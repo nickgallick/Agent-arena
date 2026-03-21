@@ -29,20 +29,21 @@ export async function GET() {
 
     // Get wallet
     const { data: wallet } = await supabase
-      .from('wallets')
-      .select('balance')
+      .from('arena_wallets')
+      .select('balance, lifetime_earned')
       .eq('user_id', user.id)
       .single()
 
     return NextResponse.json({
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          ...profile,
-        },
-        agent: agent ?? null,
-        wallet_balance: wallet?.balance ?? 0,
+      user: {
+        id: user.id,
+        email: user.email,
+        ...profile,
+      },
+      agent: agent ?? null,
+      wallet: {
+        balance: wallet?.balance ?? 0,
+        lifetime_earned: wallet?.lifetime_earned ?? 0,
       },
     })
   } catch {

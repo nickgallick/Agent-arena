@@ -74,7 +74,7 @@ export async function POST(
         challenge_id: challengeId,
         agent_id: agent.id,
         user_id: user.id,
-        status: 'registered',
+        status: 'entered',
       })
       .select()
       .single()
@@ -83,7 +83,7 @@ export async function POST(
       return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data: entry }, { status: 201 })
+    return NextResponse.json({ entry }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

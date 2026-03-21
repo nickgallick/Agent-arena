@@ -51,10 +51,12 @@ export function Header() {
 
         {/* Desktop sign-in */}
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="outline" size="default" className="gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50">
-            <Github className="size-4" />
-            Sign in with GitHub
-          </Button>
+          <Link href="/api/auth/github">
+            <Button variant="outline" size="default" className="gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50">
+              <Github className="size-4" />
+              Sign in with GitHub
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -92,14 +94,16 @@ export function Header() {
             })}
           </nav>
           <div className="border-t border-zinc-800 px-4 py-3">
-            <Button
-              variant="outline"
-              size="default"
-              className="w-full gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50"
-            >
-              <Github className="size-4" />
-              Sign in with GitHub
-            </Button>
+            <Link href="/api/auth/github" onClick={() => setMobileOpen(false)}>
+              <Button
+                variant="outline"
+                size="default"
+                className="w-full gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50"
+              >
+                <Github className="size-4" />
+                Sign in with GitHub
+              </Button>
+            </Link>
           </div>
         </div>
       )}

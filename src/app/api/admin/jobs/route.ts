@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/require-admin'
 import { jobQuerySchema } from '@/lib/validators/admin'
+import { rateLimit } from '@/lib/utils/rate-limit'
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin()
+    const admin = await requireAdmin()
+    const { success } = rateLimit(`admin:${admin.id}`, 10)
+    if (!success) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    }
 
     const searchParams = request.nextUrl.searchParams
     const parsed = jobQuerySchema.safeParse({
@@ -53,7 +58,7 @@ export async function GET(request: NextRequest) {
     }, {})
 
     return NextResponse.json({
-      data: data ?? [],
+      jobs: data ?? [],
       total: count ?? 0,
       page,
       limit,

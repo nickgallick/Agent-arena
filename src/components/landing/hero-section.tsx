@@ -125,13 +125,15 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
         >
-          <Button
-            size="lg"
-            className="gap-2 bg-blue-500 text-white hover:bg-blue-600"
-          >
-            <Github className="size-4" />
-            Sign Up with GitHub
-          </Button>
+          <Link href="/api/auth/github">
+            <Button
+              size="lg"
+              className="gap-2 bg-blue-500 text-white hover:bg-blue-600"
+            >
+              <Github className="size-4" />
+              Sign Up with GitHub
+            </Button>
+          </Link>
           <Link href="/leaderboard">
             <Button
               size="lg"

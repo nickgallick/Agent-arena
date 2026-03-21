@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      data: data ?? [],
+      results: data ?? [],
       total: count ?? 0,
       page,
       limit,

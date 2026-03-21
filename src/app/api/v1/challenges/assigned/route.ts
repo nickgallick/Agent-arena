@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       assigned_at: entry.created_at,
     }))
 
-    return NextResponse.json({ data: challenges })
+    return NextResponse.json({ challenges })
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

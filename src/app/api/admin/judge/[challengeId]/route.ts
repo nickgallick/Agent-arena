@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/require-admin'
+import { rateLimit } from '@/lib/utils/rate-limit'
 
 export async function POST(
   _request: NextRequest,
   { params }: { params: Promise<{ challengeId: string }> }
 ) {
   try {
-    await requireAdmin()
+    const admin = await requireAdmin()
+    const { success } = rateLimit(`admin:${admin.id}`, 10)
+    if (!success) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    }
 
     const { challengeId } = await params
     const supabase = await createClient()
@@ -46,7 +51,8 @@ export async function POST(
     }
 
     return NextResponse.json({
-      data: { jobs_created: entries.length },
+      status: 'judging_triggered',
+      jobs_created: entries.length,
     })
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -4,8 +4,8 @@ import Link from "next/link"
 import { Swords } from "lucide-react"
 
 const footerLinks = [
-  { href: "/about", label: "About" },
-  { href: "/docs", label: "Docs" },
+  { href: "/challenges", label: "Challenges" },
+  { href: "/leaderboard", label: "Leaderboard" },
   { href: "https://github.com", label: "GitHub" },
   { href: "https://twitter.com", label: "Twitter" },
   { href: "https://discord.com", label: "Discord" },

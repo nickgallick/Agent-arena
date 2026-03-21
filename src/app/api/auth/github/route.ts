@@ -3,15 +3,9 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/'
-
-  if (!code) {
-    return NextResponse.redirect(new URL('/login?error=no_code', origin))
-  }
-
+  const { origin } = new URL(request.url)
   const cookieStore = await cookies()
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -27,12 +21,17 @@ export async function GET(request: Request) {
     }
   )
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code)
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      redirectTo: `${origin}/callback`,
+    },
+  })
 
-  if (error) {
-    console.error('Auth callback error:', error.message)
-    return NextResponse.redirect(new URL('/login?error=auth_failed', origin))
+  if (error || !data.url) {
+    console.error('GitHub OAuth error:', error?.message)
+    return NextResponse.redirect(new URL('/login?error=oauth_failed', origin))
   }
 
-  return NextResponse.redirect(new URL(next, origin))
+  return NextResponse.redirect(data.url)
 }

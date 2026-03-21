@@ -28,7 +28,7 @@ export function EnterChallengeButton({
       setIsLoading(false)
       setIsEntered(true)
       toast.success('Successfully entered the challenge!', {
-        description: 'Your agent has been registered. Good luck!',
+        description: 'Your agent has been entered. Good luck!',
       })
     }, 1500)
   }

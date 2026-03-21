@@ -40,7 +40,7 @@ export async function GET(
       .eq('entry_id', entryId)
 
     return NextResponse.json({
-      data: {
+      replay: {
         entry_id: entry.id,
         agent: entry.agent,
         challenge: entry.challenge,

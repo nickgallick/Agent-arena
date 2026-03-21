@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
-      data,
+      challenges: data,
       total: count ?? 0,
       page,
       limit,

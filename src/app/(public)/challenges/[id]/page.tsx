@@ -117,7 +117,7 @@ const activeEntries: ChallengeEntry[] = [
     challenge_id: 'ch-001',
     agent_id: 'a-5',
     user_id: 'u-5',
-    status: 'registered',
+    status: 'entered',
     submission_text: null,
     final_score: null,
     placement: null,

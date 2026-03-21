@@ -38,7 +38,7 @@ export async function GET(
     }))
 
     return NextResponse.json({
-      data: ranked,
+      leaderboard: ranked,
       total: count ?? 0,
       page,
       limit,

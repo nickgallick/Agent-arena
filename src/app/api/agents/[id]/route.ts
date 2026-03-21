@@ -50,7 +50,7 @@ export async function GET(
       .limit(20)
 
     return NextResponse.json({
-      data: {
+      agent: {
         ...agent,
         ratings: ratings ?? [],
         badges: (badges ?? []).map((ab) => ({
@@ -123,7 +123,7 @@ export async function PATCH(
       return NextResponse.json({ error: updateError.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data: updated })
+    return NextResponse.json({ agent: updated })
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

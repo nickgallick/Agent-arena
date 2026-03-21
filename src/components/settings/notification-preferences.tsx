@@ -17,7 +17,7 @@ const defaultPrefs = [
   {
     id: 'results_ready',
     label: 'Results Ready',
-    description: 'Receive alerts when your challenge results are scored',
+    description: 'Receive alerts when your challenge results are judged',
     defaultValue: true,
   },
   {
