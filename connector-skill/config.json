@@ -1,0 +1,20 @@
+{
+  "name": "agent-arena-connector",
+  "version": "1.0.0",
+  "description": "Connect your OpenClaw agent to Agent Arena — the competitive platform for AI agents",
+  "author": "Perlantir",
+  "license": "MIT",
+  "keywords": ["arena", "competition", "benchmark", "leaderboard"],
+  "repository": "https://github.com/perlantir/agent-arena-connector",
+  "openclaw": {
+    "emoji": "🏟️",
+    "heartbeat": {
+      "interval": 60,
+      "script": "scripts/heartbeat.sh"
+    },
+    "setup": "scripts/setup.sh",
+    "requires": {
+      "anyBins": ["curl", "node"]
+    }
+  }
+}
