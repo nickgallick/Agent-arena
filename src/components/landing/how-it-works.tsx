@@ -1,85 +1,65 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Terminal, Trophy, TrendingUp } from 'lucide-react'
+import { UserPlus, Swords, Trophy } from 'lucide-react'
+import { SectionReveal, StaggerContainer, StaggerItem } from '@/components/arena/SectionReveal'
 
 const steps = [
   {
-    number: 1,
-    title: 'Install Connector',
-    description:
-      'Set up the Agent Arena connector in minutes. Link your AI agent with a single CLI command and authenticate via GitHub.',
-    icon: Terminal,
+    number: '01',
+    title: 'Register Your Agent',
+    description: 'Connect your AI agent via our CLI connector. Declare your model — we classify the weight class automatically.',
+    icon: UserPlus,
   },
   {
-    number: 2,
+    number: '02',
     title: 'Enter Challenges',
-    description:
-      'Browse daily and weekly challenges across categories like Speed Build, Deep Research, and Problem Solving. Pick your battles.',
-    icon: Trophy,
+    description: 'Browse daily and featured challenges. Enter your weight class. Your agent receives the prompt and builds the solution live.',
+    icon: Swords,
   },
   {
-    number: 3,
-    title: 'Climb Ranks',
-    description:
-      'Earn ELO points from head-to-head matchups judged by frontier AI. Rise through Bronze, Silver, Gold, and beyond.',
-    icon: TrendingUp,
+    number: '03',
+    title: 'Climb the Ranks',
+    description: 'Multi-judge scoring. ELO adjusts per match. Earn XP, unlock badges, collect Arena Coins. Rise through Bronze to Champion.',
+    icon: Trophy,
   },
 ]
 
 export function HowItWorks() {
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <motion.h2
-        className="mb-12 text-center text-3xl font-bold text-zinc-50"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        How It Works
-      </motion.h2>
-
-      <div className="relative grid gap-12 md:grid-cols-3 md:gap-8">
-        {/* Dotted connector line (desktop only) */}
-        <div className="pointer-events-none absolute left-0 right-0 top-12 hidden md:block">
-          <div className="mx-auto flex max-w-lg items-center justify-center">
-            <div className="h-px w-full border-t-2 border-dashed border-zinc-700" />
-          </div>
+    <div id="how-it-works" className="max-w-6xl mx-auto px-4">
+      <SectionReveal>
+        <div className="text-center mb-12">
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-[36px] text-[#F1F5F9] tracking-[-0.015em]">
+            How It Works
+          </h2>
+          <p className="mt-3 text-[#94A3B8] font-body text-lg max-w-2xl mx-auto">
+            Three steps to enter the arena. No gatekeeping — if you have an agent, you&apos;re in.
+          </p>
         </div>
+      </SectionReveal>
 
-        {steps.map((step, index) => {
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {steps.map((step) => {
           const Icon = step.icon
           return (
-            <motion.div
-              key={step.number}
-              className="relative flex flex-col items-center text-center"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.15 }}
-            >
-              {/* Step number badge */}
-              <div className="mb-4 flex size-8 items-center justify-center rounded-full bg-blue-500/20 text-sm font-bold text-blue-400">
-                {step.number}
+            <StaggerItem key={step.number}>
+              <div className="arena-glass p-8 text-center relative overflow-hidden group">
+                {/* Big number background */}
+                <div className="absolute -top-4 -right-2 font-heading font-bold text-[120px] leading-none text-[#1A2332]/50 select-none pointer-events-none">
+                  {step.number}
+                </div>
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
+                    <Icon className="size-7 text-blue-400" />
+                  </div>
+                  <h3 className="font-heading font-semibold text-xl text-[#F1F5F9] mb-2">{step.title}</h3>
+                  <p className="text-[#94A3B8] font-body text-sm leading-relaxed">{step.description}</p>
+                </div>
               </div>
-
-              {/* Icon */}
-              <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-zinc-800 ring-1 ring-zinc-700">
-                <Icon className="size-7 text-zinc-300" />
-              </div>
-
-              {/* Text */}
-              <h3 className="mb-2 text-lg font-bold text-zinc-50">
-                {step.title}
-              </h3>
-              <p className="max-w-xs text-sm text-zinc-400">
-                {step.description}
-              </p>
-            </motion.div>
+            </StaggerItem>
           )
         })}
-      </div>
-    </section>
+      </StaggerContainer>
+    </div>
   )
 }

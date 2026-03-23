@@ -1,78 +1,112 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth/get-user'
 import { updateAgentSchema } from '@/lib/validators/agent'
-import { rateLimit } from '@/lib/utils/rate-limit'
+import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
+
+// Public agent fields — NEVER include api_key_hash, api_key_prefix, soul_config raw
+const PUBLIC_AGENT_COLUMNS = 'id, user_id, name, bio, avatar_url, model_name, mps, weight_class_id, is_online, elo_rating, level, xp, wins, losses, draws, current_streak, created_at, updated_at'
+
+const idSchema = z.string().uuid('Invalid agent ID')
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const ip = request.headers.get('x-forwarded-for') ?? 'unknown'
-    const { success } = rateLimit(`public:${ip}`, 60)
-    if (!success) {
-      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    const { id: rawId } = await params
+    const idParsed = idSchema.safeParse(rawId)
+    if (!idParsed.success) {
+      return NextResponse.json({ error: 'Invalid agent ID' }, { status: 400 })
+    }
+    const id = idParsed.data
+
+    const ip = getClientIp(request)
+    const rl = await rateLimit(`agent-get:${ip}`, 60, 60_000)
+    if (!rl.success) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: { 'Retry-After': '60' } })
     }
 
-    const { id } = await params
     const supabase = await createClient()
 
-    // Get agent
     const { data: agent, error: agentError } = await supabase
       .from('agents')
-      .select('*')
+      .select(PUBLIC_AGENT_COLUMNS)
       .eq('id', id)
       .single()
 
-    if (agentError || !agent) {
-      return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
+    if (agentError) {
+      if (agentError.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
+      }
+      console.error('[api/agents/[id] GET] DB error:', agentError.message)
+      return NextResponse.json({ error: 'Failed to load agent' }, { status: 500 })
     }
 
-    // Get ratings
-    const { data: ratings } = await supabase
+    const { data: ratings, error: ratingsError } = await supabase
       .from('agent_ratings')
-      .select('*')
+      .select('weight_class_id, rating, rating_deviation, wins, losses, challenges_entered, best_placement, current_streak')
       .eq('agent_id', id)
 
-    // Get badges
-    const { data: badges } = await supabase
+    if (ratingsError) {
+      console.error('[api/agents/[id] GET] Ratings error:', ratingsError.message)
+    }
+
+    const { data: badges, error: badgesError } = await supabase
       .from('agent_badges')
-      .select('*, badge:badges(*)')
+      .select('id, badge_id, awarded_at, badge:badges(name, icon, rarity)')
       .eq('agent_id', id)
 
-    // Get recent entries
-    const { data: recentEntries } = await supabase
+    if (badgesError) {
+      console.error('[api/agents/[id] GET] Badges error:', badgesError.message)
+    }
+
+    const { data: recentEntries, error: entriesError } = await supabase
       .from('challenge_entries')
-      .select('*, challenge:challenges(id, title, category, status)')
+      .select('challenge_id, placement, final_score, elo_change, created_at, challenge:challenges(id, title, category, status)')
       .eq('agent_id', id)
       .order('created_at', { ascending: false })
       .limit(20)
+
+    if (entriesError) {
+      console.error('[api/agents/[id] GET] Entries error:', entriesError.message)
+    }
 
     return NextResponse.json({
       agent: {
         ...agent,
         ratings: ratings ?? [],
-        badges: (badges ?? []).map((ab) => ({
-          id: ab.id,
-          badge_id: ab.badge_id,
-          name: ab.badge?.name,
-          icon: ab.badge?.icon,
-          rarity: ab.badge?.rarity,
-          awarded_at: ab.awarded_at,
-        })),
-        recent_entries: (recentEntries ?? []).map((e) => ({
-          challenge_id: e.challenge_id,
-          title: e.challenge?.title,
-          category: e.challenge?.category,
-          placement: e.placement,
-          final_score: e.final_score,
-          elo_change: e.elo_change,
-          created_at: e.created_at,
-        })),
+        badges: (badges ?? []).map((ab) => {
+          const badge = ab.badge as unknown as { name: string; icon: string; rarity: string } | null
+          return {
+            id: ab.id,
+            badge_id: ab.badge_id,
+            name: badge?.name ?? null,
+            icon: badge?.icon ?? null,
+            rarity: badge?.rarity ?? null,
+            awarded_at: ab.awarded_at,
+          }
+        }),
+        recent_entries: (recentEntries ?? []).map((e) => {
+          const challenge = e.challenge as unknown as { title: string; category: string } | null
+          return {
+            challenge_id: e.challenge_id,
+            title: challenge?.title ?? null,
+            category: challenge?.category ?? null,
+            placement: e.placement,
+            final_score: e.final_score,
+            elo_change: e.elo_change,
+            created_at: e.created_at,
+          }
+        }),
       },
     })
-  } catch {
+  } catch (err) {
+    const e = err as Error
+    if (e.message === 'Unauthorized') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (e.message === 'Forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    console.error('[api/agents/[id] GET] Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -83,22 +117,29 @@ export async function PATCH(
 ) {
   try {
     const user = await requireUser()
-    const { success } = rateLimit(`user:${user.id}`, 10)
-    if (!success) {
-      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+
+    const { id: rawId } = await params
+    const idParsed = idSchema.safeParse(rawId)
+    if (!idParsed.success) {
+      return NextResponse.json({ error: 'Invalid agent ID' }, { status: 400 })
+    }
+    const id = idParsed.data
+
+    const ip = getClientIp(request)
+    const rl = await rateLimit(`agent-patch:${user.id}`, 10, 60_000)
+    if (!rl.success) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: { 'Retry-After': '60' } })
     }
 
-    const { id } = await params
     const supabase = await createClient()
 
-    // Verify ownership
-    const { data: agent } = await supabase
+    const { data: agent, error: ownerError } = await supabase
       .from('agents')
       .select('id, user_id')
       .eq('id', id)
       .single()
 
-    if (!agent) {
+    if (ownerError || !agent) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
     }
 
@@ -106,7 +147,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const body = await request.json()
+    const body = await request.json() as unknown
     const parsed = updateAgentSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
@@ -116,15 +157,20 @@ export async function PATCH(
       .from('agents')
       .update(parsed.data)
       .eq('id', id)
-      .select()
+      .select(PUBLIC_AGENT_COLUMNS)
       .single()
 
     if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 })
+      console.error('[api/agents/[id] PATCH] Update error:', updateError.message)
+      return NextResponse.json({ error: 'Failed to update agent' }, { status: 500 })
     }
 
     return NextResponse.json({ agent: updated })
-  } catch {
+  } catch (err) {
+    const e = err as Error
+    if (e.message === 'Unauthorized') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (e.message === 'Forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    console.error('[api/agents/[id] PATCH] Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

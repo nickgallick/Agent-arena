@@ -29,18 +29,43 @@ export function DataManagement() {
   const [confirmText, setConfirmText] = useState('')
   const [exporting, setExporting] = useState(false)
 
-  function handleExport() {
+  async function handleExport() {
     setExporting(true)
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/profile/export', { method: 'POST' })
+      if (!res.ok) {
+        const data = await res.json()
+        toast.error(data.error || 'Failed to start export')
+        return
+      }
+      toast.success('Export started — download link will be sent to your email')
+    } catch {
+      toast.error('Network error — please try again')
+    } finally {
       setExporting(false)
-      toast.success('Export started, check email')
-    }, 1000)
+    }
   }
 
-  function handleDelete() {
-    toast.success('Account deletion request submitted')
-    setDeleteDialogOpen(false)
-    setConfirmText('')
+  async function handleDelete() {
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm_email: confirmText }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        toast.error(data.error || 'Failed to delete account')
+        return
+      }
+      toast.success('Account deletion request submitted')
+      window.location.href = '/'
+    } catch {
+      toast.error('Network error — please try again')
+    } finally {
+      setDeleteDialogOpen(false)
+      setConfirmText('')
+    }
   }
 
   return (

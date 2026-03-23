@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { RefreshCw } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -32,20 +32,9 @@ interface Job {
   status: JobStatus
   payload: string
   attempts: number
-  createdAt: string
-  completedAt: string | null
+  created_at: string
+  completed_at: string | null
 }
-
-const mockJobs: Job[] = [
-  { id: 'j-001', type: 'judge_entry', status: 'completed', payload: '{"entry_id":"e-4a1b","challenge_id":"c-daily-089","criteria":["correctness","performance"]}', attempts: 1, createdAt: '2026-03-22T08:12:00Z', completedAt: '2026-03-22T08:12:04Z' },
-  { id: 'j-002', type: 'calculate_elo', status: 'completed', payload: '{"challenge_id":"c-daily-089","participants":24,"weight_class":"frontier"}', attempts: 1, createdAt: '2026-03-22T08:15:00Z', completedAt: '2026-03-22T08:15:02Z' },
-  { id: 'j-003', type: 'send_notification', status: 'completed', payload: '{"user_id":"u-78f2","template":"results_ready","channel":"email"}', attempts: 1, createdAt: '2026-03-22T08:16:00Z', completedAt: '2026-03-22T08:16:01Z' },
-  { id: 'j-004', type: 'judge_entry', status: 'processing', payload: '{"entry_id":"e-9c3d","challenge_id":"c-weekly-012","criteria":["creativity","depth"]}', attempts: 1, createdAt: '2026-03-22T09:30:00Z', completedAt: null },
-  { id: 'j-005', type: 'calculate_elo', status: 'pending', payload: '{"challenge_id":"c-weekly-012","participants":18,"weight_class":"scrapper"}', attempts: 0, createdAt: '2026-03-22T09:31:00Z', completedAt: null },
-  { id: 'j-006', type: 'send_notification', status: 'pending', payload: '{"user_id":"u-12ab","template":"daily_reminder","channel":"push"}', attempts: 0, createdAt: '2026-03-22T09:32:00Z', completedAt: null },
-  { id: 'j-007', type: 'judge_entry', status: 'failed', payload: '{"entry_id":"e-0f7a","challenge_id":"c-special-003","criteria":["speed","accuracy"]}', attempts: 3, createdAt: '2026-03-22T07:00:00Z', completedAt: null },
-  { id: 'j-008', type: 'send_notification', status: 'failed', payload: '{"user_id":"u-44cc","template":"weekly_digest","channel":"email"}', attempts: 3, createdAt: '2026-03-22T06:45:00Z', completedAt: null },
-]
 
 const statusColors: Record<JobStatus, string> = {
   pending: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
@@ -56,15 +45,48 @@ const statusColors: Record<JobStatus, string> = {
 
 export function JobQueueViewer() {
   const [filter, setFilter] = useState<string>('all')
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
 
-  const filtered = filter === 'all'
-    ? mockJobs
-    : mockJobs.filter((j) => j.status === filter)
+  async function fetchJobs() {
+    try {
+      setError(null)
+      const params = new URLSearchParams({ limit: '50' })
+      if (filter !== 'all') {
+        params.set('status', filter)
+      }
+      const res = await fetch(`/api/admin/jobs?${params.toString()}`)
+      if (!res.ok) {
+        throw new Error('Failed to load jobs')
+      }
+      const data = await res.json()
+      const mapped: Job[] = (data.jobs ?? []).map((j: Record<string, unknown>) => ({
+        id: j.id ?? '',
+        type: j.type ?? '',
+        status: (j.status as JobStatus) ?? 'pending',
+        payload: typeof j.payload === 'string' ? j.payload : JSON.stringify(j.payload ?? {}),
+        attempts: (j.attempts as number) ?? 0,
+        created_at: (j.created_at as string) ?? new Date().toISOString(),
+        completed_at: (j.completed_at as string) ?? null,
+      }))
+      setJobs(mapped)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load jobs')
+    }
+  }
+
+  useEffect(() => {
+    setLoading(true)
+    fetchJobs().finally(() => setLoading(false))
+  }, [filter])
 
   function handleRefresh() {
     setRefreshing(true)
-    setTimeout(() => setRefreshing(false), 800)
+    fetchJobs().finally(() => {
+      setTimeout(() => setRefreshing(false), 400)
+    })
   }
 
   return (
@@ -98,51 +120,65 @@ export function JobQueueViewer() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-zinc-700/50 hover:bg-transparent">
-                <TableHead className="text-zinc-400">Type</TableHead>
-                <TableHead className="text-zinc-400">Status</TableHead>
-                <TableHead className="text-zinc-400">Payload</TableHead>
-                <TableHead className="text-zinc-400 text-center">Attempts</TableHead>
-                <TableHead className="text-zinc-400">Created</TableHead>
-                <TableHead className="text-zinc-400">Completed</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((job) => (
-                <TableRow key={job.id} className="border-zinc-700/50 hover:bg-zinc-700/20">
-                  <TableCell className="font-mono text-sm text-zinc-300">
-                    {job.type}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={statusColors[job.status]}>
-                      {job.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell
-                    className="max-w-[200px] truncate font-mono text-xs text-zinc-500"
-                    title={job.payload}
-                  >
-                    {job.payload.length > 50
-                      ? `${job.payload.slice(0, 50)}...`
-                      : job.payload}
-                  </TableCell>
-                  <TableCell className="text-center text-sm text-zinc-400">
-                    {job.attempts}
-                  </TableCell>
-                  <TableCell className="text-sm text-zinc-400">
-                    {timeAgo(job.createdAt)}
-                  </TableCell>
-                  <TableCell className="text-sm text-zinc-400">
-                    {job.completedAt ? timeAgo(job.completedAt) : '—'}
-                  </TableCell>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        ) : jobs.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-zinc-400 text-sm">No jobs in queue</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-zinc-700/50 hover:bg-transparent">
+                  <TableHead className="text-zinc-400">Type</TableHead>
+                  <TableHead className="text-zinc-400">Status</TableHead>
+                  <TableHead className="text-zinc-400">Payload</TableHead>
+                  <TableHead className="text-zinc-400 text-center">Attempts</TableHead>
+                  <TableHead className="text-zinc-400">Created</TableHead>
+                  <TableHead className="text-zinc-400">Completed</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {jobs.map((job) => (
+                  <TableRow key={job.id} className="border-zinc-700/50 hover:bg-zinc-700/20">
+                    <TableCell className="font-mono text-sm text-zinc-300">
+                      {job.type}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={statusColors[job.status] ?? statusColors.pending}>
+                        {job.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell
+                      className="max-w-[200px] truncate font-mono text-xs text-zinc-500"
+                      title={job.payload}
+                    >
+                      {job.payload.length > 50
+                        ? `${job.payload.slice(0, 50)}...`
+                        : job.payload}
+                    </TableCell>
+                    <TableCell className="text-center text-sm text-zinc-400">
+                      {job.attempts}
+                    </TableCell>
+                    <TableCell className="text-sm text-zinc-400">
+                      {timeAgo(job.created_at)}
+                    </TableCell>
+                    <TableCell className="text-sm text-zinc-400">
+                      {job.completed_at ? timeAgo(job.completed_at) : '—'}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

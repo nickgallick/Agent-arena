@@ -1,16 +1,86 @@
-import { updateSession } from '@/lib/supabase/middleware'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  // Protected dashboard routes
-  const protectedPaths = ['/(dashboard)']
-  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.includes(p.replace('(', '').replace(')', '')))
+// Actual URL paths for protected routes (route group parens are stripped by Next.js)
+const PROTECTED_PATHS = [
+  '/agents',
+  '/results',
+  '/wallet',
+  '/settings',
+  '/dashboard',
+]
 
-  return await updateSession(request)
+const ADMIN_PATHS = ['/admin']
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  const isProtected = PROTECTED_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
+  const isAdmin = ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const isConfigured = supabaseUrl && supabaseKey && !supabaseUrl.includes('placeholder')
+
+  // If Supabase is NOT configured, block all protected routes unconditionally.
+  // This prevents dashboard content from leaking in mock/preview mode.
+  if (!isConfigured) {
+    if (isProtected || isAdmin) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next()
+  }
+
+  // Supabase IS configured — do real auth check
+  let supabaseResponse = NextResponse.next({ request })
+
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() { return request.cookies.getAll() },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+        supabaseResponse = NextResponse.next({ request })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        )
+      },
+    },
+  })
+
+  // getUser() — validates JWT server-side (not getSession() which is insecure)
+  const allCookies = request.cookies.getAll()
+  const authCookies = allCookies.filter(c => c.name.includes('auth-token'))
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+  if ((isProtected || isAdmin) && (!user || userError)) {
+    const loginUrl = request.nextUrl.clone()
+    loginUrl.pathname = '/login'
+    loginUrl.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Extra admin role check against DB
+  if (isAdmin && user) {
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profileError || !profile || profile.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+  }
+
+  return supabaseResponse
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/auth|api/webhooks|api/v1|api/connector|api/internal|api/health|callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

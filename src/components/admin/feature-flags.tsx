@@ -1,32 +1,81 @@
 'use client'
 
-import { useState } from 'react'
-import { ToggleLeft } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ToggleLeft, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
+import { createClient } from '@/lib/supabase/client'
 
 interface FeatureFlag {
   id: string
-  name: string
-  description: string
+  description: string | null
   enabled: boolean
 }
 
-const defaultFlags: FeatureFlag[] = [
-  { id: 'daily_challenges', name: 'daily_challenges', description: 'Enable daily challenge generation and scheduling', enabled: true },
-  { id: 'weekly_challenges', name: 'weekly_challenges', description: 'Enable weekly long-form challenge events', enabled: false },
-  { id: 'leaderboard_v2', name: 'leaderboard_v2', description: 'Use the new leaderboard with weight class filtering', enabled: true },
-  { id: 'replay_viewer', name: 'replay_viewer', description: 'Allow users to replay agent challenge submissions', enabled: true },
-  { id: 'coin_rewards', name: 'coin_rewards', description: 'Award coins for challenge participation and wins', enabled: false },
-]
-
 export function FeatureFlags() {
-  const [flags, setFlags] = useState<FeatureFlag[]>(defaultFlags)
+  const [flags, setFlags] = useState<FeatureFlag[]>([])
+  const [loading, setLoading] = useState(true)
 
-  function toggle(id: string) {
-    setFlags((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, enabled: !f.enabled } : f))
+  useEffect(() => {
+    async function fetchFlags() {
+      try {
+        const supabase = createClient()
+        const { data, error } = await supabase
+          .from('feature_flags')
+          .select('id, description, enabled')
+          .order('id')
+
+        if (error) {
+          console.error('[FeatureFlags] Fetch error:', error.message)
+          return
+        }
+        setFlags(data ?? [])
+      } catch (err) {
+        console.error('[FeatureFlags] Error:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchFlags()
+  }, [])
+
+  async function toggle(id: string) {
+    const flag = flags.find(f => f.id === id)
+    if (!flag) return
+
+    const newEnabled = !flag.enabled
+    // Optimistic update
+    setFlags(prev => prev.map(f => f.id === id ? { ...f, enabled: newEnabled } : f))
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('feature_flags')
+        .update({ enabled: newEnabled })
+        .eq('id', id)
+
+      if (error) {
+        // Revert
+        setFlags(prev => prev.map(f => f.id === id ? { ...f, enabled: !newEnabled } : f))
+        toast.error('Failed to update flag')
+        return
+      }
+      toast.success(`${flag.id} ${newEnabled ? 'enabled' : 'disabled'}`)
+    } catch {
+      setFlags(prev => prev.map(f => f.id === id ? { ...f, enabled: !newEnabled } : f))
+      toast.error('Network error')
+    }
+  }
+
+  if (loading) {
+    return (
+      <Card className="border-zinc-700/50 bg-zinc-800/50">
+        <CardContent className="py-12 flex items-center justify-center">
+          <Loader2 className="size-6 text-zinc-500 animate-spin" />
+        </CardContent>
+      </Card>
     )
   }
 
@@ -39,21 +88,25 @@ export function FeatureFlags() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-1">
-        {flags.map((flag) => (
-          <div
-            key={flag.id}
-            className="flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-zinc-700/20"
-          >
-            <div className="space-y-0.5">
-              <p className="font-mono text-sm text-zinc-50">{flag.name}</p>
-              <p className="text-sm text-zinc-400">{flag.description}</p>
+        {flags.length === 0 ? (
+          <p className="text-sm text-zinc-500 text-center py-4">No feature flags configured</p>
+        ) : (
+          flags.map((flag) => (
+            <div
+              key={flag.id}
+              className="flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-zinc-700/20"
+            >
+              <div className="space-y-0.5">
+                <p className="font-mono text-sm text-zinc-50">{flag.id}</p>
+                {flag.description && <p className="text-sm text-zinc-400">{flag.description}</p>}
+              </div>
+              <Switch
+                checked={flag.enabled}
+                onCheckedChange={() => toggle(flag.id)}
+              />
             </div>
-            <Switch
-              checked={flag.enabled}
-              onCheckedChange={() => toggle(flag.id)}
-            />
-          </div>
-        ))}
+          ))
+        )}
       </CardContent>
     </Card>
   )

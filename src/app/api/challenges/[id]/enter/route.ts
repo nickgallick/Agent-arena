@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const user = await requireUser()
-    const { success } = rateLimit(`user:${user.id}`, 10)
+    const { success } = await rateLimit(`user:${user.id}`, 10)
     if (!success) {
       return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
     }
@@ -17,12 +17,15 @@ export async function POST(
     const { id: challengeId } = await params
     const supabase = await createClient()
 
-    // Get user's agent
-    const { data: agent, error: agentError } = await supabase
+    // Get user's active agent (pick first if multiple)
+    const { data: agents, error: agentError } = await supabase
       .from('agents')
       .select('id, weight_class_id')
       .eq('user_id', user.id)
-      .single()
+      .order('created_at', { ascending: true })
+      .limit(1)
+
+    const agent = agents?.[0] ?? null
 
     if (agentError || !agent) {
       return NextResponse.json({ error: 'You must register an agent first' }, { status: 400 })
@@ -47,8 +50,9 @@ export async function POST(
       )
     }
 
-    // Check weight class eligibility
-    if (challenge.weight_class_id && challenge.weight_class_id !== agent.weight_class_id) {
+    // Check weight class eligibility — null or 'open' means all agents can enter
+    const isOpenChallenge = !challenge.weight_class_id || challenge.weight_class_id === 'open'
+    if (!isOpenChallenge && challenge.weight_class_id !== agent.weight_class_id) {
       return NextResponse.json(
         { error: 'Agent weight class does not match challenge requirements' },
         { status: 403 }
@@ -84,7 +88,10 @@ export async function POST(
     }
 
     return NextResponse.json({ entry }, { status: 201 })
-  } catch {
+  } catch (err) {
+    const e = err as Error
+    if (e.message === 'Unauthorized') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (e.message === 'Forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -17,44 +17,74 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+const INITIAL_FORM = {
+  title: '',
+  description: '',
+  prompt: '',
+  category: '',
+  format: '',
+  challengeType: '',
+  weightClass: '',
+  timeLimit: '',
+  maxCoins: '',
+  startDate: '',
+  endDate: '',
+}
+
 export function ChallengeCreator() {
   const [submitting, setSubmitting] = useState(false)
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    prompt: '',
-    category: '',
-    format: '',
-    weightClass: '',
-    timeLimit: '',
-    maxCoins: '',
-    startDate: '',
-    endDate: '',
-  })
+  const [form, setForm] = useState(INITIAL_FORM)
+  const [formError, setFormError] = useState('')
 
   function update(key: string, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }))
+    setFormError('')
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setFormError('')
     setSubmitting(true)
-    setTimeout(() => {
-      setSubmitting(false)
-      toast.success('Challenge created successfully')
-      setForm({
-        title: '',
-        description: '',
-        prompt: '',
-        category: '',
-        format: '',
-        weightClass: '',
-        timeLimit: '',
-        maxCoins: '',
-        startDate: '',
-        endDate: '',
+
+    // Build payload matching createChallengeSchema
+    const payload = {
+      title: form.title,
+      description: form.description,
+      prompt: form.prompt,
+      category: form.category,
+      format: form.format,
+      challenge_type: form.challengeType,
+      weight_class_id: form.weightClass || null,
+      time_limit_minutes: form.timeLimit ? Number(form.timeLimit) : undefined,
+      max_coins: form.maxCoins ? Number(form.maxCoins) : undefined,
+      starts_at: form.startDate ? new Date(form.startDate).toISOString() : undefined,
+      ends_at: form.endDate ? new Date(form.endDate).toISOString() : undefined,
+    }
+
+    try {
+      const res = await fetch('/api/admin/challenges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       })
-    }, 1500)
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        const msg = data.error ?? 'Failed to create challenge'
+        setFormError(msg)
+        toast.error(msg)
+        return
+      }
+
+      toast.success('Challenge created successfully')
+      setForm(INITIAL_FORM)
+    } catch {
+      toast.error('Network error — please try again')
+      setFormError('Network error — please try again')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const inputClasses = 'border-zinc-700 bg-zinc-900/50 text-zinc-50 placeholder:text-zinc-500'
@@ -123,13 +153,29 @@ export function ChallengeCreator() {
                   <SelectValue placeholder="Select format" />
                 </SelectTrigger>
                 <SelectContent className="border-zinc-700 bg-zinc-900">
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="special">Special</SelectItem>
+                  <SelectItem value="sprint">Sprint</SelectItem>
+                  <SelectItem value="standard">Standard</SelectItem>
+                  <SelectItem value="marathon">Marathon</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-zinc-300">Challenge Type</Label>
+              <Select value={form.challengeType} onValueChange={(v) => v && update('challengeType', v)}>
+                <SelectTrigger className={inputClasses}>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent className="border-zinc-700 bg-zinc-900">
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly_featured">Weekly Featured</SelectItem>
+                  <SelectItem value="special">Special</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-2">
               <Label className="text-zinc-300">Weight Class</Label>
               <Select value={form.weightClass} onValueChange={(v) => v && update('weightClass', v)}>
@@ -143,9 +189,7 @@ export function ChallengeCreator() {
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="timeLimit" className="text-zinc-300">Time Limit (minutes)</Label>
               <Input
@@ -154,6 +198,8 @@ export function ChallengeCreator() {
                 value={form.timeLimit}
                 onChange={(e) => update('timeLimit', e.target.value)}
                 placeholder="60"
+                min={5}
+                max={480}
                 className={inputClasses}
               />
             </div>
@@ -166,6 +212,8 @@ export function ChallengeCreator() {
                 value={form.maxCoins}
                 onChange={(e) => update('maxCoins', e.target.value)}
                 placeholder="500"
+                min={0}
+                max={10000}
                 className={inputClasses}
               />
             </div>
@@ -194,6 +242,10 @@ export function ChallengeCreator() {
               />
             </div>
           </div>
+
+          {formError && (
+            <p className="text-sm text-red-400">{formError}</p>
+          )}
 
           <Button
             type="submit"

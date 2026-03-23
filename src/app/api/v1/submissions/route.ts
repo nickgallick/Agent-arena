@@ -1,35 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createHash } from 'crypto'
 import { submissionSchema } from '@/lib/validators/submission'
-import { rateLimit } from '@/lib/utils/rate-limit'
-
-async function authenticateConnector(request: Request) {
-  const apiKey = request.headers.get('x-arena-api-key')
-  if (!apiKey) return null
-  const keyHash = createHash('sha256').update(apiKey).digest('hex')
-  const supabase = createAdminClient()
-  const { data: agent } = await supabase
-    .from('agents')
-    .select('id, user_id, weight_class_id, name')
-    .eq('api_key_hash', keyHash)
-    .single()
-  return agent
-}
+import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
+import { authenticateConnector } from '@/lib/auth/authenticate-connector'
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate via API key
     const agent = await authenticateConnector(request)
     if (!agent) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { success } = rateLimit(`connector:${agent.id}`, 10)
-    if (!success) {
-      return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
+    // Rate limit: 5 submissions per agent per minute (anti-spam)
+    const rl = await rateLimit(`connector-submit:${agent.id}`, 5, 60_000)
+    if (!rl.success) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: { 'Retry-After': '60' } })
     }
 
-    const body = await request.json()
+    const body = await request.json() as unknown
     const parsed = submissionSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
@@ -38,48 +27,65 @@ export async function POST(request: NextRequest) {
     const { entry_id, submission_text, submission_files, transcript, actual_mps } = parsed.data
     const supabase = createAdminClient()
 
-    // Verify the entry belongs to this agent
-    const { data: entry } = await supabase
+    // Verify the entry belongs to this agent (with explicit error handling)
+    const { data: entry, error: entryError } = await supabase
       .from('challenge_entries')
-      .select('id, agent_id, status')
+      .select('id, agent_id, user_id, status')
       .eq('id', entry_id)
       .single()
 
-    if (!entry) {
-      return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
+    if (entryError) {
+      if (entryError.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
+      }
+      console.error('[v1/submissions POST] Entry lookup error:', entryError.message)
+      return NextResponse.json({ error: 'Failed to verify entry' }, { status: 500 })
     }
 
     if (entry.agent_id !== agent.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    if (entry.status !== 'assigned') {
-      return NextResponse.json(
-        { error: 'Entry is not in assigned status' },
-        { status: 400 }
-      )
+    // Use atomic submit_entry() Postgres function to prevent double-submit race
+    const { data: submitted, error: submitError } = await supabase.rpc('submit_entry', {
+      p_entry_id: entry_id,
+      p_user_id: entry.user_id,
+      p_content: submission_text ?? '',
+    })
+
+    if (submitError) {
+      // submit_entry raises an exception if entry already submitted or wrong status
+      console.error('[v1/submissions POST] Submit error:', submitError.message)
+      if (submitError.message.includes('cannot be submitted')) {
+        return NextResponse.json(
+          { error: `Entry cannot be submitted: ${submitError.message}` },
+          { status: 409 }
+        )
+      }
+      return NextResponse.json({ error: 'Failed to submit entry' }, { status: 500 })
     }
 
-    const { data: updated, error: updateError } = await supabase
+    // Store full submission data separately (submission_files, transcript, actual_mps)
+    const { error: updateError } = await supabase
       .from('challenge_entries')
       .update({
-        submission_text,
-        submission_files,
-        transcript,
-        actual_mps,
-        status: 'submitted',
-        submitted_at: new Date().toISOString(),
+        submission_files: submission_files ?? null,
+        transcript: transcript ?? null,
+        actual_mps: actual_mps ?? null,
       })
       .eq('id', entry_id)
-      .select()
-      .single()
 
     if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 })
+      console.error('[v1/submissions POST] Metadata update error:', updateError.message)
+      // Non-fatal — submission is already recorded
     }
 
-    return NextResponse.json({ submission_id: updated.id, status: 'submitted' })
-  } catch {
+    return NextResponse.json({
+      submission_id: (submitted as { id: string }).id,
+      status: 'submitted',
+    })
+  } catch (err) {
+    console.error('[v1/submissions POST] Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

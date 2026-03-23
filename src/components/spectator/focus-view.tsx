@@ -1,0 +1,137 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+import { ArrowLeft, Clock, Code, Terminal, AlertTriangle, Zap, CheckCircle } from 'lucide-react'
+import { EventCard } from './event-card'
+import type { AgentEvent } from '@/types/spectator'
+import type { ChallengeEntry } from '@/types/challenge'
+import { formatDistanceToNow } from 'date-fns'
+
+interface FocusViewProps {
+  entry: ChallengeEntry
+  events: AgentEvent[]
+  onBack: () => void
+}
+
+function computeStats(events: AgentEvent[]) {
+  let toolsUsed = 0
+  let linesWritten = 0
+  let errorsHit = 0
+  let selfCorrections = 0
+
+  for (const e of events) {
+    if (e.type === 'tool_call') toolsUsed++
+    if (e.type === 'code_write' && e.snippet) linesWritten += e.snippet.split('\n').length
+    if (e.type === 'error_hit') errorsHit++
+    if (e.type === 'self_correct') selfCorrections++
+  }
+
+  return { toolsUsed, linesWritten, errorsHit, selfCorrections }
+}
+
+export function FocusView({ entry, events, onBack }: FocusViewProps) {
+  const feedRef = useRef<HTMLDivElement>(null)
+  const stats = computeStats(events)
+
+  // Auto-scroll on new events
+  useEffect(() => {
+    if (feedRef.current) {
+      feedRef.current.scrollTop = feedRef.current.scrollHeight
+    }
+  }, [events.length])
+
+  return (
+    <div className="flex gap-6">
+      {/* Left panel: Event timeline (60%) */}
+      <div className="flex-[3] min-w-0">
+        <button
+          onClick={onBack}
+          className="mb-4 flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Grid
+        </button>
+
+        <div
+          ref={feedRef}
+          className="flex flex-col gap-2 max-h-[70vh] overflow-y-auto pr-2"
+        >
+          {events.length === 0 && (
+            <div className="flex items-center justify-center rounded-lg border border-zinc-700/50 bg-zinc-800/30 py-12">
+              <p className="text-sm text-zinc-500">Waiting for events…</p>
+            </div>
+          )}
+          {events.map((event, i) => (
+            <EventCard key={`${event.timestamp}-${i}`} event={event} index={i} />
+          ))}
+        </div>
+      </div>
+
+      {/* Right panel: Agent info + live stats (40%) */}
+      <div className="flex-[2] space-y-4">
+        {/* Agent profile card */}
+        <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-5">
+          <div className="flex items-center gap-3">
+            <div className="h-14 w-14 overflow-hidden rounded-full bg-zinc-700">
+              {entry.agent?.avatar_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={entry.agent.avatar_url}
+                  alt={entry.agent?.name || 'Agent'}
+                  className="h-full w-full object-cover"
+                />
+              )}
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-zinc-50">
+                {entry.agent?.name || 'Unknown Agent'}
+              </h3>
+              {entry.agent?.weight_class_id && (
+                <span className="text-sm text-zinc-400 capitalize">
+                  {entry.agent.weight_class_id}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-3 text-xs text-zinc-500">
+            Joined {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}
+          </div>
+        </div>
+
+        {/* Live stats */}
+        <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-5">
+          <h4 className="mb-3 text-sm font-semibold text-zinc-300">Live Stats</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <StatItem icon={<Zap className="h-4 w-4 text-blue-400" />} label="Events" value={events.length} />
+            <StatItem icon={<Clock className="h-4 w-4 text-zinc-400" />} label="Elapsed" value={formatDistanceToNow(new Date(entry.created_at), { addSuffix: false })} />
+            <StatItem icon={<Terminal className="h-4 w-4 text-purple-400" />} label="Tools Used" value={stats.toolsUsed} />
+            <StatItem icon={<Code className="h-4 w-4 text-emerald-400" />} label="Lines Written" value={stats.linesWritten} />
+            <StatItem icon={<AlertTriangle className="h-4 w-4 text-red-400" />} label="Errors" value={stats.errorsHit} />
+            <StatItem icon={<CheckCircle className="h-4 w-4 text-amber-400" />} label="Self-fixes" value={stats.selfCorrections} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StatItem({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string | number
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg bg-zinc-900/50 px-3 py-2">
+      {icon}
+      <div>
+        <p className="text-sm font-bold tabular-nums text-zinc-50">{value}</p>
+        <p className="text-xs text-zinc-500">{label}</p>
+      </div>
+    </div>
+  )
+}

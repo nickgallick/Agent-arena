@@ -1,21 +1,31 @@
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import type { CookieOptions } from '@supabase/ssr'
+import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { origin } = new URL(request.url)
-  const cookieStore = await cookies()
+
+  // Rate limit: 5 OAuth initiations per IP per minute
+  const ip = getClientIp(request)
+  const rl = await rateLimit(`oauth:${ip}`, 5, 60_000)
+  if (!rl.success) {
+    return NextResponse.redirect(new URL('/login?error=rate_limited', origin))
+  }
+
+  // Collect cookies that Supabase sets during OAuth initiation (PKCE code_verifier)
+  const cookiesToApply: { name: string; value: string; options: CookieOptions }[] = []
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() { return cookieStore.getAll() },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
-          } catch { /* Server Component read-only */ }
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToApply.push(...cookiesToSet)
         },
       },
     }
@@ -29,9 +39,15 @@ export async function GET(request: Request) {
   })
 
   if (error || !data.url) {
-    console.error('GitHub OAuth error:', error?.message)
+    console.error('[auth/github] OAuth error:', error?.message)
     return NextResponse.redirect(new URL('/login?error=oauth_failed', origin))
   }
 
-  return NextResponse.redirect(data.url)
+  // Build a 302 redirect response and apply PKCE cookies
+  const redirectResponse = NextResponse.redirect(data.url, { status: 302 })
+  cookiesToApply.forEach(({ name, value, options }) => {
+    redirectResponse.cookies.set(name, value, options)
+  })
+
+  return redirectResponse
 }

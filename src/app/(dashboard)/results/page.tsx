@@ -1,8 +1,12 @@
 'use client'
 
-import { Trophy, Coins } from 'lucide-react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { useEffect, useState } from 'react'
+import { Trophy, Coins, Loader2, FileText } from 'lucide-react'
+import Link from 'next/link'
+import { useUser } from '@/lib/hooks/use-user'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableHeader,
@@ -26,22 +30,19 @@ interface ResultRow {
   date: string
 }
 
-const mockResults: ResultRow[] = [
-  { id: 'r1', challenge: 'Algorithm: Graph Traversal', category: 'algorithm', placement: 1, score: 98, eloChange: 24, coins: 150, date: '2026-03-21' },
-  { id: 'r2', challenge: 'Speed Build: CLI Tool', category: 'speed-build', placement: 3, score: 87, eloChange: 8, coins: 75, date: '2026-03-20' },
-  { id: 'r3', challenge: 'Debug: Race Condition', category: 'debug', placement: 2, score: 92, eloChange: 15, coins: 100, date: '2026-03-18' },
-  { id: 'r4', challenge: 'Optimize: Image Pipeline', category: 'optimization', placement: 5, score: 74, eloChange: -6, coins: 30, date: '2026-03-16' },
-  { id: 'r5', challenge: 'Design: Component Library', category: 'design', placement: 1, score: 96, eloChange: 22, coins: 150, date: '2026-03-14' },
-  { id: 'r6', challenge: 'Algorithm: Dynamic Programming', category: 'algorithm', placement: 4, score: 79, eloChange: -2, coins: 40, date: '2026-03-12' },
-  { id: 'r7', challenge: 'Speed Build: Auth System', category: 'speed-build', placement: 2, score: 91, eloChange: 14, coins: 100, date: '2026-03-10' },
-  { id: 'r8', challenge: 'Testing: E2E Suite', category: 'testing', placement: 1, score: 95, eloChange: 20, coins: 150, date: '2026-03-08' },
-  { id: 'r9', challenge: 'Debug: Async Deadlock', category: 'debug', placement: 6, score: 68, eloChange: -10, coins: 20, date: '2026-03-06' },
-  { id: 'r10', challenge: 'Optimize: Bundle Size', category: 'optimization', placement: 3, score: 85, eloChange: 7, coins: 75, date: '2026-03-04' },
-]
-
-const totalCoins = mockResults.reduce((sum, r) => sum + r.coins, 0)
+const CATEGORY_EMOJI: Record<string, string> = {
+  'speed-build': '⚡',
+  debug: '🐛',
+  algorithm: '🧩',
+  design: '🎨',
+  optimization: '🚀',
+  testing: '🧪',
+}
 
 function PlacementCell({ placement }: { placement: number }) {
+  if (!placement || placement === 0) {
+    return <span className="text-xs text-zinc-500">—</span>
+  }
   const colors: Record<number, string> = {
     1: 'bg-yellow-500/20 text-yellow-400',
     2: 'bg-zinc-300/20 text-zinc-300',
@@ -61,16 +62,90 @@ function PlacementCell({ placement }: { placement: number }) {
   )
 }
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  'speed-build': '\u26A1',
-  'debug': '\uD83D\uDC1B',
-  'algorithm': '\uD83E\udDE9',
-  'design': '\uD83C\uDFA8',
-  'optimization': '\uD83D\uDE80',
-  'testing': '\uD83E\uddEA',
-}
-
 export default function ResultsPage() {
+  const { user, loading: userLoading } = useUser()
+  const [results, setResults] = useState<ResultRow[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (userLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
+    async function fetchResults() {
+      try {
+        const res = await fetch('/api/me/results?limit=50')
+        if (!res.ok) {
+          setLoading(false)
+          return
+        }
+        const data = await res.json()
+        const mapped: ResultRow[] = (data.results ?? []).map(
+          (r: {
+            id: string
+            challenge?: { title?: string; category?: string; id?: string }
+            placement: number | null
+            final_score: number | null
+            elo_change: number | null
+            coins_awarded: number | null
+            created_at: string
+          }) => ({
+            id: r.id,
+            challenge: r.challenge?.title ?? 'Unknown Challenge',
+            category: r.challenge?.category ?? 'unknown',
+            placement: r.placement ?? 0,
+            score: r.final_score ?? 0,
+            eloChange: r.elo_change ?? 0,
+            coins: r.coins_awarded ?? 0,
+            date: r.created_at,
+          })
+        )
+        setResults(mapped)
+      } catch (err) {
+        console.error('[ResultsPage] Failed to load results:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchResults()
+  }, [user, userLoading])
+
+  if (userLoading || loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-zinc-400" />
+      </div>
+    )
+  }
+
+  const totalCoins = results.reduce((sum, r) => sum + r.coins, 0)
+
+  // Empty state
+  if (results.length === 0) {
+    return (
+      <div className="space-y-6 p-6">
+        <h1 className="text-2xl font-bold text-zinc-50">My Results</h1>
+        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-8 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-700/30">
+            <FileText className="size-8 text-zinc-500" />
+          </div>
+          <h2 className="text-xl font-bold text-zinc-50">No results yet</h2>
+          <p className="max-w-md text-zinc-400">
+            Enter a challenge to get started. Your results, placements, and ELO changes will appear here.
+          </p>
+          <Link href="/challenges">
+            <Button variant="outline" className="mt-2 border-zinc-700">
+              Browse Challenges
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -97,18 +172,21 @@ export default function ResultsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockResults.map((result) => (
+              {results.map((result) => (
                 <TableRow key={result.id} className="border-zinc-700/50">
                   <TableCell className="font-medium text-zinc-50">{result.challenge}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className="bg-zinc-700/50 text-zinc-300">
-                      {CATEGORY_EMOJI[result.category] ?? ''} {result.category.replace('-', ' ')}
+                      {CATEGORY_EMOJI[result.category] ?? ''}{' '}
+                      {result.category.replace('-', ' ')}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <PlacementCell placement={result.placement} />
                   </TableCell>
-                  <TableCell className="text-zinc-300">{result.score}pts</TableCell>
+                  <TableCell className="text-zinc-300">
+                    {result.score > 0 ? `${result.score}pts` : '—'}
+                  </TableCell>
                   <TableCell>
                     <EloChange change={result.eloChange} />
                   </TableCell>

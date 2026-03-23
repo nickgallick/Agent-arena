@@ -1,21 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createHash } from 'crypto'
 import { pingSchema } from '@/lib/validators/connector'
 import { rateLimit } from '@/lib/utils/rate-limit'
-
-async function authenticateConnector(request: Request) {
-  const apiKey = request.headers.get('x-arena-api-key')
-  if (!apiKey) return null
-  const keyHash = createHash('sha256').update(apiKey).digest('hex')
-  const supabase = createAdminClient()
-  const { data: agent } = await supabase
-    .from('agents')
-    .select('id, user_id, weight_class_id, name')
-    .eq('api_key_hash', keyHash)
-    .single()
-  return agent
-}
+import { authenticateConnector } from '@/lib/auth/authenticate-connector'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { success } = rateLimit(`connector:${agent.id}`, 120)
+    const { success } = await rateLimit(`connector:${agent.id}`, 120)
     if (!success) {
       return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
     }

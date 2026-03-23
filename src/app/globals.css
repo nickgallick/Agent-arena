@@ -8,9 +8,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,76 +47,140 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Arena color tokens for Tailwind */
+  --color-arena-page: #0B0F1A;
+  --color-arena-surface: #111827;
+  --color-arena-elevated: #1A2332;
+  --color-arena-border: #1E293B;
+  --color-arena-text-muted: #475569;
+  --color-arena-text-secondary: #94A3B8;
+  --color-arena-text-primary: #F1F5F9;
+  --color-arena-accent: #3B82F6;
+  --color-arena-accent-hover: #2563EB;
+  --color-arena-success: #10B981;
+  --color-arena-warning: #F59E0B;
+  --color-arena-error: #EF4444;
+
+  /* Weight class colors */
+  --color-arena-frontier: #EAB308;
+  --color-arena-contender: #3B82F6;
+  --color-arena-scrapper: #22C55E;
+  --color-arena-underdog: #F97316;
+  --color-arena-homebrew: #A855F7;
+  --color-arena-open: #94A3B8;
+
+  /* Tier colors */
+  --color-arena-bronze: #CD7F32;
+  --color-arena-silver: #C0C0C0;
+  --color-arena-gold: #FFD700;
+  --color-arena-platinum: #E5E4E2;
+  --color-arena-diamond: #B9F2FF;
+
+  /* Font families */
+  --font-family-heading: var(--font-heading), 'Space Grotesk', system-ui, sans-serif;
+  --font-family-body: var(--font-body), 'Inter', system-ui, sans-serif;
+  --font-family-mono: var(--font-mono), 'JetBrains Mono', monospace;
 }
 
 :root {
-  --background: #0A0A0B;
-  --foreground: #FAFAFA;
-  --surface: #18181B;
-  --card: #27272A;
-  --card-foreground: #FAFAFA;
-  --popover: #27272A;
-  --popover-foreground: #FAFAFA;
+  /* Arena Design Tokens */
+  --arena-bg-page: #0B0F1A;
+  --arena-bg-surface: #111827;
+  --arena-bg-elevated: #1A2332;
+  --arena-border: #1E293B;
+  --arena-text-muted: #475569;
+  --arena-text-secondary: #94A3B8;
+  --arena-text-primary: #F1F5F9;
+  --arena-accent: #3B82F6;
+  --arena-accent-hover: #2563EB;
+  --arena-success: #10B981;
+  --arena-warning: #F59E0B;
+  --arena-error: #EF4444;
+
+  /* Weight class colors */
+  --arena-frontier: #EAB308;
+  --arena-contender: #3B82F6;
+  --arena-scrapper: #22C55E;
+  --arena-underdog: #F97316;
+  --arena-homebrew: #A855F7;
+  --arena-open: #94A3B8;
+
+  /* Tier colors */
+  --arena-bronze: #CD7F32;
+  --arena-silver: #C0C0C0;
+  --arena-gold: #FFD700;
+  --arena-platinum: #E5E4E2;
+  --arena-diamond: #B9F2FF;
+
+  /* shadcn compatibility */
+  --background: #0B0F1A;
+  --foreground: #F1F5F9;
+  --surface: #111827;
+  --card: #111827;
+  --card-foreground: #F1F5F9;
+  --popover: #1A2332;
+  --popover-foreground: #F1F5F9;
   --primary: #3B82F6;
   --primary-foreground: #FFFFFF;
-  --secondary: #27272A;
-  --secondary-foreground: #FAFAFA;
-  --muted: #27272A;
-  --muted-foreground: #A1A1AA;
+  --secondary: #1A2332;
+  --secondary-foreground: #F1F5F9;
+  --muted: #1A2332;
+  --muted-foreground: #94A3B8;
   --accent: #3B82F6;
   --accent-foreground: #FFFFFF;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #3F3F46;
-  --input: #3F3F46;
+  --destructive: #EF4444;
+  --border: #1E293B;
+  --input: #1E293B;
   --ring: #3B82F6;
   --chart-1: #3B82F6;
-  --chart-2: #8B5CF6;
+  --chart-2: #A855F7;
   --chart-3: #22C55E;
   --chart-4: #EAB308;
   --chart-5: #F97316;
   --radius: 0.625rem;
-  --sidebar: #18181B;
-  --sidebar-foreground: #FAFAFA;
+  --sidebar: #111827;
+  --sidebar-foreground: #F1F5F9;
   --sidebar-primary: #3B82F6;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #27272A;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #3F3F46;
+  --sidebar-accent: #1A2332;
+  --sidebar-accent-foreground: #F1F5F9;
+  --sidebar-border: #1E293B;
   --sidebar-ring: #3B82F6;
 }
 
 .dark {
-  --background: #0A0A0B;
-  --foreground: #FAFAFA;
-  --surface: #18181B;
-  --card: #27272A;
-  --card-foreground: #FAFAFA;
-  --popover: #27272A;
-  --popover-foreground: #FAFAFA;
+  --background: #0B0F1A;
+  --foreground: #F1F5F9;
+  --surface: #111827;
+  --card: #111827;
+  --card-foreground: #F1F5F9;
+  --popover: #1A2332;
+  --popover-foreground: #F1F5F9;
   --primary: #3B82F6;
   --primary-foreground: #FFFFFF;
-  --secondary: #27272A;
-  --secondary-foreground: #FAFAFA;
-  --muted: #27272A;
-  --muted-foreground: #A1A1AA;
+  --secondary: #1A2332;
+  --secondary-foreground: #F1F5F9;
+  --muted: #1A2332;
+  --muted-foreground: #94A3B8;
   --accent: #3B82F6;
   --accent-foreground: #FFFFFF;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: #3F3F46;
-  --input: #3F3F46;
+  --destructive: #EF4444;
+  --border: #1E293B;
+  --input: #1E293B;
   --ring: #3B82F6;
   --chart-1: #3B82F6;
-  --chart-2: #8B5CF6;
+  --chart-2: #A855F7;
   --chart-3: #22C55E;
   --chart-4: #EAB308;
   --chart-5: #F97316;
-  --sidebar: #18181B;
-  --sidebar-foreground: #FAFAFA;
+  --sidebar: #111827;
+  --sidebar-foreground: #F1F5F9;
   --sidebar-primary: #3B82F6;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #27272A;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #3F3F46;
+  --sidebar-accent: #1A2332;
+  --sidebar-accent-foreground: #F1F5F9;
+  --sidebar-border: #1E293B;
   --sidebar-ring: #3B82F6;
 }
 
@@ -125,9 +189,171 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-arena-page text-arena-text-primary;
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-family-body);
+  }
+}
+
+/* ============================
+   Arena Glass Card
+   ============================ */
+.arena-glass {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================
+   Arena Glass Card Strong
+   ============================ */
+.arena-glass-strong {
+  background: rgba(26, 35, 50, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(30, 41, 59, 1);
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================
+   Gradient Border on Hover
+   ============================ */
+.arena-gradient-border {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.arena-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.5) 0%,
+    rgba(59, 130, 246, 0) 50%,
+    rgba(59, 130, 246, 0.3) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.arena-gradient-border:hover::before {
+  opacity: 1;
+}
+
+/* ============================
+   Live Pulse Glow
+   ============================ */
+.arena-live-pulse {
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  animation: arena-pulse 2s ease-in-out infinite;
+}
+
+@keyframes arena-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+}
+
+/* ============================
+   Live Dot
+   ============================ */
+.arena-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  animation: arena-dot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes arena-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============================
+   Code Block
+   ============================ */
+.arena-code-block {
+  background: #0B0F1A;
+  border: 1px solid #1E293B;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #94A3B8;
+  overflow-x: auto;
+}
+
+/* ============================
+   Number Counting Animation
+   ============================ */
+@keyframes arena-count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.arena-count-enter {
+  animation: arena-count-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ============================
+   Shimmer Skeleton
+   ============================ */
+.arena-skeleton {
+  background: linear-gradient(
+    90deg,
+    #111827 25%,
+    #1A2332 50%,
+    #111827 75%
+  );
+  background-size: 200% 100%;
+  animation: arena-shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes arena-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================
+   Champion Gradient Animation
+   ============================ */
+@keyframes arena-champion-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ============================
+   Grid Background
+   ============================ */
+@keyframes grid-drift {
+  to { background-position: 64px 64px; }
+}
+
+/* ============================
+   Reduced Motion
+   ============================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

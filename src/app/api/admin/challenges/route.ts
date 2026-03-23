@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/require-admin'
 import { createChallengeSchema } from '@/lib/validators/challenge'
-import { rateLimit } from '@/lib/utils/rate-limit'
+import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
     const admin = await requireAdmin()
-    const { success } = rateLimit(`admin:${admin.id}`, 10)
+    const { success } = await rateLimit(`admin:${admin.id}`, 10)
     if (!success) {
       return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
     }
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data: challenge, error } = await supabase
       .from('challenges')
@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ challenge }, { status: 201 })
-  } catch {
+  } catch (err) {
+    const e = err as Error
+    if (e.message === 'Unauthorized') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (e.message === 'Forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,72 +1,87 @@
-'use client'
-
-import { Shield } from 'lucide-react'
+import { Shield, AlertTriangle } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ChallengeCreator } from '@/components/admin/challenge-creator'
-import { JobQueueViewer } from '@/components/admin/job-queue-viewer'
-import { AgentManager } from '@/components/admin/agent-manager'
-import { FeatureFlags } from '@/components/admin/feature-flags'
-import { SystemHealth } from '@/components/admin/system-health'
+import { AdminDashboardClient } from './AdminDashboardClient'
 
-const isAdmin = true
+async function getAdminUser() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-export default function AdminPage() {
-  if (!isAdmin) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#0A0A0B]">
-        <p className="text-zinc-400">You do not have permission to access this page.</p>
-      </div>
-    )
+  // In preview/mock mode (no Supabase configured), block all access
+  if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('placeholder')) {
+    return null
+  }
+
+  const cookieStore = await cookies()
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() { return cookieStore.getAll() },
+      setAll() {}, // Read-only in server component
+    },
+  })
+
+  // getUser() — not getSession() — validates the JWT server-side
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (userError || !user) return null
+
+  // Verify admin role from DB (cannot trust JWT claims)
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id, role, display_name')
+    .eq('id', user.id)
+    .single()
+
+  if (profileError || !profile || profile.role !== 'admin') return null
+
+  return profile
+}
+
+export default async function AdminPage() {
+  const admin = await getAdminUser()
+
+  if (!admin) {
+    // If no Supabase configured — show access denied (not redirect, to avoid redirect loops)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
+      return (
+        <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+          <Header />
+          <main className="flex-1 flex items-center justify-center">
+            <div className="text-center p-8 arena-glass rounded-xl max-w-md">
+              <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+              <h2 className="font-heading text-xl font-bold text-[#F1F5F9] mb-2">Admin Access Required</h2>
+              <p className="text-[#94A3B8] font-body text-sm">
+                This panel requires Supabase configuration and an admin role. Connect your database to access admin features.
+              </p>
+            </div>
+          </main>
+          <Footer />
+        </div>
+      )
+    }
+
+    redirect('/login?redirect=/admin')
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
       <Header />
-
       <main className="flex-1">
         <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-6">
             <Shield className="h-7 w-7 text-blue-500" />
-            <h1 className="text-2xl font-bold text-zinc-50">Admin Dashboard</h1>
+            <h1 className="font-heading text-2xl font-bold text-[#F1F5F9]">Admin Dashboard</h1>
+            <span className="ml-auto font-mono text-xs text-[#475569]">
+              Logged in as {admin.display_name}
+            </span>
           </div>
-
-          <Tabs defaultValue="challenges" className="mt-6">
-            <TabsList className="border-zinc-700/50 bg-zinc-800/50">
-              <TabsTrigger value="challenges">Challenges</TabsTrigger>
-              <TabsTrigger value="jobs">Jobs</TabsTrigger>
-              <TabsTrigger value="agents">Agents</TabsTrigger>
-              <TabsTrigger value="flags">Feature Flags</TabsTrigger>
-              <TabsTrigger value="health">System Health</TabsTrigger>
-            </TabsList>
-
-            <div className="mt-6">
-              <TabsContent value="challenges">
-                <ChallengeCreator />
-              </TabsContent>
-
-              <TabsContent value="jobs">
-                <JobQueueViewer />
-              </TabsContent>
-
-              <TabsContent value="agents">
-                <AgentManager />
-              </TabsContent>
-
-              <TabsContent value="flags">
-                <FeatureFlags />
-              </TabsContent>
-
-              <TabsContent value="health">
-                <SystemHealth />
-              </TabsContent>
-            </div>
-          </Tabs>
+          <AdminDashboardClient />
         </div>
       </main>
-
       <Footer />
     </div>
   )

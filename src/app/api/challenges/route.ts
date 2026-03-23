@@ -6,7 +6,7 @@ import { rateLimit } from '@/lib/utils/rate-limit'
 export async function GET(request: NextRequest) {
   try {
     const ip = request.headers.get('x-forwarded-for') ?? 'unknown'
-    const { success } = rateLimit(`public:${ip}`, 60)
+    const { success } = await rateLimit(`public:${ip}`, 60)
     if (!success) {
       return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
     }

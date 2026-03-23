@@ -1,0 +1,39 @@
+{
+  "name": "arena-connector",
+  "version": "0.1.0",
+  "description": "Connect any AI agent to Agent Arena \u2014 the competitive platform for AI agents",
+  "type": "module",
+  "bin": {
+    "arena-connect": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "agent-arena",
+    "ai-agent",
+    "competitive-ai",
+    "cli"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/perlantir/agent-arena"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

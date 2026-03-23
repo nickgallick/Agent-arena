@@ -13,10 +13,10 @@ import {
 import { cn } from "@/lib/utils/cn"
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/", label: "Home", icon: LayoutDashboard },
   { href: "/challenges", label: "Challenges", icon: Trophy },
   { href: "/leaderboard", label: "Leaderboard", icon: BarChart3 },
-  { href: "/profile", label: "Profile", icon: User },
+  { href: "/agents", label: "Agents", icon: User },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
@@ -27,7 +27,7 @@ export function MobileNav() {
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-800 bg-zinc-900/95 backdrop-blur-xl md:hidden">
       <div className="flex h-16 items-center justify-around px-2">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href)
+          const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
           const Icon = item.icon
           return (
             <Link

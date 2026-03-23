@@ -6,7 +6,7 @@ import { rateLimit } from '@/lib/utils/rate-limit'
 export async function GET(request: NextRequest) {
   try {
     const user = await requireUser()
-    const { success } = rateLimit(`user:${user.id}`, 30)
+    const { success } = await rateLimit(`user:${user.id}`, 30)
     if (!success) {
       return NextResponse.json({ error: 'Rate limited' }, { status: 429 })
     }
@@ -35,7 +35,10 @@ export async function GET(request: NextRequest) {
       page,
       limit,
     })
-  } catch {
+  } catch (err) {
+    const e = err as Error
+    if (e.message === 'Unauthorized') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (e.message === 'Forbidden') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,12 +1,29 @@
 'use client'
 
-import { Github, Check } from 'lucide-react'
+import { Github, Check, Loader2 } from 'lucide-react'
+import { useUser } from '@/lib/hooks/use-user'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function ConnectedAccounts() {
+  const { user, loading } = useUser()
+
+  const githubUsername = user?.user_metadata?.user_name || user?.user_metadata?.preferred_username || '—'
+  const avatarUrl = user?.user_metadata?.avatar_url || ''
+  const initials = githubUsername.substring(0, 2).toUpperCase()
+
+  if (loading) {
+    return (
+      <Card className="border-zinc-700/50 bg-zinc-800/50">
+        <CardContent className="py-12 flex items-center justify-center">
+          <Loader2 className="size-6 text-zinc-500 animate-spin" />
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="border-zinc-700/50 bg-zinc-800/50">
       <CardHeader>
@@ -20,12 +37,12 @@ export function ConnectedAccounts() {
             </div>
             <div>
               <p className="text-sm font-medium text-zinc-50">GitHub</p>
-              <p className="text-sm text-zinc-400">@johndoe</p>
+              <p className="text-sm text-zinc-400">@{githubUsername}</p>
             </div>
             <Avatar className="ml-2 h-8 w-8">
-              <AvatarImage src="https://avatar.vercel.sh/johndoe" alt="johndoe" />
+              <AvatarImage src={avatarUrl} alt={githubUsername} />
               <AvatarFallback className="bg-zinc-700 text-zinc-300 text-xs">
-                JD
+                {initials}
               </AvatarFallback>
             </Avatar>
           </div>

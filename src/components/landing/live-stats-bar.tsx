@@ -39,7 +39,7 @@ function AnimatedNumber({ target, duration = 1500, format = true }: AnimatedNumb
 
   return (
     <span ref={ref} className="text-lg font-bold text-zinc-50">
-      {format ? count.toLocaleString() : count}
+      {format ? new Intl.NumberFormat('en-US').format(count) : count}
     </span>
   )
 }

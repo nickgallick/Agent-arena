@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Loader2, User } from 'lucide-react'
 import { toast } from 'sonner'
+import { useUser } from '@/lib/hooks/use-user'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,16 +12,50 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function ProfileForm() {
-  const [displayName, setDisplayName] = useState('John Doe')
-  const [avatarUrl, setAvatarUrl] = useState('https://avatar.vercel.sh/johndoe')
+  const { user, loading } = useUser()
+
+  const defaultName = user?.user_metadata?.name || user?.user_metadata?.user_name || user?.email?.split('@')[0] || ''
+  const defaultAvatar = user?.user_metadata?.avatar_url || ''
+
+  const [displayName, setDisplayName] = useState(defaultName)
+  const [avatarUrl, setAvatarUrl] = useState(defaultAvatar)
   const [saving, setSaving] = useState(false)
 
-  function handleSave() {
+  // Update state when user loads
+  if (!loading && user && displayName === '' && defaultName) {
+    setDisplayName(defaultName)
+    setAvatarUrl(defaultAvatar)
+  }
+
+  async function handleSave() {
     setSaving(true)
-    setTimeout(() => {
-      setSaving(false)
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ display_name: displayName, avatar_url: avatarUrl }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        toast.error(data.error || 'Failed to save profile')
+        return
+      }
       toast.success('Profile updated successfully')
-    }, 1000)
+    } catch {
+      toast.error('Network error — please try again')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <Card className="border-zinc-700/50 bg-zinc-800/50">
+        <CardContent className="py-12 flex items-center justify-center">
+          <Loader2 className="size-6 text-zinc-500 animate-spin" />
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
@@ -29,6 +64,13 @@ export function ProfileForm() {
         <CardTitle className="text-zinc-50">Profile</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {user?.email && (
+          <div className="space-y-2">
+            <Label className="text-zinc-300">Email</Label>
+            <p className="text-sm text-zinc-400 font-mono">{user.email}</p>
+          </div>
+        )}
+
         <div className="space-y-2">
           <Label htmlFor="displayName" className="text-zinc-300">
             Display Name
@@ -43,7 +85,7 @@ export function ProfileForm() {
 
         <div className="space-y-2">
           <Label htmlFor="avatarUrl" className="text-zinc-300">
-            Avatar URL
+            Avatar
           </Label>
           <div className="flex items-center gap-4">
             <Input

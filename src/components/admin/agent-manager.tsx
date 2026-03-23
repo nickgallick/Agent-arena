@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -29,21 +29,47 @@ interface Agent {
   isNpc: boolean
 }
 
-const mockAgents: Agent[] = [
-  { id: 'a-001', name: 'Nova-7', avatar: 'https://avatar.vercel.sh/nova7', user: 'johndoe', weightClass: 'frontier', elo: 1847, isOnline: true, isNpc: false },
-  { id: 'a-002', name: 'Blitz-X', avatar: 'https://avatar.vercel.sh/blitzx', user: 'alice_dev', weightClass: 'frontier', elo: 1923, isOnline: true, isNpc: false },
-  { id: 'a-003', name: 'ScrappyBot', avatar: 'https://avatar.vercel.sh/scrappy', user: 'bob42', weightClass: 'scrapper', elo: 1456, isOnline: false, isNpc: false },
-  { id: 'a-004', name: 'DeepMind-S', avatar: 'https://avatar.vercel.sh/deepminds', user: 'carol_ai', weightClass: 'frontier', elo: 2011, isOnline: true, isNpc: false },
-  { id: 'a-005', name: 'Arena-Bot', avatar: 'https://avatar.vercel.sh/arenabot', user: 'system', weightClass: 'open', elo: 1500, isOnline: true, isNpc: true },
-  { id: 'a-006', name: 'Tinker-3', avatar: 'https://avatar.vercel.sh/tinker3', user: 'dave_ml', weightClass: 'scrapper', elo: 1389, isOnline: false, isNpc: false },
-  { id: 'a-007', name: 'Sentinel', avatar: 'https://avatar.vercel.sh/sentinel', user: 'system', weightClass: 'frontier', elo: 1750, isOnline: true, isNpc: true },
-  { id: 'a-008', name: 'OpenRunner', avatar: 'https://avatar.vercel.sh/openrunner', user: 'eve_os', weightClass: 'open', elo: 1612, isOnline: true, isNpc: false },
-]
-
 export function AgentManager() {
   const [search, setSearch] = useState('')
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const filtered = mockAgents.filter(
+  useEffect(() => {
+    async function fetchAgents() {
+      try {
+        setLoading(true)
+        setError(null)
+        // Use leaderboard endpoint to get agents with ratings
+        const res = await fetch('/api/leaderboard/frontier?limit=100')
+        if (!res.ok) {
+          throw new Error('Failed to load agents')
+        }
+        const data = await res.json()
+        const mapped: Agent[] = (data.leaderboard ?? []).map((entry: Record<string, unknown>) => {
+          const agent = entry.agent as Record<string, unknown> | null
+          return {
+            id: agent?.id ?? String(entry.agent_id ?? ''),
+            name: agent?.name ?? 'Unknown',
+            avatar: agent?.avatar_url ?? `https://avatar.vercel.sh/${agent?.name ?? 'agent'}`,
+            user: 'user',
+            weightClass: (agent?.weight_class_id as string) ?? (entry.weight_class_id as string) ?? 'open',
+            elo: (entry.rating as number) ?? 0,
+            isOnline: true,
+            isNpc: false,
+          }
+        })
+        setAgents(mapped)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load agents')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchAgents()
+  }, [])
+
+  const filtered = agents.filter(
     (a) =>
       a.name.toLowerCase().includes(search.toLowerCase()) ||
       a.user.toLowerCase().includes(search.toLowerCase())
@@ -66,60 +92,74 @@ export function AgentManager() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-zinc-700/50 hover:bg-transparent">
-                <TableHead className="text-zinc-400">Name</TableHead>
-                <TableHead className="text-zinc-400">User</TableHead>
-                <TableHead className="text-zinc-400">Weight Class</TableHead>
-                <TableHead className="text-zinc-400 text-right">ELO</TableHead>
-                <TableHead className="text-zinc-400">Status</TableHead>
-                <TableHead className="text-zinc-400">NPC</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((agent) => (
-                <TableRow key={agent.id} className="border-zinc-700/50 hover:bg-zinc-700/20">
-                  <TableCell>
-                    <div className="flex items-center gap-2.5">
-                      <Avatar className="h-7 w-7">
-                        <AvatarImage src={agent.avatar} alt={agent.name} />
-                        <AvatarFallback className="bg-zinc-700 text-xs text-zinc-300">
-                          {agent.name.slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium text-zinc-50">
-                        {agent.name}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm text-zinc-400">{agent.user}</TableCell>
-                  <TableCell>
-                    <WeightClassBadge weightClass={agent.weightClass} />
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm text-zinc-300">
-                    {agent.elo.toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    <StatusIndicator isOnline={agent.isOnline} label={agent.isOnline ? 'Online' : 'Offline'} />
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        agent.isNpc
-                          ? 'border-purple-500/30 bg-purple-500/10 text-purple-400'
-                          : 'border-zinc-600/30 bg-zinc-700/30 text-zinc-500'
-                      }
-                    >
-                      {agent.isNpc ? 'Yes' : 'No'}
-                    </Badge>
-                  </TableCell>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-zinc-400 text-sm">No agents found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-zinc-700/50 hover:bg-transparent">
+                  <TableHead className="text-zinc-400">Name</TableHead>
+                  <TableHead className="text-zinc-400">User</TableHead>
+                  <TableHead className="text-zinc-400">Weight Class</TableHead>
+                  <TableHead className="text-zinc-400 text-right">ELO</TableHead>
+                  <TableHead className="text-zinc-400">Status</TableHead>
+                  <TableHead className="text-zinc-400">NPC</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((agent) => (
+                  <TableRow key={agent.id} className="border-zinc-700/50 hover:bg-zinc-700/20">
+                    <TableCell>
+                      <div className="flex items-center gap-2.5">
+                        <Avatar className="h-7 w-7">
+                          <AvatarImage src={agent.avatar} alt={agent.name} />
+                          <AvatarFallback className="bg-zinc-700 text-xs text-zinc-300">
+                            {agent.name.slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm font-medium text-zinc-50">
+                          {agent.name}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-zinc-400">{agent.user}</TableCell>
+                    <TableCell>
+                      <WeightClassBadge weightClass={agent.weightClass} />
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-sm text-zinc-300">
+                      {agent.elo.toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      <StatusIndicator isOnline={agent.isOnline} label={agent.isOnline ? 'Online' : 'Offline'} />
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          agent.isNpc
+                            ? 'border-purple-500/30 bg-purple-500/10 text-purple-400'
+                            : 'border-zinc-600/30 bg-zinc-700/30 text-zinc-500'
+                        }
+                      >
+                        {agent.isNpc ? 'Yes' : 'No'}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

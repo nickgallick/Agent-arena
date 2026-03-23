@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { LeaderboardTable } from '@/components/leaderboard/leaderboard-table'
@@ -8,39 +8,115 @@ import { WeightClassTabs } from '@/components/leaderboard/weight-class-tabs'
 import { TimeFilter } from '@/components/leaderboard/time-filter'
 import { SearchAgents } from '@/components/leaderboard/search-agents'
 
-const mockAgents = [
-  { id: 'nova-7', rank: 1, name: 'Nova-7', avatar_url: null, elo: 2087, wins: 42, losses: 6, draws: 3, challenges_entered: 51, last_active: '2026-03-22T08:30:00Z' },
-  { id: 'titan-x', rank: 2, name: 'Titan-X', avatar_url: null, elo: 1956, wins: 38, losses: 10, draws: 4, challenges_entered: 52, last_active: '2026-03-21T19:15:00Z' },
-  { id: 'phantom-3', rank: 3, name: 'Phantom-3', avatar_url: null, elo: 1834, wins: 34, losses: 12, draws: 2, challenges_entered: 48, last_active: '2026-03-22T02:45:00Z' },
-  { id: 'eclipse', rank: 4, name: 'Eclipse', avatar_url: null, elo: 1762, wins: 30, losses: 14, draws: 5, challenges_entered: 49, last_active: '2026-03-20T14:00:00Z' },
-  { id: 'vortex-ai', rank: 5, name: 'Vortex-AI', avatar_url: null, elo: 1698, wins: 28, losses: 16, draws: 3, challenges_entered: 47, last_active: '2026-03-21T11:30:00Z' },
-  { id: 'nexus', rank: 6, name: 'Nexus', avatar_url: null, elo: 1587, wins: 24, losses: 18, draws: 6, challenges_entered: 48, last_active: '2026-03-19T22:00:00Z' },
-  { id: 'blitz', rank: 7, name: 'Blitz', avatar_url: null, elo: 1523, wins: 24, losses: 8, draws: 2, challenges_entered: 34, last_active: '2026-03-22T06:10:00Z' },
-  { id: 'cipher', rank: 8, name: 'Cipher', avatar_url: null, elo: 1445, wins: 20, losses: 20, draws: 4, challenges_entered: 44, last_active: '2026-03-18T16:45:00Z' },
-  { id: 'aegis', rank: 9, name: 'Aegis', avatar_url: null, elo: 1356, wins: 18, losses: 22, draws: 3, challenges_entered: 43, last_active: '2026-03-20T09:20:00Z' },
-  { id: 'spectre', rank: 10, name: 'Spectre', avatar_url: null, elo: 1234, wins: 14, losses: 24, draws: 5, challenges_entered: 43, last_active: '2026-03-17T20:30:00Z' },
+interface LeaderboardAgent {
+  id: string
+  rank: number
+  name: string
+  avatar_url: string | null
+  elo: number
+  wins: number
+  losses: number
+  draws: number
+  challenges_entered: number
+  last_active: string
+  weight_class: string
+  tier: string
+  current_streak: number
+}
+
+type LeaderboardMode = 'elo' | 'pfp' | 'xp' | 'season'
+
+const modes: { value: LeaderboardMode; label: string }[] = [
+  { value: 'elo', label: 'ELO Rating' },
+  { value: 'pfp', label: 'Pound-for-Pound' },
+  { value: 'xp', label: 'XP' },
+  { value: 'season', label: 'Season 1' },
 ]
 
 export default function LeaderboardPage() {
-  const [weightClass, setWeightClass] = useState('frontier')
+  const [weightClass, setWeightClass] = useState('all')
   const [timeFilter, setTimeFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [mode, setMode] = useState<LeaderboardMode>('elo')
+  const [agents, setAgents] = useState<LeaderboardAgent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSearchChange = useCallback((v: string) => {
     setSearch(v)
   }, [])
 
+  useEffect(() => {
+    async function fetchLeaderboard() {
+      try {
+        setLoading(true)
+        setError(null)
+        const wc = weightClass === 'all' ? 'frontier' : weightClass
+        const res = await fetch(`/api/leaderboard/${wc}?limit=100`)
+        if (!res.ok) {
+          throw new Error('Failed to load leaderboard')
+        }
+        const data = await res.json()
+        const leaderboard = (data.leaderboard ?? []).map((entry: Record<string, unknown>, i: number) => {
+          const agent = entry.agent as Record<string, unknown> | null
+          return {
+            id: agent?.id ?? entry.agent_id ?? String(i),
+            rank: entry.rank ?? i + 1,
+            name: agent?.name ?? 'Unknown',
+            avatar_url: agent?.avatar_url ?? null,
+            elo: entry.rating ?? 0,
+            wins: entry.wins ?? 0,
+            losses: entry.losses ?? 0,
+            draws: 0,
+            challenges_entered: entry.challenges_entered ?? 0,
+            last_active: new Date().toISOString(),
+            weight_class: entry.weight_class_id ?? wc,
+            tier: 'bronze',
+            current_streak: entry.current_streak ?? 0,
+          }
+        })
+        setAgents(leaderboard)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load leaderboard')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchLeaderboard()
+  }, [weightClass])
+
   const filteredAgents = useMemo(() => {
-    if (!search) return mockAgents
-    const q = search.toLowerCase()
-    return mockAgents.filter((a) => a.name.toLowerCase().includes(q))
-  }, [search])
+    let result = agents
+    if (search) {
+      const q = search.toLowerCase()
+      result = result.filter((a) => a.name.toLowerCase().includes(q))
+    }
+    return result.map((a, i) => ({ ...a, rank: i + 1 }))
+  }, [agents, search])
 
   return (
-    <div className="min-h-screen bg-[#0A0A0B]">
+    <div className="min-h-screen bg-[#0B0F1A]">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-8">
-        <h1 className="text-3xl font-bold text-zinc-50 mb-6">Leaderboard</h1>
+        <h1 className="font-heading text-3xl font-bold text-[#F1F5F9] mb-2">Leaderboard</h1>
+        <p className="text-[#94A3B8] font-body mb-6">Global agent rankings by ELO rating.</p>
+
+        {/* Mode selector */}
+        <div className="flex flex-wrap items-center gap-1 mb-6 p-1 bg-[#111827] rounded-lg border border-[#1E293B] w-fit">
+          {modes.map((m) => (
+            <button
+              key={m.value}
+              onClick={() => setMode(m.value)}
+              className={`px-3 py-1.5 rounded-md text-sm font-body font-medium transition-all duration-200 ${
+                mode === m.value
+                  ? 'bg-blue-500/15 text-blue-400'
+                  : 'text-[#475569] hover:text-[#94A3B8]'
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div className="flex flex-wrap items-center gap-3">
@@ -50,9 +126,26 @@ export default function LeaderboardPage() {
           <SearchAgents value={search} onChange={handleSearchChange} />
         </div>
 
-        <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 overflow-hidden">
-          <LeaderboardTable agents={filteredAgents} />
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          </div>
+        ) : error ? (
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-6 py-12 text-center">
+            <p className="text-red-400">{error}</p>
+          </div>
+        ) : filteredAgents.length === 0 ? (
+          <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 px-6 py-16 text-center">
+            <p className="text-lg font-medium text-[#94A3B8]">No agents ranked yet</p>
+            <p className="mt-2 text-sm text-[#475569]">
+              Register your agent and compete in challenges to appear on the leaderboard.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 overflow-hidden">
+            <LeaderboardTable agents={filteredAgents} />
+          </div>
+        )}
       </main>
       <Footer />
     </div>

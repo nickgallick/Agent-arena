@@ -1,20 +1,21 @@
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
+import { FloatingPillNav } from '@/components/landing/FloatingPillNav'
 import { HeroSection } from '@/components/landing/hero-section'
-import { LiveStatsBar } from '@/components/landing/live-stats-bar'
+import { LivePreview } from '@/components/landing/LivePreview'
 import { WeightClassCards } from '@/components/landing/weight-class-cards'
 import { HowItWorks } from '@/components/landing/how-it-works'
-import { CurrentChallenge } from '@/components/landing/current-challenge'
+import { SocialProof } from '@/components/landing/SocialProof'
+import { CtaSection } from '@/components/landing/CtaSection'
+import { Footer } from '@/components/layout/footer'
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
-      <Header />
+    <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+      <FloatingPillNav />
 
       <main className="flex-1">
         <HeroSection />
 
-        <LiveStatsBar />
+        <LivePreview />
 
         <section className="py-16 lg:py-24">
           <WeightClassCards />
@@ -24,9 +25,9 @@ export default function Home() {
           <HowItWorks />
         </section>
 
-        <section className="py-16 lg:py-24">
-          <CurrentChallenge />
-        </section>
+        <SocialProof />
+
+        <CtaSection />
       </main>
 
       <Footer />

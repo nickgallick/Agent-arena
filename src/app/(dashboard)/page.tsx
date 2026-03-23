@@ -1,158 +1,323 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { Loader2, Bot, Trophy, Swords } from 'lucide-react'
+import Link from 'next/link'
+import { useUser } from '@/lib/hooks/use-user'
 import { WelcomeCard } from '@/components/dashboard/welcome-card'
 import { DailyChallengeCard } from '@/components/dashboard/daily-challenge-card'
 import { ActiveChallengesSidebar } from '@/components/dashboard/active-challenges-sidebar'
 import { QuickStats } from '@/components/dashboard/quick-stats'
 import { EloTrendChart } from '@/components/dashboard/elo-trend-chart'
 import { RecentResults } from '@/components/dashboard/recent-results'
+import { Button } from '@/components/ui/button'
 
-const mockAgent = {
-  name: 'Nova-7',
-  avatar_url: null,
-  weight_class_id: 'frontier',
+interface AgentData {
+  id: string
+  name: string
+  avatar_url: string | null
+  model_name: string
+  weight_class_id?: string
 }
 
-const mockRating = {
-  rating: 1523,
-  wins: 24,
-  losses: 8,
+interface MeResponse {
+  user: { id: string; email: string; display_name?: string }
+  agent: AgentData | null
+  wallet: { balance: number; lifetime_earned: number }
 }
 
-const mockDailyChallenge = {
-  id: 'daily-2026-03-22',
-  title: 'Speed Build: REST API',
-  category: 'speed-build',
-  status: 'not_entered' as const,
-  ends_at: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(),
-  entry_count: 47,
+interface DailyResponse {
+  challenge: {
+    id: string
+    title: string
+    category: string
+    status: string
+    scheduled_start: string
+    duration_minutes: number
+  } | null
+  your_entry: { id: string; status: string } | null
 }
 
-const mockActiveChallenges = [
-  {
-    id: 'ch-algo-sort',
-    title: 'Algorithm: Sorting Challenge',
-    category: 'algorithm',
-    categoryEmoji: '\uD83E\udDE9',
-    timeRemaining: '3h 22m',
-    entryCount: 31,
-  },
-  {
-    id: 'ch-debug-memory',
-    title: 'Debug: Memory Leak Hunt',
-    category: 'debug',
-    categoryEmoji: '\uD83D\uDC1B',
-    timeRemaining: '6h 45m',
-    entryCount: 19,
-  },
-  {
-    id: 'ch-optimize-query',
-    title: 'Optimize: SQL Query Perf',
-    category: 'optimization',
-    categoryEmoji: '\uD83D\uDE80',
-    timeRemaining: '11h 10m',
-    entryCount: 12,
-  },
-]
-
-const mockQuickStats = {
-  totalChallenges: '32',
-  winRate: '67%',
-  winRateTrend: 5,
-  currentStreak: '4',
-  bestPlacement: '#1',
+interface ChallengesResponse {
+  challenges: Array<{
+    id: string
+    title: string
+    category: string
+    status: string
+    scheduled_start: string
+    duration_minutes: number
+  }>
 }
 
-function generateEloData() {
-  const data = []
-  let elo = 1450
-  const now = new Date()
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - i)
-    const change = Math.round((Math.random() - 0.35) * 12)
-    elo = Math.max(1400, Math.min(1600, elo + change))
-    data.push({
-      date: `${date.getMonth() + 1}/${date.getDate()}`,
-      elo,
-    })
-  }
-  data[data.length - 1].elo = 1520
-  return data
+interface RatingData {
+  rating: number
+  wins: number
+  losses: number
+  draws: number
+  challenges_entered: number
+  best_placement: number | null
+  current_streak: number
 }
 
-const mockEloData = generateEloData()
+interface ResultEntry {
+  id: string
+  challenge: { id: string; title: string; category: string } | null
+  placement: number | null
+  final_score: number | null
+  elo_change: number | null
+  created_at: string
+}
 
-const mockRecentResults = [
-  {
-    id: 'r1',
-    challengeTitle: 'Algorithm: Graph Traversal',
-    challengeId: 'ch-graph',
-    placement: 1,
-    score: 98,
-    eloChange: 24,
-    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'r2',
-    challengeTitle: 'Speed Build: CLI Tool',
-    challengeId: 'ch-cli',
-    placement: 3,
-    score: 87,
-    eloChange: 8,
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'r3',
-    challengeTitle: 'Debug: Race Condition',
-    challengeId: 'ch-race',
-    placement: 2,
-    score: 92,
-    eloChange: 15,
-    date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'r4',
-    challengeTitle: 'Optimize: Image Pipeline',
-    challengeId: 'ch-img',
-    placement: 5,
-    score: 74,
-    eloChange: -6,
-    date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'r5',
-    challengeTitle: 'Design: Component Library',
-    challengeId: 'ch-design',
-    placement: 1,
-    score: 96,
-    eloChange: 22,
-    date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-]
+interface EloHistoryEntry {
+  rating_after: number
+  created_at: string
+}
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  'speed-build': '⚡',
+  debug: '🐛',
+  algorithm: '🧩',
+  design: '🎨',
+  optimization: '🚀',
+  testing: '🧪',
+}
+
+function computeTimeRemaining(scheduledStart: string, durationMinutes: number): string {
+  const endMs = new Date(scheduledStart).getTime() + durationMinutes * 60_000
+  const remainMs = endMs - Date.now()
+  if (remainMs <= 0) return 'Ended'
+  const hours = Math.floor(remainMs / 3_600_000)
+  const mins = Math.floor((remainMs % 3_600_000) / 60_000)
+  if (hours > 0) return `${hours}h ${mins}m`
+  return `${mins}m`
+}
 
 export default function DashboardPage() {
+  const { user, loading: userLoading } = useUser()
+  const [me, setMe] = useState<MeResponse | null>(null)
+  const [rating, setRating] = useState<RatingData | null>(null)
+  const [daily, setDaily] = useState<DailyResponse | null>(null)
+  const [activeChallenges, setActiveChallenges] = useState<ChallengesResponse | null>(null)
+  const [results, setResults] = useState<ResultEntry[]>([])
+  const [eloHistory, setEloHistory] = useState<EloHistoryEntry[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (userLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
+    async function fetchData() {
+      try {
+        const [meRes, dailyRes, challengesRes, resultsRes] = await Promise.all([
+          fetch('/api/me'),
+          fetch('/api/challenges/daily'),
+          fetch('/api/challenges?status=active&limit=5'),
+          fetch('/api/me/results?limit=5'),
+        ])
+
+        if (meRes.ok) {
+          const meData = await meRes.json()
+          setMe(meData)
+
+          // If we have an agent, fetch rating and elo history from Supabase via client
+          if (meData.agent) {
+            const { createClient } = await import('@/lib/supabase/client')
+            const supabase = createClient()
+
+            const { data: ratingData } = await supabase
+              .from('agent_ratings')
+              .select('rating, wins, losses, draws, challenges_entered, best_placement, current_streak')
+              .eq('agent_id', meData.agent.id)
+              .limit(1)
+              .maybeSingle()
+
+            if (ratingData) setRating(ratingData)
+
+            const { data: eloData } = await supabase
+              .from('elo_history')
+              .select('rating_after, created_at')
+              .eq('agent_id', meData.agent.id)
+              .order('created_at', { ascending: true })
+              .limit(30)
+
+            if (eloData) setEloHistory(eloData)
+          }
+        }
+
+        if (dailyRes.ok) setDaily(await dailyRes.json())
+        if (challengesRes.ok) setActiveChallenges(await challengesRes.json())
+        if (resultsRes.ok) {
+          const rData = await resultsRes.json()
+          setResults(rData.results ?? [])
+        }
+      } catch (err) {
+        console.error('[Dashboard] Failed to load data:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [user, userLoading])
+
+  if (userLoading || loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-zinc-400" />
+      </div>
+    )
+  }
+
+  // No agent registered — show CTA
+  if (!me?.agent) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/20">
+          <Bot className="size-8 text-blue-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-zinc-50">Welcome to Agent Arena</h2>
+        <p className="max-w-md text-zinc-400">
+          Register your AI agent to start competing in challenges, earning ELO, and climbing the leaderboard.
+        </p>
+        <Link href="/agents">
+          <Button className="mt-2 bg-blue-500 hover:bg-blue-600">
+            Register Your Agent
+          </Button>
+        </Link>
+      </div>
+    )
+  }
+
+  const agent = me.agent
+  const wins = rating?.wins ?? 0
+  const losses = rating?.losses ?? 0
+  const totalChallenges = rating?.challenges_entered ?? 0
+  const winRate = totalChallenges > 0 ? `${Math.round((wins / totalChallenges) * 100)}%` : '0%'
+
+  const welcomeAgent = {
+    name: agent.name,
+    avatar_url: agent.avatar_url,
+    weight_class_id: agent.weight_class_id ?? 'open',
+  }
+
+  const welcomeRating = {
+    rating: rating?.rating ?? 1500,
+    wins,
+    losses,
+  }
+
+  // Map daily challenge for the card component
+  const dailyChallenge = daily?.challenge
+    ? {
+        id: daily.challenge.id,
+        title: daily.challenge.title,
+        category: daily.challenge.category,
+        status: (daily.your_entry ? 'in_progress' : 'not_entered') as 'not_entered' | 'in_progress' | 'completed',
+        ends_at: new Date(
+          new Date(daily.challenge.scheduled_start).getTime() +
+            daily.challenge.duration_minutes * 60_000
+        ).toISOString(),
+        entry_count: 0, // We don't have this from the daily endpoint
+      }
+    : null
+
+  // Map active challenges
+  const activeChallengesList = (activeChallenges?.challenges ?? []).map((c) => ({
+    id: c.id,
+    title: c.title,
+    category: c.category,
+    categoryEmoji: CATEGORY_EMOJI[c.category] ?? '🏆',
+    timeRemaining: computeTimeRemaining(c.scheduled_start, c.duration_minutes),
+    entryCount: 0,
+  }))
+
+  // Quick stats
+  const quickStats = {
+    totalChallenges: totalChallenges.toString(),
+    winRate,
+    currentStreak: (rating?.current_streak ?? 0).toString(),
+    bestPlacement: rating?.best_placement ? `#${rating.best_placement}` : '—',
+  }
+
+  // ELO chart data
+  const eloData = eloHistory.map((e) => {
+    const d = new Date(e.created_at)
+    return {
+      date: `${d.getMonth() + 1}/${d.getDate()}`,
+      elo: Math.round(e.rating_after),
+    }
+  })
+
+  // Recent results
+  const recentResults = results.map((r) => ({
+    id: r.id,
+    challengeTitle: r.challenge?.title ?? 'Unknown Challenge',
+    challengeId: r.challenge?.id ?? '',
+    placement: r.placement ?? 0,
+    score: r.final_score ?? 0,
+    eloChange: r.elo_change ?? 0,
+    date: r.created_at,
+  }))
+
   return (
     <div className="space-y-6 p-6">
-      <WelcomeCard agent={mockAgent} rating={mockRating} />
+      <WelcomeCard agent={welcomeAgent} rating={welcomeRating} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <DailyChallengeCard challenge={mockDailyChallenge} />
+          {dailyChallenge ? (
+            <DailyChallengeCard challenge={dailyChallenge} />
+          ) : (
+            <div className="flex h-40 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+              <div className="text-center">
+                <Swords className="mx-auto mb-2 size-6" />
+                <p className="text-sm">No daily challenge right now</p>
+              </div>
+            </div>
+          )}
         </div>
         <div className="lg:col-span-1">
-          <ActiveChallengesSidebar challenges={mockActiveChallenges} />
+          {activeChallengesList.length > 0 ? (
+            <ActiveChallengesSidebar challenges={activeChallengesList} />
+          ) : (
+            <div className="flex h-40 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+              <div className="text-center">
+                <Trophy className="mx-auto mb-2 size-6" />
+                <p className="text-sm">No active challenges</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <QuickStats stats={mockQuickStats} />
+      <QuickStats stats={quickStats} />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <EloTrendChart data={mockEloData} />
+          {eloData.length > 0 ? (
+            <EloTrendChart data={eloData} />
+          ) : (
+            <div className="flex h-64 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+              <div className="text-center">
+                <p className="text-sm">ELO history will appear after your first challenge</p>
+              </div>
+            </div>
+          )}
         </div>
         <div className="lg:col-span-1">
-          <RecentResults results={mockRecentResults} />
+          {recentResults.length > 0 ? (
+            <RecentResults results={recentResults} />
+          ) : (
+            <div className="flex h-64 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+              <div className="text-center">
+                <p className="text-sm">No results yet</p>
+                <p className="mt-1 text-xs">Enter a challenge to get started</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

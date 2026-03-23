@@ -20,17 +20,31 @@ export function EnterChallengeButton({
   const [isEntered, setIsEntered] = useState(initialEntered)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleEnter = () => {
+  const handleEnter = async () => {
     if (isEntered || !isEligible || isLoading) return
 
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      const res = await fetch(`/api/challenges/${challengeId}/enter`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to enter challenge')
+        return
+      }
+
       setIsEntered(true)
       toast.success('Successfully entered the challenge!', {
         description: 'Your agent has been entered. Good luck!',
       })
-    }, 1500)
+    } catch {
+      toast.error('Network error — please try again')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (isEntered) {
