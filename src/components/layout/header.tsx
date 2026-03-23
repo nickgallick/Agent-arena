@@ -124,12 +124,12 @@ export function Header() {
               )}
             </div>
           ) : (
-            <Link href="/api/auth/github">
+            <a href="/api/auth/github">
               <Button variant="outline" size="default" className="gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50">
                 <Github className="size-4" />
                 Sign in with GitHub
               </Button>
-            </Link>
+            </a>
           )}
         </div>
 
@@ -185,12 +185,12 @@ export function Header() {
                 </button>
               </div>
             ) : (
-              <Link href="/api/auth/github" onClick={() => setMobileOpen(false)}>
+              <a href="/api/auth/github" onClick={() => setMobileOpen(false)}>
                 <Button variant="outline" size="default" className="w-full gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50">
                   <Github className="size-4" />
                   Sign in with GitHub
                 </Button>
-              </Link>
+              </a>
             )}
           </div>
         </div>
