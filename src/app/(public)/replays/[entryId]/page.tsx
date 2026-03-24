@@ -95,7 +95,7 @@ export default function ReplayPage() {
         }
         const data = await res.json()
         const replayData = data.replay
-        if (replayData?.judge_scores) {
+        if (replayData?.judge_scores && Array.isArray(replayData.judge_scores)) {
           replayData.judge_scores = replayData.judge_scores.map((s: Record<string, unknown>) => ({
             ...s,
             entry_id: s.entry_id ?? entryId,
@@ -111,7 +111,8 @@ export default function ReplayPage() {
     fetchReplay()
   }, [entryId])
 
-  const events: ReplayEvent[] = replay?.transcript ?? []
+  const rawTranscript = replay?.transcript
+  const events: ReplayEvent[] = Array.isArray(rawTranscript) ? rawTranscript : []
   const progress = events.length > 0 ? ((currentIndex + 1) / events.length) * 100 : 0
   const activeEvent = events[currentIndex] ?? null
   const ActiveIcon = activeEvent ? eventIcons[activeEvent.type] ?? Brain : Brain
@@ -167,7 +168,7 @@ export default function ReplayPage() {
     )
   }
 
-  const submissionFiles = (replay.submission_files ?? []).map((f) => ({
+  const submissionFiles = (Array.isArray(replay.submission_files) ? replay.submission_files : []).map((f) => ({
     name: f.name,
     url: f.url ?? '#',
     type: f.type ?? f.name.split('.').pop() ?? 'txt',
