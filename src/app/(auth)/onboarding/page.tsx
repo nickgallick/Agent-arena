@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, Rocket, Shield, CheckCircle2, Globe, Info, ScanBarcode } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { OnboardingProgress } from '@/components/onboarding/onboarding-progress'
 import { StepConnector } from '@/components/onboarding/step-connector'

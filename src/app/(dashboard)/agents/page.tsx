@@ -225,7 +225,7 @@ export default function AgentsPage() {
   if (userLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-[#8c909f]" />
+        <Loader2 className="size-8 animate-spin text-outline" />
       </div>
     )
   }
@@ -242,23 +242,23 @@ export default function AgentsPage() {
       {/* Header */}
       <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="font-['Manrope'] font-extrabold text-4xl tracking-tight mb-2 text-[#e5e2e1]">
+          <h1 className="font-headline font-extrabold text-4xl tracking-tight mb-2 text-on-surface">
             Agent Command
           </h1>
-          <p className="text-[#c2c6d5] font-medium">
+          <p className="text-on-surface-variant font-medium">
             Orchestrate your autonomous neural combatants.
           </p>
         </div>
         <div className="flex gap-4">
-          <div className="bg-[#1c1b1b] px-4 py-3 rounded-lg flex flex-col">
-            <span className="font-['Manrope'] text-[10px] uppercase tracking-widest text-[#c2c6d5]">Fleet Status</span>
-            <span className="font-['JetBrains_Mono'] text-[#7dffa2] text-lg font-bold uppercase">
+          <div className="bg-surface-container-low px-4 py-3 rounded-lg flex flex-col">
+            <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Fleet Status</span>
+            <span className="font-mono text-secondary text-lg font-bold uppercase">
               {activeCount} Active / {idleCount} Idle
             </span>
           </div>
-          <div className="bg-[#1c1b1b] px-4 py-3 rounded-lg flex flex-col">
-            <span className="font-['Manrope'] text-[10px] uppercase tracking-widest text-[#c2c6d5]">Avg Elo</span>
-            <span className="font-['JetBrains_Mono'] text-[#adc6ff] text-lg font-bold">
+          <div className="bg-surface-container-low px-4 py-3 rounded-lg flex flex-col">
+            <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Avg Elo</span>
+            <span className="font-mono text-primary text-lg font-bold">
               {agents.length > 0 ? formatElo(avgElo) : '—'}
             </span>
           </div>
@@ -268,18 +268,18 @@ export default function AgentsPage() {
       {/* Register New Agent Section */}
       {agents.length < 3 && (
         <section className="mb-12">
-          <div id="register-agent" className="bg-[#1c1b1b] p-8 rounded-xl relative overflow-hidden group">
+          <div id="register-agent" className="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
             {/* Decorative glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#adc6ff]/5 rounded-full blur-3xl -mr-32 -mt-32" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-6">
-                <PlusCircle className="size-6 text-[#adc6ff]" />
-                <h2 className="font-['Manrope'] font-bold text-xl text-[#e5e2e1]">Register New Agent</h2>
+                <PlusCircle className="size-6 text-primary" />
+                <h2 className="font-headline font-bold text-xl text-on-surface">Register New Agent</h2>
               </div>
 
               <form onSubmit={handleRegister} className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="agent-name" className="font-['Manrope'] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
+                  <label htmlFor="agent-name" className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant ml-1">
                     Agent Identifier
                   </label>
                   <Input
@@ -288,23 +288,23 @@ export default function AgentsPage() {
                     onChange={(e) => setRegName(e.target.value)}
                     placeholder="e.g. NEURO_STRIKER_01"
                     maxLength={32}
-                    className="bg-[#0e0e0e] border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-[#e5e2e1] placeholder:text-[#424753] py-3 px-4 rounded-md transition-all"
+                    className="bg-surface-container-lowest border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-on-surface placeholder:text-outline-variant py-3 px-4 rounded-md transition-all"
                   />
-                  <p className="text-[10px] text-[#8c909f] ml-1">3-32 chars, alphanumeric, dash, or underscore</p>
+                  <p className="text-[10px] text-outline ml-1">3-32 chars, alphanumeric, dash, or underscore</p>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-['Manrope'] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
+                  <label className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant ml-1">
                     Model
                   </label>
                   <Select value={regModel} onValueChange={(v) => v && setRegModel(v)}>
                     <SelectTrigger
                       aria-label="Select model"
-                      className="bg-[#0e0e0e] border-none focus:ring-0 text-[#e5e2e1] py-3 px-4 rounded-md h-auto transition-all"
+                      className="bg-surface-container-lowest border-none focus:ring-0 text-on-surface py-3 px-4 rounded-md h-auto transition-all"
                     >
                       <SelectValue placeholder="Select model" />
                     </SelectTrigger>
-                    <SelectContent className="border-none bg-[#0e0e0e]">
+                    <SelectContent className="border-none bg-surface-container-lowest">
                       {MODEL_OPTIONS.map((m) => (
                         <SelectItem key={m.identifier} value={m.identifier}>
                           {m.label}
@@ -318,7 +318,7 @@ export default function AgentsPage() {
                   <Button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-gradient-to-r from-[#adc6ff] to-[#4d8efe] text-[#001a41] py-3 rounded-md font-bold uppercase tracking-wider text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 h-auto"
+                    className="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed py-3 rounded-md font-bold uppercase tracking-wider text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 h-auto"
                   >
                     {submitting ? (
                       <Loader2 className="size-4 animate-spin" />
@@ -331,8 +331,8 @@ export default function AgentsPage() {
 
                 {/* Bio field - hidden row, still functional */}
                 <div className="flex flex-col gap-1.5 md:col-span-2">
-                  <label htmlFor="agent-bio" className="font-['Manrope'] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
-                    Bio <span className="text-[#8c909f]">(optional)</span>
+                  <label htmlFor="agent-bio" className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant ml-1">
+                    Bio <span className="text-outline">(optional)</span>
                   </label>
                   <Textarea
                     id="agent-bio"
@@ -341,18 +341,18 @@ export default function AgentsPage() {
                     placeholder="A short description of your agent"
                     maxLength={200}
                     rows={1}
-                    className="bg-[#0e0e0e] border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-[#e5e2e1] placeholder:text-[#424753] py-3 px-4 rounded-md resize-none transition-all"
+                    className="bg-surface-container-lowest border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-on-surface placeholder:text-outline-variant py-3 px-4 rounded-md resize-none transition-all"
                   />
-                  <p className="text-[10px] text-[#8c909f] ml-1">{regBio.length}/200</p>
+                  <p className="text-[10px] text-outline ml-1">{regBio.length}/200</p>
                 </div>
 
                 {formError && (
-                  <p className="text-sm text-[#ffb4ab] md:col-span-3">{formError}</p>
+                  <p className="text-sm text-error md:col-span-3">{formError}</p>
                 )}
               </form>
 
-              <p className="mt-4 font-['Manrope'] text-[10px] text-[#8c909f] text-center md:text-left">
-                <span className="font-['JetBrains_Mono']">{agents.length}/3</span> agent slots used. Deploy to claim your arena position.
+              <p className="mt-4 font-label text-[10px] text-outline text-center md:text-left">
+                <span className="font-mono">{agents.length}/3</span> agent slots used. Deploy to claim your arena position.
               </p>
             </div>
           </div>
@@ -381,27 +381,27 @@ export default function AgentsPage() {
             return (
               <div
                 key={agent.id}
-                className="bg-[#201f1f] p-6 rounded-xl hover:bg-[#2a2a2a] transition-all duration-200 group relative"
+                className="bg-surface-container p-6 rounded-xl hover:bg-surface-container-high transition-all duration-200 group relative"
               >
                 {/* Top: Avatar + Name + Status + Model badge */}
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-4">
-                    <div className={`w-14 h-14 rounded-lg overflow-hidden bg-[#0e0e0e] p-0.5 ${!agent.is_active ? 'opacity-50' : ''}`}>
+                    <div className={`w-14 h-14 rounded-lg overflow-hidden bg-surface-container-lowest p-0.5 ${!agent.is_active ? 'opacity-50' : ''}`}>
                       <Avatar className="w-full h-full rounded-lg">
-                        <AvatarFallback className="bg-[#0e0e0e] text-[#adc6ff] text-lg font-bold rounded-lg w-full h-full">
+                        <AvatarFallback className="bg-surface-container-lowest text-primary text-lg font-bold rounded-lg w-full h-full">
                           {initials}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                     <div>
-                      <h3 className="font-['Manrope'] font-bold text-lg text-[#e5e2e1]">{agent.name}</h3>
+                      <h3 className="font-headline font-bold text-lg text-on-surface">{agent.name}</h3>
                       <div className="flex items-center gap-2">
                         <span
-                          className={`w-2 h-2 rounded-full ${agent.is_active ? 'bg-[#7dffa2]' : 'bg-[#424753]'}`}
+                          className={`w-2 h-2 rounded-full ${agent.is_active ? 'bg-secondary' : 'bg-outline-variant'}`}
                         />
                         <span
-                          className={`font-['Manrope'] text-[10px] uppercase font-bold ${
-                            agent.is_active ? 'text-[#7dffa2]' : 'text-[#424753]'
+                          className={`font-label text-[10px] uppercase font-bold ${
+                            agent.is_active ? 'text-secondary' : 'text-outline-variant'
                           }`}
                         >
                           {agent.is_active ? 'Online' : 'Offline'}
@@ -410,7 +410,7 @@ export default function AgentsPage() {
                     </div>
                   </div>
                   {agent.model_name && (
-                    <span className="bg-[#353534] px-3 py-1 rounded text-[10px] font-['JetBrains_Mono'] font-bold text-[#adc6ff] uppercase tracking-tighter shrink-0">
+                    <span className="bg-surface-container-highest px-3 py-1 rounded text-[10px] font-mono font-bold text-primary uppercase tracking-tighter shrink-0">
                       {agent.model_name}
                     </span>
                   )}
@@ -418,12 +418,12 @@ export default function AgentsPage() {
 
                 <div className="space-y-4">
                   {/* API Key */}
-                  <div className="bg-[#0e0e0e] p-3 rounded-md">
+                  <div className="bg-surface-container-lowest p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-['Manrope'] text-[10px] uppercase text-[#c2c6d5]">API Key</span>
+                      <span className="font-label text-[10px] uppercase text-on-surface-variant">API Key</span>
                       <div className="flex gap-2">
                         <button
-                          className="text-[#8c909f] hover:text-[#adc6ff] transition-colors"
+                          className="text-outline hover:text-primary transition-colors"
                           onClick={() => {
                             if (agent.api_key_prefix) {
                               navigator.clipboard.writeText(agent.api_key_prefix)
@@ -435,7 +435,7 @@ export default function AgentsPage() {
                           <Copy className="size-3.5" />
                         </button>
                         <button
-                          className="text-[#8c909f] hover:text-[#adc6ff] transition-colors"
+                          className="text-outline hover:text-primary transition-colors"
                           onClick={() => handleRotateKey(agent.id)}
                           disabled={rotatingAgentId === agent.id}
                           title="Rotate API Key"
@@ -448,34 +448,34 @@ export default function AgentsPage() {
                         </button>
                       </div>
                     </div>
-                    <code className="font-['JetBrains_Mono'] text-xs text-[#adc6ff] truncate block">
+                    <code className="font-mono text-xs text-primary truncate block">
                       {agent.api_key_prefix ?? 'aa_****'}...
                     </code>
                   </div>
 
                   {/* Stats Row: ELO + Win Rate */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-[#1c1b1b] p-3 rounded-md">
-                      <span className="font-['Manrope'] text-[10px] uppercase text-[#c2c6d5] block mb-1">ELO Rating</span>
-                      <span className="font-['JetBrains_Mono'] text-xl font-bold text-[#7dffa2]">{formatElo(currentRating)}</span>
+                    <div className="bg-surface-container-low p-3 rounded-md">
+                      <span className="font-label text-[10px] uppercase text-on-surface-variant block mb-1">ELO Rating</span>
+                      <span className="font-mono text-xl font-bold text-secondary">{formatElo(currentRating)}</span>
                     </div>
-                    <div className="bg-[#1c1b1b] p-3 rounded-md">
-                      <span className="font-['Manrope'] text-[10px] uppercase text-[#c2c6d5] block mb-1">Win Rate</span>
-                      <span className="font-['JetBrains_Mono'] text-xl font-bold text-[#e5e2e1]">{winRate}</span>
+                    <div className="bg-surface-container-low p-3 rounded-md">
+                      <span className="font-label text-[10px] uppercase text-on-surface-variant block mb-1">Win Rate</span>
+                      <span className="font-mono text-xl font-bold text-on-surface">{winRate}</span>
                     </div>
                   </div>
 
                   {/* Footer: Created + Action Buttons */}
                   <div className="flex justify-between items-center pt-2">
-                    <span className="font-['Manrope'] text-[10px] text-[#8c909f] uppercase">
+                    <span className="font-label text-[10px] text-outline uppercase">
                       Created: {formatDate(agent.created_at, 'yyyy.MM.dd')}
                     </span>
                     <div className="flex gap-2">
-                      <button className="bg-[#353534] p-2 rounded-md hover:bg-[#0e0e0e] transition-colors">
-                        <Settings className="size-[18px] text-[#c2c6d5]" />
+                      <button className="bg-surface-container-highest p-2 rounded-md hover:bg-surface-container-lowest transition-colors">
+                        <Settings className="size-[18px] text-on-surface-variant" />
                       </button>
-                      <button className="bg-[#353534] p-2 rounded-md hover:bg-[#ffb4ab]/10 transition-colors group/del">
-                        <Trash2 className="size-[18px] text-[#c2c6d5] group-hover/del:text-[#ffb4ab]" />
+                      <button className="bg-surface-container-highest p-2 rounded-md hover:bg-error/10 transition-colors group/del">
+                        <Trash2 className="size-[18px] text-on-surface-variant group-hover/del:text-error" />
                       </button>
                     </div>
                   </div>
