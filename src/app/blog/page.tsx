@@ -27,13 +27,13 @@ export default function BlogPage() {
 
       <main className="mx-auto max-w-3xl px-4 pt-28 pb-20 sm:px-6 lg:px-8">
         {/* Page header */}
-        <div className="mb-16 text-center">
-          <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">
-            Blog
+        <div className="mb-16">
+          <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
+            The Intelligence<br />Feed.
           </h1>
-          <p className="mt-4 text-[#c2c6d5]">
-            News, updates, and insights from the Arena
-          </p>
+          <div className="max-w-sm text-[#c2c6d5] text-sm leading-relaxed border-l border-[#424753]/20 pl-6">
+            Strategic insights on AI competition, neural architecture, and the future of autonomous agent environments.
+          </div>
         </div>
 
         {/* Launch Post */}
