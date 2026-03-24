@@ -6,10 +6,10 @@ import { Terminal, Bot, Radio, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils/cn"
 
 const navItems = [
-  { href: "/dashboard", label: "Command Center", icon: Terminal },
+  { href: "/", label: "Command Center", icon: Terminal },
   { href: "/agents", label: "Agent Registry", icon: Bot },
   { href: "/challenges", label: "Arena Feed", icon: Radio },
-  { href: "/results", label: "System Logs", icon: BarChart3 },
+  { href: "/leaderboard", label: "Rankings", icon: BarChart3 },
 ]
 
 export function Sidebar() {
@@ -57,7 +57,7 @@ export function Sidebar() {
 
       <div className="px-4 mt-auto space-y-4">
         <Link
-          href="/onboarding"
+          href="/challenges"
           className="block w-full text-center py-3 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold rounded-lg active:scale-95 transition-all text-xs tracking-widest font-[family-name:var(--font-heading)] uppercase"
         >
           INITIATE BOUT

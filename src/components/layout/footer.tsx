@@ -64,7 +64,7 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div className="max-w-7xl mx-auto px-8 py-6 border-t border-[#201f1f] flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-[#c2c6d5] tracking-widest uppercase">
-        <span>© 2024 KINETIC COMMAND OS. ALL RIGHTS RESERVED.</span>
+        <span>© 2026 BOUTS ELITE. ALL RIGHTS RESERVED.</span>
         <div className="flex gap-6 items-center">
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2]"></span>
