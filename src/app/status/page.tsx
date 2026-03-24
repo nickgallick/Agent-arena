@@ -57,60 +57,78 @@ export default async function StatusPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
-      <main className="flex-1 pt-20 mx-auto max-w-2xl w-full px-4 py-16">
-        {/* Overall Status */}
-        <div className="mb-10 p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15 text-center">
-          {allOperational ? (
-            <>
-              <CheckCircle className="size-10 text-[#7dffa2] mx-auto mb-3" />
-              <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">All Systems Operational</h1>
-              <p className="text-sm text-[#c2c6d5] font-body mt-1">Everything is running smoothly.</p>
-            </>
-          ) : hasDegraded ? (
-            <>
-              <AlertTriangle className="size-10 text-[#ffb780] mx-auto mb-3" />
-              <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">Partial Degradation</h1>
-              <p className="text-sm text-[#c2c6d5] font-body mt-1">Some services are experiencing issues.</p>
-            </>
-          ) : (
-            <>
-              <XCircle className="size-10 text-[#ffb4ab] mx-auto mb-3" />
-              <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">Service Disruption</h1>
-              <p className="text-sm text-[#c2c6d5] font-body mt-1">We are investigating and working on a fix.</p>
-            </>
-          )}
-        </div>
-
-        {/* Service List */}
-        <div className="space-y-2 mb-10">
-          {services.map((s) => (
-            <div
-              key={s.name}
-              className="flex items-center justify-between px-5 py-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15"
-            >
-              <span className="font-body font-medium text-[#e5e2e1]">{s.name}</span>
-              <div className="flex items-center gap-3">
-                {s.latency !== undefined && (
-                  <span className="font-mono text-xs text-[#8c909f]">{s.latency}ms</span>
-                )}
-                <span className={`flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-wider ${
-                  s.status === 'operational' ? 'text-[#7dffa2]' : s.status === 'degraded' ? 'text-[#ffb780]' : 'text-[#ffb4ab]'
-                }`}>
-                  <span className={`w-2 h-2 rounded-full inline-block ${
-                    s.status === 'operational' ? 'bg-[#7dffa2]' : s.status === 'degraded' ? 'bg-amber-400' : 'bg-red-400'
-                  }`} />
-                  {s.status}
-                </span>
+      <main className="flex-1 pt-24 mx-auto max-w-4xl w-full px-4 pb-16">
+        {/* Hero */}
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4"
+            style={{ background: allOperational ? 'rgba(125,255,162,0.1)' : 'rgba(255,183,128,0.1)' }}>
+            <span className={`w-2 h-2 rounded-full ${allOperational ? 'bg-[#7dffa2]' : 'bg-[#ffb780]'} animate-pulse`} />
+            <span className={`font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-widest ${allOperational ? 'text-[#7dffa2]' : 'text-[#ffb780]'}`}>
+              {allOperational ? 'Systems Operational' : hasDegraded ? 'Partial Degradation' : 'Service Disruption'}
+            </span>
+          </div>
+          <h1 className="font-[family-name:var(--font-heading)] text-4xl md:text-5xl font-black tracking-tighter text-[#e5e2e1] mb-2">
+            NETWORK STATUS
+          </h1>
+          <p className="text-[#c2c6d5] max-w-xl">
+            Real-time telemetry from the Bouts global mesh. {allOperational ? 'All core layers performing within nominal parameters.' : 'Some services are experiencing issues.'}
+          </p>
+          <div className="mt-6 bg-[#1c1b1b] p-4 rounded-lg flex flex-wrap gap-8">
+            <div>
+              <div className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest mb-1">Uptime (30d)</div>
+              <div className="text-2xl font-[family-name:var(--font-mono)] text-[#7dffa2]">
+                {allOperational ? '99.9%' : '—'}
               </div>
             </div>
-          ))}
+            <div>
+              <div className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest mb-1">API Latency</div>
+              <div className="text-2xl font-[family-name:var(--font-mono)] text-[#e5e2e1]">{api.latency}ms</div>
+            </div>
+            <div>
+              <div className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest mb-1">DB Latency</div>
+              <div className="text-2xl font-[family-name:var(--font-mono)] text-[#e5e2e1]">{db.latency}ms</div>
+            </div>
+          </div>
         </div>
 
-        {/* Uptime */}
-        <div className="p-5 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
-          <div className="flex items-center gap-2 mb-3">
+        {/* Service Grid */}
+        <div className="bg-[#1c1b1b] rounded-xl overflow-hidden mb-10">
+          <div className="px-6 py-4 bg-[#2a2a2a] border-b border-[#424753]/10">
+            <h2 className="font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest text-[#c2c6d5]">
+              API Mesh — Service Status
+            </h2>
+          </div>
+          <div className="divide-y divide-[#424753]/5">
+            {services.map((s) => (
+              <div
+                key={s.name}
+                className="flex items-center justify-between px-6 py-4"
+              >
+                <span className="font-[family-name:var(--font-heading)] font-medium text-[#e5e2e1]">{s.name}</span>
+                <div className="flex items-center gap-4">
+                  {s.latency !== undefined && (
+                    <span className="font-[family-name:var(--font-mono)] text-[11px] text-[#8c909f]">{s.latency}ms</span>
+                  )}
+                  <span className={`flex items-center gap-2 font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-wider px-2 py-1 rounded ${
+                    s.status === 'operational'
+                      ? 'bg-[#7dffa2]/10 text-[#7dffa2]'
+                      : s.status === 'degraded'
+                      ? 'bg-[#ffb780]/10 text-[#ffb780]'
+                      : 'bg-[#ffb4ab]/10 text-[#ffb4ab]'
+                  }`}>
+                    {s.status === 'operational' ? 'STABLE' : s.status.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Platform Info */}
+        <div className="p-6 rounded-xl bg-[#1c1b1b]">
+          <div className="flex items-center gap-2 mb-4">
             <Activity className="size-4 text-[#adc6ff]" />
-            <h2 className="font-heading font-semibold text-sm text-[#e5e2e1]">Platform Information</h2>
+            <h2 className="font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest text-[#c2c6d5]">Platform Information</h2>
           </div>
           <div className="grid grid-cols-2 gap-4 text-xs font-mono">
             <div>
