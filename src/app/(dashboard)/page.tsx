@@ -220,7 +220,7 @@ export default function DashboardPage() {
           new Date(daily.challenge.scheduled_start).getTime() +
             daily.challenge.duration_minutes * 60_000
         ).toISOString(),
-        entry_count: 0, // We don't have this from the daily endpoint
+        entry_count: 0,
       }
     : null
 
@@ -263,63 +263,78 @@ export default function DashboardPage() {
   }))
 
   return (
-    <div className="space-y-6 p-6">
-      <WelcomeCard agent={welcomeAgent} rating={welcomeRating} />
+    <div className="space-y-8 p-6">
+      {/* === Section 1: Hero Welcome + Daily Challenge === */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Agent Hero Card */}
+        <WelcomeCard
+          agent={welcomeAgent}
+          rating={welcomeRating}
+          className="lg:col-span-8"
+        />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+        {/* Daily Challenge Card */}
+        <div className="lg:col-span-4">
           {dailyChallenge ? (
-            <DailyChallengeCard challenge={dailyChallenge} />
+            <DailyChallengeCard challenge={dailyChallenge} className="h-full" />
           ) : (
-            <div className="flex h-40 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
+            <div className="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15 text-center p-8">
+              <Swords className="mx-auto mb-3 size-6 text-[#8c909f]" />
+              <p className="text-sm text-[#c2c6d5]">No daily challenge right now</p>
+              <p className="mt-1 text-xs text-[#8c909f]">Check back soon for new protocols</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* === Section 2: Stats Grid + ELO Chart === */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Quick Stats — 2×2 grid */}
+        <QuickStats stats={quickStats} className="lg:col-span-4 grid-cols-2 lg:grid-cols-2" />
+
+        {/* ELO Trend Chart */}
+        <div className="lg:col-span-8">
+          {eloData.length > 0 ? (
+            <EloTrendChart data={eloData} className="h-full" />
+          ) : (
+            <div className="flex h-full min-h-[280px] items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
               <div className="text-center">
-                <Swords className="mx-auto mb-2 size-6" />
-                <p className="text-sm">No daily challenge right now</p>
+                <p className="text-sm text-[#c2c6d5]">Performance telemetry will appear after your first challenge</p>
               </div>
             </div>
           )}
         </div>
+      </section>
+
+      {/* === Section 3: Recent Results + Active Challenges === */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Results (Combat Logs) */}
+        <div className="lg:col-span-2">
+          {recentResults.length > 0 ? (
+            <RecentResults results={recentResults} className="h-full" />
+          ) : (
+            <div className="flex h-full min-h-[280px] items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+              <div className="text-center">
+                <p className="text-sm text-[#c2c6d5]">No combat logs yet</p>
+                <p className="mt-1 text-xs text-[#8c909f]">Enter a challenge to generate your first results</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Active Challenges Sidebar (Telemetry Feed) */}
         <div className="lg:col-span-1">
           {activeChallengesList.length > 0 ? (
-            <ActiveChallengesSidebar challenges={activeChallengesList} />
+            <ActiveChallengesSidebar challenges={activeChallengesList} className="h-full" />
           ) : (
-            <div className="flex h-40 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
-              <div className="text-center">
-                <Trophy className="mx-auto mb-2 size-6" />
-                <p className="text-sm">No active challenges</p>
-              </div>
+            <div className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15 p-6">
+              <Trophy className="mx-auto mb-3 size-6 text-[#8c909f]" />
+              <p className="text-sm text-[#c2c6d5]">No active challenges</p>
+              <p className="mt-1 text-xs text-[#8c909f]">Awaiting new arena events</p>
             </div>
           )}
         </div>
-      </div>
-
-      <QuickStats stats={quickStats} />
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          {eloData.length > 0 ? (
-            <EloTrendChart data={eloData} />
-          ) : (
-            <div className="flex h-64 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
-              <div className="text-center">
-                <p className="text-sm">ELO history will appear after your first challenge</p>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="lg:col-span-1">
-          {recentResults.length > 0 ? (
-            <RecentResults results={recentResults} />
-          ) : (
-            <div className="flex h-64 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
-              <div className="text-center">
-                <p className="text-sm">No results yet</p>
-                <p className="mt-1 text-xs">Enter a challenge to get started</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      </section>
     </div>
   )
 }

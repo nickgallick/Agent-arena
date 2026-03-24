@@ -17,6 +17,15 @@ import {
   Zap,
   MapPin,
   Activity,
+  Key,
+  Copy,
+  Trash2,
+  RefreshCw,
+  Eye,
+  AlertTriangle,
+  SlidersHorizontal,
+  Download,
+  ChevronDown,
 } from 'lucide-react'
 import { formatElo, formatWinRate, formatDate, formatNumber, timeAgo } from '@/lib/utils/format'
 
@@ -90,13 +99,13 @@ export default function AgentProfilePage() {
   if (loading) {
     return (
       <PageWithSidebar>
-      <div className="min-h-screen bg-[#131313]">
-        <Header />
-        <main className="flex-1 pt-32 flex items-center justify-center pb-24">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
-        </main>
-        <Footer />
-      </div>
+        <div className="min-h-screen bg-surface">
+          <Header />
+          <main className="flex-1 pt-32 flex items-center justify-center pb-24">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-container border-t-transparent" />
+          </main>
+          <Footer />
+        </div>
       </PageWithSidebar>
     )
   }
@@ -104,18 +113,18 @@ export default function AgentProfilePage() {
   if (error || !agent) {
     return (
       <PageWithSidebar>
-      <div className="min-h-screen bg-[#131313]">
-        <Header />
-        <main className="flex-1 pt-32 flex items-center justify-center pb-24">
-          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
-            <p className="text-lg font-medium font-['Manrope'] text-[#c2c6d5]">{error ?? 'Agent not found'}</p>
-            <a href="/leaderboard" className="mt-4 inline-block text-sm font-['Manrope'] text-[#adc6ff] hover:text-[#adc6ff]">
-              Back to leaderboard
-            </a>
-          </div>
-        </main>
-        <Footer />
-      </div>
+        <div className="min-h-screen bg-surface">
+          <Header />
+          <main className="flex-1 pt-32 flex items-center justify-center pb-24">
+            <div className="rounded-xl border border-outline-variant/15 bg-surface-container-low/50 px-8 py-12 text-center">
+              <p className="text-lg font-medium font-[family-name:var(--font-heading)] text-on-surface-variant">{error ?? 'Agent not found'}</p>
+              <a href="/leaderboard" className="mt-4 inline-block text-sm font-[family-name:var(--font-heading)] text-primary hover:text-primary">
+                Back to leaderboard
+              </a>
+            </div>
+          </main>
+          <Footer />
+        </div>
       </PageWithSidebar>
     )
   }
@@ -136,311 +145,334 @@ export default function AgentProfilePage() {
 
   return (
     <PageWithSidebar>
-    <div className="min-h-screen bg-[#131313] text-[#e5e2e1] font-['Manrope'] selection:bg-[#adc6ff]/30 selection:text-[#adc6ff] leading-relaxed" style={{
-      backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(173, 198, 255, 0.05) 1px, transparent 0)',
-      backgroundSize: '24px 24px',
-    }}>
-      <Header />
-      <main className="pt-32 pb-24 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
+      <div className="min-h-screen bg-surface text-on-surface font-[family-name:var(--font-heading)] selection:bg-primary/30">
+        <Header />
+        <main className="pt-28 pb-20 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
 
-        {/* Hero Section: Agent Profile Identity */}
-        <section className="mb-12">
-          <div className="bg-[#1c1b1b] rounded-xl p-8 flex flex-col md:flex-row items-center md:items-end gap-8 relative overflow-hidden">
-            {/* Background Accent */}
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#adc6ff]/5 to-transparent pointer-events-none" />
-
-            {/* Avatar with Status */}
-            <div className="relative group">
-              <div className="w-32 h-32 md:w-48 md:h-48 rounded-lg overflow-hidden border-2 border-[#adc6ff]/20 bg-[#201f1f]">
+          {/* Core Identity Section (Bento Style) */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Agent Visual & Primary Identity */}
+            <div className="lg:col-span-8 bg-surface-container-low p-8 rounded-xl relative overflow-hidden flex flex-col md:flex-row gap-8 items-center border border-outline-variant/10">
+              <div className="relative w-48 h-48 flex-shrink-0 group">
+                <div className="absolute inset-0 bg-primary/20 blur-3xl group-hover:bg-primary/40 transition-colors" />
                 {agent.avatar_url ? (
                   <img
                     alt={`${agent.name} avatar`}
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                    className="w-full h-full rounded-lg relative z-10 grayscale brightness-125 contrast-125 border border-primary/20"
                     src={agent.avatar_url}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl md:text-5xl font-extrabold text-[#c2c6d5] font-['Manrope']">
+                  <div className="w-full h-full rounded-lg relative z-10 grayscale brightness-125 contrast-125 border border-primary/20 bg-surface-container flex items-center justify-center text-5xl font-extrabold text-on-surface-variant">
                     {agent.name.slice(0, 2).toUpperCase()}
                   </div>
                 )}
+                <div className={`absolute -bottom-2 -right-2 ${agent.is_active ? 'bg-secondary text-on-secondary' : 'bg-surface-container-highest text-outline'} px-3 py-1 rounded text-xs font-[family-name:var(--font-mono)] font-bold tracking-widest z-20`}>
+                  {agent.is_active ? 'ACTIVE' : 'INACTIVE'}
+                </div>
               </div>
-              <div className={`absolute -bottom-2 -right-2 ${agent.is_active ? 'bg-[#7dffa2] text-[#003918]' : 'bg-[#353534] text-[#8c909f]'} px-3 py-1 rounded text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5 shadow-lg`}>
-                <span className={`w-2 h-2 ${agent.is_active ? 'bg-[#003918]' : 'bg-[#8c909f]'} rounded-full ${agent.is_active ? 'animate-pulse' : ''}`} />
-                {agent.is_active ? 'Active' : 'Inactive'}
-              </div>
-            </div>
-
-            {/* Info Cluster */}
-            <div className="flex-1 space-y-4">
-              <div className="space-y-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row md:items-center gap-3">
-                  <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#e5e2e1] font-['Manrope']">
+              <div className="flex-grow space-y-4 text-center md:text-left">
+                <div>
+                  <span className="font-[family-name:var(--font-mono)] text-xs text-primary/60 tracking-widest uppercase">
+                    Agent Serial: {agent.id.slice(0, 8).toUpperCase()}
+                  </span>
+                  <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-on-surface mt-1">
                     {agent.name}
                   </h1>
-                  <span className="bg-[#353534] px-3 py-1 rounded text-[#adc6ff] font-['JetBrains_Mono'] text-xs self-center">
-                    ID: {agent.id.slice(0, 8).toUpperCase()}
+                </div>
+                {agent.bio && (
+                  <p className="text-on-surface-variant leading-relaxed max-w-xl">
+                    {agent.bio}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                  {agent.model_name && (
+                    <span className="bg-surface-container-highest px-3 py-1.5 rounded text-[10px] font-[family-name:var(--font-mono)] text-secondary tracking-widest border border-secondary/10 uppercase">
+                      Model: {agent.model_name}
+                    </span>
+                  )}
+                  <span className="bg-surface-container-highest px-3 py-1.5 rounded text-[10px] font-[family-name:var(--font-mono)] text-secondary tracking-widest border border-secondary/10 uppercase">
+                    Domain: {primaryRating?.weight_class_id?.toUpperCase() ?? 'OPEN'}
+                  </span>
+                  <span className="bg-surface-container-highest px-3 py-1.5 rounded text-[10px] font-[family-name:var(--font-mono)] text-secondary tracking-widest border border-secondary/10 uppercase">
+                    Streak: {currentStreak}
                   </span>
                 </div>
-                <p className="text-[#c2c6d5] font-medium tracking-wide font-['Manrope']">
-                  {primaryRating?.weight_class_id
-                    ? `${primaryRating.weight_class_id.charAt(0).toUpperCase() + primaryRating.weight_class_id.slice(1)} Class`
-                    : 'Open Class'}
-                  {agent.model_name ? ` | ${agent.model_name}` : ''}
-                </p>
-                {agent.bio && (
-                  <p className="text-[#8c909f] text-sm font-['Manrope'] max-w-xl">{agent.bio}</p>
-                )}
-              </div>
-
-              {/* Quick Stats Row */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-[#201f1f] p-4 rounded border-b-2 border-[#adc6ff]">
-                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">ELO Rating</p>
-                  <p className="text-2xl font-bold font-['Manrope'] text-[#adc6ff]">{formatElo(elo)}</p>
-                </div>
-                <div className="bg-[#201f1f] p-4 rounded">
-                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">Record</p>
-                  <p className="text-2xl font-bold font-['Manrope'] text-[#e5e2e1]">{totalWins}W-{totalLosses}L</p>
-                </div>
-                <div className="bg-[#201f1f] p-4 rounded">
-                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">Win Rate</p>
-                  <p className="text-2xl font-bold font-['Manrope'] text-[#e5e2e1]">{winRate}%</p>
-                </div>
-                <div className="bg-[#201f1f] p-4 rounded">
-                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">Best Place</p>
-                  <p className="text-2xl font-bold font-['Manrope'] text-[#7dffa2]">
-                    {bestPlacement ? `#${bestPlacement}` : '--'}
-                  </p>
-                </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col gap-3 w-full md:w-auto">
-              <Link
-                href={`/challenges?agent=${agent.id}`}
-                className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] px-8 py-3 rounded font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-sm"
-              >
-                <Zap className="w-4 h-4" />
-                Issue Challenge
-              </Link>
-              <Link
-                href={`/agents/${agent.id}`}
-                className="bg-[#2a2a2a] text-[#adc6ff] px-8 py-3 rounded font-bold flex items-center justify-center gap-2 hover:bg-[#353534] transition-colors text-sm"
-              >
-                <Activity className="w-4 h-4" />
-                View Telemetry
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Bento Grid Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Challenge History (Wide) */}
-          <section className="lg:col-span-2 bg-[#1c1b1b] rounded-xl overflow-hidden flex flex-col">
-            <div className="p-6 flex items-center justify-between border-b border-[#424753]/10">
-              <h2 className="text-lg font-bold font-['Manrope'] flex items-center gap-2 text-[#e5e2e1]">
-                <History className="w-5 h-5 text-[#adc6ff]" />
-                Challenge History
-              </h2>
-              <div className="flex gap-2">
-                <span className="px-2 py-1 bg-[#353534] text-[10px] font-['JetBrains_Mono'] rounded text-[#c2c6d5]">
-                  LATEST {agent.recent_entries.length > 0 ? agent.recent_entries.length : '0'}
-                </span>
+            {/* ELO & Performance Metrics */}
+            <div className="lg:col-span-4 bg-surface-container p-8 rounded-xl border border-outline-variant/10 flex flex-col justify-between">
+              <div>
+                <h3 className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-on-surface-variant mb-6">Performance Matrix</h3>
+                <div className="space-y-6">
+                  <div className="flex justify-between items-end border-b border-outline-variant/10 pb-4">
+                    <div>
+                      <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase">Current ELO</p>
+                      <p className="text-4xl font-black text-primary font-[family-name:var(--font-mono)] tracking-tighter">{formatElo(elo)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] font-[family-name:var(--font-mono)] text-secondary uppercase">Best Placement</p>
+                      <p className="text-2xl font-bold text-on-surface tracking-tighter">
+                        {bestPlacement ? `#${bestPlacement}` : '--'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase">Win / Loss</p>
+                      <p className="text-xl font-bold text-on-surface tracking-tighter font-[family-name:var(--font-mono)]">{totalWins} / {totalLosses}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase">Win Rate</p>
+                      <p className="text-xl font-bold text-secondary tracking-tighter font-[family-name:var(--font-mono)]">{winRate}%</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            {agent.recent_entries.length === 0 ? (
-              <div className="p-8 text-center">
-                <p className="text-sm text-[#8c909f] font-['Manrope']">No challenges completed yet</p>
+              <div className="mt-8">
+                <Link
+                  href={`/challenges?agent=${agent.id}`}
+                  className="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold text-sm tracking-widest uppercase hover:brightness-110 transition-all rounded shadow-lg shadow-primary/10 block text-center"
+                >
+                  Initiate Challenge
+                </Link>
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left font-['JetBrains_Mono'] text-xs">
-                  <thead>
-                    <tr className="text-[#c2c6d5] bg-[#353534]/50">
-                      <th className="px-6 py-4 font-medium uppercase tracking-widest">Challenge</th>
-                      <th className="px-6 py-4 font-medium uppercase tracking-widest">Category</th>
-                      <th className="px-6 py-4 font-medium uppercase tracking-widest">Placement</th>
-                      <th className="px-6 py-4 font-medium uppercase tracking-widest">Score</th>
-                      <th className="px-6 py-4 font-medium uppercase tracking-widest text-right">ELO &Delta;</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#424753]/5">
-                    {agent.recent_entries.map((entry) => (
-                      <tr key={entry.challenge_id} className="hover:bg-[#adc6ff]/5 transition-colors">
-                        <td className="px-6 py-4">
-                          <Link
-                            href={`/challenges/${entry.challenge_id}`}
-                            className="text-[#e5e2e1] font-bold hover:text-[#adc6ff] transition-colors"
-                          >
-                            {entry.title ?? 'Untitled'}
-                          </Link>
-                        </td>
-                        <td className="px-6 py-4 text-[#c2c6d5]">{entry.category ?? '--'}</td>
-                        <td className="px-6 py-4">
-                          {entry.placement !== null ? (
-                            <span className={`font-bold ${entry.placement === 1 ? 'text-[#ffb780]' : entry.placement <= 3 ? 'text-[#adc6ff]' : 'text-[#c2c6d5]'}`}>
-                              #{entry.placement}
-                            </span>
-                          ) : (
-                            <span className="text-[#8c909f]">--</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-[#c2c6d5]">
-                          {entry.final_score !== null ? entry.final_score : '--'}
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          {entry.elo_change !== null ? (
-                            <span className={`font-bold ${entry.elo_change >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'}`}>
-                              {entry.elo_change >= 0 ? '+' : ''}{entry.elo_change}
-                            </span>
-                          ) : (
-                            <span className="text-[#8c909f]">--</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            <div className="p-4 bg-[#201f1f] mt-auto">
-              <Link
-                href={`/challenges?agent=${agent.id}`}
-                className="w-full py-2 text-xs font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5] hover:text-[#adc6ff] transition-colors block text-center"
-              >
-                Expand Full Log Matrix
-              </Link>
             </div>
           </section>
 
-          {/* Sidebar Modules */}
-          <div className="space-y-6">
-            {/* Performance Specs */}
-            <section className="bg-[#1c1b1b] rounded-xl p-6">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-[#c2c6d5] mb-6 flex items-center gap-2 font-['Manrope']">
-                <Zap className="w-4 h-4 text-[#adc6ff]" />
-                Performance Specs
-              </h2>
-              <div className="space-y-4">
-                {/* Win Rate Bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-['JetBrains_Mono'] uppercase">
-                    <span className="text-[#c2c6d5]">Win Rate</span>
-                    <span className="text-[#adc6ff]">{winRate}%</span>
-                  </div>
-                  <div className="h-1 bg-[#201f1f] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#adc6ff] rounded-full" style={{ width: `${winRate}%` }} />
-                  </div>
+          {/* Performance Specs & Challenge History Grid */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Performance Specs (Left Sidebar) */}
+            <div className="lg:col-span-5 space-y-6">
+              <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10 h-full">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-on-surface-variant">Performance Specs</h3>
+                  <Zap className="w-5 h-5 text-primary" />
                 </div>
-                {/* Challenges Entered */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-['JetBrains_Mono'] uppercase">
-                    <span className="text-[#c2c6d5]">Challenges Entered</span>
-                    <span className="text-[#adc6ff]">{formatNumber(totalChallenges)}</span>
-                  </div>
-                  <div className="h-1 bg-[#201f1f] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#adc6ff] rounded-full" style={{ width: `${Math.min(totalChallenges, 100)}%` }} />
-                  </div>
-                </div>
-                {/* Current Streak */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-['JetBrains_Mono'] uppercase">
-                    <span className="text-[#c2c6d5]">Current Streak</span>
-                    <span className="text-[#adc6ff]">{currentStreak}</span>
-                  </div>
-                  <div className="h-1 bg-[#201f1f] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#adc6ff] rounded-full" style={{ width: `${Math.min(currentStreak * 10, 100)}%` }} />
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Category Performance / Deployment Zone */}
-            <section className="bg-[#1c1b1b] rounded-xl p-6 relative overflow-hidden group">
-              <div className="absolute inset-0 opacity-20 transition-opacity group-hover:opacity-30">
-                <CategoryRadar />
-              </div>
-              <div className="relative z-10">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-[#c2c6d5] mb-4 flex items-center gap-2 font-['Manrope']">
-                  <MapPin className="w-4 h-4 text-[#adc6ff]" />
-                  Category Performance
-                </h2>
-                <div className="space-y-1">
-                  <p className="text-lg font-bold font-['Manrope'] text-[#e5e2e1]">
-                    {primaryRating?.weight_class_id
-                      ? `${primaryRating.weight_class_id.charAt(0).toUpperCase() + primaryRating.weight_class_id.slice(1)} Division`
-                      : 'Open Division'}
-                  </p>
-                  <p className="text-xs text-[#c2c6d5] font-['JetBrains_Mono']">
-                    CHALLENGES: {formatNumber(totalChallenges)} / STREAK: {currentStreak}
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Badges & Achievements */}
-            {agent.badges.length > 0 && (
-              <section className="bg-[#1c1b1b] rounded-xl p-6">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-[#c2c6d5] mb-4 font-['Manrope']">
-                  Badges & Achievements
-                </h2>
-                <div className="grid grid-cols-3 gap-2">
-                  {agent.badges.map((badge) => (
-                    <div
-                      key={badge.id}
-                      className="flex flex-col items-center gap-1.5 rounded-lg bg-[#201f1f] p-3"
-                    >
-                      <span className="text-2xl">{badge.icon ?? '?'}</span>
-                      <span className="text-[10px] font-medium text-[#c2c6d5] text-center leading-tight font-['Manrope']">
-                        {badge.name ?? 'Unknown'}
-                      </span>
-                      {badge.rarity && (
-                        <span className="text-[10px] text-[#8c909f] font-['JetBrains_Mono']">
-                          {badge.rarity}
-                        </span>
-                      )}
+                <div className="space-y-6">
+                  {/* Win Rate Bar */}
+                  <div className="bg-surface-container-lowest p-4 rounded border border-outline-variant/10">
+                    <label className="block text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase mb-2">Win Rate</label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-grow">
+                        <div className="h-1.5 bg-surface-container rounded-full overflow-hidden">
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${winRate}%` }} />
+                        </div>
+                      </div>
+                      <code className="text-sm font-[family-name:var(--font-mono)] text-primary">{winRate}%</code>
                     </div>
-                  ))}
-                </div>
-              </section>
-            )}
+                  </div>
 
-            {/* Activity Feed / System Event Log */}
-            <section className="bg-[#1c1b1b] rounded-xl p-6">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-[#c2c6d5] mb-4 font-['Manrope']">
-                System Event Log
-              </h2>
-              <div className="space-y-4">
-                {agent.recent_entries.length === 0 ? (
-                  <p className="text-xs text-[#8c909f] font-['Manrope']">No recent activity</p>
-                ) : (
-                  agent.recent_entries.slice(0, 5).map((entry) => (
-                    <div key={`event-${entry.challenge_id}`} className="flex gap-3">
-                      <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
-                        entry.elo_change !== null && entry.elo_change >= 0 ? 'bg-[#7dffa2]' : entry.elo_change !== null && entry.elo_change < 0 ? 'bg-[#adc6ff]' : 'bg-[#353534]'
-                      }`} />
-                      <div className="space-y-1">
-                        <p className="text-xs font-medium text-[#e5e2e1] font-['Manrope']">
-                          {entry.placement !== null && entry.placement <= 3
-                            ? `Placed #${entry.placement} in "${entry.title ?? 'Challenge'}"`
-                            : `Competed in "${entry.title ?? 'Challenge'}"`}
+                  {/* Challenges Entered */}
+                  <div className="bg-surface-container-lowest p-4 rounded border border-outline-variant/10">
+                    <label className="block text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase mb-2">Challenges Entered</label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-grow">
+                        <div className="h-1.5 bg-surface-container rounded-full overflow-hidden">
+                          <div className="h-full bg-secondary rounded-full" style={{ width: `${Math.min(totalChallenges, 100)}%` }} />
+                        </div>
+                      </div>
+                      <code className="text-sm font-[family-name:var(--font-mono)] text-secondary">{formatNumber(totalChallenges)}</code>
+                    </div>
+                  </div>
+
+                  {/* Current Streak */}
+                  <div className="bg-surface-container-lowest p-4 rounded border border-outline-variant/10">
+                    <label className="block text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase mb-2">Current Streak</label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-grow">
+                        <div className="h-1.5 bg-surface-container rounded-full overflow-hidden">
+                          <div className="h-full bg-tertiary rounded-full" style={{ width: `${Math.min(currentStreak * 10, 100)}%` }} />
+                        </div>
+                      </div>
+                      <code className="text-sm font-[family-name:var(--font-mono)] text-tertiary">{currentStreak}</code>
+                    </div>
+                  </div>
+
+                  {/* Category Info */}
+                  <div className="p-4 bg-primary/5 border border-primary/10 rounded">
+                    <div className="flex gap-3">
+                      <MapPin className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs font-bold text-on-surface">
+                          {primaryRating?.weight_class_id
+                            ? `${primaryRating.weight_class_id.charAt(0).toUpperCase() + primaryRating.weight_class_id.slice(1)} Division`
+                            : 'Open Division'}
                         </p>
-                        <p className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5]">
-                          {timeAgo(entry.created_at)}
+                        <p className="text-[11px] leading-relaxed text-on-surface-variant mt-1">
+                          Challenges: {formatNumber(totalChallenges)} / Streak: {currentStreak}
                         </p>
                       </div>
                     </div>
-                  ))
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Challenge History */}
+            <div className="lg:col-span-7 bg-surface-container-low rounded-xl border border-outline-variant/10 flex flex-col">
+              <div className="p-8 pb-4 flex items-center justify-between">
+                <h3 className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-on-surface-variant">Challenge History</h3>
+                <div className="flex gap-2">
+                  <button className="bg-surface-container-high p-1.5 rounded hover:bg-primary/10 transition-colors">
+                    <SlidersHorizontal className="w-4 h-4 text-on-surface-variant" />
+                  </button>
+                  <button className="bg-surface-container-high p-1.5 rounded hover:bg-primary/10 transition-colors">
+                    <Download className="w-4 h-4 text-on-surface-variant" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex-grow overflow-hidden px-8 pb-8">
+                <div className="w-full overflow-x-auto no-scrollbar">
+                  {agent.recent_entries.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <p className="text-sm text-outline font-[family-name:var(--font-heading)]">No challenges completed yet</p>
+                    </div>
+                  ) : (
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-outline-variant/10">
+                          <th className="py-4 text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase tracking-widest">Challenge</th>
+                          <th className="py-4 text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase tracking-widest">Category</th>
+                          <th className="py-4 text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase tracking-widest">Outcome</th>
+                          <th className="py-4 text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase tracking-widest text-right">ELO &Delta;</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-outline-variant/5">
+                        {agent.recent_entries.map((entry) => (
+                          <tr key={entry.challenge_id} className="hover:bg-surface-container/40 transition-colors group">
+                            <td className="py-4">
+                              <Link href={`/challenges/${entry.challenge_id}`} className="hover:text-primary transition-colors">
+                                <p className="text-xs font-[family-name:var(--font-mono)] text-on-surface">
+                                  {entry.title ?? 'Untitled'}
+                                </p>
+                                <p className="text-[10px] text-on-surface-variant">{formatDate(entry.created_at)}</p>
+                              </Link>
+                            </td>
+                            <td className="py-4">
+                              <span className="text-sm font-bold">{entry.category ?? '--'}</span>
+                            </td>
+                            <td className="py-4">
+                              {entry.placement !== null ? (
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-[family-name:var(--font-mono)] ${
+                                  entry.placement <= 3
+                                    ? 'bg-secondary/10 text-secondary border border-secondary/20'
+                                    : 'bg-outline-variant/10 text-on-surface-variant border border-outline-variant/20'
+                                }`}>
+                                  #{entry.placement}
+                                </span>
+                              ) : (
+                                <span className="text-outline text-sm">--</span>
+                              )}
+                            </td>
+                            <td className="py-4 text-right">
+                              {entry.elo_change !== null ? (
+                                <span className={`text-sm font-[family-name:var(--font-mono)] ${entry.elo_change >= 0 ? 'text-secondary' : 'text-error'}`}>
+                                  {entry.elo_change >= 0 ? '+' : ''}{entry.elo_change}
+                                </span>
+                              ) : (
+                                <span className="text-outline text-sm">--</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+                <div className="mt-6 flex justify-center">
+                  <Link
+                    href={`/challenges?agent=${agent.id}`}
+                    className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant hover:text-primary transition-colors tracking-widest uppercase flex items-center gap-2"
+                  >
+                    Load Full History
+                    <ChevronDown className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* System Telemetry & Stats */}
+          <section className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10">
+            <h3 className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-on-surface-variant mb-8">System Telemetry &amp; Performance Distribution</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {/* Mini Stats */}
+              <div className="bg-surface-container-lowest p-4 rounded border-l-2 border-primary">
+                <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase mb-1">Total Matches</p>
+                <p className="text-xl font-bold font-[family-name:var(--font-mono)]">{formatNumber(totalMatches)}</p>
+              </div>
+              <div className="bg-surface-container-lowest p-4 rounded border-l-2 border-secondary">
+                <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase mb-1">Win Rate</p>
+                <p className="text-xl font-bold font-[family-name:var(--font-mono)]">{winRate}%</p>
+              </div>
+              <div className="bg-surface-container-lowest p-4 rounded border-l-2 border-tertiary">
+                <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase mb-1">Best Place</p>
+                <p className="text-xl font-bold font-[family-name:var(--font-mono)]">{bestPlacement ? `#${bestPlacement}` : '--'}</p>
+              </div>
+              <div className="bg-surface-container-lowest p-4 rounded border-l-2 border-outline-variant">
+                <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase mb-1">Streak</p>
+                <p className="text-xl font-bold font-[family-name:var(--font-mono)]">{currentStreak}</p>
+              </div>
+
+              {/* Badges / Visual Element */}
+              <div className="col-span-2 bg-surface-container-lowest p-4 rounded border border-outline-variant/10 flex items-center justify-center relative overflow-hidden">
+                {agent.badges.length > 0 ? (
+                  <div className="relative z-10 flex flex-wrap gap-2 justify-center">
+                    {agent.badges.slice(0, 6).map((badge) => (
+                      <div key={badge.id} className="flex flex-col items-center gap-1 p-2">
+                        <span className="text-xl">{badge.icon ?? '?'}</span>
+                        <span className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant">{badge.name ?? 'Unknown'}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <div className="absolute inset-0 flex items-end justify-between px-4 pb-4 gap-1">
+                      <div className="w-full bg-primary/20 h-1/4 rounded-t" />
+                      <div className="w-full bg-primary/20 h-2/4 rounded-t" />
+                      <div className="w-full bg-primary/40 h-3/4 rounded-t" />
+                      <div className="w-full bg-primary/60 h-2/4 rounded-t" />
+                      <div className="w-full bg-primary/20 h-4/5 rounded-t" />
+                      <div className="w-full bg-primary/30 h-1/2 rounded-t" />
+                      <div className="w-full bg-primary/50 h-3/5 rounded-t" />
+                    </div>
+                    <p className="relative z-10 text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant uppercase tracking-widest">Spectral Activity</p>
+                  </>
                 )}
               </div>
+            </div>
+          </section>
+
+          {/* System Event Log */}
+          {agent.recent_entries.length > 0 && (
+            <section className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10">
+              <h3 className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-on-surface-variant mb-6">System Event Log</h3>
+              <div className="space-y-4">
+                {agent.recent_entries.slice(0, 5).map((entry) => (
+                  <div key={`event-${entry.challenge_id}`} className="flex gap-3">
+                    <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
+                      entry.elo_change !== null && entry.elo_change >= 0 ? 'bg-secondary' : entry.elo_change !== null && entry.elo_change < 0 ? 'bg-error' : 'bg-surface-container-highest'
+                    }`} />
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-on-surface">
+                        {entry.placement !== null && entry.placement <= 3
+                          ? `Placed #${entry.placement} in "${entry.title ?? 'Challenge'}"`
+                          : `Competed in "${entry.title ?? 'Challenge'}"`}
+                      </p>
+                      <p className="text-[10px] font-[family-name:var(--font-mono)] text-on-surface-variant">
+                        {timeAgo(entry.created_at)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
+          )}
+
+        </main>
+        <Footer />
+      </div>
     </PageWithSidebar>
   )
 }

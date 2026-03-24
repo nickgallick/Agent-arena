@@ -2,18 +2,22 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, X, Fingerprint, Zap, Shield, Rocket, Scale, Copy, Check, AlertTriangle } from 'lucide-react'
-import { useUser } from '@/lib/hooks/use-user'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Loader2,
+  X,
+  Fingerprint,
+  Zap,
+  Shield,
+  Rocket,
+  Scale,
+  Copy,
+  Check,
+  AlertTriangle,
+  Cpu,
+  ShieldCheck,
+  Activity,
+} from 'lucide-react'
+import { useUser } from '@/lib/hooks/use-user'
 import {
   Dialog,
   DialogContent,
@@ -23,6 +27,7 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
 const MODEL_OPTIONS = [
@@ -137,8 +142,8 @@ export default function NewAgentPage() {
       {/* Header */}
       <header className="w-full max-w-7xl px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tighter text-[#e5e2e1] font-['Manrope']">Bouts Elite</span>
-          <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#adc6ff] px-2 py-0.5 bg-[#adc6ff]/10 rounded">
+          <span className="text-xl font-bold tracking-tighter text-[#e5e2e1]">Bouts Elite</span>
+          <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#adc6ff] px-2 py-0.5 bg-[#adc6ff]/10 rounded">
             Command_v2.4
           </span>
         </div>
@@ -146,8 +151,8 @@ export default function NewAgentPage() {
           href="/agents"
           className="flex items-center gap-2 text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors group"
         >
-          <X className="size-4" />
-          <span className="font-medium text-sm font-['Manrope']">Cancel Registration</span>
+          <X className="size-3.5" />
+          <span className="font-medium text-sm">Cancel Registration</span>
         </a>
       </header>
 
@@ -155,87 +160,66 @@ export default function NewAgentPage() {
       <main className="w-full max-w-2xl px-6 py-12 flex-grow">
         {/* Page Title */}
         <div className="mb-12">
-          <h1 className="font-['Manrope'] text-3xl font-extrabold tracking-tight mb-4 text-[#e5e2e1]">
+          <h1 className="font-[family-name:var(--font-heading)] text-3xl font-extrabold tracking-tight mb-4 text-[#e5e2e1]">
             Initialize New Agent
           </h1>
-          <p className="text-[#c2c6d5] max-w-lg font-['Manrope']">
+          <p className="text-[#c2c6d5] max-w-lg">
             Provision a new autonomous combat unit for the Kinetic Arena. Ensure all parameters align with deployment protocols.
           </p>
         </div>
 
         {/* Form Section */}
         <form onSubmit={handleRegister}>
-          <section className="bg-[#1c1b1b] rounded-xl p-6 sm:p-8 space-y-10">
+          <section className="bg-[#1c1b1b] rounded-xl p-8 space-y-10">
             {/* Agent Name */}
             <div className="space-y-2">
-              <label className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
+              <label className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
                 Agent Name
               </label>
               <div className="relative group">
-                <Input
+                <input
+                  type="text"
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
                   placeholder="e.g. VECTOR-9"
                   maxLength={32}
-                  className="w-full bg-[#0e0e0e] border-none text-[#e5e2e1] placeholder:text-[#c2c6d5]/30 px-4 py-4 h-auto focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all border-b-2 border-transparent focus:border-b-[#adc6ff] rounded-t-md rounded-b-none"
+                  className="w-full bg-[#0e0e0e] border-none text-[#e5e2e1] placeholder:text-[#c2c6d5]/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-[#adc6ff]"
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity">
                   <Fingerprint className="size-5 text-[#adc6ff]" />
                 </div>
               </div>
-              <p className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5]/60 italic">
+              <p className="font-[family-name:var(--font-mono)] text-[10px] text-[#c2c6d5]/60 italic">
                 Unique identifier required for registry sync.
               </p>
             </div>
 
-            {/* Model Selection */}
+            {/* Mission Directives & Description */}
             <div className="space-y-2">
-              <label className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
-                Model Selection
-              </label>
-              <Select value={regModel} onValueChange={(v) => v && setRegModel(v)}>
-                <SelectTrigger
-                  aria-label="Select model"
-                  className="w-full bg-[#0e0e0e] border-none text-[#e5e2e1] placeholder:text-[#c2c6d5]/30 px-4 py-4 h-auto focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all rounded-t-md rounded-b-none"
-                >
-                  <SelectValue placeholder="Select a model for your agent" />
-                </SelectTrigger>
-                <SelectContent className="border-none bg-[#0e0e0e]">
-                  {MODEL_OPTIONS.map((m) => (
-                    <SelectItem key={m.identifier} value={m.identifier}>
-                      {m.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-              <label className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
+              <label className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
                 Mission Directives &amp; Description
               </label>
-              <Textarea
+              <textarea
                 value={regBio}
                 onChange={(e) => setRegBio(e.target.value)}
                 placeholder="Define core logic and combat philosophy..."
                 maxLength={200}
                 rows={3}
-                className="w-full bg-[#0e0e0e] border-none text-[#e5e2e1] placeholder:text-[#c2c6d5]/30 px-4 py-4 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all border-b-2 border-transparent focus:border-b-[#adc6ff] resize-none rounded-t-md rounded-b-none"
+                className="w-full bg-[#0e0e0e] border-none text-[#e5e2e1] placeholder:text-[#c2c6d5]/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-[#adc6ff] resize-none"
               />
             </div>
 
             {/* Weight Class Selection */}
             <div className="space-y-4">
-              <label className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
-                Weight Class Selection
+              <label className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
+                Weight Class selection
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {WEIGHT_CLASSES.map((wc) => {
                   const Icon = wc.icon
                   const isSelected = weightClass === wc.id
                   return (
-                    <label key={wc.id} className="cursor-pointer">
+                    <label key={wc.id} className="cursor-pointer group">
                       <input
                         type="radio"
                         name="weight-class"
@@ -248,7 +232,7 @@ export default function NewAgentPage() {
                         className={`h-full p-4 rounded-lg border transition-all flex flex-col items-center justify-center text-center gap-2 ${
                           isSelected
                             ? 'bg-[#adc6ff]/10 border-[#adc6ff]'
-                            : 'bg-[#201f1f] border-[#424753]/15 hover:border-[#424753]/40'
+                            : 'bg-[#201f1f] border-[#424753]/15'
                         }`}
                       >
                         <Icon
@@ -256,8 +240,8 @@ export default function NewAgentPage() {
                             isSelected ? 'text-[#adc6ff]' : 'text-[#c2c6d5]'
                           }`}
                         />
-                        <span className="font-bold text-xs text-[#e5e2e1] font-['Manrope']">{wc.label}</span>
-                        <span className="font-['JetBrains_Mono'] text-[9px] text-[#c2c6d5]/60">
+                        <span className="font-bold text-xs text-[#e5e2e1]">{wc.label}</span>
+                        <span className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]/60">
                           {wc.sub}
                         </span>
                       </div>
@@ -269,15 +253,15 @@ export default function NewAgentPage() {
 
             {/* Form Error */}
             {formError && (
-              <p className="text-sm text-[#ffb4ab] font-['Manrope']">{formError}</p>
+              <p className="text-sm text-[#ffb4ab]">{formError}</p>
             )}
 
             {/* Action Area */}
             <div className="pt-6 border-t border-[#424753]/10 flex flex-col items-center gap-6">
-              <Button
+              <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 h-auto rounded-lg bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] font-bold tracking-tight text-lg shadow-xl shadow-[#adc6ff]/10 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                className="w-full py-4 rounded-lg bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold tracking-tight text-lg shadow-xl shadow-[#adc6ff]/10 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-60"
               >
                 {submitting ? (
                   <Loader2 className="size-5 animate-spin" />
@@ -285,10 +269,10 @@ export default function NewAgentPage() {
                   <Zap className="size-5" fill="currentColor" />
                 )}
                 Initialize Agent
-              </Button>
+              </button>
               <div className="flex items-center gap-4 text-[#c2c6d5]/40">
                 <div className="h-[1px] w-12 bg-current" />
-                <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-[0.2em]">
+                <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.2em]">
                   Verification Pending
                 </span>
                 <div className="h-[1px] w-12 bg-current" />
@@ -301,39 +285,31 @@ export default function NewAgentPage() {
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-[#201f1f]/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#7dffa2]/10 flex items-center justify-center text-[#7dffa2]">
-              <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-                <rect x="9" y="9" width="6" height="6" />
-                <path d="M15 2v2" /><path d="M15 20v2" /><path d="M2 15h2" /><path d="M2 9h2" />
-                <path d="M20 15h2" /><path d="M20 9h2" /><path d="M9 2v2" /><path d="M9 20v2" />
-              </svg>
+              <Cpu className="size-5" />
             </div>
             <div>
-              <p className="font-bold text-xs text-[#e5e2e1] font-['Manrope']">Neural Sync</p>
-              <p className="font-['JetBrains_Mono'] text-[9px] text-[#c2c6d5]">Ready for uplink</p>
+              <p className="font-bold text-xs text-[#e5e2e1]">Neural Sync</p>
+              <p className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]">Ready for uplink</p>
             </div>
           </div>
 
           <div className="bg-[#201f1f]/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#adc6ff]/10 flex items-center justify-center text-[#adc6ff]">
-              <Shield className="size-5" />
+              <ShieldCheck className="size-5" />
             </div>
             <div>
-              <p className="font-bold text-xs text-[#e5e2e1] font-['Manrope']">Encrypted</p>
-              <p className="font-['JetBrains_Mono'] text-[9px] text-[#c2c6d5]">AES-256 standard</p>
+              <p className="font-bold text-xs text-[#e5e2e1]">Encrypted</p>
+              <p className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]">AES-256 standard</p>
             </div>
           </div>
 
           <div className="bg-[#201f1f]/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#ffb780]/10 flex items-center justify-center text-[#ffb780]">
-              <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 3v18h18" />
-                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
-              </svg>
+              <Activity className="size-5" />
             </div>
             <div>
-              <p className="font-bold text-xs text-[#e5e2e1] font-['Manrope']">Telemetry</p>
-              <p className="font-['JetBrains_Mono'] text-[9px] text-[#c2c6d5]">Real-time tracking</p>
+              <p className="font-bold text-xs text-[#e5e2e1]">Telemetry</p>
+              <p className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]">Real-time tracking</p>
             </div>
           </div>
         </div>
@@ -343,7 +319,7 @@ export default function NewAgentPage() {
       <Dialog open={!!apiKey} onOpenChange={(open) => { if (!open) handleDismissKeyDialog() }}>
         <DialogContent className="border-none bg-[#1c1b1b] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#e5e2e1] font-['Manrope']">
+            <DialogTitle className="text-[#e5e2e1]">
               Your API Key
             </DialogTitle>
             <DialogDescription className="text-[#8c909f]">
@@ -359,7 +335,7 @@ export default function NewAgentPage() {
               </p>
             </div>
             <div className="space-y-2">
-              <code className="block w-full overflow-x-auto break-all rounded-md bg-[#0e0e0e] px-3 py-2 font-['JetBrains_Mono'] text-xs text-[#7dffa2]">
+              <code className="block w-full overflow-x-auto break-all rounded-md bg-[#0e0e0e] px-3 py-2 font-[family-name:var(--font-mono)] text-xs text-[#7dffa2]">
                 {apiKey}
               </code>
               <Button
