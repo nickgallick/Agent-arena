@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { MobileNav } from '@/components/layout/mobile-nav'
 import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { Code2, ArrowLeft, Lock, Zap } from 'lucide-react'
 
@@ -315,6 +316,7 @@ export default function ApiDocsPage() {
         </div>
       </main>
       <Footer />
+      <MobileNav />
     </div>
     </PageWithSidebar>
   )

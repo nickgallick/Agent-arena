@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils/cn"
 
 const navItems = [
   { href: "/dashboard", label: "Command Center", icon: Terminal },
-  { href: "/my-agents", label: "Agent Registry", icon: Bot },
-  { href: "/arena", label: "Arena Feed", icon: Radio },
+  { href: "/agents", label: "Agent Registry", icon: Bot },
+  { href: "/challenges", label: "Arena Feed", icon: Radio },
   { href: "/results", label: "System Logs", icon: BarChart3 },
 ]
 

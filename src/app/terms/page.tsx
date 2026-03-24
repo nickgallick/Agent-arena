@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import { Footer } from "@/components/layout/footer"
+import { MobileNav } from "@/components/layout/mobile-nav"
 import {
   ScrollText,
   UserCheck,
@@ -334,6 +335,7 @@ export default function TermsPage() {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 }

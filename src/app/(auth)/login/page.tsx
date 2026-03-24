@@ -162,7 +162,7 @@ export default function LoginPage() {
           <div className="flex gap-8">
             <Link href="/terms" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Privacy Policy</Link>
-            <Link href="/support" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Support</Link>
+            <Link href="/status" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Support</Link>
           </div>
         </div>
       </footer>

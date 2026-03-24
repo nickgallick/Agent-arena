@@ -1,45 +1,85 @@
 import Link from "next/link"
-import { Radio, Terminal, ExternalLink } from "lucide-react"
+import { Terminal, Network } from "lucide-react"
 
 export function Footer() {
+  const now = new Date()
+  const utcTime = now.toUTCString().split(" ")[4]
+
   return (
-    <footer className="w-full py-12 px-8 mt-auto flex flex-col items-center bg-[#131313] border-t border-[#424753]/15 font-[family-name:var(--font-heading)] text-[0.875rem] leading-relaxed">
-      <div className="w-full max-w-7xl grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12">
-        <div className="col-span-2">
-          <div className="text-lg font-bold text-[#e5e2e1] mb-4">Bouts Arena</div>
-          <p className="text-[#c2c6d5] max-w-xs mb-6">The definitive arena for computational supremacy. Deploy, battle, and evolve the next generation of AI.</p>
-          <div className="flex gap-4">
-            <Radio className="size-5 text-[#c2c6d5] cursor-pointer hover:text-[#adc6ff]" />
-            <ExternalLink className="size-5 text-[#c2c6d5] cursor-pointer hover:text-[#adc6ff]" />
-            <Terminal className="size-5 text-[#c2c6d5] cursor-pointer hover:text-[#adc6ff]" />
-          </div>
+    <footer className="w-full bg-[#131313] border-t border-[#424753]/15 font-['JetBrains_Mono']">
+      {/* Main footer columns */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto px-8 py-12 text-xs tracking-widest uppercase">
+        {/* Brand */}
+        <div className="col-span-2 md:col-span-1">
+          <span className="text-lg font-bold text-[#e5e2e1] block mb-4 tracking-tighter">
+            BOUTS ELITE
+          </span>
+          <p className="text-[#c2c6d5] normal-case tracking-normal text-xs max-w-xs leading-relaxed">
+            Advanced AI orchestration and competitive telemetry environment.
+          </p>
         </div>
-        <div>
-          <div className="font-bold text-[#e5e2e1] mb-4">Arena</div>
-          <ul className="space-y-2">
-            <li><Link href="/challenges" className="text-[#c2c6d5] hover:text-[#e5e2e1]">Challenges</Link></li>
-            <li><Link href="/leaderboard" className="text-[#c2c6d5] hover:text-[#e5e2e1]">Leaderboard</Link></li>
-          </ul>
+
+        {/* Network */}
+        <div className="flex flex-col gap-3">
+          <span className="text-[#adc6ff] font-bold mb-2">NETWORK</span>
+          <Link href="/challenges" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            Arena
+          </Link>
+          <Link href="/agents" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            Agents
+          </Link>
+          <Link href="/leaderboard" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            Telemetry
+          </Link>
         </div>
-        <div>
-          <div className="font-bold text-[#e5e2e1] mb-4">Resources</div>
-          <ul className="space-y-2">
-            <li><a className="text-[#c2c6d5] hover:text-[#e5e2e1]" href="#">Docs</a></li>
-            <li><a className="text-[#c2c6d5] hover:text-[#e5e2e1]" href="#">API Reference</a></li>
-          </ul>
+
+        {/* Development */}
+        <div className="flex flex-col gap-3">
+          <span className="text-[#adc6ff] font-bold mb-2">DEVELOPMENT</span>
+          <Link href="/docs/api" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            API
+          </Link>
+          <Link href="/docs/connector" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            SDK
+          </Link>
+          <Link href="/docs" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            Docs
+          </Link>
         </div>
-        <div>
-          <div className="font-bold text-[#e5e2e1] mb-4">Social</div>
-          <ul className="space-y-2">
-            <li><a className="text-[#c2c6d5] hover:text-[#e5e2e1]" href="#">Discord</a></li>
-            <li><a className="text-[#c2c6d5] hover:text-[#e5e2e1]" href="#">Twitter</a></li>
-          </ul>
+
+        {/* Community */}
+        <div className="flex flex-col gap-3">
+          <span className="text-[#adc6ff] font-bold mb-2">COMMUNITY</span>
+          <a href="#" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            GitHub
+          </a>
+          <a href="#" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            Discord
+          </a>
+          <a href="#" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            X
+          </a>
         </div>
       </div>
-      <div className="w-full pt-8 border-t border-[#424753]/10 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-[#c2c6d5] text-xs">© 2024 Bouts Arena. All rights reserved.</div>
-        <div className="flex items-center gap-4 font-[family-name:var(--font-mono)] text-[0.65rem] text-[#7dffa2] uppercase">
-          <span className="flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-[#7dffa2]"></span> API Status: Operational</span>
+
+      {/* Bottom bar */}
+      <div className="max-w-7xl mx-auto px-8 py-6 border-t border-[#201f1f] flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-[#c2c6d5] tracking-widest uppercase">
+        <span>© 2024 KINETIC COMMAND OS. ALL RIGHTS RESERVED.</span>
+        <div className="flex gap-6 items-center">
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2]"></span>
+            SYSTEMS_NOMINAL
+          </span>
+          <span>UTC: {utcTime}</span>
+        </div>
+        {/* Icon links */}
+        <div className="flex gap-3">
+          <div className="w-8 h-8 rounded border border-[#424753]/30 flex items-center justify-center hover:bg-[#201f1f] transition-all cursor-pointer">
+            <Terminal className="size-3.5 text-[#adc6ff]" />
+          </div>
+          <div className="w-8 h-8 rounded border border-[#424753]/30 flex items-center justify-center hover:bg-[#201f1f] transition-all cursor-pointer">
+            <Network className="size-3.5 text-[#adc6ff]" />
+          </div>
         </div>
       </div>
     </footer>

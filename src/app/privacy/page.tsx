@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
+import { Footer } from "@/components/layout/footer"
+import { MobileNav } from "@/components/layout/mobile-nav"
 import { Shield, Mail, Database, Eye, Trash2, Globe } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -263,6 +264,7 @@ export default function PrivacyPage() {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Home, Rocket } from "lucide-react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
+import { MobileNav } from "@/components/layout/mobile-nav"
 
 export default function NotFound() {
   return (
@@ -26,21 +27,21 @@ export default function NotFound() {
           {/* Glitch Indicator */}
           <div className="mb-6 flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-[#ffb4ab] animate-pulse" />
-            <span className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.3em] text-[#ffb4ab]">
+            <span className="font-['JetBrains_Mono'] text-xs uppercase tracking-[0.3em] text-[#ffb4ab]">
               System Error: 0x00404
             </span>
           </div>
 
           {/* Hero Text */}
-          <h1 className="text-8xl md:text-9xl font-black tracking-tighter text-[#e5e2e1] mb-2 opacity-10 font-[family-name:var(--font-heading)]">
+          <h1 className="text-8xl md:text-9xl font-black tracking-tighter text-[#e5e2e1] mb-2 opacity-10 font-['Manrope']">
             404
           </h1>
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase mb-6 leading-none">
+          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase mb-6 leading-none font-['Manrope']">
             PAGE NOT FOUND
           </h2>
-          <p className="text-[#c2c6d5] text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-lg">
-            The neural path you are seeking does not exist or has been relocated
-            within the Kinetic Command matrix.
+          <p className="text-[#c2c6d5] text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-lg font-['Manrope']">
+            The neural path you are seeking does not exist or has been relocated within the Kinetic
+            Command matrix.
           </p>
 
           {/* Action Cluster */}
@@ -61,38 +62,37 @@ export default function NotFound() {
             </Link>
           </div>
 
-          {/* Terminal Decorum */}
+          {/* Terminal block */}
           <div className="mt-16 w-full max-w-md bg-[#1c1b1b] p-4 rounded-lg border border-[#424753]/10 text-left">
             <div className="flex gap-2 mb-3">
               <div className="w-2 h-2 rounded-full bg-[#3a3939]" />
               <div className="w-2 h-2 rounded-full bg-[#3a3939]" />
               <div className="w-2 h-2 rounded-full bg-[#3a3939]" />
             </div>
-            <div className="font-[family-name:var(--font-mono)] text-[10px] leading-relaxed text-[#c2c6d5]/60 uppercase">
+            <div className="font-['JetBrains_Mono'] text-[10px] leading-relaxed text-[#c2c6d5]/60 uppercase">
               <div>&gt; INITIALIZING TRACE_ROUTE...</div>
               <div>&gt; SECTOR: 0xFF04 (VOID)</div>
               <div>&gt; STATUS: RESOURCE_UNREACHABLE</div>
-              <div className="text-[#7dffa2]">
-                &gt; AUTOMATIC REDIRECT SUGGESTED: COMMAND_ROOT
-              </div>
+              <div className="text-[#7dffa2]">&gt; AUTOMATIC REDIRECT SUGGESTED: COMMAND_ROOT</div>
             </div>
           </div>
         </div>
 
-        {/* Decorative Elements */}
+        {/* Decorative side text */}
         <div className="absolute left-10 top-1/4 hidden lg:block opacity-20 rotate-90">
-          <span className="font-[family-name:var(--font-mono)] text-[10px] tracking-widest text-[#adc6ff] uppercase">
+          <span className="font-['JetBrains_Mono'] text-[10px] tracking-widest text-[#adc6ff] uppercase">
             Telemetry-Void-Sequence-99
           </span>
         </div>
         <div className="absolute right-10 bottom-1/4 hidden lg:block opacity-20 -rotate-90">
-          <span className="font-[family-name:var(--font-mono)] text-[10px] tracking-widest text-[#7dffa2] uppercase">
+          <span className="font-['JetBrains_Mono'] text-[10px] tracking-widest text-[#7dffa2] uppercase">
             Kinetic-Command-OS-v2.4
           </span>
         </div>
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   )
 }

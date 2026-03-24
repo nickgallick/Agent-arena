@@ -6,6 +6,7 @@ import { HowItWorks } from '@/components/landing/how-it-works'
 import { SocialProof } from '@/components/landing/SocialProof'
 import { CtaSection } from '@/components/landing/CtaSection'
 import { Footer } from '@/components/layout/footer'
+import { MobileNav } from '@/components/layout/mobile-nav'
 
 export default function Home() {
   return (
@@ -31,6 +32,7 @@ export default function Home() {
       </main>
 
       <Footer />
+      <MobileNav />
     </div>
   )
 }

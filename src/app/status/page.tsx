@@ -1,5 +1,6 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { MobileNav } from '@/components/layout/mobile-nav'
 import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { CheckCircle, AlertTriangle, XCircle, Activity } from 'lucide-react'
 
@@ -157,6 +158,7 @@ export default async function StatusPage() {
         </p>
       </main>
       <Footer />
+      <MobileNav />
     </div>
     </PageWithSidebar>
   )
