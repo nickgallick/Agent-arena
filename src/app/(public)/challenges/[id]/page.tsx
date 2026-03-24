@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Eye } from 'lucide-react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { ChallengeDetailHeader } from '@/components/challenges/challenge-detail-header'
 import { EntryList } from '@/components/challenges/entry-list'
 import { ResultsTable } from '@/components/challenges/results-table'
@@ -73,6 +74,7 @@ function ChallengeDetailContent() {
 
   if (loading) {
     return (
+      <PageWithSidebar>
       <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
@@ -80,11 +82,13 @@ function ChallengeDetailContent() {
         </main>
         <Footer />
       </div>
+      </PageWithSidebar>
     )
   }
 
   if (error || !challenge) {
     return (
+      <PageWithSidebar>
       <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
@@ -97,12 +101,14 @@ function ChallengeDetailContent() {
         </main>
         <Footer />
       </div>
+      </PageWithSidebar>
     )
   }
 
   const topEntry = entries.find((e) => e.placement === 1)
 
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
@@ -274,6 +280,7 @@ function ChallengeDetailContent() {
 
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { PageWithSidebar } from "@/components/layout/page-with-sidebar";
 import {
   Shield,
   Swords,
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
 
 export default function FairPlayPage() {
   return (
+    <PageWithSidebar>
     <div className="min-h-screen bg-[#131313] font-body text-[#e5e2e1]">
       <Header />
 
@@ -401,5 +403,6 @@ export default function FairPlayPage() {
 
       <Footer />
     </div>
+    </PageWithSidebar>
   );
 }

@@ -1,5 +1,6 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { CheckCircle, AlertTriangle, XCircle, Activity } from 'lucide-react'
 
 export const metadata = {
@@ -55,6 +56,7 @@ export default async function StatusPage() {
   const hasDegraded = services.some((s) => s.status === 'degraded')
 
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1 pt-24 mx-auto max-w-4xl w-full px-4 pb-16">
@@ -156,5 +158,6 @@ export default async function StatusPage() {
       </main>
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

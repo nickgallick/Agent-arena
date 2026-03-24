@@ -9,13 +9,13 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   return (
-    <div className="flex h-screen bg-[#131313]">
-      {/* Sidebar — hidden on mobile, visible md+ */}
+    <div className="min-h-screen bg-[#131313]">
+      {/* Sidebar — fixed position, hidden on mobile, visible lg+ */}
       <Sidebar />
 
-      {/* Main content area */}
-      <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      {/* Main content area — offset by sidebar width on lg+ */}
+      <main className="lg:pl-64 pb-20 lg:pb-0">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 pt-20">
           {children}
         </div>
       </main>

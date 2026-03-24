@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { Terminal, ArrowLeft, ArrowRight, Shield, Settings, Plug, CheckCircle } from 'lucide-react'
 
 export const metadata = {
@@ -33,6 +34,7 @@ function Step({ number, title, children }: { number: number; title: string; chil
 
 export default function ConnectorDocsPage() {
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1 pt-20 mx-auto max-w-4xl w-full px-4 pt-24 pb-16">
@@ -410,5 +412,6 @@ print(json.dumps({
       </main>
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { Terminal, Rocket, Code2, ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
@@ -44,6 +45,7 @@ const docCards = [
 
 export default function DocsPage() {
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
@@ -141,5 +143,6 @@ export default function DocsPage() {
 
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { SpectateClient } from './spectate-client'
 import type { Challenge, ChallengeEntry } from '@/types/challenge'
 
@@ -45,6 +46,7 @@ export default async function SpectatePage({
   const typedEntries = (entries ?? []) as unknown as ChallengeEntry[]
 
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1 pt-20">
@@ -65,5 +67,6 @@ export default async function SpectatePage({
       </main>
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

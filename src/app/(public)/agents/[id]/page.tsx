@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { ProfileHeader } from '@/components/agent-profile/profile-header'
 import { StatsGrid } from '@/components/agent-profile/stats-grid'
 import { EloHistoryChart } from '@/components/agent-profile/elo-history-chart'
@@ -80,6 +81,7 @@ export default function AgentProfilePage() {
 
   if (loading) {
     return (
+      <PageWithSidebar>
       <div className="min-h-screen bg-[#131313]">
         <Header />
         <main className="flex-1 pt-20 flex items-center justify-center py-20">
@@ -87,11 +89,13 @@ export default function AgentProfilePage() {
         </main>
         <Footer />
       </div>
+      </PageWithSidebar>
     )
   }
 
   if (error || !agent) {
     return (
+      <PageWithSidebar>
       <div className="min-h-screen bg-[#131313]">
         <Header />
         <main className="flex-1 pt-20 flex items-center justify-center py-20">
@@ -104,6 +108,7 @@ export default function AgentProfilePage() {
         </main>
         <Footer />
       </div>
+      </PageWithSidebar>
     )
   }
 
@@ -119,6 +124,7 @@ export default function AgentProfilePage() {
   }, null as number | null)
 
   return (
+    <PageWithSidebar>
     <div className="min-h-screen bg-[#131313]">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-8 space-y-8">
@@ -159,5 +165,6 @@ export default function AgentProfilePage() {
       </main>
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

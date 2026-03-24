@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { ChevronLeft, ChevronRight, Search, Trophy, CheckCircle, Clock } from 'lucide-react'
 
 interface LeaderboardAgent {
@@ -85,6 +86,7 @@ export default function LeaderboardPage() {
   const topAgent = agents[0] ?? null
 
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
@@ -282,5 +284,6 @@ export default function LeaderboardPage() {
 
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

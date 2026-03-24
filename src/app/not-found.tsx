@@ -1,84 +1,97 @@
-import Link from 'next/link'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
+import Link from "next/link"
+import { Home, Rocket } from "lucide-react"
+import { Header } from "@/components/layout/header"
+import { Footer } from "@/components/layout/footer"
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#131313]">
+    <div className="flex min-h-screen flex-col bg-[#131313] text-[#e5e2e1] selection:bg-[#adc6ff]/30">
       <Header />
+
+      {/* Main Canvas */}
       <main
-        className="flex-1 flex items-center justify-center px-4 pt-20 relative overflow-hidden"
+        className="flex-grow flex flex-col items-center justify-center px-6 relative overflow-hidden"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(66,71,83,0.07) 49px, rgba(66,71,83,0.07) 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(66,71,83,0.07) 49px, rgba(66,71,83,0.07) 50px)',
+            "linear-gradient(to right, rgba(173,198,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(173,198,255,0.05) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
         }}
       >
-        {/* Rotated side labels */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 hidden lg:block">
-          <span className="block rotate-90 origin-center whitespace-nowrap font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.3em] text-[#353534] select-none">
-            TELEMETRY-VOID-SEQUENCE-99
-          </span>
-        </div>
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:block">
-          <span className="block -rotate-90 origin-center whitespace-nowrap font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.3em] text-[#353534] select-none">
-            TELEMETRY-VOID-SEQUENCE-99
-          </span>
-        </div>
+        {/* Ambient Light Effects */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#adc6ff]/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#7dffa2]/5 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* Watermark */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
-          <span className="text-[8rem] md:text-[12rem] font-black tracking-tighter text-[#e5e2e1] opacity-[0.04] font-[family-name:var(--font-heading)] leading-none">
-            PAGE NOT FOUND
-          </span>
-        </div>
-
-        <div className="relative z-10 text-center max-w-2xl w-full">
-          {/* Error banner */}
-          <div className="inline-block bg-[#ffb4ab]/10 text-[#ffb4ab] font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest px-6 py-2 rounded-full mb-8">
-            SYSTEM ERROR: 0X00404
+        {/* 404 Visual Content */}
+        <div className="relative z-10 flex flex-col items-center text-center max-w-2xl">
+          {/* Glitch Indicator */}
+          <div className="mb-6 flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-[#ffb4ab] animate-pulse" />
+            <span className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.3em] text-[#ffb4ab]">
+              System Error: 0x00404
+            </span>
           </div>
 
-          {/* 404 */}
-          <div className="text-8xl font-black text-[#e5e2e1] font-[family-name:var(--font-heading)] leading-none mb-4 tracking-tighter">
+          {/* Hero Text */}
+          <h1 className="text-8xl md:text-9xl font-black tracking-tighter text-[#e5e2e1] mb-2 opacity-10 font-[family-name:var(--font-heading)]">
             404
-          </div>
-
-          {/* Signal Lost */}
-          <h1 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-[#c2c6d5] mb-8">
-            Signal Lost
           </h1>
+          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase mb-6 leading-none">
+            PAGE NOT FOUND
+          </h2>
+          <p className="text-[#c2c6d5] text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-lg">
+            The neural path you are seeking does not exist or has been relocated
+            within the Kinetic Command matrix.
+          </p>
 
-          {/* Terminal trace route */}
-          <div className="bg-[#0e0e0e] rounded-xl p-6 text-left mb-8 mx-auto max-w-lg">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-3 h-3 rounded-full bg-[#ffb4ab]/60" />
-              <span className="w-3 h-3 rounded-full bg-[#ffb780]/60" />
-              <span className="w-3 h-3 rounded-full bg-[#7dffa2]/60" />
-              <span className="ml-2 font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">trace_route.sh</span>
-            </div>
-            <pre className="font-[family-name:var(--font-mono)] text-xs text-[#8c909f] leading-relaxed">
-              <code>{`$ traceroute bouts.arena/target
- 1  gateway.bouts.internal    1.2ms
- 2  edge-proxy-07.arena       3.8ms
- 3  router.sector-alpha       8.1ms
- 4  * * * Request timed out
- 5  * * * Request timed out
- 6  ??? destination unreachable
-
-ERR::0x00404 — target sector not found
-Session terminated.`}</code>
-            </pre>
+          {/* Action Cluster */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            <Link
+              href="/"
+              className="group relative px-8 py-4 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#00285c] rounded font-bold flex items-center justify-center gap-3 hover:shadow-[0_0_20px_rgba(173,198,255,0.3)] transition-all active:scale-95"
+            >
+              <Home className="size-5" />
+              Go Home
+            </Link>
+            <Link
+              href="/challenges"
+              className="px-8 py-4 bg-[#2a2a2a] text-[#adc6ff] rounded font-bold flex items-center justify-center gap-3 hover:bg-[#353534] transition-all active:scale-95"
+            >
+              <Rocket className="size-5" />
+              Browse Challenges
+            </Link>
           </div>
 
-          {/* CTA */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-[family-name:var(--font-heading)] font-bold px-8 py-3 rounded-lg shadow-lg shadow-[#4d8efe]/20 transition-transform active:scale-[0.98] text-sm"
-          >
-            Return to Base
-          </Link>
+          {/* Terminal Decorum */}
+          <div className="mt-16 w-full max-w-md bg-[#1c1b1b] p-4 rounded-lg border border-[#424753]/10 text-left">
+            <div className="flex gap-2 mb-3">
+              <div className="w-2 h-2 rounded-full bg-[#3a3939]" />
+              <div className="w-2 h-2 rounded-full bg-[#3a3939]" />
+              <div className="w-2 h-2 rounded-full bg-[#3a3939]" />
+            </div>
+            <div className="font-[family-name:var(--font-mono)] text-[10px] leading-relaxed text-[#c2c6d5]/60 uppercase">
+              <div>&gt; INITIALIZING TRACE_ROUTE...</div>
+              <div>&gt; SECTOR: 0xFF04 (VOID)</div>
+              <div>&gt; STATUS: RESOURCE_UNREACHABLE</div>
+              <div className="text-[#7dffa2]">
+                &gt; AUTOMATIC REDIRECT SUGGESTED: COMMAND_ROOT
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute left-10 top-1/4 hidden lg:block opacity-20 rotate-90">
+          <span className="font-[family-name:var(--font-mono)] text-[10px] tracking-widest text-[#adc6ff] uppercase">
+            Telemetry-Void-Sequence-99
+          </span>
+        </div>
+        <div className="absolute right-10 bottom-1/4 hidden lg:block opacity-20 -rotate-90">
+          <span className="font-[family-name:var(--font-mono)] text-[10px] tracking-widest text-[#7dffa2] uppercase">
+            Kinetic-Command-OS-v2.4
+          </span>
         </div>
       </main>
+
       <Footer />
     </div>
   )

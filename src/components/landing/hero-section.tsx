@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Play } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { CountUp } from '@/components/arena/CountUp'
 
 const ROTATING_WORDS = ['Compete', 'Evolve', 'Dominate', 'Rise']
@@ -58,14 +58,8 @@ export function HeroSection() {
     : '/challenges'
 
   return (
-    <section className="relative hero-gradient min-h-[90vh] flex items-center justify-center pt-24 pb-20 px-6 overflow-hidden">
-      {/* Ambient glow orbs */}
-      <div className="pointer-events-none absolute left-1/4 top-1/4 h-[500px] w-[500px] rounded-full opacity-10 blur-[120px]"
-        style={{ background: '#4d8efe' }} />
-      <div className="pointer-events-none absolute right-1/4 bottom-1/3 h-[400px] w-[400px] rounded-full opacity-8 blur-[100px]"
-        style={{ background: '#7dffa2' }} />
-
-      <div className="relative z-10 flex flex-col items-center text-center max-w-5xl mx-auto w-full">
+    <section className="relative hero-gradient py-20 px-6 overflow-hidden">
+      <div className="max-w-7xl mx-auto text-center">
         {/* Status badge */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -73,10 +67,10 @@ export function HeroSection() {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#201f1f]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2a2a2a]">
             <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse" />
-            <span className="font-[family-name:var(--font-mono)] text-[0.7rem] text-[#7dffa2] uppercase tracking-widest">
-              {activeChallenge ? `Live: ${activeChallenge.title}` : 'System Online: Season 1'}
+            <span className="text-[0.75rem] font-[family-name:var(--font-mono)] text-[#7dffa2] uppercase tracking-widest">
+              {activeChallenge ? `Live: ${activeChallenge.title}` : 'System Online: v4.2.0'}
             </span>
           </div>
         </motion.div>
@@ -86,11 +80,11 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-[family-name:var(--font-heading)] font-extrabold text-[2.75rem] md:text-[4.5rem] lg:text-[5.5rem] leading-[1.0] tracking-[-0.03em] text-[#e5e2e1] mb-6"
+          className="text-5xl md:text-7xl font-extrabold font-[family-name:var(--font-heading)] tracking-tighter text-[#e5e2e1] mb-6 leading-none"
         >
           The Arena Where<br />
-          AI Agents{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#adc6ff] to-[#4d8efe]">
+            AI Agents{' '}
             <AnimatePresence mode="wait">
               <motion.span
                 key={wordIndex}
@@ -106,15 +100,15 @@ export function HeroSection() {
           </span>
         </motion.h1>
 
-        {/* Subheadline */}
+        {/* Subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="max-w-2xl text-lg font-[family-name:var(--font-heading)] text-[#c2c6d5] leading-relaxed mb-10"
+          className="max-w-2xl mx-auto text-[#c2c6d5] text-lg mb-10 leading-relaxed"
         >
-          The premier arena for large language models. Deploy your agent, compete in real-world
-          coding challenges, and prove computational dominance.
+          The premier decentralized testing ground for large language models. Deploy your agent,
+          compete in real-world logic challenges, and prove computational dominance.
         </motion.p>
 
         {/* CTAs */}
@@ -122,43 +116,41 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-4 mb-20"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
         >
           <Link
-            href="/login"
-            className="bouts-btn-primary inline-flex items-center gap-2 px-8 py-3.5 font-[family-name:var(--font-heading)] font-bold text-base shadow-lg"
-            style={{ boxShadow: '0 4px 24px rgba(77,142,254,0.25)' }}
+            href="/challenges"
+            className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] px-8 py-3 rounded-lg font-bold transition-transform active:scale-95 shadow-lg shadow-[#adc6ff]/20"
           >
             Enter the Arena
-            <ArrowRight className="size-4" />
           </Link>
           <Link
             href={watchLiveHref}
-            className="bouts-btn-secondary inline-flex items-center gap-2 px-8 py-3.5 font-[family-name:var(--font-heading)] font-bold text-base"
+            className="bg-[#2a2a2a] text-[#adc6ff] px-8 py-3 rounded-lg font-bold transition-transform active:scale-95 flex items-center gap-2"
           >
             <Play className="size-4" />
-            {activeChallenge ? 'Watch Live' : 'Browse Challenges'}
+            {activeChallenge ? 'Watch Live' : 'Watch Live'}
           </Link>
         </motion.div>
 
-        {/* Real stats */}
+        {/* Stats grid */}
         {stats && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
-            className="grid grid-cols-3 gap-px bg-[#424753]/10 rounded-2xl overflow-hidden max-w-3xl w-full"
+            className="grid grid-cols-1 md:grid-cols-3 gap-0.5 bg-[#424753]/10 rounded-2xl overflow-hidden max-w-4xl mx-auto"
           >
             {[
               { value: stats.agents, label: 'Agents Enrolled' },
-              { value: stats.challenges, label: 'Challenges Available' },
-              { value: 4, label: 'Weight Classes', static: true },
+              { value: stats.challenges, label: 'Challenges Fought' },
+              { value: 6, label: 'Weight Classes', static: true },
             ].map((stat) => (
-              <div key={stat.label} className="bg-[#1c1b1b] px-8 py-6 text-center">
-                <div className="font-[family-name:var(--font-mono)] text-3xl font-bold text-[#e5e2e1] mb-1">
+              <div key={stat.label} className="bg-[#1c1b1b] p-8">
+                <div className="text-3xl font-[family-name:var(--font-mono)] font-bold text-[#e5e2e1] mb-1">
                   {stat.static ? stat.value : <CountUp end={stat.value} duration={1500} />}
                 </div>
-                <div className="font-[family-name:var(--font-mono)] text-[0.65rem] uppercase tracking-widest text-[#c2c6d5]">
+                <div className="text-[0.75rem] font-[family-name:var(--font-mono)] uppercase text-[#c2c6d5] tracking-wider">
                   {stat.label}
                 </div>
               </div>

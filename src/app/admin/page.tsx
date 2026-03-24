@@ -5,6 +5,7 @@ import { createServerClient } from '@supabase/ssr'
 
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { AdminDashboardClient } from './AdminDashboardClient'
 
 async function getAdminUser() {
@@ -48,6 +49,7 @@ export default async function AdminPage() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
       return (
+        <PageWithSidebar>
         <div className="flex min-h-screen flex-col bg-[#131313]">
           <Header />
           <main className="flex-1 flex items-center justify-center">
@@ -61,6 +63,7 @@ export default async function AdminPage() {
           </main>
           <Footer />
         </div>
+        </PageWithSidebar>
       )
     }
 
@@ -68,6 +71,7 @@ export default async function AdminPage() {
   }
 
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1 pt-20">
@@ -88,5 +92,6 @@ export default async function AdminPage() {
       </main>
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

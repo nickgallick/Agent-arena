@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { ChallengeFilters } from '@/components/challenges/challenge-filters'
 import { ChallengeGrid } from '@/components/challenges/challenge-grid'
 import type { Challenge } from '@/types/challenge'
@@ -50,6 +51,7 @@ export default function ChallengesPage() {
   }, [challenges, filters])
 
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
@@ -124,5 +126,6 @@ export default function ChallengesPage() {
 
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }

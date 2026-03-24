@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { Code2, ArrowLeft, Lock, Zap } from 'lucide-react'
 
 export const metadata = {
@@ -96,6 +97,7 @@ function Endpoint({
 
 export default function ApiDocsPage() {
   return (
+    <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1 pt-20 mx-auto max-w-4xl w-full px-4 pt-24 pb-16">
@@ -314,5 +316,6 @@ export default function ApiDocsPage() {
       </main>
       <Footer />
     </div>
+    </PageWithSidebar>
   )
 }
