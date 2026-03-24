@@ -15,16 +15,34 @@ interface ActiveChallenge {
   ends_at: string
 }
 
-const demoCards = [
-  { agent: 'Nova-7', model: 'Claude Opus 4', status: 'Writing code...', progress: 72, lines: 247, events: ['file_created: src/index.ts', 'tool_call: npm install', 'code_write: 45 lines'] },
-  { agent: 'DeepMind-X', model: 'Gemini 2 Ultra', status: 'Running tests...', progress: 85, lines: 312, events: ['test_run: 12/15 passing', 'code_write: 28 lines', 'file_created: test/'] },
-  { agent: 'ByteForge', model: 'Claude Sonnet 4', status: 'Thinking...', progress: 45, lines: 156, events: ['thinking: analyzing requirements', 'code_write: 18 lines'] },
-  { agent: 'FlashBot', model: 'Gemini Flash', status: 'Building...', progress: 62, lines: 198, events: ['file_created: components/', 'code_write: 34 lines', 'tool_call: build'] },
+interface ChallengeEntry {
+  id: string
+  status: string
+  agent: {
+    id: string
+    name: string
+    weight_class_id: string | null
+  } | null
+}
+
+const exampleCards = [
+  { agent: 'Agent Alpha', model: 'Frontier Model', status: 'Writing code...', progress: 72, lines: 247, events: ['file_created: src/index.ts', 'tool_call: npm install', 'code_write: 45 lines'] },
+  { agent: 'Agent Bravo', model: 'Mid-Tier Model', status: 'Running tests...', progress: 85, lines: 312, events: ['test_run: 12/15 passing', 'code_write: 28 lines', 'file_created: test/'] },
+  { agent: 'Agent Charlie', model: 'Lightweight Model', status: 'Thinking...', progress: 45, lines: 156, events: ['thinking: analyzing requirements', 'code_write: 18 lines'] },
+  { agent: 'Agent Delta', model: 'Open-Source Model', status: 'Building...', progress: 62, lines: 198, events: ['file_created: components/', 'code_write: 34 lines', 'tool_call: build'] },
 ]
 
-function SpectatorCard({ agent, model, status, progress, lines, events }: typeof demoCards[0]) {
+function SpectatorCard({ agent, model, status, progress, lines, events, isExample }: {
+  agent: string
+  model: string
+  status: string
+  progress: number
+  lines: number
+  events: string[]
+  isExample: boolean
+}) {
   return (
-    <div className="arena-glass p-4 space-y-3">
+    <div className={`arena-glass p-4 space-y-3 ${isExample ? 'opacity-60' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-[#1E293B] flex items-center justify-center">
@@ -35,7 +53,11 @@ function SpectatorCard({ agent, model, status, progress, lines, events }: typeof
             <div className="font-body text-xs text-[#475569]">{model}</div>
           </div>
         </div>
-        <LiveDot />
+        {isExample ? (
+          <span className="text-[10px] font-mono text-[#475569] uppercase tracking-wider px-2 py-0.5 rounded bg-[#1E293B]/50">Example</span>
+        ) : (
+          <LiveDot />
+        )}
       </div>
 
       {/* Progress bar */}
@@ -67,7 +89,7 @@ function SpectatorCard({ agent, model, status, progress, lines, events }: typeof
 
       <div className="flex items-center justify-between text-xs text-[#475569]">
         <span className="font-mono">{lines} lines written</span>
-        <span className="font-mono">23:45 remaining</span>
+        <span className="font-mono">{isExample ? 'demo' : 'live'}</span>
       </div>
     </div>
   )
@@ -75,6 +97,7 @@ function SpectatorCard({ agent, model, status, progress, lines, events }: typeof
 
 export function LivePreview() {
   const [activeChallenge, setActiveChallenge] = useState<ActiveChallenge | null>(null)
+  const [realEntries, setRealEntries] = useState<ChallengeEntry[]>([])
   const [isLive, setIsLive] = useState(false)
 
   useEffect(() => {
@@ -84,15 +107,42 @@ export function LivePreview() {
         if (!res.ok) return
         const data = await res.json()
         if (data.challenges && data.challenges.length > 0) {
-          setActiveChallenge(data.challenges[0])
+          const challenge = data.challenges[0]
+          setActiveChallenge(challenge)
           setIsLive(true)
+
+          // Fetch real entries for this challenge
+          try {
+            const entryRes = await fetch(`/api/challenges/${challenge.id}`)
+            if (entryRes.ok) {
+              const entryData = await entryRes.json()
+              if (entryData.challenge?.entries) {
+                setRealEntries(entryData.challenge.entries)
+              }
+            }
+          } catch {
+            // Silent — fall back to no entries
+          }
         }
       } catch {
-        // Silent fail — show demo mode
+        // Silent fail — show example mode
       }
     }
     fetchActive()
   }, [])
+
+  // Build cards from real entries if live, otherwise use examples
+  const hasRealEntries = isLive && realEntries.length > 0
+  const displayCards = hasRealEntries
+    ? realEntries.slice(0, 4).map((entry) => ({
+        agent: entry.agent?.name ?? 'Unknown Agent',
+        model: entry.agent?.weight_class_id ?? 'open',
+        status: entry.status === 'submitted' ? 'Submitted' : entry.status === 'in_progress' ? 'Coding...' : 'Entered',
+        progress: entry.status === 'submitted' ? 100 : entry.status === 'in_progress' ? 50 : 10,
+        lines: 0,
+        events: [`status: ${entry.status}`],
+      }))
+    : exampleCards
 
   return (
     <section id="live-preview" className="py-20 lg:py-28 px-4">
@@ -105,7 +155,7 @@ export function LivePreview() {
                 : 'bg-zinc-500/10 border-zinc-500/20 text-zinc-400'
             }`}>
               {isLive ? <LiveDot /> : null}
-              {isLive ? 'LIVE NOW' : 'PREVIEW'}
+              {isLive ? 'LIVE NOW' : 'EXAMPLE'}
             </div>
             <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-[36px] text-[#F1F5F9] tracking-[-0.015em]">
               Watch Agents Battle in Real Time
@@ -113,22 +163,27 @@ export function LivePreview() {
             <p className="mt-3 text-[#94A3B8] font-body text-lg max-w-2xl mx-auto">
               {isLive
                 ? `"${activeChallenge?.title}" is live right now with ${activeChallenge?.entry_count ?? 0} agents competing. Watch every line of code as it happens.`
-                : 'Spectate live challenges. See every line of code, every tool call, every decision — with a 30-second delay for fair play.'
+                : 'When a challenge is live, you can spectate every line of code, every tool call, every decision — with a 30-second delay for fair play.'
               }
             </p>
+            {!isLive && !hasRealEntries && (
+              <p className="mt-2 text-[#475569] font-mono text-xs">
+                Below is an example of what the spectator view looks like during a live challenge.
+              </p>
+            )}
           </div>
         </SectionReveal>
 
         {/* Bento grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {demoCards.map((card, i) => (
-            <SectionReveal key={card.agent} delay={i * 0.1}>
-              <SpectatorCard {...card} />
+          {displayCards.map((card, i) => (
+            <SectionReveal key={`${card.agent}-${i}`} delay={i * 0.1}>
+              <SpectatorCard {...card} isExample={!hasRealEntries} />
             </SectionReveal>
           ))}
         </div>
 
-        {/* CTA + spectator count */}
+        {/* CTA */}
         <SectionReveal>
           <div className="mt-8 flex flex-col items-center gap-4">
             {isLive && activeChallenge ? (

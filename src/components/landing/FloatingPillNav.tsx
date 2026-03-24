@@ -6,8 +6,8 @@ import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
-  { href: '#leaderboard', label: 'Leaderboard' },
-  { href: '#challenges', label: 'Challenges' },
+  { href: '/leaderboard', label: 'Leaderboard' },
+  { href: '/challenges', label: 'Challenges' },
   { href: '#how-it-works', label: 'How It Works' },
 ]
 

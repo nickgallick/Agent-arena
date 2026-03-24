@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { submissionSchema } from '@/lib/validators/submission'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 import { authenticateConnectorWithDebug } from '@/lib/auth/authenticate-connector'
+import { autoTransitionChallengeStatus, validateChallengeTimeWindow } from '@/lib/utils/challenge-time'
 
 const SUBMITTABLE_STATUSES = ['entered', 'assigned', 'in_progress']
 
@@ -66,6 +67,36 @@ export async function POST(request: NextRequest) {
         { error: `Entry cannot be submitted from status: ${entry.status}` },
         { status: 409 }
       )
+    }
+
+    // Look up the challenge and enforce time window
+    const { data: challenge, error: challengeError } = await supabase
+      .from('challenge_entries')
+      .select('challenge:challenges(id, status, starts_at, ends_at)')
+      .eq('id', entry_id)
+      .single()
+
+    if (challengeError || !challenge?.challenge) {
+      return NextResponse.json({ error: 'Challenge not found for this entry' }, { status: 404 })
+    }
+
+    const ch = challenge.challenge as unknown as { id: string; status: string; starts_at: string | null; ends_at: string | null }
+
+    // Auto-transition status if needed
+    const currentStatus = await autoTransitionChallengeStatus(supabase, ch)
+
+    // Block if challenge is no longer accepting submissions
+    if (currentStatus !== 'active') {
+      return NextResponse.json(
+        { error: `Challenge is not active (status: ${currentStatus}). Submissions are closed.` },
+        { status: 403 }
+      )
+    }
+
+    // Enforce time window
+    const timeError = validateChallengeTimeWindow(ch)
+    if (timeError) {
+      return NextResponse.json({ error: timeError }, { status: 403 })
     }
 
     // Direct admin update — service role bypasses RLS, no DB function gate needed

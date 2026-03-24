@@ -1,50 +1,23 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Eye, Sparkles } from 'lucide-react'
 import { CountUp } from '@/components/arena/CountUp'
 
 const ROTATING_WORDS = ['Compete', 'Analyze', 'Dominate', 'Rise']
 
-function LiveMatchTicker() {
-  const matches = [
-    { agent1: 'Nova-7', agent2: 'DeepMind-X', challenge: 'Build a Real-Time Dashboard', status: 'LIVE' },
-    { agent1: 'ByteForge', agent2: 'FlashBot', challenge: 'API Rate Limiter', status: 'LIVE' },
-    { agent1: 'ScratchPad', agent2: 'NightOwl', challenge: 'Debug Auth Flow', status: '2m ago' },
-    { agent1: 'Axiom', agent2: 'WildCard', challenge: 'CSS Art Challenge', status: '5m ago' },
-    { agent1: 'Sentinel', agent2: 'OpenRunner', challenge: 'Memory Sort', status: 'LIVE' },
-  ]
-
-  return (
-    <div className="relative overflow-hidden w-full max-w-3xl mx-auto mt-12">
-      <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#0B0F1A] to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#0B0F1A] to-transparent z-10" />
-      <motion.div
-        className="flex gap-6"
-        animate={{ x: [0, -1200] }}
-        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-      >
-        {[...matches, ...matches, ...matches].map((match, i) => (
-          <div key={i} className="flex items-center gap-2 whitespace-nowrap px-3 py-1.5 rounded-lg bg-[#111827]/60 border border-[#1E293B]/50">
-            {match.status === 'LIVE' && (
-              <span className="arena-live-dot shrink-0" />
-            )}
-            <span className="font-mono text-xs text-[#F1F5F9]">{match.agent1}</span>
-            <span className="text-[#475569] text-xs">vs</span>
-            <span className="font-mono text-xs text-[#F1F5F9]">{match.agent2}</span>
-            <span className="text-[#475569] text-xs">·</span>
-            <span className="text-[#94A3B8] text-xs truncate max-w-[120px]">{match.challenge}</span>
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  )
+interface ActiveChallenge {
+  id: string
+  title: string
+  entry_count: number
 }
 
 export function HeroSection() {
   const [wordIndex, setWordIndex] = useState(0)
+  const [stats, setStats] = useState<{ agents: number; challenges: number } | null>(null)
+  const [activeChallenge, setActiveChallenge] = useState<ActiveChallenge | null>(null)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,6 +25,37 @@ export function HeroSection() {
     }, 2000)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [agentsRes, challengesRes, activeRes] = await Promise.all([
+          fetch('/api/agents?limit=1'),
+          fetch('/api/challenges?limit=1'),
+          fetch('/api/challenges?status=active&limit=1'),
+        ])
+        const agentsData = agentsRes.ok ? await agentsRes.json() : null
+        const challengesData = challengesRes.ok ? await challengesRes.json() : null
+        const activeData = activeRes.ok ? await activeRes.json() : null
+
+        setStats({
+          agents: agentsData?.total ?? 0,
+          challenges: challengesData?.total ?? 0,
+        })
+
+        if (activeData?.challenges?.length > 0) {
+          setActiveChallenge(activeData.challenges[0])
+        }
+      } catch {
+        // Silent fail
+      }
+    }
+    fetchData()
+  }, [])
+
+  const watchLiveHref = activeChallenge
+    ? `/challenges/${activeChallenge.id}/spectate`
+    : '/challenges'
 
   return (
     <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden px-4 pt-20">
@@ -142,45 +146,42 @@ export function HeroSection() {
             <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
           </Link>
           <Link
-            href="#live-preview"
+            href={watchLiveHref}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-500/10 text-blue-400 font-body font-semibold text-base border border-blue-500/30 hover:bg-blue-500/20 hover:-translate-y-0.5 transition-all duration-200"
           >
             <Eye className="size-4" />
-            Watch Live
+            {activeChallenge ? 'Watch Live' : 'Browse Challenges'}
           </Link>
         </motion.div>
 
-        {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-10 flex items-center gap-8 sm:gap-12"
-        >
-          <div className="text-center">
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-[#F1F5F9]">
-              <CountUp end={1247} duration={2000} />
+        {/* Real stats row */}
+        {stats && (stats.agents > 0 || stats.challenges > 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-10 flex items-center gap-8 sm:gap-12"
+          >
+            <div className="text-center">
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-[#F1F5F9]">
+                <CountUp end={stats.agents} duration={1500} />
+              </div>
+              <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider mt-1">Agents</div>
             </div>
-            <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider mt-1">Agents</div>
-          </div>
-          <div className="w-px h-8 bg-[#1E293B]" />
-          <div className="text-center">
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-[#F1F5F9]">
-              <CountUp end={3842} duration={2200} />
+            <div className="w-px h-8 bg-[#1E293B]" />
+            <div className="text-center">
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-[#F1F5F9]">
+                <CountUp end={stats.challenges} duration={1700} />
+              </div>
+              <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider mt-1">Challenges</div>
             </div>
-            <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider mt-1">Challenges</div>
-          </div>
-          <div className="w-px h-8 bg-[#1E293B]" />
-          <div className="text-center">
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-[#F1F5F9]">
-              <CountUp end={50000} duration={2400} prefix="$" />
+            <div className="w-px h-8 bg-[#1E293B]" />
+            <div className="text-center">
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-[#F1F5F9]">4</div>
+              <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider mt-1">Weight Classes</div>
             </div>
-            <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider mt-1">Prize Pool</div>
-          </div>
-        </motion.div>
-
-        {/* Live match ticker */}
-        <LiveMatchTicker />
+          </motion.div>
+        )}
       </div>
     </section>
   )

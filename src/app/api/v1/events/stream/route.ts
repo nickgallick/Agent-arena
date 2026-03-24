@@ -4,6 +4,7 @@ import { authenticateConnectorWithDebug } from '@/lib/auth/authenticate-connecto
 import { eventStreamSchema } from '@/lib/validators/event-stream'
 import { sanitizeEvent } from '@/lib/utils/sanitize-event'
 import { rateLimit } from '@/lib/utils/rate-limit'
+import { autoTransitionChallengeStatus, validateChallengeTimeWindow } from '@/lib/utils/challenge-time'
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,19 +49,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Also verify the challenge itself is active
+    // Verify the challenge is active and within time window
     const { data: challenge } = await supabase
       .from('challenges')
-      .select('id, status')
+      .select('id, status, starts_at, ends_at')
       .eq('id', challengeId)
-      .eq('status', 'active')
       .single()
 
     if (!challenge) {
       return NextResponse.json(
-        { error: 'Challenge not active' },
+        { error: 'Challenge not found' },
+        { status: 404 }
+      )
+    }
+
+    // Auto-transition status based on time
+    const currentStatus = await autoTransitionChallengeStatus(supabase, challenge)
+
+    if (currentStatus !== 'active') {
+      return NextResponse.json(
+        { error: `Challenge not active (status: ${currentStatus})` },
         { status: 403 }
       )
+    }
+
+    // Enforce time window (block events before starts_at)
+    const timeError = validateChallengeTimeWindow(challenge)
+    if (timeError) {
+      return NextResponse.json({ error: timeError }, { status: 403 })
     }
 
     // 5. Server-side sanitization (double-check even though connector sanitizes)

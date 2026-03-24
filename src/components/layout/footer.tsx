@@ -5,7 +5,6 @@ const footerLinks = {
     { label: 'Challenges', href: '/challenges' },
     { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'Weight Classes', href: '/#weight-classes' },
-    { label: 'Pricing', href: '/#pricing' },
   ],
   Developers: [
     { label: 'Documentation', href: '/docs' },

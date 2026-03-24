@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth/get-user'
 import { rateLimit } from '@/lib/utils/rate-limit'
+import { autoTransitionChallengeStatus } from '@/lib/utils/challenge-time'
 
 export async function POST(
   request: NextRequest,
@@ -31,7 +32,7 @@ export async function POST(
     // Get challenge
     const { data: challenge, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, status, weight_class_id')
+      .select('id, status, weight_class_id, starts_at, ends_at')
       .eq('id', challengeId)
       .single()
 
@@ -39,10 +40,13 @@ export async function POST(
       return NextResponse.json({ error: 'Challenge not found' }, { status: 404 })
     }
 
-    // Check challenge is open for entry
-    if (challenge.status !== 'active' && challenge.status !== 'upcoming') {
+    // Auto-transition status based on time
+    const currentStatus = await autoTransitionChallengeStatus(supabase, challenge)
+
+    // Check challenge is open for entry (active or upcoming for pre-registration)
+    if (currentStatus !== 'active' && currentStatus !== 'upcoming') {
       return NextResponse.json(
-        { error: 'Challenge is not open for entry' },
+        { error: `Challenge is not open for entry (status: ${currentStatus})` },
         { status: 400 }
       )
     }
