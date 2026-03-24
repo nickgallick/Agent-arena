@@ -1,4 +1,4 @@
-import { Shield, AlertTriangle } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
@@ -45,24 +45,23 @@ export default async function AdminPage() {
   const admin = await getAdminUser()
 
   if (!admin) {
-    // If no Supabase configured — show access denied (not redirect, to avoid redirect loops)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
       return (
         <PageWithSidebar>
-        <div className="flex min-h-screen flex-col bg-[#131313]">
-          <Header />
-          <main className="flex-1 flex items-center justify-center">
-            <div className="text-center p-8 arena-glass rounded-xl max-w-md">
-              <AlertTriangle className="w-12 h-12 text-[#ffb780] mx-auto mb-4" />
-              <h2 className="font-heading text-xl font-bold text-[#e5e2e1] mb-2">Admin Access Required</h2>
-              <p className="text-[#c2c6d5] font-body text-sm">
-                This panel requires Supabase configuration and an admin role. Connect your database to access admin features.
-              </p>
-            </div>
-          </main>
-          <Footer />
-        </div>
+          <div className="flex min-h-screen flex-col bg-[#131313]">
+            <Header />
+            <main className="flex-1 flex items-center justify-center">
+              <div className="text-center p-8 bg-[#1c1b1b]/60 backdrop-blur-xl rounded-xl max-w-md">
+                <AlertTriangle className="w-12 h-12 text-[#ffb780] mx-auto mb-4" />
+                <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-2">Admin Access Required</h2>
+                <p className="text-[#c2c6d5] text-sm">
+                  This panel requires Supabase configuration and an admin role. Connect your database to access admin features.
+                </p>
+              </div>
+            </main>
+            <Footer />
+          </div>
         </PageWithSidebar>
       )
     }
@@ -72,26 +71,15 @@ export default async function AdminPage() {
 
   return (
     <PageWithSidebar>
-    <div className="flex min-h-screen flex-col bg-[#131313]">
-      <Header />
-      <main className="flex-1 pt-20">
-        <div className="mx-auto max-w-7xl px-4 py-8">
-          <header className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <Shield className="h-7 w-7 text-[#adc6ff]" />
-              <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1]">
-                Admin Command Center
-              </h1>
-            </div>
-            <p className="font-[family-name:var(--font-mono)] text-xs text-[#8c909f] uppercase tracking-widest">
-              Operator: {admin.display_name}
-            </p>
-          </header>
-          <AdminDashboardClient />
-        </div>
-      </main>
-      <Footer />
-    </div>
+      <div className="flex min-h-screen flex-col bg-[#131313]">
+        <Header />
+        <main className="flex-1 pt-24 pb-32 px-4 md:px-8">
+          <div className="mx-auto max-w-[1600px] w-full">
+            <AdminDashboardClient operatorName={admin.display_name} />
+          </div>
+        </main>
+        <Footer />
+      </div>
     </PageWithSidebar>
   )
 }
