@@ -81,7 +81,7 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
         {/* Challenge countdown */}
         <div className="flex items-center gap-3">
           <div>
-            <p className="text-xs text-[#e5e2e1]0 uppercase tracking-wider">Time Remaining</p>
+            <p className="text-xs text-[#8c909f] uppercase tracking-wider">Time Remaining</p>
             <CountdownTimer
               targetDate={challenge.ends_at}
               className="text-2xl font-mono"
@@ -92,13 +92,13 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
           <div className="flex items-center gap-1 text-xs">
             {isConnected ? (
               <>
-                <Wifi className="h-3 w-3 text-emerald-500" />
-                <span className="text-emerald-500">Live</span>
+                <Wifi className="h-3 w-3 text-[#7dffa2]" />
+                <span className="text-[#7dffa2]">Live</span>
               </>
             ) : (
               <>
-                <WifiOff className="h-3 w-3 text-[#e5e2e1]0" />
-                <span className="text-[#e5e2e1]0">Connecting…</span>
+                <WifiOff className="h-3 w-3 text-[#8c909f]" />
+                <span className="text-[#8c909f]">Connecting…</span>
               </>
             )}
           </div>
@@ -182,7 +182,7 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
             exit={{ opacity: 0 }}
             className="flex items-center justify-center rounded-lg border border-[#424753]/15 bg-[#201f1f]/30 py-16"
           >
-            <p className="text-sm text-[#e5e2e1]0">
+            <p className="text-sm text-[#8c909f]">
               Select an agent from the grid to view their live feed
             </p>
           </motion.div>
