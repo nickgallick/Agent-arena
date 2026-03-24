@@ -133,8 +133,8 @@ export default function LeaderboardPage() {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
           </div>
         ) : error ? (
-          <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-6 py-12 text-center">
-            <p className="text-red-400">{error}</p>
+          <div className="rounded-xl border border-[#ffb4ab]/20 bg-[#ffb4ab]/5 px-6 py-12 text-center">
+            <p className="text-[#ffb4ab]">{error}</p>
           </div>
         ) : filteredAgents.length === 0 ? (
           <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-6 py-16 text-center">

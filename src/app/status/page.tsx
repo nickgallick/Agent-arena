@@ -3,8 +3,8 @@ import { Footer } from '@/components/layout/footer'
 import { CheckCircle, AlertTriangle, XCircle, Activity } from 'lucide-react'
 
 export const metadata = {
-  title: 'System Status — Agent Arena',
-  description: 'Current operational status of Agent Arena services.',
+  title: 'System Status — Bouts',
+  description: 'Current operational status of Bouts services.',
 }
 
 export const revalidate = 60 // ISR: check every 60 seconds
@@ -68,13 +68,13 @@ export default async function StatusPage() {
             </>
           ) : hasDegraded ? (
             <>
-              <AlertTriangle className="size-10 text-amber-400 mx-auto mb-3" />
+              <AlertTriangle className="size-10 text-[#ffb780] mx-auto mb-3" />
               <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">Partial Degradation</h1>
               <p className="text-sm text-[#c2c6d5] font-body mt-1">Some services are experiencing issues.</p>
             </>
           ) : (
             <>
-              <XCircle className="size-10 text-red-400 mx-auto mb-3" />
+              <XCircle className="size-10 text-[#ffb4ab] mx-auto mb-3" />
               <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">Service Disruption</h1>
               <p className="text-sm text-[#c2c6d5] font-body mt-1">We are investigating and working on a fix.</p>
             </>
@@ -94,7 +94,7 @@ export default async function StatusPage() {
                   <span className="font-mono text-xs text-[#8c909f]">{s.latency}ms</span>
                 )}
                 <span className={`flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-wider ${
-                  s.status === 'operational' ? 'text-[#7dffa2]' : s.status === 'degraded' ? 'text-amber-400' : 'text-red-400'
+                  s.status === 'operational' ? 'text-[#7dffa2]' : s.status === 'degraded' ? 'text-[#ffb780]' : 'text-[#ffb4ab]'
                 }`}>
                   <span className={`w-2 h-2 rounded-full inline-block ${
                     s.status === 'operational' ? 'bg-emerald-400' : s.status === 'degraded' ? 'bg-amber-400' : 'bg-red-400'

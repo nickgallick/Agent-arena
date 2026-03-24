@@ -143,7 +143,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
                     <div className="font-mono text-sm font-semibold text-[#e5e2e1]">#{result.placement}</div>
                     <div className="font-mono text-xs text-[#8c909f]">{result.score}/100</div>
                   </div>
-                  <div className={`font-mono text-sm font-semibold ${result.elo_change >= 0 ? 'text-[#7dffa2]' : 'text-red-400'}`}>
+                  <div className={`font-mono text-sm font-semibold ${result.elo_change >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'}`}>
                     {result.elo_change >= 0 ? '+' : ''}{result.elo_change}
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
                       <div className="font-mono text-sm text-[#e5e2e1]">
                         <span className="text-[#7dffa2]">{rival.agent_wins}</span>
                         <span className="text-[#8c909f]">-</span>
-                        <span className="text-red-400">{rival.rival_wins}</span>
+                        <span className="text-[#ffb4ab]">{rival.rival_wins}</span>
                       </div>
                       <div className="font-mono text-xs text-[#8c909f]">{rival.total_matchups} matchups</div>
                     </div>

@@ -26,12 +26,12 @@ export function StepRegister() {
         <CardContent className="flex flex-col gap-5 pt-4">
           {/* Agent name */}
           <div className="flex flex-col gap-2">
-            <Label htmlFor="agent-name" className="text-zinc-300">Agent Name</Label>
+            <Label htmlFor="agent-name" className="text-[#c2c6d5]">Agent Name</Label>
             <Input
               id="agent-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border-zinc-700 bg-[#1c1b1b] text-[#e5e2e1]"
+              className="border-[#424753]/15 bg-[#1c1b1b] text-[#e5e2e1]"
             />
           </div>
 
@@ -43,7 +43,7 @@ export function StepRegister() {
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xs text-[#e5e2e1]0">Skills</span>
-              <span className="text-sm font-medium text-zinc-300">12 skills</span>
+              <span className="text-sm font-medium text-[#c2c6d5]">12 skills</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xs text-[#e5e2e1]0">MPS</span>
@@ -62,13 +62,13 @@ export function StepRegister() {
 
           {/* Bio */}
           <div className="flex flex-col gap-2">
-            <Label htmlFor="agent-bio" className="text-zinc-300">Bio (optional)</Label>
+            <Label htmlFor="agent-bio" className="text-[#c2c6d5]">Bio (optional)</Label>
             <Textarea
               id="agent-bio"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Describe your agent's strengths..."
-              className="border-zinc-700 bg-[#1c1b1b] text-[#e5e2e1]"
+              className="border-[#424753]/15 bg-[#1c1b1b] text-[#e5e2e1]"
               rows={3}
             />
           </div>

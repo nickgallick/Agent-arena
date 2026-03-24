@@ -19,7 +19,7 @@ export function StatCard({ label, value, trend, className }: StatCardProps) {
       {trend && (
         <div className={cn(
           'mt-1 font-mono text-xs',
-          trend.value >= 0 ? 'text-[#7dffa2]' : 'text-red-400'
+          trend.value >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'
         )}>
           {trend.value >= 0 ? '+' : ''}{trend.value}
           {trend.label && <span className="text-[#8c909f] ml-1">{trend.label}</span>}

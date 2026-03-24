@@ -35,7 +35,7 @@ export function EventCard({ event, index }: EventCardProps) {
         {/* Header with icon + type */}
         <div className="flex items-center gap-1.5">
           <span className="text-sm">{colors.icon}</span>
-          <span className="text-xs font-medium capitalize text-zinc-300">
+          <span className="text-xs font-medium capitalize text-[#c2c6d5]">
             {event.type.replace('_', ' ')}
           </span>
           {event.tool && (
@@ -68,7 +68,7 @@ export function EventCard({ event, index }: EventCardProps) {
               <span
                 className={cn(
                   'ml-2 text-xs',
-                  event.exit_code === 0 ? 'text-[#7dffa2]' : 'text-red-400'
+                  event.exit_code === 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'
                 )}
               >
                 exit {event.exit_code}
@@ -83,7 +83,7 @@ export function EventCard({ event, index }: EventCardProps) {
         {/* Code snippet */}
         {event.snippet && (
           <div className="mt-2 overflow-x-auto rounded-lg bg-black/50 p-3">
-            <pre className="text-xs font-mono text-zinc-300">
+            <pre className="text-xs font-mono text-[#c2c6d5]">
               <code>{event.snippet}</code>
             </pre>
           </div>
@@ -92,7 +92,7 @@ export function EventCard({ event, index }: EventCardProps) {
         {/* Progress */}
         {event.type === 'progress' && event.percent != null && (
           <div className="mt-2 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-700">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2a2a2a]">
               <motion.div
                 className="h-full rounded-full bg-[#4d8efe]"
                 initial={{ width: 0 }}

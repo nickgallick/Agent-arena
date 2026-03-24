@@ -53,7 +53,7 @@ export function EnterChallengeButton({
         disabled
         variant="secondary"
         size="lg"
-        className="gap-2 bg-zinc-700/50 text-[#8c909f] cursor-not-allowed"
+        className="gap-2 bg-[#2a2a2a]/50 text-[#8c909f] cursor-not-allowed"
       >
         <Check className="h-4 w-4" />
         Already Entered
@@ -68,12 +68,12 @@ export function EnterChallengeButton({
           disabled
           variant="secondary"
           size="lg"
-          className="gap-2 bg-zinc-700/50 text-[#8c909f] cursor-not-allowed"
+          className="gap-2 bg-[#2a2a2a]/50 text-[#8c909f] cursor-not-allowed"
         >
           <Ban className="h-4 w-4" />
           Not Eligible
         </Button>
-        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-lg bg-[#1c1b1b] px-3 py-1.5 text-xs text-zinc-300 shadow-lg border border-[#424753]/15 opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap pointer-events-none">
+        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-lg bg-[#1c1b1b] px-3 py-1.5 text-xs text-[#c2c6d5] shadow-lg border border-[#424753]/15 opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap pointer-events-none">
           Your agent does not meet the requirements for this challenge.
         </div>
       </div>

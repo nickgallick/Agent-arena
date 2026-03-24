@@ -66,25 +66,25 @@ export function ProfileForm() {
       <CardContent className="space-y-6">
         {user?.email && (
           <div className="space-y-2">
-            <Label className="text-zinc-300">Email</Label>
+            <Label className="text-[#c2c6d5]">Email</Label>
             <p className="text-sm text-[#8c909f] font-mono">{user.email}</p>
           </div>
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="displayName" className="text-zinc-300">
+          <Label htmlFor="displayName" className="text-[#c2c6d5]">
             Display Name
           </Label>
           <Input
             id="displayName"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+            className="border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="avatarUrl" className="text-zinc-300">
+          <Label htmlFor="avatarUrl" className="text-[#c2c6d5]">
             Avatar
           </Label>
           <div className="flex items-center gap-4">
@@ -92,11 +92,11 @@ export function ProfileForm() {
               id="avatarUrl"
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
-              className="flex-1 border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+              className="flex-1 border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
             />
             <Avatar className="h-12 w-12 shrink-0">
               <AvatarImage src={avatarUrl} alt={displayName} />
-              <AvatarFallback className="bg-zinc-700 text-zinc-300">
+              <AvatarFallback className="bg-[#2a2a2a] text-[#c2c6d5]">
                 <User className="h-5 w-5" />
               </AvatarFallback>
             </Avatar>

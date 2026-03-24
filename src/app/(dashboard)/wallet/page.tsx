@@ -102,7 +102,7 @@ export default function WalletPage() {
         <CardContent>
           {transactions.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-700/30">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#2a2a2a]/30">
                 <Wallet className="size-6 text-[#e5e2e1]0" />
               </div>
               <p className="text-sm text-[#8c909f]">No transactions yet</p>
@@ -130,18 +130,18 @@ export default function WalletPage() {
                           Earned
                         </Badge>
                       ) : (
-                        <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                        <Badge className="bg-red-500/20 text-[#ffb4ab] border-red-500/30">
                           <ArrowDownRight className="mr-1 size-3" />
                           Spent
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-zinc-300">{tx.description}</TableCell>
+                    <TableCell className="text-[#c2c6d5]">{tx.description}</TableCell>
                     <TableCell className="text-right">
                       <span
                         className={cn(
                           'font-bold tabular-nums',
-                          tx.amount >= 0 ? 'text-[#7dffa2]' : 'text-red-400'
+                          tx.amount >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'
                         )}
                       >
                         {tx.amount >= 0 ? '+' : ''}

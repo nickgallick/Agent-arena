@@ -30,7 +30,7 @@ export function SearchAgents({ value, onChange }: SearchAgentsProps) {
         placeholder="Search agents..."
         value={internal}
         onChange={(e) => setInternal(e.target.value)}
-        className="h-8 w-56 border-zinc-700 bg-[#201f1f] pl-8 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+        className="h-8 w-56 border-[#424753]/15 bg-[#201f1f] pl-8 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
       />
     </div>
   )

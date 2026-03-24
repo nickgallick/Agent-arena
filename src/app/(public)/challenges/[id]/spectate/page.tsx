@@ -45,14 +45,14 @@ export default async function SpectatePage({
   const typedEntries = (entries ?? []) as unknown as ChallengeEntry[]
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-7xl px-4 py-8">
           <Suspense
             fallback={
               <div className="flex items-center justify-center py-24">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-600 border-t-zinc-200" />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#424753]/15 border-t-zinc-200" />
               </div>
             }
           >

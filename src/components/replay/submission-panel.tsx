@@ -17,7 +17,7 @@ export function SubmissionPanel({ submissionText, files }: SubmissionPanelProps)
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {submissionText && (
-          <pre className="overflow-x-auto rounded-lg bg-[#1c1b1b] p-4 font-mono text-sm text-zinc-300">
+          <pre className="overflow-x-auto rounded-lg bg-[#1c1b1b] p-4 font-mono text-sm text-[#c2c6d5]">
             <code>{submissionText}</code>
           </pre>
         )}
@@ -27,13 +27,13 @@ export function SubmissionPanel({ submissionText, files }: SubmissionPanelProps)
             <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">Files</p>
             <ul className="flex flex-col gap-1">
               {files.map((file) => (
-                <li key={file.name} className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-zinc-700/30">
+                <li key={file.name} className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-[#2a2a2a]/30">
                   <FileCode className="h-4 w-4 shrink-0 text-cyan-400" />
                   <a
                     href={file.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="truncate text-sm text-zinc-300 hover:text-[#e5e2e1]"
+                    className="truncate text-sm text-[#c2c6d5] hover:text-[#e5e2e1]"
                   >
                     {file.name}
                   </a>

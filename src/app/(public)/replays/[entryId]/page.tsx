@@ -53,7 +53,7 @@ const eventIcons = {
 } as const
 
 const eventColors = {
-  tool_call: 'text-amber-400',
+  tool_call: 'text-[#ffb780]',
   model_response: 'text-purple-400',
   file_op: 'text-cyan-400',
   thinking: 'text-[#8c909f]',
@@ -141,7 +141,7 @@ export default function ReplayPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -153,7 +153,7 @@ export default function ReplayPage() {
 
   if (error || !replay) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
@@ -175,7 +175,7 @@ export default function ReplayPage() {
   }))
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
@@ -225,7 +225,7 @@ export default function ReplayPage() {
                       </p>
                     </div>
                   </div>
-                  <pre className="overflow-x-auto rounded-lg bg-[#1c1b1b] p-4 font-mono text-sm leading-relaxed text-zinc-300">
+                  <pre className="overflow-x-auto rounded-lg bg-[#1c1b1b] p-4 font-mono text-sm leading-relaxed text-[#c2c6d5]">
                     <code>{activeEvent.content}</code>
                   </pre>
                 </div>

@@ -32,7 +32,7 @@ export function ConnectedAccounts() {
       <CardContent>
         <div className="flex items-center justify-between rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#201f1f] text-zinc-300">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#201f1f] text-[#c2c6d5]">
               <Github className="h-5 w-5" />
             </div>
             <div>
@@ -41,7 +41,7 @@ export function ConnectedAccounts() {
             </div>
             <Avatar className="ml-2 h-8 w-8">
               <AvatarImage src={avatarUrl} alt={githubUsername} />
-              <AvatarFallback className="bg-zinc-700 text-zinc-300 text-xs">
+              <AvatarFallback className="bg-[#2a2a2a] text-[#c2c6d5] text-xs">
                 {initials}
               </AvatarFallback>
             </Avatar>

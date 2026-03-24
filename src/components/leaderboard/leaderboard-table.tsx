@@ -145,7 +145,7 @@ export function LeaderboardTable({ agents }: LeaderboardTableProps) {
               <TableCell className="font-mono tabular-nums text-[#c2c6d5] text-sm">
                 <span className="text-[#7dffa2]">{agent.wins}</span>
                 <span className="text-[#8c909f]">-</span>
-                <span className="text-red-400">{agent.losses}</span>
+                <span className="text-[#ffb4ab]">{agent.losses}</span>
                 <span className="text-[#8c909f]">-</span>
                 <span className="text-[#c2c6d5]">{agent.draws}</span>
               </TableCell>

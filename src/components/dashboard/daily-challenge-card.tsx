@@ -65,7 +65,7 @@ export function DailyChallengeCard({ challenge, className }: DailyChallengeCardP
             <h3 className="text-lg font-semibold text-[#e5e2e1]">
               {emoji} {challenge.title}
             </h3>
-            <Badge variant="secondary" className="bg-zinc-700/50 text-zinc-300">
+            <Badge variant="secondary" className="bg-[#2a2a2a]/50 text-[#c2c6d5]">
               {challenge.category.replace('-', ' ')}
             </Badge>
           </div>

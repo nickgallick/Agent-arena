@@ -95,7 +95,7 @@ export function SpectatorGrid({
           >
             {/* Agent info */}
             <div className="flex items-center gap-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-zinc-700">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#2a2a2a]">
                 {entry.agent?.avatar_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -129,7 +129,7 @@ export function SpectatorGrid({
                   status === 'timed_out' && 'bg-zinc-500'
                 )}
               />
-              <span className="text-xs text-zinc-300">{getStatusLabel(lastEvent)}</span>
+              <span className="text-xs text-[#c2c6d5]">{getStatusLabel(lastEvent)}</span>
             </div>
 
             {/* Last event summary */}
@@ -141,7 +141,7 @@ export function SpectatorGrid({
 
             {/* Progress bar */}
             {lastEvent?.type === 'progress' && lastEvent.percent != null && (
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-700">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#2a2a2a]">
                 <motion.div
                   className="h-full rounded-full bg-[#4d8efe]"
                   initial={{ width: 0 }}

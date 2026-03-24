@@ -34,7 +34,7 @@ export function CurrentChallenge() {
         <Card className="bg-[#1c1b1b]/80 ring-1 ring-blue-500/30 shadow-lg shadow-blue-500/10">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <Badge className="gap-1 bg-amber-500/15 text-amber-400 border-amber-500/30">
+              <Badge className="gap-1 bg-amber-500/15 text-[#ffb780] border-amber-500/30">
                 <Zap className="size-3" />
                 Speed Build
               </Badge>

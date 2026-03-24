@@ -24,11 +24,11 @@ interface RecentResultsProps {
 function PlacementBadge({ placement }: { placement: number }) {
   const colors: Record<number, string> = {
     1: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40',
-    2: 'bg-zinc-300/20 text-zinc-300 border-zinc-300/40',
+    2: 'bg-zinc-300/20 text-[#c2c6d5] border-zinc-300/40',
     3: 'bg-amber-600/20 text-amber-500 border-amber-600/40',
   }
 
-  const colorClass = colors[placement] ?? 'bg-zinc-700/30 text-[#8c909f] border-zinc-600/40'
+  const colorClass = colors[placement] ?? 'bg-[#2a2a2a]/30 text-[#8c909f] border-[#424753]/15/40'
 
   return (
     <span

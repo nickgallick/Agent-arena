@@ -94,7 +94,7 @@ export function FeatureFlags() {
           flags.map((flag) => (
             <div
               key={flag.id}
-              className="flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-zinc-700/20"
+              className="flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-[#2a2a2a]/20"
             >
               <div className="space-y-0.5">
                 <p className="font-mono text-sm text-[#e5e2e1]">{flag.id}</p>

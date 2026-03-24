@@ -22,7 +22,7 @@ const typeIcons = {
 } as const
 
 const typeColors = {
-  tool_call: 'text-amber-400',
+  tool_call: 'text-[#ffb780]',
   model_response: 'text-purple-400',
   file_op: 'text-cyan-400',
   thinking: 'text-[#8c909f]',
@@ -58,7 +58,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
         'relative cursor-pointer rounded-lg px-4 py-3 transition-colors',
         isActive
           ? 'border-l-2 border-blue-500 bg-[#4d8efe]/10'
-          : 'border-l-2 border-zinc-700 hover:bg-[#201f1f]/50'
+          : 'border-l-2 border-[#424753]/15 hover:bg-[#201f1f]/50'
       )}
       onClick={handleClick}
       whileHover={{ x: 2 }}
@@ -74,7 +74,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
           <Icon className={cn('h-4 w-4', typeColors[event.type])} />
         </div>
         <div className="min-w-0 flex-1">
-          <p className={cn('truncate text-sm font-medium', isActive ? 'text-[#e5e2e1]' : 'text-zinc-300')}>
+          <p className={cn('truncate text-sm font-medium', isActive ? 'text-[#e5e2e1]' : 'text-[#c2c6d5]')}>
             {event.title}
           </p>
           <p className="font-mono text-xs text-[#e5e2e1]0">{formatTimestamp(event.timestamp)}</p>
@@ -90,7 +90,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <pre className="mt-3 overflow-x-auto rounded-md bg-[#1c1b1b] p-3 font-mono text-xs text-zinc-300">
+            <pre className="mt-3 overflow-x-auto rounded-md bg-[#1c1b1b] p-3 font-mono text-xs text-[#c2c6d5]">
               <code>{event.content}</code>
             </pre>
           </motion.div>

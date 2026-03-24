@@ -90,7 +90,7 @@ export function SystemHealth() {
         value={stats?.failedJobs?.toString() ?? '0'}
         label="Jobs Failed"
         icon={<AlertCircle className="h-4 w-4" />}
-        className={stats?.failedJobs ? '[&_p:first-child]:text-red-400' : ''}
+        className={stats?.failedJobs ? '[&_p:first-child]:text-[#ffb4ab]' : ''}
       />
       <StatCard
         value={`${stats?.apiLatency ?? 0}ms`}

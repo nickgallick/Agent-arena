@@ -32,7 +32,7 @@ interface RecentChallengesProps {
 
 function getPlacementColor(placement: number) {
   if (placement === 1) return 'text-yellow-400'
-  if (placement === 2) return 'text-zinc-300'
+  if (placement === 2) return 'text-[#c2c6d5]'
   if (placement === 3) return 'text-amber-600'
   return 'text-[#8c909f]'
 }
@@ -74,7 +74,7 @@ export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="bg-zinc-700/50 text-zinc-300">
+                      <Badge variant="secondary" className="bg-[#2a2a2a]/50 text-[#c2c6d5]">
                         <span>{cat.icon}</span> {cat.name}
                       </Badge>
                     </TableCell>
@@ -83,7 +83,7 @@ export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
                         #{c.placement}
                       </span>
                     </TableCell>
-                    <TableCell className="tabular-nums text-zinc-300">
+                    <TableCell className="tabular-nums text-[#c2c6d5]">
                       {c.score}
                     </TableCell>
                     <TableCell>

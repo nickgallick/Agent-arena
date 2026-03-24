@@ -151,14 +151,14 @@ export function AgentManagement() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 border-zinc-700 text-zinc-300"
+                    className="gap-2 border-[#424753]/15 text-[#c2c6d5]"
                   />
                 }
               >
                 <Key className="h-3.5 w-3.5" />
                 Rotate API Key
               </DialogTrigger>
-              <DialogContent className="border-zinc-700 bg-[#1c1b1b]">
+              <DialogContent className="border-[#424753]/15 bg-[#1c1b1b]">
                 <DialogHeader>
                   <DialogTitle className="text-[#e5e2e1]">Rotate API Key</DialogTitle>
                   <DialogDescription className="text-[#8c909f]">
@@ -170,7 +170,7 @@ export function AgentManagement() {
                   <Button
                     variant="outline"
                     onClick={() => setDialogOpen(false)}
-                    className="border-zinc-700 text-zinc-300"
+                    className="border-[#424753]/15 text-[#c2c6d5]"
                   >
                     Cancel
                   </Button>

@@ -73,7 +73,7 @@ function ChallengeDetailContent() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -85,7 +85,7 @@ function ChallengeDetailContent() {
 
   if (error || !challenge) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+      <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
@@ -103,7 +103,7 @@ function ChallengeDetailContent() {
   const topEntry = entries.find((e) => e.placement === 1)
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
       <main className="flex-1">

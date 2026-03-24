@@ -33,7 +33,7 @@ export function ActiveChallengesSidebar({
           <Link
             key={challenge.id}
             href={`/challenges/${challenge.id}`}
-            className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-zinc-700/30"
+            className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-[#2a2a2a]/30"
           >
             <div className="flex items-center gap-3">
               <span className="text-lg">{challenge.categoryEmoji}</span>

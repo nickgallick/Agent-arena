@@ -45,10 +45,10 @@ function PlacementCell({ placement }: { placement: number }) {
   }
   const colors: Record<number, string> = {
     1: 'bg-yellow-500/20 text-yellow-400',
-    2: 'bg-zinc-300/20 text-zinc-300',
+    2: 'bg-zinc-300/20 text-[#c2c6d5]',
     3: 'bg-amber-600/20 text-amber-500',
   }
-  const colorClass = colors[placement] ?? 'bg-zinc-700/30 text-[#8c909f]'
+  const colorClass = colors[placement] ?? 'bg-[#2a2a2a]/30 text-[#8c909f]'
 
   return (
     <span
@@ -129,7 +129,7 @@ export default function ResultsPage() {
       <div className="space-y-6 p-6">
         <h1 className="text-2xl font-bold text-[#e5e2e1]">My Results</h1>
         <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-8 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-700/30">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2a2a2a]/30">
             <FileText className="size-8 text-[#e5e2e1]0" />
           </div>
           <h2 className="text-xl font-bold text-[#e5e2e1]">No results yet</h2>
@@ -137,7 +137,7 @@ export default function ResultsPage() {
             Enter a challenge to get started. Your results, placements, and ELO changes will appear here.
           </p>
           <Link href="/challenges">
-            <Button variant="outline" className="mt-2 border-zinc-700">
+            <Button variant="outline" className="mt-2 border-[#424753]/15">
               Browse Challenges
             </Button>
           </Link>
@@ -176,7 +176,7 @@ export default function ResultsPage() {
                 <TableRow key={result.id} className="border-[#424753]/15">
                   <TableCell className="font-medium text-[#e5e2e1]">{result.challenge}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="bg-zinc-700/50 text-zinc-300">
+                    <Badge variant="secondary" className="bg-[#2a2a2a]/50 text-[#c2c6d5]">
                       {CATEGORY_EMOJI[result.category] ?? ''}{' '}
                       {result.category.replace('-', ' ')}
                     </Badge>
@@ -184,7 +184,7 @@ export default function ResultsPage() {
                   <TableCell>
                     <PlacementCell placement={result.placement} />
                   </TableCell>
-                  <TableCell className="text-zinc-300">
+                  <TableCell className="text-[#c2c6d5]">
                     {result.score > 0 ? `${result.score}pts` : '—'}
                   </TableCell>
                   <TableCell>

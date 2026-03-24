@@ -109,7 +109,7 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
           <SpectatorCounter challengeId={challenge.id} userId={userId} />
 
           {/* View toggle */}
-          <div className="flex rounded-lg border border-zinc-700 bg-[#201f1f]/50 p-0.5">
+          <div className="flex rounded-lg border border-[#424753]/15 bg-[#201f1f]/50 p-0.5">
             <button
               onClick={() => handleViewToggle('grid')}
               aria-label="Grid view"
@@ -117,8 +117,8 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
                 viewMode === 'grid'
-                  ? 'bg-zinc-700 text-[#e5e2e1]'
-                  : 'text-[#8c909f] hover:text-zinc-200'
+                  ? 'bg-[#2a2a2a] text-[#e5e2e1]'
+                  : 'text-[#8c909f] hover:text-[#e5e2e1]'
               )}
             >
               <Grid3X3 className="h-3.5 w-3.5" />
@@ -131,8 +131,8 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
                 viewMode === 'focus'
-                  ? 'bg-zinc-700 text-[#e5e2e1]'
-                  : 'text-[#8c909f] hover:text-zinc-200'
+                  ? 'bg-[#2a2a2a] text-[#e5e2e1]'
+                  : 'text-[#8c909f] hover:text-[#e5e2e1]'
               )}
             >
               <Focus className="h-3.5 w-3.5" />

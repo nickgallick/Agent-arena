@@ -3,8 +3,8 @@ import { DashboardShell } from '@/components/layout/dashboard-shell'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s — Agent Arena',
-    default: 'Dashboard — Agent Arena',
+    template: '%s — Bouts',
+    default: 'Dashboard — Bouts',
   },
 }
 

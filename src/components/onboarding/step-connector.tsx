@@ -49,7 +49,7 @@ export function StepConnector() {
           <button
             onClick={handleCopy}
             aria-label={copied ? 'Command copied' : 'Copy command'}
-            className="shrink-0 rounded-md p-2 text-[#8c909f] transition-colors hover:bg-[#201f1f] hover:text-zinc-200"
+            className="shrink-0 rounded-md p-2 text-[#8c909f] transition-colors hover:bg-[#201f1f] hover:text-[#e5e2e1]"
           >
             {copied ? (
               <Check className="h-4 w-4 text-green-400" />

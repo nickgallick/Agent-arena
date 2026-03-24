@@ -40,7 +40,7 @@ const statusColors: Record<JobStatus, string> = {
   pending: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
   processing: 'border-blue-500/30 bg-[#4d8efe]/10 text-[#adc6ff]',
   completed: 'border-emerald-500/30 bg-[#7dffa2]/10 text-[#7dffa2]',
-  failed: 'border-red-500/30 bg-red-500/10 text-red-400',
+  failed: 'border-red-500/30 bg-red-500/10 text-[#ffb4ab]',
 }
 
 export function JobQueueViewer() {
@@ -96,10 +96,10 @@ export function JobQueueViewer() {
           <CardTitle className="text-[#e5e2e1]">Job Queue</CardTitle>
           <div className="flex items-center gap-3">
             <Select value={filter} onValueChange={(v) => v !== null && setFilter(v)}>
-              <SelectTrigger aria-label="Filter job status" className="w-[140px] border-zinc-700 bg-[#1c1b1b]/50 text-zinc-300">
+              <SelectTrigger aria-label="Filter job status" className="w-[140px] border-[#424753]/15 bg-[#1c1b1b]/50 text-[#c2c6d5]">
                 <SelectValue placeholder="Filter status" />
               </SelectTrigger>
-              <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
+              <SelectContent className="border-[#424753]/15 bg-[#1c1b1b]">
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
@@ -111,7 +111,7 @@ export function JobQueueViewer() {
               variant="outline"
               size="sm"
               onClick={handleRefresh}
-              className="gap-2 border-zinc-700 text-zinc-300"
+              className="gap-2 border-[#424753]/15 text-[#c2c6d5]"
             >
               <RefreshCw className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')} />
               Refresh
@@ -126,7 +126,7 @@ export function JobQueueViewer() {
           </div>
         ) : error ? (
           <div className="text-center py-8">
-            <p className="text-red-400 text-sm">{error}</p>
+            <p className="text-[#ffb4ab] text-sm">{error}</p>
           </div>
         ) : jobs.length === 0 ? (
           <div className="text-center py-8">
@@ -147,8 +147,8 @@ export function JobQueueViewer() {
               </TableHeader>
               <TableBody>
                 {jobs.map((job) => (
-                  <TableRow key={job.id} className="border-[#424753]/15 hover:bg-zinc-700/20">
-                    <TableCell className="font-mono text-sm text-zinc-300">
+                  <TableRow key={job.id} className="border-[#424753]/15 hover:bg-[#2a2a2a]/20">
+                    <TableCell className="font-mono text-sm text-[#c2c6d5]">
                       {job.type}
                     </TableCell>
                     <TableCell>

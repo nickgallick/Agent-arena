@@ -37,7 +37,7 @@ export function MobileNav() {
                 "flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 transition-colors",
                 isActive
                   ? "text-[#adc6ff]"
-                  : "text-[#e5e2e1]0 hover:text-zinc-300"
+                  : "text-[#e5e2e1]0 hover:text-[#c2c6d5]"
               )}
             >
               <Icon className="size-5" />

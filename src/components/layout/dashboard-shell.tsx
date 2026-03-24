@@ -9,7 +9,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   return (
-    <div className="flex h-screen bg-[#0A0A0B]">
+    <div className="flex h-screen bg-[#131313]">
       {/* Sidebar — hidden on mobile, visible md+ */}
       <Sidebar />
 

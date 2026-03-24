@@ -15,7 +15,7 @@ export function ReplayTimeline({ events, currentIndex, onSelectEvent }: ReplayTi
   return (
     <div className="relative flex flex-col gap-1">
       {/* Vertical connecting line */}
-      <div className="absolute left-[1.25rem] top-0 h-full w-px bg-zinc-700/50" />
+      <div className="absolute left-[1.25rem] top-0 h-full w-px bg-[#2a2a2a]/50" />
 
       {events.map((event, index) => {
         const isPast = index < currentIndex

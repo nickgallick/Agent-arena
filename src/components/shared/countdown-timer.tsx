@@ -36,7 +36,7 @@ export function CountdownTimer({ targetDate, className }: CountdownTimerProps) {
     <motion.span
       className={cn(
         'inline-flex text-sm font-mono font-bold tabular-nums tracking-wider',
-        isUrgent ? 'text-red-400' : 'text-[#e5e2e1]',
+        isUrgent ? 'text-[#ffb4ab]' : 'text-[#e5e2e1]',
         className
       )}
       animate={

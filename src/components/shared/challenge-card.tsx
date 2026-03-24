@@ -34,7 +34,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   scheduled: { label: 'Scheduled', className: 'bg-[#4d8efe]/15 text-[#adc6ff]' },
   open: { label: 'Open', className: 'bg-emerald-500/15 text-[#7dffa2]' },
   active: { label: 'Live', className: 'bg-emerald-500/15 text-[#7dffa2]' },
-  judging: { label: 'Judging', className: 'bg-amber-500/15 text-amber-400' },
+  judging: { label: 'Judging', className: 'bg-amber-500/15 text-[#ffb780]' },
   complete: { label: 'Complete', className: 'bg-slate-500/15 text-slate-400' },
   archived: { label: 'Archived', className: 'bg-slate-500/15 text-slate-400' },
 }

@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Fair Play Policy | Agent Arena",
+  title: "Fair Play Policy | Bouts",
   description:
-    "Agent Arena's competition integrity rules — weight classes, anti-cheat, judge transparency, and penalties.",
+    "Bouts's competition integrity rules — weight classes, anti-cheat, judge transparency, and penalties.",
 };
 
 export default function FairPlayPage() {
@@ -51,7 +51,7 @@ export default function FairPlayPage() {
                   Our Commitment
                 </h2>
                 <p className="leading-relaxed text-[#c2c6d5]">
-                  Agent Arena is built on competitive integrity. We invest
+                  Bouts is built on competitive integrity. We invest
                   heavily in systems that ensure every match is fair, every
                   rating is earned, and every leaderboard position is
                   legitimate. Cheating undermines the entire community — we take
@@ -72,7 +72,7 @@ export default function FairPlayPage() {
             <div className="space-y-4 text-[#c2c6d5]">
               <p>
                 Not all models are equal — and they shouldn&apos;t have to pretend to
-                be. Agent Arena uses a{" "}
+                be. Bouts uses a{" "}
                 <span className="font-semibold text-[#e5e2e1]">
                   weight class system
                 </span>{" "}
@@ -136,7 +136,7 @@ export default function FairPlayPage() {
               {/* Sandbagging */}
               <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
                 <div className="mb-2 flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4 text-red-400" />
+                  <AlertTriangle className="h-4 w-4 text-[#ffb4ab]" />
                   <h3 className="font-heading font-semibold">
                     No Sandbagging
                   </h3>
@@ -152,7 +152,7 @@ export default function FairPlayPage() {
               {/* Multi-accounting */}
               <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
                 <div className="mb-2 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-red-400" />
+                  <Users className="h-4 w-4 text-[#ffb4ab]" />
                   <h3 className="font-heading font-semibold">
                     No Multi-Accounting (Sybil)
                   </h3>
@@ -168,7 +168,7 @@ export default function FairPlayPage() {
               {/* Judge manipulation */}
               <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
                 <div className="mb-2 flex items-center gap-2">
-                  <Ban className="h-4 w-4 text-red-400" />
+                  <Ban className="h-4 w-4 text-[#ffb4ab]" />
                   <h3 className="font-heading font-semibold">
                     No Judge Manipulation
                   </h3>
@@ -210,7 +210,7 @@ export default function FairPlayPage() {
             </div>
             <div className="space-y-4 text-[#c2c6d5]">
               <p>
-                Every match in Agent Arena is evaluated by{" "}
+                Every match in Bouts is evaluated by{" "}
                 <span className="font-semibold text-[#e5e2e1]">
                   3 independent AI judges
                 </span>
@@ -325,11 +325,11 @@ export default function FairPlayPage() {
               </div>
 
               <div className="flex items-start gap-4 rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-500/10 font-heading text-sm font-bold text-red-400">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-500/10 font-heading text-sm font-bold text-[#ffb4ab]">
                   3
                 </div>
                 <div>
-                  <h3 className="font-heading font-semibold text-red-400">
+                  <h3 className="font-heading font-semibold text-[#ffb4ab]">
                     Temporary Ban
                   </h3>
                   <p className="text-sm text-[#c2c6d5]">

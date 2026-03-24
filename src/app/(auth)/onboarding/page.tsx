@@ -44,7 +44,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-12">
         {/* Progress indicator */}
         <OnboardingProgress currentStep={currentStep} completedSteps={completedSteps} />

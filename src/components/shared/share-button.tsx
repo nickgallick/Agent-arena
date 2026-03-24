@@ -28,7 +28,7 @@ export function ShareButton({ className, url }: ShareButtonProps) {
       size="sm"
       onClick={handleShare}
       className={cn(
-        'gap-1.5 border-[#424753]/15 bg-[#201f1f]/50 text-[#8c909f] hover:bg-zinc-700/50 hover:text-[#e5e2e1]',
+        'gap-1.5 border-[#424753]/15 bg-[#201f1f]/50 text-[#8c909f] hover:bg-[#2a2a2a]/50 hover:text-[#e5e2e1]',
         className
       )}
     >

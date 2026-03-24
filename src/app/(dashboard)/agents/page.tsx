@@ -239,7 +239,7 @@ export default function AgentsPage() {
             Register up to 3 agents. Each agent gets its own API key and can compete independently.
           </p>
         </div>
-        <Badge variant="secondary" className="bg-[#201f1f] text-zinc-300 border border-zinc-700">
+        <Badge variant="secondary" className="bg-[#201f1f] text-[#c2c6d5] border border-[#424753]/15">
           {agents.length}/3 agents
         </Badge>
       </div>
@@ -283,7 +283,7 @@ export default function AgentsPage() {
                           </div>
                         </div>
                         {agent.model_name && (
-                          <Badge variant="secondary" className="bg-zinc-700/50 text-zinc-300 w-fit">
+                          <Badge variant="secondary" className="bg-[#2a2a2a]/50 text-[#c2c6d5] w-fit">
                             <Cpu className="mr-1 size-3" />
                             {agent.model_name}
                           </Badge>
@@ -316,7 +316,7 @@ export default function AgentsPage() {
                   {agent.bio && (
                     <div>
                       <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0 mb-1">Bio</p>
-                      <p className="text-sm text-zinc-300">{agent.bio}</p>
+                      <p className="text-sm text-[#c2c6d5]">{agent.bio}</p>
                     </div>
                   )}
 
@@ -324,12 +324,12 @@ export default function AgentsPage() {
                     <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">API Key</p>
                     <div className="flex items-center justify-between gap-3 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 px-3 py-3">
                       <div>
-                        <p className="font-mono text-sm text-zinc-300">{agent.api_key_prefix ?? 'aa_****'}••••••••</p>
+                        <p className="font-mono text-sm text-[#c2c6d5]">{agent.api_key_prefix ?? 'aa_****'}••••••••</p>
                         <p className="text-xs text-[#e5e2e1]0">You only see the full key when it is created or rotated.</p>
                       </div>
                       <Button
                         variant="outline"
-                        className="gap-2 border-zinc-700 shrink-0"
+                        className="gap-2 border-[#424753]/15 shrink-0"
                         onClick={() => handleRotateKey(agent.id)}
                         disabled={rotatingAgentId === agent.id}
                       >
@@ -363,25 +363,25 @@ export default function AgentsPage() {
 
           <form onSubmit={handleRegister} className="mt-4 max-w-md space-y-4 text-left">
             <div className="space-y-2">
-              <Label htmlFor="agent-name" className="text-zinc-300">Agent Name</Label>
+              <Label htmlFor="agent-name" className="text-[#c2c6d5]">Agent Name</Label>
               <Input
                 id="agent-name"
                 value={regName}
                 onChange={(e) => setRegName(e.target.value)}
                 placeholder="my-agent-01"
                 maxLength={32}
-                className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+                className="border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
               />
               <p className="text-xs text-[#e5e2e1]0">3-32 chars, alphanumeric, dash, or underscore</p>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-zinc-300">Model</Label>
+              <Label className="text-[#c2c6d5]">Model</Label>
               <Select value={regModel} onValueChange={(v) => v && setRegModel(v)}>
-                <SelectTrigger aria-label="Select model" className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1]">
+                <SelectTrigger aria-label="Select model" className="border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1]">
                   <SelectValue placeholder="Select model" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
+                <SelectContent className="border-[#424753]/15 bg-[#1c1b1b]">
                   {MODEL_OPTIONS.map((m) => (
                     <SelectItem key={m.identifier} value={m.identifier}>
                       {m.label}
@@ -392,7 +392,7 @@ export default function AgentsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="agent-bio" className="text-zinc-300">
+              <Label htmlFor="agent-bio" className="text-[#c2c6d5]">
                 Bio <span className="text-[#e5e2e1]0">(optional)</span>
               </Label>
               <Textarea
@@ -402,12 +402,12 @@ export default function AgentsPage() {
                 placeholder="A short description of your agent"
                 maxLength={200}
                 rows={2}
-                className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+                className="border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
               />
               <p className="text-xs text-[#e5e2e1]0">{regBio.length}/200</p>
             </div>
 
-            {formError && <p className="text-sm text-red-400">{formError}</p>}
+            {formError && <p className="text-sm text-[#ffb4ab]">{formError}</p>}
 
             <Button type="submit" disabled={submitting} className="w-full bg-[#4d8efe] hover:bg-[#adc6ff]">
               {submitting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
@@ -418,7 +418,7 @@ export default function AgentsPage() {
       )}
 
       <Dialog open={!!apiKey} onOpenChange={(open) => { if (!open) handleDismissKeyDialog() }}>
-        <DialogContent className="border-zinc-700 bg-[#1c1b1b] sm:max-w-md">
+        <DialogContent className="border-[#424753]/15 bg-[#1c1b1b] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-[#e5e2e1]">
               {apiKeyDialogMode === 'rotated' ? 'Your New API Key' : 'Your API Key'}
@@ -431,17 +431,17 @@ export default function AgentsPage() {
           </DialogHeader>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-              <AlertTriangle className="size-4 shrink-0 text-amber-400" />
-              <p className="text-sm font-medium text-amber-300">
+            <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-[#ffb780]/10 p-3">
+              <AlertTriangle className="size-4 shrink-0 text-[#ffb780]" />
+              <p className="text-sm font-medium text-[#ffb780]">
                 {apiKeyDialogMode === 'rotated' ? 'This is your replacement key — save it now' : 'This key is shown once — save it now'}
               </p>
             </div>
             <div className="space-y-2">
-              <code className="block w-full overflow-x-auto break-all rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 font-mono text-xs text-[#7dffa2]">
+              <code className="block w-full overflow-x-auto break-all rounded-lg border border-[#424753]/15 bg-zinc-950 px-3 py-2 font-mono text-xs text-[#7dffa2]">
                 {apiKey}
               </code>
-              <Button variant="outline" onClick={handleCopyApiKey} className="w-full gap-2 border-zinc-700">
+              <Button variant="outline" onClick={handleCopyApiKey} className="w-full gap-2 border-[#424753]/15">
                 {keyCopied ? (
                   <>
                     <Check className="size-4 text-[#7dffa2]" />
@@ -459,7 +459,7 @@ export default function AgentsPage() {
 
           <DialogFooter>
             <DialogClose>
-              <Button variant="outline" className="border-zinc-700" onClick={handleDismissKeyDialog}>
+              <Button variant="outline" className="border-[#424753]/15" onClick={handleDismissKeyDialog}>
                 {apiKeyDialogMode === 'rotated' ? 'I saved my new key' : 'I&apos;ve saved my key'}
               </Button>
             </DialogClose>

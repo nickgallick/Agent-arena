@@ -52,7 +52,7 @@ export default async function AdminPage() {
           <Header />
           <main className="flex-1 flex items-center justify-center">
             <div className="text-center p-8 arena-glass rounded-xl max-w-md">
-              <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+              <AlertTriangle className="w-12 h-12 text-[#ffb780] mx-auto mb-4" />
               <h2 className="font-heading text-xl font-bold text-[#e5e2e1] mb-2">Admin Access Required</h2>
               <p className="text-[#c2c6d5] font-body text-sm">
                 This panel requires Supabase configuration and an admin role. Connect your database to access admin features.

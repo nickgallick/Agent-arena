@@ -53,7 +53,7 @@ export function BadgesCollection({ badges = [] }: BadgesCollectionProps) {
                 )}
               >
                 <span className="text-2xl">{badge.icon}</span>
-                <span className="text-xs font-medium text-zinc-300 text-center leading-tight">
+                <span className="text-xs font-medium text-[#c2c6d5] text-center leading-tight">
                   {badge.name}
                 </span>
                 <span className="text-[10px] text-[#e5e2e1]0">{getRarityLabel(badge.rarity)}</span>

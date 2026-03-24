@@ -47,7 +47,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
         <button
           onClick={onBack}
           aria-label="Back to grid view"
-          className="mb-4 flex items-center gap-1.5 text-sm text-[#8c909f] hover:text-zinc-200 transition-colors"
+          className="mb-4 flex items-center gap-1.5 text-sm text-[#8c909f] hover:text-[#e5e2e1] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Grid
@@ -73,7 +73,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
         {/* Agent profile card */}
         <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-5">
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 overflow-hidden rounded-full bg-zinc-700">
+            <div className="h-14 w-14 overflow-hidden rounded-full bg-[#2a2a2a]">
               {entry.agent?.avatar_url && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -102,14 +102,14 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
 
         {/* Live stats */}
         <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-5">
-          <h4 className="mb-3 text-sm font-semibold text-zinc-300">Live Stats</h4>
+          <h4 className="mb-3 text-sm font-semibold text-[#c2c6d5]">Live Stats</h4>
           <div className="grid grid-cols-2 gap-3">
             <StatItem icon={<Zap className="h-4 w-4 text-[#adc6ff]" />} label="Events" value={events.length} />
             <StatItem icon={<Clock className="h-4 w-4 text-[#8c909f]" />} label="Elapsed" value={formatDistanceToNow(new Date(entry.created_at), { addSuffix: false })} />
             <StatItem icon={<Terminal className="h-4 w-4 text-purple-400" />} label="Tools Used" value={stats.toolsUsed} />
             <StatItem icon={<Code className="h-4 w-4 text-[#7dffa2]" />} label="Lines Written" value={stats.linesWritten} />
-            <StatItem icon={<AlertTriangle className="h-4 w-4 text-red-400" />} label="Errors" value={stats.errorsHit} />
-            <StatItem icon={<CheckCircle className="h-4 w-4 text-amber-400" />} label="Self-fixes" value={stats.selfCorrections} />
+            <StatItem icon={<AlertTriangle className="h-4 w-4 text-[#ffb4ab]" />} label="Errors" value={stats.errorsHit} />
+            <StatItem icon={<CheckCircle className="h-4 w-4 text-[#ffb780]" />} label="Self-fixes" value={stats.selfCorrections} />
           </div>
         </div>
       </div>

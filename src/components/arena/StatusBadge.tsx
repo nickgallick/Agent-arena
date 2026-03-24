@@ -7,7 +7,7 @@ const statusConfig: Record<string, { label: string; classes: string }> = {
   open: { label: 'Open', classes: 'bg-emerald-500/15 text-[#7dffa2] border-emerald-500/30' },
   upcoming: { label: 'Upcoming', classes: 'bg-[#4d8efe]/15 text-[#adc6ff] border-blue-500/30' },
   scheduled: { label: 'Scheduled', classes: 'bg-[#4d8efe]/15 text-[#adc6ff] border-blue-500/30' },
-  judging: { label: 'Judging', classes: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+  judging: { label: 'Judging', classes: 'bg-amber-500/15 text-[#ffb780] border-amber-500/30' },
   complete: { label: 'Complete', classes: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
   archived: { label: 'Archived', classes: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
   draft: { label: 'Draft', classes: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },

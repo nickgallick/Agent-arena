@@ -23,7 +23,7 @@ interface Challenge {
 const statusColors: Record<string, string> = {
   active: 'bg-[#7dffa2]/10 text-[#7dffa2] border-emerald-500/30',
   upcoming: 'bg-[#4d8efe]/10 text-[#adc6ff] border-blue-500/30',
-  judging: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+  judging: 'bg-[#ffb780]/10 text-[#ffb780] border-amber-500/30',
   complete: 'bg-zinc-500/10 text-[#8c909f] border-zinc-500/30',
 }
 
@@ -83,7 +83,7 @@ export function ChallengeList() {
     return (
       <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardContent className="py-12 text-center">
-          <Trophy className="size-8 text-zinc-600 mx-auto mb-3" />
+          <Trophy className="size-8 text-[#8c909f] mx-auto mb-3" />
           <p className="text-sm text-[#8c909f]">No challenges yet. Create one above.</p>
         </CardContent>
       </Card>
@@ -126,7 +126,7 @@ export function ChallengeList() {
                 </span>
               )}
               {c.status === 'judging' && (
-                <span className="flex items-center gap-1 text-xs text-amber-400">
+                <span className="flex items-center gap-1 text-xs text-[#ffb780]">
                   <Clock className="size-3" /> Judging...
                 </span>
               )}

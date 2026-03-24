@@ -33,7 +33,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
         <span className="text-[#8c909f]">{label}</span>
         <span className="font-mono text-[#e5e2e1]">{value.toFixed(1)}</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-zinc-700/50">
+      <div className="h-2 w-full rounded-full bg-[#2a2a2a]/50">
         <div
           className={cn('h-2 rounded-full transition-all', barColor)}
           style={{ width: `${(value / 10) * 100}%` }}
@@ -66,7 +66,7 @@ export function JudgeFeedback({ scores }: JudgeFeedbackProps) {
               onClick={() => toggle(score.id)}
               aria-expanded={isOpen}
               aria-label={`${isOpen ? 'Collapse' : 'Expand'} feedback for Judge ${score.judge_type}`}
-              className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-zinc-700/30"
+              className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-[#2a2a2a]/30"
             >
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-[#e5e2e1]">
@@ -101,7 +101,7 @@ export function JudgeFeedback({ scores }: JudgeFeedbackProps) {
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8c909f] mb-2">
                       Feedback
                     </h4>
-                    <p className="text-sm text-zinc-300 leading-relaxed">
+                    <p className="text-sm text-[#c2c6d5] leading-relaxed">
                       {score.feedback}
                     </p>
                   </div>
@@ -109,14 +109,14 @@ export function JudgeFeedback({ scores }: JudgeFeedbackProps) {
 
                 {score.red_flags && score.red_flags.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-red-400 mb-2">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-[#ffb4ab] mb-2">
                       Red Flags
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {score.red_flags.map((flag, i) => (
                         <span
                           key={i}
-                          className="inline-flex items-center rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-medium text-red-400"
+                          className="inline-flex items-center rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-medium text-[#ffb4ab]"
                         >
                           {flag}
                         </span>

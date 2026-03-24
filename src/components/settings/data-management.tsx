@@ -72,7 +72,7 @@ export function DataManagement() {
     <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
-          <AlertTriangle className="h-5 w-5 text-amber-400" />
+          <AlertTriangle className="h-5 w-5 text-[#ffb780]" />
           Data Management
         </CardTitle>
         <CardDescription className="text-[#8c909f]">
@@ -86,7 +86,7 @@ export function DataManagement() {
             variant="outline"
             onClick={handleExport}
             disabled={exporting}
-            className="gap-2 border-zinc-700 text-zinc-300"
+            className="gap-2 border-[#424753]/15 text-[#c2c6d5]"
           >
             {exporting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -103,7 +103,7 @@ export function DataManagement() {
               <Trash2 className="h-4 w-4" />
               Delete Account
             </DialogTrigger>
-            <DialogContent className="border-zinc-700 bg-[#1c1b1b]">
+            <DialogContent className="border-[#424753]/15 bg-[#1c1b1b]">
               <DialogHeader>
                 <DialogTitle className="text-[#e5e2e1]">Delete Account</DialogTitle>
                 <DialogDescription className="text-[#8c909f]">
@@ -113,15 +113,15 @@ export function DataManagement() {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-2 py-2">
-                <Label htmlFor="confirm-delete" className="text-sm text-zinc-300">
-                  Type <span className="font-mono font-bold text-red-400">DELETE</span> to confirm
+                <Label htmlFor="confirm-delete" className="text-sm text-[#c2c6d5]">
+                  Type <span className="font-mono font-bold text-[#ffb4ab]">DELETE</span> to confirm
                 </Label>
                 <Input
                   id="confirm-delete"
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="DELETE"
-                  className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-zinc-600"
+                  className="border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#8c909f]"
                 />
               </div>
               <DialogFooter className="gap-2 sm:gap-0">
@@ -131,7 +131,7 @@ export function DataManagement() {
                     setDeleteDialogOpen(false)
                     setConfirmText('')
                   }}
-                  className="border-zinc-700 text-zinc-300"
+                  className="border-[#424753]/15 text-[#c2c6d5]"
                 >
                   Cancel
                 </Button>

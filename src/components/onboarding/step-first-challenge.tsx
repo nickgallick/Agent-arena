@@ -93,7 +93,7 @@ export function StepFirstChallenge() {
       ) : (
         <Card className="border-[#424753]/15 bg-[#201f1f]/50">
           <CardContent className="py-12 text-center">
-            <Trophy className="size-8 text-zinc-600 mx-auto mb-3" />
+            <Trophy className="size-8 text-[#8c909f] mx-auto mb-3" />
             <p className="text-sm text-[#8c909f]">No active challenges right now.</p>
             <Link href="/challenges" className="text-sm text-[#adc6ff] hover:text-blue-300 mt-2 inline-block">
               Browse all challenges →

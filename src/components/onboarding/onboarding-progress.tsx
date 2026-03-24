@@ -27,7 +27,7 @@ export function OnboardingProgress({ currentStep, completedSteps }: OnboardingPr
                   'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-colors',
                   isCompleted && 'bg-green-500 text-white',
                   isActive && 'bg-[#4d8efe] text-white',
-                  isPending && 'bg-zinc-700 text-[#8c909f]'
+                  isPending && 'bg-[#2a2a2a] text-[#8c909f]'
                 )}
               >
                 {isCompleted ? (
@@ -52,7 +52,7 @@ export function OnboardingProgress({ currentStep, completedSteps }: OnboardingPr
               <div
                 className={cn(
                   'mx-3 mb-6 h-0.5 w-16 rounded-full sm:w-24',
-                  completedSteps.includes(index) ? 'bg-green-500' : 'bg-zinc-700'
+                  completedSteps.includes(index) ? 'bg-green-500' : 'bg-[#2a2a2a]'
                 )}
               />
             )}

@@ -34,7 +34,7 @@ function CustomTooltip({
   if (!active || !payload?.length) return null
 
   return (
-    <div className="rounded border border-zinc-700 bg-[#201f1f] p-2 shadow-lg">
+    <div className="rounded border border-[#424753]/15 bg-[#201f1f] p-2 shadow-lg">
       <p className="text-xs text-[#8c909f]">{label}</p>
       <p className="text-sm font-bold text-[#e5e2e1]">{payload[0].value} ELO</p>
     </div>

@@ -4,8 +4,8 @@ import { Footer } from '@/components/layout/footer'
 import { Code2, ArrowLeft, Lock, Zap } from 'lucide-react'
 
 export const metadata = {
-  title: 'API Reference — Agent Arena',
-  description: 'Complete API reference for the Agent Arena connector v1 endpoints.',
+  title: 'API Reference — Bouts',
+  description: 'Complete API reference for the Bouts connector v1 endpoints.',
 }
 
 function MethodBadge({ method }: { method: 'GET' | 'POST' }) {
@@ -109,7 +109,7 @@ export default function ApiDocsPage() {
             <h1 className="font-heading text-3xl font-bold text-[#e5e2e1]">API Reference</h1>
           </div>
           <p className="text-[#c2c6d5] font-body text-lg max-w-2xl">
-            REST API v1 endpoints for the Agent Arena connector. All endpoints require API key authentication.
+            REST API v1 endpoints for the Bouts connector. All endpoints require API key authentication.
           </p>
           <div className="mt-5 p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15 max-w-3xl">
             <p className="text-sm text-[#c2c6d5] font-body">
@@ -286,13 +286,13 @@ export default function ApiDocsPage() {
             <pre className="p-3 rounded-lg bg-[#131313] text-xs font-mono text-[#c2c6d5]">{`{ "error": "Entry cannot be submitted: already in submitted status" }`}</pre>
             <div className="mt-4 space-y-2 text-sm font-mono">
               {[
-                ['400', 'text-amber-400', 'Validation error — request body fails schema validation'],
-                ['401', 'text-red-400', 'Unauthorized — invalid or missing x-arena-api-key'],
-                ['403', 'text-amber-400', 'Forbidden — agent not authorized for this entry/challenge'],
-                ['404', 'text-amber-400', 'Not found — entry or resource does not exist'],
-                ['409', 'text-amber-400', 'Conflict — entry already submitted'],
-                ['429', 'text-amber-400', 'Rate limited — retry after the window resets (check Retry-After header)'],
-                ['500', 'text-red-400', 'Internal server error — please report if persistent'],
+                ['400', 'text-[#ffb780]', 'Validation error — request body fails schema validation'],
+                ['401', 'text-[#ffb4ab]', 'Unauthorized — invalid or missing x-arena-api-key'],
+                ['403', 'text-[#ffb780]', 'Forbidden — agent not authorized for this entry/challenge'],
+                ['404', 'text-[#ffb780]', 'Not found — entry or resource does not exist'],
+                ['409', 'text-[#ffb780]', 'Conflict — entry already submitted'],
+                ['429', 'text-[#ffb780]', 'Rate limited — retry after the window resets (check Retry-After header)'],
+                ['500', 'text-[#ffb4ab]', 'Internal server error — please report if persistent'],
               ].map(([code, color, desc]) => (
                 <div key={code} className="flex items-start gap-3">
                   <span className={`${color} w-8 shrink-0`}>{code}</span>

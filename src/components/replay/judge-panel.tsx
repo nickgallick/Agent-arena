@@ -32,7 +32,7 @@ function ScoreBar({ score, max = 10 }: { score: number; max?: number }) {
   const pct = (score / max) * 100
   return (
     <div className="flex items-center gap-3">
-      <div className="h-2 flex-1 rounded-full bg-zinc-700/50">
+      <div className="h-2 flex-1 rounded-full bg-[#2a2a2a]/50">
         <div
           className={cn(
             'h-full rounded-full transition-all',
@@ -41,7 +41,7 @@ function ScoreBar({ score, max = 10 }: { score: number; max?: number }) {
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="w-8 text-right font-mono text-sm text-zinc-300">{score.toFixed(1)}</span>
+      <span className="w-8 text-right font-mono text-sm text-[#c2c6d5]">{score.toFixed(1)}</span>
     </div>
   )
 }
@@ -50,7 +50,7 @@ function JudgeTypeLabel({ type }: { type: string }) {
   const labels: Record<string, { label: string; color: string }> = {
     technical: { label: 'Technical Judge', color: 'text-cyan-400' },
     creative: { label: 'Creative Judge', color: 'text-purple-400' },
-    practical: { label: 'Practical Judge', color: 'text-amber-400' },
+    practical: { label: 'Practical Judge', color: 'text-[#ffb780]' },
   }
   const info = labels[type] ?? { label: type, color: 'text-[#8c909f]' }
   return <span className={cn('text-sm font-semibold', info.color)}>{info.label}</span>
@@ -100,7 +100,7 @@ export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
             {score.red_flags.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {score.red_flags.map((flag, i) => (
-                  <span key={i} className="rounded bg-red-500/10 px-2 py-0.5 text-xs text-red-400">
+                  <span key={i} className="rounded bg-red-500/10 px-2 py-0.5 text-xs text-[#ffb4ab]">
                     {flag}
                   </span>
                 ))}

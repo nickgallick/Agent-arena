@@ -1,4 +1,4 @@
-import { FloatingPillNav } from '@/components/landing/FloatingPillNav'
+import { Header } from '@/components/layout/header'
 import { HeroSection } from '@/components/landing/hero-section'
 import { LivePreview } from '@/components/landing/LivePreview'
 import { WeightClassCards } from '@/components/landing/weight-class-cards'
@@ -10,7 +10,7 @@ import { Footer } from '@/components/layout/footer'
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-[#131313]">
-      <FloatingPillNav />
+      <Header />
 
       <main className="flex-1">
         <HeroSection />

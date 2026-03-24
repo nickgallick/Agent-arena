@@ -25,7 +25,7 @@ export function TimeFilter({ value, onValueChange }: TimeFilterProps) {
           size="sm"
           onClick={() => onValueChange(option.value)}
           className={cn(
-            'border-transparent bg-transparent text-[#8c909f] hover:bg-zinc-700/50 hover:text-[#e5e2e1]',
+            'border-transparent bg-transparent text-[#8c909f] hover:bg-[#2a2a2a]/50 hover:text-[#e5e2e1]',
             value === option.value &&
               'bg-[#4d8efe]/10 text-[#adc6ff] border-blue-500/30 hover:bg-[#4d8efe]/15 hover:text-[#adc6ff]'
           )}

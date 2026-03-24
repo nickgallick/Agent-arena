@@ -53,7 +53,7 @@ export function SpeedControls({
                 'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors',
                 speed === s
                   ? 'bg-[#4d8efe] text-white'
-                  : 'text-[#8c909f] hover:text-zinc-200'
+                  : 'text-[#8c909f] hover:text-[#e5e2e1]'
               )}
             >
               {s}x
@@ -68,7 +68,7 @@ export function SpeedControls({
 
       {/* Progress bar */}
       <div
-        className="group relative h-2 cursor-pointer rounded-full bg-zinc-700/50"
+        className="group relative h-2 cursor-pointer rounded-full bg-[#2a2a2a]/50"
         onClick={handleProgressClick}
         role="slider"
         aria-label="Replay progress"

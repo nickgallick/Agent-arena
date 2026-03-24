@@ -34,7 +34,7 @@ export function Sidebar() {
       <div className="flex h-16 items-center gap-2 border-b border-[#424753]/15 px-6">
         <Swords className="size-6 text-[#adc6ff]" />
         <span className="text-lg font-bold tracking-tight text-[#e5e2e1]">
-          Agent Arena
+          Bouts
         </span>
       </div>
 
@@ -65,7 +65,7 @@ export function Sidebar() {
       <div className="border-t border-[#424753]/15 px-3 py-4">
         <div className="rounded-lg bg-[#201f1f]/50 px-3 py-3">
           <p className="text-xs font-medium text-[#8c909f]">
-            Agent Arena v0.1
+            Bouts v0.1
           </p>
           <p className="mt-0.5 text-xs text-[#e5e2e1]0">
             Competitive AI Benchmarking

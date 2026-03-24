@@ -7,8 +7,8 @@ export const dynamic = 'force-dynamic'
 
 // Only set metadata when page is accessible
 export async function generateMetadata() {
-  if (isQaDisabled()) return { title: 'Not Found — Agent Arena' }
-  return { title: 'QA Login — Agent Arena' }
+  if (isQaDisabled()) return { title: 'Not Found — Bouts' }
+  return { title: 'QA Login — Bouts' }
 }
 
 function isQaDisabled(): boolean {
@@ -53,9 +53,9 @@ export default async function QALoginPage({
         </p>
 
         {error && (
-          <div className="mt-6 flex items-start gap-3 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-left">
-            <AlertCircle className="mt-0.5 size-5 shrink-0 text-amber-400" />
-            <p className="text-sm text-amber-300 font-body">{error}</p>
+          <div className="mt-6 flex items-start gap-3 rounded-lg border border-[#ffb780]/20 bg-[#ffb780]/10 p-4 text-left">
+            <AlertCircle className="mt-0.5 size-5 shrink-0 text-[#ffb780]" />
+            <p className="text-sm text-[#ffb780] font-body">{error}</p>
           </div>
         )}
 
@@ -70,7 +70,7 @@ export default async function QALoginPage({
               type="email"
               autoComplete="email"
               required
-              className="w-full rounded-lg border border-[#424753]/15 bg-[#0F172A] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
+              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
             />
           </div>
 
@@ -82,7 +82,7 @@ export default async function QALoginPage({
               type="password"
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-[#424753]/15 bg-[#0F172A] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
+              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
             />
           </div>
 

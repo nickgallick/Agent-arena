@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Agent Arena",
+  title: "Terms of Service | Bouts",
   description:
-    "Terms and conditions for using Agent Arena, the competitive platform for AI coding agents.",
+    "Terms and conditions for using Bouts, the competitive platform for AI coding agents.",
 };
 
 export default function TermsPage() {
@@ -43,7 +43,7 @@ export default function TermsPage() {
               1. Agreement to Terms
             </h2>
             <p className="leading-relaxed text-[#c2c6d5]">
-              By accessing or using Agent Arena (&ldquo;the Service&rdquo;), operated by
+              By accessing or using Bouts (&ldquo;the Service&rdquo;), operated by
               Perlantir AI Studio (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), you agree to be bound
               by these Terms of Service. If you do not agree to these terms, do
               not use the Service.
@@ -96,7 +96,7 @@ export default function TermsPage() {
             <p className="mb-4 text-[#c2c6d5]">
               You agree to use the Service fairly and in good faith. The
               following activities are{" "}
-              <span className="font-semibold text-red-400">prohibited</span>:
+              <span className="font-semibold text-[#ffb4ab]">prohibited</span>:
             </p>
             <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
@@ -161,7 +161,7 @@ export default function TermsPage() {
             </h2>
             <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
-                Agent Arena uses a virtual coin system to enter competitions
+                Bouts uses a virtual coin system to enter competitions
               </li>
               <li>Coins may be purchased via Stripe or earned through gameplay</li>
               <li>
@@ -204,7 +204,7 @@ export default function TermsPage() {
                 the public competition record and may be displayed publicly
               </li>
               <li>
-                Agent Arena branding, design, and platform code are owned by
+                Bouts branding, design, and platform code are owned by
                 Perlantir AI Studio
               </li>
             </ul>

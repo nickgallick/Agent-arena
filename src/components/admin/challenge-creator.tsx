@@ -87,7 +87,7 @@ export function ChallengeCreator() {
     }
   }
 
-  const inputClasses = 'border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0'
+  const inputClasses = 'border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0'
 
   return (
     <Card className="border-[#424753]/15 bg-[#201f1f]/50">
@@ -97,7 +97,7 @@ export function ChallengeCreator() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-zinc-300">Title</Label>
+            <Label htmlFor="title" className="text-[#c2c6d5]">Title</Label>
             <Input
               id="title"
               value={form.title}
@@ -108,7 +108,7 @@ export function ChallengeCreator() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-zinc-300">Description</Label>
+            <Label htmlFor="description" className="text-[#c2c6d5]">Description</Label>
             <Textarea
               id="description"
               value={form.description}
@@ -120,7 +120,7 @@ export function ChallengeCreator() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="prompt" className="text-zinc-300">Prompt</Label>
+            <Label htmlFor="prompt" className="text-[#c2c6d5]">Prompt</Label>
             <Textarea
               id="prompt"
               value={form.prompt}
@@ -133,12 +133,12 @@ export function ChallengeCreator() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-2">
-              <Label className="text-zinc-300">Category</Label>
+              <Label className="text-[#c2c6d5]">Category</Label>
               <Select value={form.category} onValueChange={(v) => v && update('category', v)}>
                 <SelectTrigger aria-label="Select category" className={inputClasses}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
+                <SelectContent className="border-[#424753]/15 bg-[#1c1b1b]">
                   <SelectItem value="speed_build">Speed Build</SelectItem>
                   <SelectItem value="deep_research">Deep Research</SelectItem>
                   <SelectItem value="problem_solving">Problem Solving</SelectItem>
@@ -147,12 +147,12 @@ export function ChallengeCreator() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-zinc-300">Format</Label>
+              <Label className="text-[#c2c6d5]">Format</Label>
               <Select value={form.format} onValueChange={(v) => v && update('format', v)}>
                 <SelectTrigger aria-label="Select format" className={inputClasses}>
                   <SelectValue placeholder="Select format" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
+                <SelectContent className="border-[#424753]/15 bg-[#1c1b1b]">
                   <SelectItem value="sprint">Sprint</SelectItem>
                   <SelectItem value="standard">Standard</SelectItem>
                   <SelectItem value="marathon">Marathon</SelectItem>
@@ -161,12 +161,12 @@ export function ChallengeCreator() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-zinc-300">Challenge Type</Label>
+              <Label className="text-[#c2c6d5]">Challenge Type</Label>
               <Select value={form.challengeType} onValueChange={(v) => v && update('challengeType', v)}>
                 <SelectTrigger aria-label="Select challenge type" className={inputClasses}>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
+                <SelectContent className="border-[#424753]/15 bg-[#1c1b1b]">
                   <SelectItem value="daily">Daily</SelectItem>
                   <SelectItem value="weekly_featured">Weekly Featured</SelectItem>
                   <SelectItem value="special">Special</SelectItem>
@@ -177,12 +177,12 @@ export function ChallengeCreator() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-2">
-              <Label className="text-zinc-300">Weight Class</Label>
+              <Label className="text-[#c2c6d5]">Weight Class</Label>
               <Select value={form.weightClass} onValueChange={(v) => v && update('weightClass', v)}>
                 <SelectTrigger aria-label="Select weight class" className={inputClasses}>
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
+                <SelectContent className="border-[#424753]/15 bg-[#1c1b1b]">
                   <SelectItem value="frontier">Frontier</SelectItem>
                   <SelectItem value="scrapper">Scrapper</SelectItem>
                   <SelectItem value="open">Open</SelectItem>
@@ -191,7 +191,7 @@ export function ChallengeCreator() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="timeLimit" className="text-zinc-300">Time Limit (minutes)</Label>
+              <Label htmlFor="timeLimit" className="text-[#c2c6d5]">Time Limit (minutes)</Label>
               <Input
                 id="timeLimit"
                 type="number"
@@ -205,7 +205,7 @@ export function ChallengeCreator() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="maxCoins" className="text-zinc-300">Max Coins</Label>
+              <Label htmlFor="maxCoins" className="text-[#c2c6d5]">Max Coins</Label>
               <Input
                 id="maxCoins"
                 type="number"
@@ -221,7 +221,7 @@ export function ChallengeCreator() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="text-zinc-300">Start Date &amp; Time</Label>
+              <Label htmlFor="startDate" className="text-[#c2c6d5]">Start Date &amp; Time</Label>
               <Input
                 id="startDate"
                 type="datetime-local"
@@ -232,7 +232,7 @@ export function ChallengeCreator() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="text-zinc-300">End Date &amp; Time</Label>
+              <Label htmlFor="endDate" className="text-[#c2c6d5]">End Date &amp; Time</Label>
               <Input
                 id="endDate"
                 type="datetime-local"
@@ -244,7 +244,7 @@ export function ChallengeCreator() {
           </div>
 
           {formError && (
-            <p className="text-sm text-red-400">{formError}</p>
+            <p className="text-sm text-[#ffb4ab]">{formError}</p>
           )}
 
           <Button

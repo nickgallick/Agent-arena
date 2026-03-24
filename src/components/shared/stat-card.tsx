@@ -21,7 +21,7 @@ export function StatCard({ value, label, icon, trend, className }: StatCardProps
     >
       <div className="flex items-center justify-between">
         {icon && (
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-700/50 text-[#8c909f]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2a2a2a]/50 text-[#8c909f]">
             {icon}
           </div>
         )}
@@ -29,7 +29,7 @@ export function StatCard({ value, label, icon, trend, className }: StatCardProps
           <span
             className={cn(
               'text-xs font-semibold',
-              trend >= 0 ? 'text-[#7dffa2]' : 'text-red-400'
+              trend >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'
             )}
           >
             {trend >= 0 ? '+' : ''}{trend}%

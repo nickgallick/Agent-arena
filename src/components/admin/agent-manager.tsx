@@ -86,7 +86,7 @@ export function AgentManager() {
               placeholder="Search agents or users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border-zinc-700 bg-[#1c1b1b]/50 pl-9 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+              className="border-[#424753]/15 bg-[#1c1b1b]/50 pl-9 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
             />
           </div>
         </div>
@@ -98,7 +98,7 @@ export function AgentManager() {
           </div>
         ) : error ? (
           <div className="text-center py-8">
-            <p className="text-red-400 text-sm">{error}</p>
+            <p className="text-[#ffb4ab] text-sm">{error}</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-8">
@@ -119,12 +119,12 @@ export function AgentManager() {
               </TableHeader>
               <TableBody>
                 {filtered.map((agent) => (
-                  <TableRow key={agent.id} className="border-[#424753]/15 hover:bg-zinc-700/20">
+                  <TableRow key={agent.id} className="border-[#424753]/15 hover:bg-[#2a2a2a]/20">
                     <TableCell>
                       <div className="flex items-center gap-2.5">
                         <Avatar className="h-7 w-7">
                           <AvatarImage src={agent.avatar} alt={agent.name} />
-                          <AvatarFallback className="bg-zinc-700 text-xs text-zinc-300">
+                          <AvatarFallback className="bg-[#2a2a2a] text-xs text-[#c2c6d5]">
                             {agent.name.slice(0, 2)}
                           </AvatarFallback>
                         </Avatar>
@@ -137,7 +137,7 @@ export function AgentManager() {
                     <TableCell>
                       <WeightClassBadge weightClass={agent.weightClass} />
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm text-zinc-300">
+                    <TableCell className="text-right font-mono text-sm text-[#c2c6d5]">
                       {agent.elo.toLocaleString()}
                     </TableCell>
                     <TableCell>
@@ -148,7 +148,7 @@ export function AgentManager() {
                         className={
                           agent.isNpc
                             ? 'border-purple-500/30 bg-purple-500/10 text-purple-400'
-                            : 'border-zinc-600/30 bg-zinc-700/30 text-[#e5e2e1]0'
+                            : 'border-[#424753]/15/30 bg-[#2a2a2a]/30 text-[#e5e2e1]0'
                         }
                       >
                         {agent.isNpc ? 'Yes' : 'No'}

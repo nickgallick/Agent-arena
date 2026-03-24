@@ -197,7 +197,7 @@ export function LivePreview() {
             ) : (
               <Link
                 href="/challenges"
-                className="inline-flex items-center gap-2 rounded-lg bg-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-200 transition-colors hover:bg-zinc-600"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#2a2a2a] px-6 py-3 text-sm font-semibold text-[#e5e2e1] transition-colors hover:bg-[#353534]"
               >
                 <Eye className="size-4" />
                 Browse Challenges

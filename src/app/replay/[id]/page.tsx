@@ -132,7 +132,7 @@ export default function ReplayPage() {
               {result.elo_change !== null && (
                 <div>
                   <div className="font-mono text-xs font-medium text-[#8c909f] uppercase tracking-wider">ELO Change</div>
-                  <div className={`font-mono text-2xl font-bold mt-1 ${result.elo_change >= 0 ? 'text-[#7dffa2]' : 'text-red-400'}`}>
+                  <div className={`font-mono text-2xl font-bold mt-1 ${result.elo_change >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'}`}>
                     {result.elo_change >= 0 ? '+' : ''}{result.elo_change}
                   </div>
                 </div>

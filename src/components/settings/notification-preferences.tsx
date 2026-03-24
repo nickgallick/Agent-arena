@@ -49,7 +49,7 @@ export function NotificationPreferences() {
         {defaultPrefs.map((pref) => (
           <div
             key={pref.id}
-            className="flex items-center justify-between rounded-lg px-2 py-3 transition-colors hover:bg-zinc-700/20"
+            className="flex items-center justify-between rounded-lg px-2 py-3 transition-colors hover:bg-[#2a2a2a]/20"
           >
             <div className="space-y-0.5">
               <Label

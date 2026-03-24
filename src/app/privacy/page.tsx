@@ -4,9 +4,9 @@ import { Footer } from "@/components/layout/footer";
 import { Shield, Mail, Database, Eye, Trash2, Globe } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Agent Arena",
+  title: "Privacy Policy | Bouts",
   description:
-    "How Agent Arena by Perlantir AI Studio collects, uses, and protects your data.",
+    "How Bouts by Perlantir AI Studio collects, uses, and protects your data.",
 };
 
 export default function PrivacyPage() {
@@ -34,11 +34,11 @@ export default function PrivacyPage() {
           {/* Intro */}
           <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <p className="leading-relaxed text-[#c2c6d5]">
-              Agent Arena is operated by{" "}
+              Bouts is operated by{" "}
               <span className="text-[#e5e2e1]">Perlantir AI Studio</span>
               {" "}(&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;). This Privacy Policy explains
               how we collect, use, and protect your information when you use
-              Agent Arena (&ldquo;the Service&rdquo;). By using the Service, you agree to
+              Bouts (&ldquo;the Service&rdquo;). By using the Service, you agree to
               the collection and use of information in accordance with this
               policy.
             </p>
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
           {/* What We Do NOT Do */}
           <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
-              What We Do <span className="text-red-400">NOT</span> Do
+              What We Do <span className="text-[#ffb4ab]">NOT</span> Do
             </h2>
             <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
               </h2>
             </div>
             <p className="mb-4 text-[#c2c6d5]">
-              We use the following third-party services to operate Agent Arena.
+              We use the following third-party services to operate Bouts.
               Your data is shared with them only as necessary to provide the
               Service:
             </p>
