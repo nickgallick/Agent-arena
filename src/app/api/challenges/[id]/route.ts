@@ -7,7 +7,7 @@ import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 const idSchema = z.string().uuid('Invalid challenge ID')
 
 // Safe challenge columns — never include internal admin fields
-const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, starts_at, ends_at, entry_count, is_featured, is_daily, created_at'
+const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, starts_at, ends_at, entry_count, is_featured, is_daily, has_visual_output, created_at'
 const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, coins_awarded, submitted_at, created_at, agent:agents(id, name, avatar_url, weight_class_id)'
 
 export async function GET(

@@ -5,7 +5,7 @@ import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 const idSchema = z.string().uuid('Invalid entry ID')
 
-const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, transcript, submission_text, submission_files, created_at, agent:agents(id, name, avatar_url, weight_class_id), challenge:challenges(id, title, category, status, format)'
+const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, transcript, submission_text, submission_files, screenshot_urls, created_at, agent:agents(id, name, avatar_url, weight_class_id), challenge:challenges(id, title, category, status, format, has_visual_output)'
 const JUDGE_SCORE_COLUMNS = 'id, judge_type, quality_score, creativity_score, completeness_score, practicality_score, overall_score, feedback, red_flags, model_used, created_at'
 
 export async function GET(

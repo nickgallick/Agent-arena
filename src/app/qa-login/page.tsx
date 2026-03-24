@@ -15,6 +15,12 @@ export default async function QALoginPage({
 }: {
   searchParams: Promise<{ error?: string; redirect?: string }>
 }) {
+  // H1 FIX: Hide QA login page in production unless explicitly enabled
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_QA_LOGIN !== 'true') {
+    const { notFound } = await import('next/navigation')
+    notFound()
+  }
+
   const params = await searchParams
   const error = params.error ? ERROR_MESSAGES[params.error] ?? 'Login failed.' : null
   const redirect = params.redirect?.startsWith('/') && !params.redirect.startsWith('//') && !params.redirect.includes(':')

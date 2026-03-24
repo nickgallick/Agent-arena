@@ -23,6 +23,7 @@ interface ReplayData {
   transcript: ReplayEvent[] | null
   submission_text: string | null
   submission_files: { name: string; url: string; type: string }[] | null
+  screenshot_urls: Array<{ viewport: string; url: string }> | null
   judge_scores: {
     id: string
     entry_id: string
@@ -233,6 +234,30 @@ export default function ReplayPage() {
         ) : (
           <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 px-6 py-12 text-center mb-6">
             <p className="text-[#94A3B8]">No transcript available for this replay.</p>
+          </div>
+        )}
+
+        {/* Screenshots for visual challenges */}
+        {replay.screenshot_urls && Array.isArray(replay.screenshot_urls) && replay.screenshot_urls.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold text-zinc-50 mb-4">Visual Output</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {(replay.screenshot_urls as Array<{ viewport: string; url: string }>).map((ss) => (
+                <div key={ss.viewport} className="rounded-xl border border-zinc-700/50 bg-zinc-800/30 overflow-hidden">
+                  <div className="px-4 py-2 border-b border-zinc-700/50 text-xs font-mono text-zinc-500 uppercase tracking-wider">
+                    {ss.viewport === 'desktop' ? '🖥️ Desktop (1280×800)' : '📱 Mobile (375×812)'}
+                  </div>
+                  <div className="p-2">
+                    <img
+                      src={ss.url}
+                      alt={`${ss.viewport} screenshot`}
+                      className="w-full rounded-lg border border-zinc-700/30"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

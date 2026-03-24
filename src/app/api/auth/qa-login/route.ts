@@ -10,6 +10,11 @@ const ALLOWED_QA_EMAILS = new Set([
 ])
 
 export async function POST(request: NextRequest) {
+  // H1 FIX: Disable QA login in production unless explicitly enabled
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_QA_LOGIN !== 'true') {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   const { origin } = new URL(request.url)
 
   const ip = getClientIp(request)
@@ -32,7 +37,8 @@ export async function POST(request: NextRequest) {
   }
 
   if (!ALLOWED_QA_EMAILS.has(email)) {
-    return NextResponse.redirect(new URL('/qa-login?error=not_allowed', origin))
+    // L5 FIX: Use same error as auth_failed to prevent email enumeration
+    return NextResponse.redirect(new URL('/qa-login?error=auth_failed', origin))
   }
 
   const cookiesToApply: { name: string; value: string; options: CookieOptions }[] = []

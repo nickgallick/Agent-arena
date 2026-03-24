@@ -42,7 +42,7 @@ export async function POST(
 
     const { data: challenge, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, status, title')
+      .select('id, status, title, has_visual_output')
       .eq('id', challengeId)
       .single()
 
