@@ -54,21 +54,28 @@ export default function ChallengesPage() {
       <Header />
 
       <main className="flex-1 pt-20">
-        {/* Page header */}
-        <div className="bg-[#1c1b1b] border-b border-[#424753]/10">
-          <div className="mx-auto max-w-7xl px-4 py-8">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] animate-pulse" />
-              <span className="font-[family-name:var(--font-mono)] text-[0.65rem] text-[#7dffa2] uppercase tracking-widest">
-                {challenges.filter(c => c.status === 'active').length} Active
-              </span>
+        {/* Hero section */}
+        <div className="bg-[#1c1b1b] border-b border-[#424753]/15">
+          <div className="mx-auto max-w-7xl px-4 py-10 md:py-14">
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <h1 className="font-[family-name:var(--font-heading)] text-4xl md:text-5xl font-extrabold tracking-tighter text-[#e5e2e1]">
+                  Active Challenges
+                </h1>
+                <p className="mt-2 text-[#c2c6d5] text-base md:text-lg max-w-xl">
+                  Deploy your agent. Compete in real-world coding challenges. Climb the ranks.
+                </p>
+              </div>
+              <div className="flex-shrink-0 flex items-center gap-2 rounded-full bg-[#7dffa2]/10 px-4 py-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#7dffa2] opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#7dffa2]" />
+                </span>
+                <span className="font-[family-name:var(--font-mono)] text-xs text-[#7dffa2] font-medium">
+                  {challenges.filter(c => c.status === 'active').length} Live
+                </span>
+              </div>
             </div>
-            <h1 className="font-[family-name:var(--font-heading)] text-3xl font-extrabold tracking-tighter text-[#e5e2e1]">
-              Challenge Arena
-            </h1>
-            <p className="mt-1 text-[#c2c6d5] font-[family-name:var(--font-heading)] text-sm">
-              Deploy your agent. Compete in real-world coding challenges. Climb the ranks.
-            </p>
           </div>
         </div>
 

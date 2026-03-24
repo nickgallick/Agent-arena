@@ -29,18 +29,18 @@ const categoryConfig: Record<string, { name: string; icon: string; color: string
   debug: { name: 'Debug', icon: '🐛', color: '#EF4444' },
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  upcoming: { label: 'Upcoming', className: 'bg-[#4d8efe]/15 text-[#adc6ff]' },
-  scheduled: { label: 'Scheduled', className: 'bg-[#4d8efe]/15 text-[#adc6ff]' },
-  open: { label: 'Open', className: 'bg-emerald-500/15 text-[#7dffa2]' },
-  active: { label: 'Live', className: 'bg-emerald-500/15 text-[#7dffa2]' },
-  judging: { label: 'Judging', className: 'bg-amber-500/15 text-[#ffb780]' },
-  complete: { label: 'Complete', className: 'bg-slate-500/15 text-slate-400' },
-  archived: { label: 'Archived', className: 'bg-slate-500/15 text-slate-400' },
+const statusConfig: Record<string, { label: string; color: string }> = {
+  upcoming: { label: 'Upcoming', color: '#adc6ff' },
+  scheduled: { label: 'Scheduled', color: '#adc6ff' },
+  open: { label: 'Open', color: '#7dffa2' },
+  active: { label: 'Live', color: '#7dffa2' },
+  judging: { label: 'Judging', color: '#ffb780' },
+  complete: { label: 'Complete', color: '#8c909f' },
+  archived: { label: 'Archived', color: '#8c909f' },
 }
 
 const defaultCategory = { name: 'Challenge', icon: '🏆', color: '#3B82F6' }
-const defaultStatus = { label: 'Open', className: 'bg-slate-500/15 text-slate-400' }
+const defaultStatus = { label: 'Open', color: '#8c909f' }
 
 export function ChallengeCard({
   id,
@@ -62,43 +62,51 @@ export function ChallengeCard({
         whileHover={{ y: -2 }}
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         className={cn(
-          'rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-4 transition-all duration-200',
-          'hover:border-[#4d8efe]/30 hover:shadow-[0_4px_24px_rgba(0,0,0,0.3)]',
+          'rounded-xl bg-[#1c1b1b] overflow-hidden p-5 transition-all duration-200',
+          'hover:ring-1 hover:ring-[#adc6ff]/20 hover:shadow-[0_4px_24px_rgba(0,0,0,0.3)]',
           className
         )}
       >
+        {/* Header: category icon + label, status badge */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
             <span
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-sm"
-              style={{ backgroundColor: `${cat.color}26` }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-base"
+              style={{ backgroundColor: `${cat.color}1a` }}
             >
               {cat.icon}
             </span>
             <span
-              className="rounded-full px-2 py-0.5 text-xs font-medium"
-              style={{ backgroundColor: `${cat.color}26`, color: cat.color }}
+              className="rounded-full px-2.5 py-0.5 text-xs font-medium font-[family-name:var(--font-mono)]"
+              style={{ backgroundColor: `${cat.color}1a`, color: cat.color }}
             >
               {cat.name}
             </span>
           </div>
-          <span className={cn('rounded-full px-2 py-0.5 text-xs font-semibold', statusInfo.className)}>
+          <span
+            className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+            style={{ backgroundColor: `${statusInfo.color}1a`, color: statusInfo.color }}
+          >
             {statusInfo.label}
           </span>
         </div>
 
-        <h3 className="mt-3 text-sm font-semibold text-[#e5e2e1] line-clamp-1">{title}</h3>
-        <p className="mt-1 text-xs text-[#c2c6d5] line-clamp-2">{description}</p>
+        {/* Title + description */}
+        <h3 className="mt-4 font-[family-name:var(--font-heading)] font-bold text-lg text-[#e5e2e1] line-clamp-1">
+          {title}
+        </h3>
+        <p className="mt-1.5 text-sm text-[#c2c6d5] line-clamp-2">{description}</p>
 
-        <div className="mt-3 flex items-center gap-3">
+        {/* Footer: metadata chips */}
+        <div className="mt-4 flex items-center gap-2">
           <WeightClassBadge weightClass={weight_class_id} />
-          <div className="flex items-center gap-1 text-xs text-[#8c909f]">
-            <Clock className="h-3 w-3" />
-            <span>{formatDuration(time_limit_minutes)}</span>
+          <div className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
+            <Clock className="h-3.5 w-3.5" />
+            <span className="font-[family-name:var(--font-mono)]">{formatDuration(time_limit_minutes)}</span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-[#8c909f]">
-            <Users className="h-3 w-3" />
-            <span>{entry_count}</span>
+          <div className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
+            <Users className="h-3.5 w-3.5" />
+            <span className="font-[family-name:var(--font-mono)]">{entry_count}</span>
           </div>
         </div>
       </motion.div>
