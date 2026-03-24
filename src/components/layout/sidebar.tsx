@@ -16,12 +16,12 @@ import {
 import { cn } from "@/lib/utils/cn"
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/challenges", label: "Challenges", icon: Trophy },
-  { href: "/leaderboard", label: "Leaderboard", icon: BarChart3 },
-  { href: "/agents", label: "My Agents", icon: Bot },
-  { href: "/results", label: "My Results", icon: ClipboardList },
-  { href: "/wallet", label: "Wallet", icon: Wallet },
+  { href: "/", label: "Command Center", icon: LayoutDashboard },
+  { href: "/challenges", label: "Arena Feed", icon: Trophy },
+  { href: "/leaderboard", label: "Rankings", icon: BarChart3 },
+  { href: "/agents", label: "Agent Registry", icon: Bot },
+  { href: "/results", label: "System Logs", icon: ClipboardList },
+  { href: "/wallet", label: "Credits", icon: Wallet },
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
@@ -29,48 +29,53 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden h-screen w-64 flex-shrink-0 flex-col border-r border-[#424753]/15 bg-[#1c1b1b] md:flex">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-[#424753]/15 px-6">
-        <Swords className="size-6 text-[#adc6ff]" />
-        <span className="text-lg font-bold tracking-tight text-[#e5e2e1]">
-          Bouts
-        </span>
+    <aside className="hidden h-screen w-64 flex-shrink-0 flex-col bg-[#1c1b1b] md:flex">
+      {/* Logo + System Label */}
+      <div className="flex items-center gap-3 px-6 py-5">
+        <div className="w-8 h-8 rounded-lg bg-[#4d8efe] flex items-center justify-center">
+          <Swords className="size-4 text-[#002e69]" />
+        </div>
+        <div>
+          <h3 className="font-[family-name:var(--font-heading)] font-bold text-xs tracking-widest text-[#e5e2e1] uppercase">
+            Operations
+          </h3>
+          <p className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f]">
+            v1.0-stable
+          </p>
+        </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href)
+          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
           const Icon = item.icon
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-4 py-3 font-[family-name:var(--font-mono)] text-[0.75rem] uppercase tracking-widest transition-all duration-150",
                 isActive
-                  ? "bg-[#4d8efe]/10 text-[#adc6ff]"
-                  : "text-[#8c909f] hover:bg-[#201f1f] hover:text-[#e5e2e1]"
+                  ? "bg-[#201f1f] text-[#adc6ff]"
+                  : "text-[#c2c6d5] hover:bg-[#201f1f] hover:text-[#adc6ff]"
               )}
             >
-              <Icon className="size-5" />
-              {item.label}
+              <Icon className="size-4 shrink-0" />
+              <span>{item.label}</span>
             </Link>
           )
         })}
       </nav>
 
-      {/* Bottom section */}
-      <div className="border-t border-[#424753]/15 px-3 py-4">
-        <div className="rounded-lg bg-[#201f1f]/50 px-3 py-3">
-          <p className="text-xs font-medium text-[#8c909f]">
-            Bouts v0.1
-          </p>
-          <p className="mt-0.5 text-xs text-[#e5e2e1]0">
-            Competitive AI Benchmarking
-          </p>
-        </div>
+      {/* Bottom CTA */}
+      <div className="px-4 py-4 mt-auto">
+        <Link
+          href="/challenges"
+          className="block w-full text-center py-3 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold rounded-lg active:scale-95 transition-all text-xs tracking-widest font-[family-name:var(--font-heading)] uppercase"
+        >
+          Initiate Bout
+        </Link>
       </div>
     </aside>
   )
