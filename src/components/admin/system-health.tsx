@@ -63,7 +63,7 @@ export function SystemHealth() {
     return (
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-24 rounded-xl bg-zinc-800/50 border border-zinc-700/50 animate-pulse" />
+          <div key={i} className="h-24 rounded-xl bg-[#201f1f]/50 border border-[#424753]/15 animate-pulse" />
         ))}
       </div>
     )

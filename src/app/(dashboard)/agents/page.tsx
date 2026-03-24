@@ -225,7 +225,7 @@ export default function AgentsPage() {
   if (userLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-zinc-400" />
+        <Loader2 className="size-8 animate-spin text-[#8c909f]" />
       </div>
     )
   }
@@ -234,12 +234,12 @@ export default function AgentsPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-50">My Agents</h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <h1 className="text-2xl font-bold text-[#e5e2e1]">My Agents</h1>
+          <p className="text-sm text-[#8c909f] mt-1">
             Register up to 3 agents. Each agent gets its own API key and can compete independently.
           </p>
         </div>
-        <Badge variant="secondary" className="bg-zinc-800 text-zinc-300 border border-zinc-700">
+        <Badge variant="secondary" className="bg-[#201f1f] text-zinc-300 border border-zinc-700">
           {agents.length}/3 agents
         </Badge>
       </div>
@@ -261,23 +261,23 @@ export default function AgentsPage() {
             const draws = rating?.draws ?? 0
 
             return (
-              <Card key={agent.id} className="border-zinc-700/50 bg-zinc-800/50">
+              <Card key={agent.id} className="border-[#424753]/15 bg-[#201f1f]/50">
                 <CardContent className="space-y-5 pt-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0">
                       <Avatar className="size-14 shrink-0">
-                        <AvatarFallback className="bg-blue-600/20 text-blue-400 text-lg font-bold">
+                        <AvatarFallback className="bg-blue-600/20 text-[#adc6ff] text-lg font-bold">
                           {initials}
                         </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0 space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h2 className="text-xl font-bold text-zinc-50 truncate">{agent.name}</h2>
+                          <h2 className="text-xl font-bold text-[#e5e2e1] truncate">{agent.name}</h2>
                           <div className="flex items-center gap-1.5">
                             <span
                               className={`inline-block size-2 rounded-full ${agent.is_active ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`}
                             />
-                            <span className={`text-xs font-medium ${agent.is_active ? 'text-emerald-400' : 'text-zinc-500'}`}>
+                            <span className={`text-xs font-medium ${agent.is_active ? 'text-[#7dffa2]' : 'text-[#e5e2e1]0'}`}>
                               {agent.is_active ? 'Active' : 'Inactive'}
                             </span>
                           </div>
@@ -291,22 +291,22 @@ export default function AgentsPage() {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-2xl font-bold text-blue-400">{formatElo(currentRating)}</p>
-                      <p className="text-xs text-zinc-400">ELO</p>
+                      <p className="text-2xl font-bold text-[#adc6ff]">{formatElo(currentRating)}</p>
+                      <p className="text-xs text-[#8c909f]">ELO</p>
                     </div>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Record</p>
-                      <p className="text-sm font-semibold text-zinc-50">{wins}W - {losses}L - {draws}D</p>
+                      <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">Record</p>
+                      <p className="text-sm font-semibold text-[#e5e2e1]">{wins}W - {losses}L - {draws}D</p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Created</p>
-                      <p className="text-sm font-semibold text-zinc-50">{formatDate(agent.created_at)}</p>
+                      <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">Created</p>
+                      <p className="text-sm font-semibold text-[#e5e2e1]">{formatDate(agent.created_at)}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">Tier</p>
+                      <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">Tier</p>
                       <div className="pt-1">
                         <TierBadge elo={currentRating} />
                       </div>
@@ -315,17 +315,17 @@ export default function AgentsPage() {
 
                   {agent.bio && (
                     <div>
-                      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Bio</p>
+                      <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0 mb-1">Bio</p>
                       <p className="text-sm text-zinc-300">{agent.bio}</p>
                     </div>
                   )}
 
                   <div className="space-y-2">
-                    <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">API Key</p>
-                    <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-700/50 bg-zinc-900/50 px-3 py-3">
+                    <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">API Key</p>
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 px-3 py-3">
                       <div>
                         <p className="font-mono text-sm text-zinc-300">{agent.api_key_prefix ?? 'aa_****'}••••••••</p>
-                        <p className="text-xs text-zinc-500">You only see the full key when it is created or rotated.</p>
+                        <p className="text-xs text-[#e5e2e1]0">You only see the full key when it is created or rotated.</p>
                       </div>
                       <Button
                         variant="outline"
@@ -350,14 +350,14 @@ export default function AgentsPage() {
       )}
 
       {agents.length < 3 && (
-        <div id="register-agent" className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-8">
+        <div id="register-agent" className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/20">
-              <Bot className="size-6 text-blue-400" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#4d8efe]/20">
+              <Bot className="size-6 text-[#adc6ff]" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-zinc-50">Register a new agent</h2>
-              <p className="text-sm text-zinc-400">Create another competitor and get a fresh API key.</p>
+              <h2 className="text-xl font-bold text-[#e5e2e1]">Register a new agent</h2>
+              <p className="text-sm text-[#8c909f]">Create another competitor and get a fresh API key.</p>
             </div>
           </div>
 
@@ -370,18 +370,18 @@ export default function AgentsPage() {
                 onChange={(e) => setRegName(e.target.value)}
                 placeholder="my-agent-01"
                 maxLength={32}
-                className="border-zinc-700 bg-zinc-900/50 text-zinc-50 placeholder:text-zinc-500"
+                className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
               />
-              <p className="text-xs text-zinc-500">3-32 chars, alphanumeric, dash, or underscore</p>
+              <p className="text-xs text-[#e5e2e1]0">3-32 chars, alphanumeric, dash, or underscore</p>
             </div>
 
             <div className="space-y-2">
               <Label className="text-zinc-300">Model</Label>
               <Select value={regModel} onValueChange={(v) => v && setRegModel(v)}>
-                <SelectTrigger aria-label="Select model" className="border-zinc-700 bg-zinc-900/50 text-zinc-50">
+                <SelectTrigger aria-label="Select model" className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1]">
                   <SelectValue placeholder="Select model" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-zinc-900">
+                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
                   {MODEL_OPTIONS.map((m) => (
                     <SelectItem key={m.identifier} value={m.identifier}>
                       {m.label}
@@ -393,7 +393,7 @@ export default function AgentsPage() {
 
             <div className="space-y-2">
               <Label htmlFor="agent-bio" className="text-zinc-300">
-                Bio <span className="text-zinc-500">(optional)</span>
+                Bio <span className="text-[#e5e2e1]0">(optional)</span>
               </Label>
               <Textarea
                 id="agent-bio"
@@ -402,14 +402,14 @@ export default function AgentsPage() {
                 placeholder="A short description of your agent"
                 maxLength={200}
                 rows={2}
-                className="border-zinc-700 bg-zinc-900/50 text-zinc-50 placeholder:text-zinc-500"
+                className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
               />
-              <p className="text-xs text-zinc-500">{regBio.length}/200</p>
+              <p className="text-xs text-[#e5e2e1]0">{regBio.length}/200</p>
             </div>
 
             {formError && <p className="text-sm text-red-400">{formError}</p>}
 
-            <Button type="submit" disabled={submitting} className="w-full bg-blue-500 hover:bg-blue-600">
+            <Button type="submit" disabled={submitting} className="w-full bg-[#4d8efe] hover:bg-[#adc6ff]">
               {submitting ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
               Register Agent
             </Button>
@@ -418,12 +418,12 @@ export default function AgentsPage() {
       )}
 
       <Dialog open={!!apiKey} onOpenChange={(open) => { if (!open) handleDismissKeyDialog() }}>
-        <DialogContent className="border-zinc-700 bg-zinc-900 sm:max-w-md">
+        <DialogContent className="border-zinc-700 bg-[#1c1b1b] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-zinc-50">
+            <DialogTitle className="text-[#e5e2e1]">
               {apiKeyDialogMode === 'rotated' ? 'Your New API Key' : 'Your API Key'}
             </DialogTitle>
-            <DialogDescription className="text-zinc-400">
+            <DialogDescription className="text-[#8c909f]">
               {apiKeyDialogMode === 'rotated'
                 ? 'Your old key has been invalidated. Copy this new key now — it will not be shown again.'
                 : 'Copy this key now. It will not be shown again.'}
@@ -438,13 +438,13 @@ export default function AgentsPage() {
               </p>
             </div>
             <div className="space-y-2">
-              <code className="block w-full overflow-x-auto break-all rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 font-mono text-xs text-emerald-400">
+              <code className="block w-full overflow-x-auto break-all rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 font-mono text-xs text-[#7dffa2]">
                 {apiKey}
               </code>
               <Button variant="outline" onClick={handleCopyApiKey} className="w-full gap-2 border-zinc-700">
                 {keyCopied ? (
                   <>
-                    <Check className="size-4 text-emerald-400" />
+                    <Check className="size-4 text-[#7dffa2]" />
                     Copied!
                   </>
                 ) : (

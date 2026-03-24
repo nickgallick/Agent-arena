@@ -30,10 +30,10 @@ const categoryConfig: Record<string, { name: string; icon: string; color: string
 }
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  upcoming: { label: 'Upcoming', className: 'bg-blue-500/15 text-blue-400' },
-  scheduled: { label: 'Scheduled', className: 'bg-blue-500/15 text-blue-400' },
-  open: { label: 'Open', className: 'bg-emerald-500/15 text-emerald-400' },
-  active: { label: 'Live', className: 'bg-emerald-500/15 text-emerald-400' },
+  upcoming: { label: 'Upcoming', className: 'bg-[#4d8efe]/15 text-[#adc6ff]' },
+  scheduled: { label: 'Scheduled', className: 'bg-[#4d8efe]/15 text-[#adc6ff]' },
+  open: { label: 'Open', className: 'bg-emerald-500/15 text-[#7dffa2]' },
+  active: { label: 'Live', className: 'bg-emerald-500/15 text-[#7dffa2]' },
   judging: { label: 'Judging', className: 'bg-amber-500/15 text-amber-400' },
   complete: { label: 'Complete', className: 'bg-slate-500/15 text-slate-400' },
   archived: { label: 'Archived', className: 'bg-slate-500/15 text-slate-400' },
@@ -62,7 +62,7 @@ export function ChallengeCard({
         whileHover={{ y: -2 }}
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         className={cn(
-          'rounded-xl border border-[#1E293B] bg-[#111827] p-4 transition-all duration-200',
+          'rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-4 transition-all duration-200',
           'hover:border-blue-500/30 hover:shadow-[0_4px_24px_rgba(0,0,0,0.3)]',
           className
         )}
@@ -87,16 +87,16 @@ export function ChallengeCard({
           </span>
         </div>
 
-        <h3 className="mt-3 text-sm font-semibold text-[#F1F5F9] line-clamp-1">{title}</h3>
-        <p className="mt-1 text-xs text-[#94A3B8] line-clamp-2">{description}</p>
+        <h3 className="mt-3 text-sm font-semibold text-[#e5e2e1] line-clamp-1">{title}</h3>
+        <p className="mt-1 text-xs text-[#c2c6d5] line-clamp-2">{description}</p>
 
         <div className="mt-3 flex items-center gap-3">
           <WeightClassBadge weightClass={weight_class_id} />
-          <div className="flex items-center gap-1 text-xs text-[#475569]">
+          <div className="flex items-center gap-1 text-xs text-[#8c909f]">
             <Clock className="h-3 w-3" />
             <span>{formatDuration(time_limit_minutes)}</span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-[#475569]">
+          <div className="flex items-center gap-1 text-xs text-[#8c909f]">
             <Users className="h-3 w-3" />
             <span>{entry_count}</span>
           </div>

@@ -16,28 +16,28 @@ export function ConnectedAccounts() {
 
   if (loading) {
     return (
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
-          <Loader2 className="size-6 text-zinc-500 animate-spin" />
+          <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="text-zinc-50">Connected Accounts</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Connected Accounts</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between rounded-lg border border-zinc-700/50 bg-zinc-900/50 p-4">
+        <div className="flex items-center justify-between rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-800 text-zinc-300">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#201f1f] text-zinc-300">
               <Github className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-medium text-zinc-50">GitHub</p>
-              <p className="text-sm text-zinc-400">@{githubUsername}</p>
+              <p className="text-sm font-medium text-[#e5e2e1]">GitHub</p>
+              <p className="text-sm text-[#8c909f]">@{githubUsername}</p>
             </div>
             <Avatar className="ml-2 h-8 w-8">
               <AvatarImage src={avatarUrl} alt={githubUsername} />
@@ -46,7 +46,7 @@ export function ConnectedAccounts() {
               </AvatarFallback>
             </Avatar>
           </div>
-          <Badge className="border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+          <Badge className="border-emerald-500/30 bg-[#7dffa2]/10 text-[#7dffa2]">
             <Check className="mr-1 h-3 w-3" />
             Connected
           </Badge>

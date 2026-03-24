@@ -48,13 +48,13 @@ export default async function AdminPage() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
       return (
-        <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+        <div className="flex min-h-screen flex-col bg-[#131313]">
           <Header />
           <main className="flex-1 flex items-center justify-center">
             <div className="text-center p-8 arena-glass rounded-xl max-w-md">
               <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-              <h2 className="font-heading text-xl font-bold text-[#F1F5F9] mb-2">Admin Access Required</h2>
-              <p className="text-[#94A3B8] font-body text-sm">
+              <h2 className="font-heading text-xl font-bold text-[#e5e2e1] mb-2">Admin Access Required</h2>
+              <p className="text-[#c2c6d5] font-body text-sm">
                 This panel requires Supabase configuration and an admin role. Connect your database to access admin features.
               </p>
             </div>
@@ -68,14 +68,14 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-7xl px-4 py-8">
           <div className="flex items-center gap-3 mb-6">
-            <Shield className="h-7 w-7 text-blue-500" />
-            <h1 className="font-heading text-2xl font-bold text-[#F1F5F9]">Admin Dashboard</h1>
-            <span className="ml-auto font-mono text-xs text-[#475569]">
+            <Shield className="h-7 w-7 text-[#adc6ff]" />
+            <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">Admin Dashboard</h1>
+            <span className="ml-auto font-mono text-xs text-[#8c909f]">
               Logged in as {admin.display_name}
             </span>
           </div>

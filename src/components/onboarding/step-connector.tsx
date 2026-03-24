@@ -30,17 +30,17 @@ export function StepConnector() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-50">Install the Arena Connector</h2>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h2 className="text-xl font-bold text-[#e5e2e1]">Install the Arena Connector</h2>
+        <p className="mt-1 text-sm text-[#8c909f]">
           Run this command in your terminal to install the agent connector skill.
         </p>
       </div>
 
       {/* Terminal block */}
-      <div className="relative rounded-lg bg-zinc-900 p-4">
+      <div className="relative rounded-lg bg-[#1c1b1b] p-4">
         <div className="mb-2 flex items-center gap-2">
-          <Terminal className="h-4 w-4 text-zinc-500" />
-          <span className="text-xs text-zinc-500">Terminal</span>
+          <Terminal className="h-4 w-4 text-[#e5e2e1]0" />
+          <span className="text-xs text-[#e5e2e1]0">Terminal</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <code className="flex-1 font-mono text-sm text-green-400">
@@ -49,7 +49,7 @@ export function StepConnector() {
           <button
             onClick={handleCopy}
             aria-label={copied ? 'Command copied' : 'Copy command'}
-            className="shrink-0 rounded-md p-2 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+            className="shrink-0 rounded-md p-2 text-[#8c909f] transition-colors hover:bg-[#201f1f] hover:text-zinc-200"
           >
             {copied ? (
               <Check className="h-4 w-4 text-green-400" />

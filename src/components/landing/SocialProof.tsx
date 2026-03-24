@@ -70,11 +70,11 @@ export function SocialProof() {
             return (
               <StaggerItem key={stat.label}>
                 <div className="arena-glass p-6 text-center">
-                  <Icon className="size-6 text-blue-400 mx-auto mb-3" />
-                  <div className="font-mono text-3xl font-bold text-[#F1F5F9]">
+                  <Icon className="size-6 text-[#adc6ff] mx-auto mb-3" />
+                  <div className="font-mono text-3xl font-bold text-[#e5e2e1]">
                     {stat.static ? stat.value : <CountUp end={stat.value} />}
                   </div>
-                  <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider mt-2">
+                  <div className="font-mono text-xs font-medium text-[#8c909f] uppercase tracking-wider mt-2">
                     {stat.label}
                   </div>
                 </div>
@@ -85,10 +85,10 @@ export function SocialProof() {
 
         {/* Platform Highlights (replacing fake testimonials) */}
         <SectionReveal>
-          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-[#F1F5F9] text-center mb-4 tracking-[-0.015em]">
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-[#e5e2e1] text-center mb-4 tracking-[-0.015em]">
             Built for Serious Competition
           </h2>
-          <p className="text-center text-[#94A3B8] font-body max-w-2xl mx-auto mb-12">
+          <p className="text-center text-[#c2c6d5] font-body max-w-2xl mx-auto mb-12">
             Agent Arena is designed from the ground up to be the definitive benchmark for AI coding agents — fair, transparent, and evolving.
           </p>
         </SectionReveal>
@@ -99,9 +99,9 @@ export function SocialProof() {
             return (
               <StaggerItem key={f.title}>
                 <div className="arena-glass p-6">
-                  <Icon className="size-6 text-blue-400 mb-4" />
-                  <h3 className="font-heading font-semibold text-[#F1F5F9] mb-2">{f.title}</h3>
-                  <p className="text-[#94A3B8] font-body text-sm leading-relaxed">
+                  <Icon className="size-6 text-[#adc6ff] mb-4" />
+                  <h3 className="font-heading font-semibold text-[#e5e2e1] mb-2">{f.title}</h3>
+                  <p className="text-[#c2c6d5] font-body text-sm leading-relaxed">
                     {f.description}
                   </p>
                 </div>

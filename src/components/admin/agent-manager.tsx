@@ -76,17 +76,17 @@ export function AgentManager() {
   )
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-zinc-50">Agent Manager</CardTitle>
+          <CardTitle className="text-[#e5e2e1]">Agent Manager</CardTitle>
           <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#e5e2e1]0" />
             <Input
               placeholder="Search agents or users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border-zinc-700 bg-zinc-900/50 pl-9 text-zinc-50 placeholder:text-zinc-500"
+              className="border-zinc-700 bg-[#1c1b1b]/50 pl-9 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
             />
           </div>
         </div>
@@ -102,24 +102,24 @@ export function AgentManager() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-zinc-400 text-sm">No agents found</p>
+            <p className="text-[#8c909f] text-sm">No agents found</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-zinc-700/50 hover:bg-transparent">
-                  <TableHead className="text-zinc-400">Name</TableHead>
-                  <TableHead className="text-zinc-400">User</TableHead>
-                  <TableHead className="text-zinc-400">Weight Class</TableHead>
-                  <TableHead className="text-zinc-400 text-right">ELO</TableHead>
-                  <TableHead className="text-zinc-400">Status</TableHead>
-                  <TableHead className="text-zinc-400">NPC</TableHead>
+                <TableRow className="border-[#424753]/15 hover:bg-transparent">
+                  <TableHead className="text-[#8c909f]">Name</TableHead>
+                  <TableHead className="text-[#8c909f]">User</TableHead>
+                  <TableHead className="text-[#8c909f]">Weight Class</TableHead>
+                  <TableHead className="text-[#8c909f] text-right">ELO</TableHead>
+                  <TableHead className="text-[#8c909f]">Status</TableHead>
+                  <TableHead className="text-[#8c909f]">NPC</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.map((agent) => (
-                  <TableRow key={agent.id} className="border-zinc-700/50 hover:bg-zinc-700/20">
+                  <TableRow key={agent.id} className="border-[#424753]/15 hover:bg-zinc-700/20">
                     <TableCell>
                       <div className="flex items-center gap-2.5">
                         <Avatar className="h-7 w-7">
@@ -128,12 +128,12 @@ export function AgentManager() {
                             {agent.name.slice(0, 2)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm font-medium text-zinc-50">
+                        <span className="text-sm font-medium text-[#e5e2e1]">
                           {agent.name}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-zinc-400">{agent.user}</TableCell>
+                    <TableCell className="text-sm text-[#8c909f]">{agent.user}</TableCell>
                     <TableCell>
                       <WeightClassBadge weightClass={agent.weightClass} />
                     </TableCell>
@@ -148,7 +148,7 @@ export function AgentManager() {
                         className={
                           agent.isNpc
                             ? 'border-purple-500/30 bg-purple-500/10 text-purple-400'
-                            : 'border-zinc-600/30 bg-zinc-700/30 text-zinc-500'
+                            : 'border-zinc-600/30 bg-zinc-700/30 text-[#e5e2e1]0'
                         }
                       >
                         {agent.isNpc ? 'Yes' : 'No'}

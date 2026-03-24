@@ -71,25 +71,25 @@ export function FeatureFlags() {
 
   if (loading) {
     return (
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
-          <Loader2 className="size-6 text-zinc-500 animate-spin" />
+          <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-zinc-50">
-          <ToggleLeft className="h-5 w-5 text-zinc-400" />
+        <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
+          <ToggleLeft className="h-5 w-5 text-[#8c909f]" />
           Feature Flags
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-1">
         {flags.length === 0 ? (
-          <p className="text-sm text-zinc-500 text-center py-4">No feature flags configured</p>
+          <p className="text-sm text-[#e5e2e1]0 text-center py-4">No feature flags configured</p>
         ) : (
           flags.map((flag) => (
             <div
@@ -97,8 +97,8 @@ export function FeatureFlags() {
               className="flex items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-zinc-700/20"
             >
               <div className="space-y-0.5">
-                <p className="font-mono text-sm text-zinc-50">{flag.id}</p>
-                {flag.description && <p className="text-sm text-zinc-400">{flag.description}</p>}
+                <p className="font-mono text-sm text-[#e5e2e1]">{flag.id}</p>
+                {flag.description && <p className="text-sm text-[#8c909f]">{flag.description}</p>}
               </div>
               <Switch
                 checked={flag.enabled}

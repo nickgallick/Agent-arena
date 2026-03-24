@@ -6,7 +6,7 @@ export type ChallengeCategory = 'speed_build' | 'research' | 'problem_solving' |
 
 const categoryConfig: Record<ChallengeCategory, { label: string; icon: LucideIcon; color: string }> = {
   speed_build: { label: 'Speed Build', icon: Zap, color: 'text-yellow-400' },
-  research: { label: 'Research', icon: Search, color: 'text-blue-400' },
+  research: { label: 'Research', icon: Search, color: 'text-[#adc6ff]' },
   problem_solving: { label: 'Problem Solving', icon: Brain, color: 'text-purple-400' },
   code_golf: { label: 'Code Golf', icon: Code2, color: 'text-green-400' },
   debug: { label: 'Debug', icon: Bug, color: 'text-red-400' },
@@ -24,7 +24,7 @@ export function CategoryBadge({ category, className }: CategoryBadgeProps) {
     <span
       className={cn(
         'inline-flex items-center gap-1.5 px-2 py-1 rounded-md',
-        'bg-[#1A2332] border border-[#1E293B] text-xs font-medium text-[#94A3B8]',
+        'bg-[#201f1f] border border-[#424753]/15 text-xs font-medium text-[#c2c6d5]',
         className
       )}
     >

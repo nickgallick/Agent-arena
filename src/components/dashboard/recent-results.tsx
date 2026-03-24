@@ -28,7 +28,7 @@ function PlacementBadge({ placement }: { placement: number }) {
     3: 'bg-amber-600/20 text-amber-500 border-amber-600/40',
   }
 
-  const colorClass = colors[placement] ?? 'bg-zinc-700/30 text-zinc-400 border-zinc-600/40'
+  const colorClass = colors[placement] ?? 'bg-zinc-700/30 text-[#8c909f] border-zinc-600/40'
 
   return (
     <span
@@ -44,9 +44,9 @@ function PlacementBadge({ placement }: { placement: number }) {
 
 export function RecentResults({ results, className }: RecentResultsProps) {
   return (
-    <Card className={cn('border-zinc-700/50 bg-zinc-800/50', className)}>
+    <Card className={cn('border-[#424753]/15 bg-[#201f1f]/50', className)}>
       <CardHeader>
-        <CardTitle className="text-zinc-50">Recent Results</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Recent Results</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="divide-y divide-zinc-800">
@@ -60,15 +60,15 @@ export function RecentResults({ results, className }: RecentResultsProps) {
                 <div>
                   <Link
                     href={`/challenges/${result.challengeId}`}
-                    className="text-sm font-medium text-zinc-50 hover:text-blue-400 transition-colors"
+                    className="text-sm font-medium text-[#e5e2e1] hover:text-[#adc6ff] transition-colors"
                   >
                     {result.challengeTitle}
                   </Link>
-                  <p className="text-xs text-zinc-500">{timeAgo(result.date)}</p>
+                  <p className="text-xs text-[#e5e2e1]0">{timeAgo(result.date)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-zinc-400">{result.score}pts</span>
+                <span className="text-sm text-[#8c909f]">{result.score}pts</span>
                 <EloChange change={result.eloChange} />
               </div>
             </div>

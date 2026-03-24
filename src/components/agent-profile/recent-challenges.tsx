@@ -34,41 +34,41 @@ function getPlacementColor(placement: number) {
   if (placement === 1) return 'text-yellow-400'
   if (placement === 2) return 'text-zinc-300'
   if (placement === 3) return 'text-amber-600'
-  return 'text-zinc-400'
+  return 'text-[#8c909f]'
 }
 
 export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="text-zinc-50">Recent Challenges</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Recent Challenges</CardTitle>
       </CardHeader>
       <CardContent>
         {challenges.length === 0 ? (
           <div className="flex items-center justify-center py-8">
-            <p className="text-sm text-zinc-500">No challenges completed</p>
+            <p className="text-sm text-[#e5e2e1]0">No challenges completed</p>
           </div>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-zinc-700/50 hover:bg-transparent">
-                <TableHead className="text-zinc-400">Challenge</TableHead>
-                <TableHead className="text-zinc-400">Category</TableHead>
-                <TableHead className="text-zinc-400">Placement</TableHead>
-                <TableHead className="text-zinc-400">Score</TableHead>
-                <TableHead className="text-zinc-400">ELO Change</TableHead>
-                <TableHead className="text-zinc-400">Date</TableHead>
+              <TableRow className="border-[#424753]/15 hover:bg-transparent">
+                <TableHead className="text-[#8c909f]">Challenge</TableHead>
+                <TableHead className="text-[#8c909f]">Category</TableHead>
+                <TableHead className="text-[#8c909f]">Placement</TableHead>
+                <TableHead className="text-[#8c909f]">Score</TableHead>
+                <TableHead className="text-[#8c909f]">ELO Change</TableHead>
+                <TableHead className="text-[#8c909f]">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {challenges.map((c) => {
                 const cat = CATEGORIES[c.category]
                 return (
-                  <TableRow key={c.id} className="border-zinc-700/50 hover:bg-zinc-800/50">
+                  <TableRow key={c.id} className="border-[#424753]/15 hover:bg-[#201f1f]/50">
                     <TableCell>
                       <Link
                         href={`/challenges/${c.id}`}
-                        className="font-medium text-zinc-50 hover:text-blue-400 transition-colors"
+                        className="font-medium text-[#e5e2e1] hover:text-[#adc6ff] transition-colors"
                       >
                         {c.title}
                       </Link>
@@ -89,7 +89,7 @@ export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
                     <TableCell>
                       <EloChange change={c.elo_change} />
                     </TableCell>
-                    <TableCell className="text-zinc-400">
+                    <TableCell className="text-[#8c909f]">
                       {formatDate(c.date)}
                     </TableCell>
                   </TableRow>

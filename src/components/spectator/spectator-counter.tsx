@@ -15,7 +15,7 @@ export function SpectatorCounter({ challengeId, userId, className }: SpectatorCo
   const { count, isGrowing } = useSpectatorCount({ challengeId, userId })
 
   return (
-    <div className={cn('flex items-center gap-1.5 text-xs text-zinc-400', className)}>
+    <div className={cn('flex items-center gap-1.5 text-xs text-[#8c909f]', className)}>
       <div className="relative">
         <Eye className="h-3.5 w-3.5" />
         {isGrowing && (

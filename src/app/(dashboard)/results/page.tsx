@@ -41,14 +41,14 @@ const CATEGORY_EMOJI: Record<string, string> = {
 
 function PlacementCell({ placement }: { placement: number }) {
   if (!placement || placement === 0) {
-    return <span className="text-xs text-zinc-500">—</span>
+    return <span className="text-xs text-[#e5e2e1]0">—</span>
   }
   const colors: Record<number, string> = {
     1: 'bg-yellow-500/20 text-yellow-400',
     2: 'bg-zinc-300/20 text-zinc-300',
     3: 'bg-amber-600/20 text-amber-500',
   }
-  const colorClass = colors[placement] ?? 'bg-zinc-700/30 text-zinc-400'
+  const colorClass = colors[placement] ?? 'bg-zinc-700/30 text-[#8c909f]'
 
   return (
     <span
@@ -116,7 +116,7 @@ export default function ResultsPage() {
   if (userLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-zinc-400" />
+        <Loader2 className="size-8 animate-spin text-[#8c909f]" />
       </div>
     )
   }
@@ -127,13 +127,13 @@ export default function ResultsPage() {
   if (results.length === 0) {
     return (
       <div className="space-y-6 p-6">
-        <h1 className="text-2xl font-bold text-zinc-50">My Results</h1>
-        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-8 text-center">
+        <h1 className="text-2xl font-bold text-[#e5e2e1]">My Results</h1>
+        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-8 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-700/30">
-            <FileText className="size-8 text-zinc-500" />
+            <FileText className="size-8 text-[#e5e2e1]0" />
           </div>
-          <h2 className="text-xl font-bold text-zinc-50">No results yet</h2>
-          <p className="max-w-md text-zinc-400">
+          <h2 className="text-xl font-bold text-[#e5e2e1]">No results yet</h2>
+          <p className="max-w-md text-[#8c909f]">
             Enter a challenge to get started. Your results, placements, and ELO changes will appear here.
           </p>
           <Link href="/challenges">
@@ -149,32 +149,32 @@ export default function ResultsPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-zinc-50">My Results</h1>
-        <div className="flex items-center gap-2 rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-4 py-2">
+        <h1 className="text-2xl font-bold text-[#e5e2e1]">My Results</h1>
+        <div className="flex items-center gap-2 rounded-lg border border-[#424753]/15 bg-[#201f1f]/50 px-4 py-2">
           <Coins className="size-5 text-yellow-400" />
-          <span className="text-sm text-zinc-400">Total Earned:</span>
+          <span className="text-sm text-[#8c909f]">Total Earned:</span>
           <span className="font-bold text-yellow-400">{totalCoins.toLocaleString()}</span>
         </div>
       </div>
 
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardContent className="pt-4">
           <Table>
             <TableHeader>
-              <TableRow className="border-zinc-700/50 hover:bg-transparent">
-                <TableHead className="text-zinc-400">Challenge</TableHead>
-                <TableHead className="text-zinc-400">Category</TableHead>
-                <TableHead className="text-zinc-400">Placement</TableHead>
-                <TableHead className="text-zinc-400">Score</TableHead>
-                <TableHead className="text-zinc-400">ELO Change</TableHead>
-                <TableHead className="text-zinc-400">Coins</TableHead>
-                <TableHead className="text-zinc-400">Date</TableHead>
+              <TableRow className="border-[#424753]/15 hover:bg-transparent">
+                <TableHead className="text-[#8c909f]">Challenge</TableHead>
+                <TableHead className="text-[#8c909f]">Category</TableHead>
+                <TableHead className="text-[#8c909f]">Placement</TableHead>
+                <TableHead className="text-[#8c909f]">Score</TableHead>
+                <TableHead className="text-[#8c909f]">ELO Change</TableHead>
+                <TableHead className="text-[#8c909f]">Coins</TableHead>
+                <TableHead className="text-[#8c909f]">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {results.map((result) => (
-                <TableRow key={result.id} className="border-zinc-700/50">
-                  <TableCell className="font-medium text-zinc-50">{result.challenge}</TableCell>
+                <TableRow key={result.id} className="border-[#424753]/15">
+                  <TableCell className="font-medium text-[#e5e2e1]">{result.challenge}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className="bg-zinc-700/50 text-zinc-300">
                       {CATEGORY_EMOJI[result.category] ?? ''}{' '}
@@ -196,7 +196,7 @@ export default function ResultsPage() {
                       {result.coins}
                     </span>
                   </TableCell>
-                  <TableCell className="text-zinc-400">{formatDate(result.date)}</TableCell>
+                  <TableCell className="text-[#8c909f]">{formatDate(result.date)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

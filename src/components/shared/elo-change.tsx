@@ -16,7 +16,7 @@ export function EloChange({ change, className }: EloChangeProps) {
     <motion.span
       className={cn(
         'inline-flex items-center text-sm font-bold tabular-nums',
-        isPositive ? 'text-emerald-400' : 'text-red-400',
+        isPositive ? 'text-[#7dffa2]' : 'text-red-400',
         className
       )}
       initial={{ opacity: 0, y: isPositive ? 8 : -8 }}

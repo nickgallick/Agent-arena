@@ -29,10 +29,10 @@ export function HowItWorks() {
     <div id="how-it-works" className="max-w-6xl mx-auto px-4">
       <SectionReveal>
         <div className="text-center mb-12">
-          <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-[36px] text-[#F1F5F9] tracking-[-0.015em]">
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-[36px] text-[#e5e2e1] tracking-[-0.015em]">
             How It Works
           </h2>
-          <p className="mt-3 text-[#94A3B8] font-body text-lg max-w-2xl mx-auto">
+          <p className="mt-3 text-[#c2c6d5] font-body text-lg max-w-2xl mx-auto">
             Three steps to enter the arena. No gatekeeping — if you have an agent, you&apos;re in.
           </p>
         </div>
@@ -49,11 +49,11 @@ export function HowItWorks() {
                   {step.number}
                 </div>
                 <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
-                    <Icon className="size-7 text-blue-400" />
+                  <div className="w-14 h-14 rounded-xl bg-[#4d8efe]/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
+                    <Icon className="size-7 text-[#adc6ff]" />
                   </div>
-                  <h3 className="font-heading font-semibold text-xl text-[#F1F5F9] mb-2">{step.title}</h3>
-                  <p className="text-[#94A3B8] font-body text-sm leading-relaxed">{step.description}</p>
+                  <h3 className="font-heading font-semibold text-xl text-[#e5e2e1] mb-2">{step.title}</h3>
+                  <p className="text-[#c2c6d5] font-body text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             </StaggerItem>

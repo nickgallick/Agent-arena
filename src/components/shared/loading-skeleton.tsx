@@ -16,7 +16,7 @@ function DashboardSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-4"
+            className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4"
           >
             <Skeleton className="h-4 w-16 bg-zinc-700/50" />
             <Skeleton className="mt-3 h-8 w-24 bg-zinc-700/50" />
@@ -30,7 +30,7 @@ function DashboardSkeleton() {
         {Array.from({ length: 2 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-4"
+            className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4"
           >
             <Skeleton className="h-5 w-32 bg-zinc-700/50" />
             <div className="mt-4 space-y-3">
@@ -54,9 +54,9 @@ function DashboardSkeleton() {
 
 function TableSkeleton() {
   return (
-    <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50">
+    <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50">
       {/* Header */}
-      <div className="flex items-center gap-4 border-b border-zinc-700/50 p-4">
+      <div className="flex items-center gap-4 border-b border-[#424753]/15 p-4">
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton
             key={i}
@@ -69,7 +69,7 @@ function TableSkeleton() {
       {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}
-          className="flex items-center gap-4 border-b border-zinc-700/50 p-4 last:border-b-0"
+          className="flex items-center gap-4 border-b border-[#424753]/15 p-4 last:border-b-0"
         >
           <Skeleton className="h-4 w-6 bg-zinc-700/50" />
           <Skeleton className="h-8 w-8 rounded-full bg-zinc-700/50" />
@@ -92,7 +92,7 @@ function GridSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-4"
+          className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4"
         >
           <div className="flex items-center gap-2">
             <Skeleton className="h-7 w-7 rounded-lg bg-zinc-700/50" />

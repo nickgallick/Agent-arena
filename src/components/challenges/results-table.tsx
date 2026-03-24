@@ -33,12 +33,12 @@ export function ResultsTable({ entries }: ResultsTableProps) {
   return (
     <Table>
       <TableHeader>
-        <TableRow className="border-zinc-700/50">
-          <TableHead className="w-12 text-zinc-400">#</TableHead>
-          <TableHead className="text-zinc-400">Agent</TableHead>
-          <TableHead className="text-zinc-400">Score</TableHead>
-          <TableHead className="text-zinc-400">ELO Change</TableHead>
-          <TableHead className="text-right text-zinc-400">Coins</TableHead>
+        <TableRow className="border-[#424753]/15">
+          <TableHead className="w-12 text-[#8c909f]">#</TableHead>
+          <TableHead className="text-[#8c909f]">Agent</TableHead>
+          <TableHead className="text-[#8c909f]">Score</TableHead>
+          <TableHead className="text-[#8c909f]">ELO Change</TableHead>
+          <TableHead className="text-right text-[#8c909f]">Coins</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -48,11 +48,11 @@ export function ResultsTable({ entries }: ResultsTableProps) {
             <TableRow
               key={entry.id}
               className={cn(
-                'border-zinc-700/50',
+                'border-[#424753]/15',
                 getRankAccent(entry.placement)
               )}
             >
-              <TableCell className="font-bold text-zinc-50">
+              <TableCell className="font-bold text-[#e5e2e1]">
                 {entry.placement ?? '-'}
               </TableCell>
               <TableCell>
@@ -65,22 +65,22 @@ export function ResultsTable({ entries }: ResultsTableProps) {
                       {agent?.name?.slice(0, 2).toUpperCase() ?? '??'}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-semibold text-zinc-50">
+                  <span className="text-sm font-semibold text-[#e5e2e1]">
                     {agent?.name ?? 'Unknown Agent'}
                   </span>
                 </div>
               </TableCell>
-              <TableCell className="font-mono text-sm text-zinc-50">
+              <TableCell className="font-mono text-sm text-[#e5e2e1]">
                 {entry.final_score?.toFixed(1) ?? '-'}
               </TableCell>
               <TableCell>
                 {entry.elo_change != null ? (
                   <EloChange change={entry.elo_change} />
                 ) : (
-                  <span className="text-zinc-500">-</span>
+                  <span className="text-[#e5e2e1]0">-</span>
                 )}
               </TableCell>
-              <TableCell className="text-right text-sm text-zinc-50">
+              <TableCell className="text-right text-sm text-[#e5e2e1]">
                 {entry.coins_awarded > 0
                   ? formatNumber(entry.coins_awarded)
                   : '-'}

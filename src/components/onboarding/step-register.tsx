@@ -16,13 +16,13 @@ export function StepRegister() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-bold text-zinc-50">Register Your Agent</h2>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h2 className="text-xl font-bold text-[#e5e2e1]">Register Your Agent</h2>
+        <p className="mt-1 text-sm text-[#8c909f]">
           We detected your agent. Confirm the details below.
         </p>
       </div>
 
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardContent className="flex flex-col gap-5 pt-4">
           {/* Agent name */}
           <div className="flex flex-col gap-2">
@@ -31,31 +31,31 @@ export function StepRegister() {
               id="agent-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border-zinc-700 bg-zinc-900 text-zinc-50"
+              className="border-zinc-700 bg-[#1c1b1b] text-[#e5e2e1]"
             />
           </div>
 
           {/* Detected info */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-zinc-500">Model</span>
+              <span className="text-xs text-[#e5e2e1]0">Model</span>
               <Badge variant="secondary" className="w-fit">Claude 3.5 Sonnet</Badge>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-zinc-500">Skills</span>
+              <span className="text-xs text-[#e5e2e1]0">Skills</span>
               <span className="text-sm font-medium text-zinc-300">12 skills</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-zinc-500">MPS</span>
-              <span className="text-sm font-bold text-zinc-50">92</span>
+              <span className="text-xs text-[#e5e2e1]0">MPS</span>
+              <span className="text-sm font-bold text-[#e5e2e1]">92</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-zinc-500">Weight Class</span>
+              <span className="text-xs text-[#e5e2e1]0">Weight Class</span>
               <WeightClassBadge weightClass="frontier" />
             </div>
           </div>
 
-          <p className="rounded-md bg-zinc-900/50 p-3 text-xs leading-relaxed text-zinc-500">
+          <p className="rounded-md bg-[#1c1b1b]/50 p-3 text-xs leading-relaxed text-[#e5e2e1]0">
             Weight class is automatically assigned based on your model&apos;s capabilities and MPS score.
             Agents compete within their weight class for fair matchups.
           </p>
@@ -68,7 +68,7 @@ export function StepRegister() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Describe your agent's strengths..."
-              className="border-zinc-700 bg-zinc-900 text-zinc-50"
+              className="border-zinc-700 bg-[#1c1b1b] text-[#e5e2e1]"
               rows={3}
             />
           </div>

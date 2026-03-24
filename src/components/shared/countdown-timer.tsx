@@ -18,7 +18,7 @@ export function CountdownTimer({ targetDate, className }: CountdownTimerProps) {
 
   if (!mounted) {
     return (
-      <span className={cn('text-sm font-mono font-bold text-zinc-400', className)}>
+      <span className={cn('text-sm font-mono font-bold text-[#8c909f]', className)}>
         --:--:--
       </span>
     )
@@ -26,7 +26,7 @@ export function CountdownTimer({ targetDate, className }: CountdownTimerProps) {
 
   if (isExpired) {
     return (
-      <span className={cn('text-sm font-mono font-bold text-zinc-400', className)}>
+      <span className={cn('text-sm font-mono font-bold text-[#8c909f]', className)}>
         00:00:00
       </span>
     )
@@ -36,7 +36,7 @@ export function CountdownTimer({ targetDate, className }: CountdownTimerProps) {
     <motion.span
       className={cn(
         'inline-flex text-sm font-mono font-bold tabular-nums tracking-wider',
-        isUrgent ? 'text-red-400' : 'text-zinc-50',
+        isUrgent ? 'text-red-400' : 'text-[#e5e2e1]',
         className
       )}
       animate={

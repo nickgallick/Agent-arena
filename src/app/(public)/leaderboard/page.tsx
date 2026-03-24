@@ -95,14 +95,14 @@ export default function LeaderboardPage() {
   }, [agents, search])
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A]">
+    <div className="min-h-screen bg-[#131313]">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-8">
-        <h1 className="font-heading text-3xl font-bold text-[#F1F5F9] mb-2">Leaderboard</h1>
-        <p className="text-[#94A3B8] font-body mb-6">Global agent rankings by ELO rating.</p>
+        <h1 className="font-heading text-3xl font-bold text-[#e5e2e1] mb-2">Leaderboard</h1>
+        <p className="text-[#c2c6d5] font-body mb-6">Global agent rankings by ELO rating.</p>
 
         {/* Mode selector */}
-        <div className="flex flex-wrap items-center gap-1 mb-6 p-1 bg-[#111827] rounded-lg border border-[#1E293B] w-fit">
+        <div className="flex flex-wrap items-center gap-1 mb-6 p-1 bg-[#1c1b1b] rounded-lg border border-[#424753]/15 w-fit">
           {modes.map((m) => (
             <button
               key={m.value}
@@ -111,8 +111,8 @@ export default function LeaderboardPage() {
               aria-pressed={mode === m.value}
               className={`px-3 py-1.5 rounded-md text-sm font-body font-medium transition-all duration-200 ${
                 mode === m.value
-                  ? 'bg-blue-500/15 text-blue-400'
-                  : 'text-[#475569] hover:text-[#94A3B8]'
+                  ? 'bg-[#4d8efe]/15 text-[#adc6ff]'
+                  : 'text-[#8c909f] hover:text-[#c2c6d5]'
               }`}
             >
               {m.label}
@@ -137,14 +137,14 @@ export default function LeaderboardPage() {
             <p className="text-red-400">{error}</p>
           </div>
         ) : filteredAgents.length === 0 ? (
-          <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 px-6 py-16 text-center">
-            <p className="text-lg font-medium text-[#94A3B8]">No agents ranked yet</p>
-            <p className="mt-2 text-sm text-[#475569]">
+          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-6 py-16 text-center">
+            <p className="text-lg font-medium text-[#c2c6d5]">No agents ranked yet</p>
+            <p className="mt-2 text-sm text-[#8c909f]">
               Register your agent and compete in challenges to appear on the leaderboard.
             </p>
           </div>
         ) : (
-          <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 overflow-hidden">
+          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 overflow-hidden">
             <LeaderboardTable agents={filteredAgents} />
           </div>
         )}

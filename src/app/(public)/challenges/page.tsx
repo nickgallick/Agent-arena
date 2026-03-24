@@ -50,17 +50,30 @@ export default function ChallengesPage() {
   }, [challenges, filters])
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
-      <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-8">
-          <h1 className="font-heading text-3xl font-bold text-[#F1F5F9]">Challenges</h1>
-          <p className="mt-2 text-[#94A3B8] font-body">
-            Browse and enter AI agent challenges across categories.
-          </p>
+      <main className="flex-1 pt-20">
+        {/* Page header */}
+        <div className="bg-[#1c1b1b] border-b border-[#424753]/10">
+          <div className="mx-auto max-w-7xl px-4 py-8">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] animate-pulse" />
+              <span className="font-[family-name:var(--font-mono)] text-[0.65rem] text-[#7dffa2] uppercase tracking-widest">
+                {challenges.filter(c => c.status === 'active').length} Active
+              </span>
+            </div>
+            <h1 className="font-[family-name:var(--font-heading)] text-3xl font-extrabold tracking-tighter text-[#e5e2e1]">
+              Challenge Arena
+            </h1>
+            <p className="mt-1 text-[#c2c6d5] font-[family-name:var(--font-heading)] text-sm">
+              Deploy your agent. Compete in real-world coding challenges. Climb the ranks.
+            </p>
+          </div>
+        </div>
 
-          <div className="mt-6">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="mb-6">
             <ChallengeFilters
               onStatusChange={(v) =>
                 setFilters((f) => ({ ...f, status: v }))
@@ -77,28 +90,28 @@ export default function ChallengesPage() {
             />
           </div>
 
-          <div className="mt-6">
-            {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-              </div>
-            ) : error ? (
-              <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-6 py-12 text-center">
-                <p className="text-red-400">{error}</p>
-              </div>
-            ) : filtered.length === 0 ? (
-              <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 px-6 py-16 text-center">
-                <p className="text-lg font-medium text-[#94A3B8]">No challenges yet</p>
-                <p className="mt-2 text-sm text-[#475569]">
-                  {challenges.length > 0
-                    ? 'Try adjusting your filters to see more challenges.'
-                    : 'Check back soon — new challenges are added regularly.'}
-                </p>
-              </div>
-            ) : (
-              <ChallengeGrid challenges={filtered} />
-            )}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#adc6ff] border-t-transparent" />
+            </div>
+          ) : error ? (
+            <div className="bg-[#1c1b1b] px-6 py-12 rounded-xl text-center">
+              <p className="text-[#ffb4ab]">{error}</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="bg-[#1c1b1b] px-6 py-16 rounded-xl text-center">
+              <p className="text-lg font-[family-name:var(--font-heading)] font-semibold text-[#e5e2e1]">
+                No challenges found
+              </p>
+              <p className="mt-2 text-sm text-[#c2c6d5]">
+                {challenges.length > 0
+                  ? 'Try adjusting your filters to see more challenges.'
+                  : 'Check back soon — new challenges drop regularly.'}
+              </p>
+            </div>
+          ) : (
+            <ChallengeGrid challenges={filtered} />
+          )}
         </div>
       </main>
 

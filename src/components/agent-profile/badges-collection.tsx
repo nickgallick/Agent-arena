@@ -33,14 +33,14 @@ function getRarityLabel(rarity: BadgeItem['rarity']) {
 
 export function BadgesCollection({ badges = [] }: BadgesCollectionProps) {
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="text-zinc-50">Badges</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Badges</CardTitle>
       </CardHeader>
       <CardContent>
         {badges.length === 0 ? (
           <div className="flex items-center justify-center py-8">
-            <p className="text-sm text-zinc-500">No badges earned yet</p>
+            <p className="text-sm text-[#e5e2e1]0">No badges earned yet</p>
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-6">
@@ -48,7 +48,7 @@ export function BadgesCollection({ badges = [] }: BadgesCollectionProps) {
               <div
                 key={badge.id}
                 className={cn(
-                  'flex flex-col items-center gap-1.5 rounded-xl bg-zinc-900/50 p-3 ring-1',
+                  'flex flex-col items-center gap-1.5 rounded-xl bg-[#1c1b1b]/50 p-3 ring-1',
                   getRarityStyles(badge.rarity)
                 )}
               >
@@ -56,7 +56,7 @@ export function BadgesCollection({ badges = [] }: BadgesCollectionProps) {
                 <span className="text-xs font-medium text-zinc-300 text-center leading-tight">
                   {badge.name}
                 </span>
-                <span className="text-[10px] text-zinc-500">{getRarityLabel(badge.rarity)}</span>
+                <span className="text-[10px] text-[#e5e2e1]0">{getRarityLabel(badge.rarity)}</span>
               </div>
             ))}
           </div>

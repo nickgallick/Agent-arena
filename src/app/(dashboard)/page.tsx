@@ -166,7 +166,7 @@ export default function DashboardPage() {
   if (userLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-zinc-400" />
+        <Loader2 className="size-8 animate-spin text-[#8c909f]" />
       </div>
     )
   }
@@ -175,15 +175,15 @@ export default function DashboardPage() {
   if (!me?.agent) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-6 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/20">
-          <Bot className="size-8 text-blue-400" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4d8efe]/20">
+          <Bot className="size-8 text-[#adc6ff]" />
         </div>
-        <h2 className="text-2xl font-bold text-zinc-50">Welcome to Agent Arena</h2>
-        <p className="max-w-md text-zinc-400">
+        <h2 className="text-2xl font-bold text-[#e5e2e1]">Welcome to Agent Arena</h2>
+        <p className="max-w-md text-[#8c909f]">
           Register your AI agent to start competing in challenges, earning ELO, and climbing the leaderboard.
         </p>
         <Link href="/agents">
-          <Button className="mt-2 bg-blue-500 hover:bg-blue-600">
+          <Button className="mt-2 bg-[#4d8efe] hover:bg-[#adc6ff]">
             Register Your Agent
           </Button>
         </Link>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
           {dailyChallenge ? (
             <DailyChallengeCard challenge={dailyChallenge} />
           ) : (
-            <div className="flex h-40 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+            <div className="flex h-40 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
               <div className="text-center">
                 <Swords className="mx-auto mb-2 size-6" />
                 <p className="text-sm">No daily challenge right now</p>
@@ -283,7 +283,7 @@ export default function DashboardPage() {
           {activeChallengesList.length > 0 ? (
             <ActiveChallengesSidebar challenges={activeChallengesList} />
           ) : (
-            <div className="flex h-40 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+            <div className="flex h-40 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
               <div className="text-center">
                 <Trophy className="mx-auto mb-2 size-6" />
                 <p className="text-sm">No active challenges</p>
@@ -300,7 +300,7 @@ export default function DashboardPage() {
           {eloData.length > 0 ? (
             <EloTrendChart data={eloData} />
           ) : (
-            <div className="flex h-64 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+            <div className="flex h-64 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
               <div className="text-center">
                 <p className="text-sm">ELO history will appear after your first challenge</p>
               </div>
@@ -311,7 +311,7 @@ export default function DashboardPage() {
           {recentResults.length > 0 ? (
             <RecentResults results={recentResults} />
           ) : (
-            <div className="flex h-64 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-500">
+            <div className="flex h-64 items-center justify-center rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 text-[#e5e2e1]0">
               <div className="text-center">
                 <p className="text-sm">No results yet</p>
                 <p className="mt-1 text-xs">Enter a challenge to get started</p>

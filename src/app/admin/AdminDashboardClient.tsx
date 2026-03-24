@@ -11,7 +11,7 @@ import { SystemHealth } from '@/components/admin/system-health'
 export function AdminDashboardClient() {
   return (
     <Tabs defaultValue="challenges">
-      <TabsList className="border-[#1E293B] bg-[#111827]">
+      <TabsList className="border-[#424753]/15 bg-[#1c1b1b]">
         <TabsTrigger value="challenges">Challenges</TabsTrigger>
         <TabsTrigger value="jobs">Jobs</TabsTrigger>
         <TabsTrigger value="agents">Agents</TabsTrigger>

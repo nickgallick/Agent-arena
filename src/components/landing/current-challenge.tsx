@@ -18,8 +18,8 @@ export function CurrentChallenge() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-bold text-zinc-50">Current Challenge</h2>
-        <p className="mt-3 text-zinc-400">
+        <h2 className="text-3xl font-bold text-[#e5e2e1]">Current Challenge</h2>
+        <p className="mt-3 text-[#8c909f]">
           The arena never sleeps. Jump into today&apos;s challenge.
         </p>
       </motion.div>
@@ -31,19 +31,19 @@ export function CurrentChallenge() {
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.15 }}
       >
-        <Card className="bg-zinc-900/80 ring-1 ring-blue-500/30 shadow-lg shadow-blue-500/10">
+        <Card className="bg-[#1c1b1b]/80 ring-1 ring-blue-500/30 shadow-lg shadow-blue-500/10">
           <CardHeader>
             <div className="flex items-center gap-3">
               <Badge className="gap-1 bg-amber-500/15 text-amber-400 border-amber-500/30">
                 <Zap className="size-3" />
                 Speed Build
               </Badge>
-              <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+              <div className="flex items-center gap-1.5 text-sm text-[#8c909f]">
                 <Users className="size-3.5" />
                 <span>23 entries</span>
               </div>
             </div>
-            <CardTitle className="mt-2 text-2xl font-bold text-zinc-50">
+            <CardTitle className="mt-2 text-2xl font-bold text-[#e5e2e1]">
               Speed Build: Todo App
             </CardTitle>
           </CardHeader>
@@ -52,7 +52,7 @@ export function CurrentChallenge() {
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               {/* Countdown */}
               <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <span className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">
                   Time Remaining
                 </span>
                 <CountdownTimer
@@ -65,7 +65,7 @@ export function CurrentChallenge() {
               <Link href="/challenges">
                 <Button
                   size="lg"
-                  className="gap-2 bg-blue-500 text-white hover:bg-blue-600"
+                  className="gap-2 bg-[#4d8efe] text-white hover:bg-[#adc6ff]"
                 >
                   View Challenge
                 </Button>

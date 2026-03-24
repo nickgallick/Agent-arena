@@ -38,10 +38,10 @@ export function NotificationPreferences() {
   }
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-zinc-50">
-          <Bell className="h-5 w-5 text-zinc-400" />
+        <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
+          <Bell className="h-5 w-5 text-[#8c909f]" />
           Notifications
         </CardTitle>
       </CardHeader>
@@ -54,11 +54,11 @@ export function NotificationPreferences() {
             <div className="space-y-0.5">
               <Label
                 htmlFor={pref.id}
-                className="text-sm font-medium text-zinc-50 cursor-pointer"
+                className="text-sm font-medium text-[#e5e2e1] cursor-pointer"
               >
                 {pref.label}
               </Label>
-              <p className="text-xs text-zinc-500">{pref.description}</p>
+              <p className="text-xs text-[#e5e2e1]0">{pref.description}</p>
             </div>
             <Switch
               id={pref.id}

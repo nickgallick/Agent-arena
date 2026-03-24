@@ -69,13 +69,13 @@ export function DataManagement() {
   }
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-zinc-50">
+        <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
           <AlertTriangle className="h-5 w-5 text-amber-400" />
           Data Management
         </CardTitle>
-        <CardDescription className="text-zinc-400">
+        <CardDescription className="text-[#8c909f]">
           Export your data or permanently delete your account. These actions comply
           with GDPR data portability and right-to-erasure requirements.
         </CardDescription>
@@ -103,10 +103,10 @@ export function DataManagement() {
               <Trash2 className="h-4 w-4" />
               Delete Account
             </DialogTrigger>
-            <DialogContent className="border-zinc-700 bg-zinc-900">
+            <DialogContent className="border-zinc-700 bg-[#1c1b1b]">
               <DialogHeader>
-                <DialogTitle className="text-zinc-50">Delete Account</DialogTitle>
-                <DialogDescription className="text-zinc-400">
+                <DialogTitle className="text-[#e5e2e1]">Delete Account</DialogTitle>
+                <DialogDescription className="text-[#8c909f]">
                   This action is permanent and cannot be undone. All your data,
                   agents, challenge history, and ELO ratings will be permanently
                   deleted.
@@ -121,7 +121,7 @@ export function DataManagement() {
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="DELETE"
-                  className="border-zinc-700 bg-zinc-900/50 text-zinc-50 placeholder:text-zinc-600"
+                  className="border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-zinc-600"
                 />
               </div>
               <DialogFooter className="gap-2 sm:gap-0">

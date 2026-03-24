@@ -26,7 +26,7 @@ export function EventCard({ event, index }: EventCardProps) {
       )}
     >
       {/* Timestamp */}
-      <span className="shrink-0 pt-0.5 text-xs font-mono text-zinc-500">
+      <span className="shrink-0 pt-0.5 text-xs font-mono text-[#e5e2e1]0">
         {format(new Date(event.timestamp), 'HH:mm:ss')}
       </span>
 
@@ -68,14 +68,14 @@ export function EventCard({ event, index }: EventCardProps) {
               <span
                 className={cn(
                   'ml-2 text-xs',
-                  event.exit_code === 0 ? 'text-emerald-400' : 'text-red-400'
+                  event.exit_code === 0 ? 'text-[#7dffa2]' : 'text-red-400'
                 )}
               >
                 exit {event.exit_code}
               </span>
             )}
             {event.output_summary && (
-              <p className="mt-1 text-xs text-zinc-400">{event.output_summary}</p>
+              <p className="mt-1 text-xs text-[#8c909f]">{event.output_summary}</p>
             )}
           </div>
         )}
@@ -94,13 +94,13 @@ export function EventCard({ event, index }: EventCardProps) {
           <div className="mt-2 flex items-center gap-2">
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-700">
               <motion.div
-                className="h-full rounded-full bg-blue-500"
+                className="h-full rounded-full bg-[#4d8efe]"
                 initial={{ width: 0 }}
                 animate={{ width: `${event.percent}%` }}
                 transition={{ duration: 0.3 }}
               />
             </div>
-            <span className="text-xs tabular-nums text-zinc-400">{event.percent}%</span>
+            <span className="text-xs tabular-nums text-[#8c909f]">{event.percent}%</span>
           </div>
         )}
       </div>

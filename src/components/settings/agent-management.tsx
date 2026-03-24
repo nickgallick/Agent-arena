@@ -84,16 +84,16 @@ export function AgentManagement() {
 
   if (userLoading || loading) {
     return (
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-zinc-50">
-            <Bot className="h-5 w-5 text-zinc-400" />
+          <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
+            <Bot className="h-5 w-5 text-[#8c909f]" />
             Agent
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="size-6 animate-spin text-zinc-400" />
+            <Loader2 className="size-6 animate-spin text-[#8c909f]" />
           </div>
         </CardContent>
       </Card>
@@ -102,17 +102,17 @@ export function AgentManagement() {
 
   if (!agent) {
     return (
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-zinc-50">
-            <Bot className="h-5 w-5 text-zinc-400" />
+          <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
+            <Bot className="h-5 w-5 text-[#8c909f]" />
             Agent
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-            <p className="text-sm text-zinc-400">No agent registered yet</p>
-            <p className="text-xs text-zinc-500">Register an agent to manage it here</p>
+            <p className="text-sm text-[#8c909f]">No agent registered yet</p>
+            <p className="text-xs text-[#e5e2e1]0">Register an agent to manage it here</p>
           </div>
         </CardContent>
       </Card>
@@ -120,20 +120,20 @@ export function AgentManagement() {
   }
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-zinc-50">
-          <Bot className="h-5 w-5 text-zinc-400" />
+        <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
+          <Bot className="h-5 w-5 text-[#8c909f]" />
           Agent
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-lg border border-zinc-700/50 bg-zinc-900/50 p-4 space-y-3">
+        <div className="rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-zinc-50">{agent.name}</p>
+              <p className="text-sm font-semibold text-[#e5e2e1]">{agent.name}</p>
               {agent.model_name && (
-                <p className="text-xs text-zinc-400">{agent.model_name}</p>
+                <p className="text-xs text-[#8c909f]">{agent.model_name}</p>
               )}
             </div>
             <StatusIndicator isOnline={agent.is_active} label={agent.is_active ? 'Active' : 'Inactive'} />
@@ -141,8 +141,8 @@ export function AgentManagement() {
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-zinc-500">API Key</p>
-              <p className="font-mono text-sm text-zinc-400">****-****-****-****</p>
+              <p className="text-xs text-[#e5e2e1]0">API Key</p>
+              <p className="font-mono text-sm text-[#8c909f]">****-****-****-****</p>
             </div>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -158,10 +158,10 @@ export function AgentManagement() {
                 <Key className="h-3.5 w-3.5" />
                 Rotate API Key
               </DialogTrigger>
-              <DialogContent className="border-zinc-700 bg-zinc-900">
+              <DialogContent className="border-zinc-700 bg-[#1c1b1b]">
                 <DialogHeader>
-                  <DialogTitle className="text-zinc-50">Rotate API Key</DialogTitle>
-                  <DialogDescription className="text-zinc-400">
+                  <DialogTitle className="text-[#e5e2e1]">Rotate API Key</DialogTitle>
+                  <DialogDescription className="text-[#8c909f]">
                     Are you sure? This will invalidate your current key. Any active integrations
                     using the old key will stop working immediately.
                   </DialogDescription>
@@ -177,7 +177,7 @@ export function AgentManagement() {
                   <Button
                     onClick={handleRotate}
                     disabled={rotating}
-                    className="bg-blue-500 text-white hover:bg-blue-600"
+                    className="bg-[#4d8efe] text-white hover:bg-[#adc6ff]"
                   >
                     {rotating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Rotate

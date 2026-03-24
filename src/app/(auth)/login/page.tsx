@@ -1,77 +1,99 @@
-import { Github, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { Github } from 'lucide-react'
 
-export const metadata = { title: 'Sign In — Agent Arena' }
-
-function getSupabaseConfigured() {
+function isSupabaseConfigured() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   return !!(url && !url.includes('placeholder') && url.startsWith('https://'))
 }
 
+export const metadata = { title: 'Sign In — Bouts' }
+
 export default function LoginPage() {
-  const isConfigured = getSupabaseConfigured()
+  const configured = isSupabaseConfigured()
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0B0F1A] px-4">
-      {/* Decorative glow */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/10 blur-[128px]" />
+    <div className="relative min-h-screen bg-[#131313] technical-grid flex flex-col items-center justify-center px-4 overflow-hidden">
+      {/* Ambient glow */}
+      <div className="fixed top-[10%] right-[15%] w-64 h-64 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(173,198,255,0.05)' }} />
+      <div className="fixed bottom-[20%] left-[10%] w-96 h-96 rounded-full blur-[150px] pointer-events-none" style={{ background: 'rgba(125,255,162,0.05)' }} />
+
+      {/* Logo */}
+      <div className="mb-8 text-center">
+        <Link href="/" className="text-2xl font-extrabold tracking-tighter text-[#e5e2e1] font-[family-name:var(--font-heading)] hover:text-[#adc6ff] transition-colors">
+          Bouts
+        </Link>
+        <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tighter text-[#e5e2e1] mt-4 mb-1">
+          Sign in to Bouts
+        </h1>
+        <p className="font-[family-name:var(--font-mono)] text-[#c2c6d5] text-xs tracking-widest uppercase opacity-70">
+          Precision Tier Authentication
+        </p>
       </div>
 
-      <div className="relative arena-glass-strong w-full max-w-md p-8 text-center">
-        {/* Logo */}
-        <div className="mx-auto mb-6 w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-          <span className="font-heading text-lg font-bold text-white">AA</span>
-        </div>
+      {/* Auth card */}
+      <div className="w-full max-w-sm">
+        <div className="bg-[#1c1b1b] rounded-xl shadow-2xl relative overflow-hidden p-8">
+          {/* Top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#adc6ff] to-[#4d8efe] opacity-60" />
 
-        <h1 className="font-heading text-2xl font-bold text-[#F1F5F9]">
-          Sign in to Agent Arena
-        </h1>
-        <p className="mt-2 text-sm text-[#94A3B8] font-body">
-          Connect your GitHub account to register agents and start competing.
-        </p>
-
-        {isConfigured ? (
-          <a
-            href="/api/auth/github"
-            className="mt-8 w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white text-[#0B0F1A] font-body font-semibold text-base hover:bg-white/90 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(255,255,255,0.15)] active:scale-[0.98] transition-all duration-200"
-          >
-            <Github className="size-5" />
-            Continue with GitHub
-          </a>
-        ) : (
-          <div className="mt-8 space-y-4">
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-left">
-              <AlertCircle className="size-5 text-amber-400 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-amber-400 font-body">Authentication not configured</p>
-                <p className="text-xs text-[#94A3B8] mt-1 font-body">
-                  This is a preview deployment. GitHub OAuth requires Supabase to be connected. 
-                  The arena is fully functional — auth will be live once the database is provisioned.
-                </p>
-              </div>
+          {!configured ? (
+            <div className="text-center py-4">
+              <p className="text-[#c2c6d5] text-sm mb-4">
+                Authentication is not configured for this environment.
+              </p>
+              <Link href="/" className="text-[#adc6ff] text-sm hover:underline">
+                ← Back to home
+              </Link>
             </div>
-            <button
-              disabled
-              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white/20 text-white/40 font-body font-semibold text-base cursor-not-allowed"
-            >
-              <Github className="size-5" />
-              Continue with GitHub
-            </button>
-          </div>
-        )}
+          ) : (
+            <>
+              {/* GitHub OAuth — primary auth */}
+              <a href="/api/auth/github" className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-[#353534] hover:bg-[#3a3939] text-[#e5e2e1] font-[family-name:var(--font-heading)] font-semibold rounded-lg transition-all duration-150 active:scale-[0.98] group">
+                <Github className="size-5 shrink-0" />
+                <span className="text-base">Sign in with GitHub</span>
+              </a>
 
-        <p className="mt-6 text-xs text-[#475569] font-body">
-          By signing in, you agree to our{' '}
-          <Link href="/terms" className="text-[#94A3B8] hover:text-[#F1F5F9] underline">Terms</Link>{' '}
-          and{' '}
-          <Link href="/privacy" className="text-[#94A3B8] hover:text-[#F1F5F9] underline">Privacy Policy</Link>.
-        </p>
+              {/* Divider */}
+              <div className="relative py-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-[#424753]/15" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-[#1c1b1b] px-4 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5]">
+                    System Gateway
+                  </span>
+                </div>
+              </div>
 
-        <div className="mt-8 pt-6 border-t border-[#1E293B]">
-          <Link href="/" className="text-sm text-[#475569] hover:text-[#94A3B8] transition-colors font-body">
-            ← Back to home
-          </Link>
+              {/* Security badges */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#201f1f] p-3 rounded-lg flex items-center gap-2">
+                  <div className="size-5 text-[#7dffa2] font-bold text-xs flex items-center justify-center">✓</div>
+                  <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">End-to-End Secure</span>
+                </div>
+                <div className="bg-[#201f1f] p-3 rounded-lg flex items-center gap-2">
+                  <div className="size-5 text-[#7dffa2] font-bold text-xs flex items-center justify-center">⚡</div>
+                  <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">Low Latency Auth</span>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-[#424753]/15 text-center">
+                <p className="text-xs text-[#c2c6d5] mb-2">New to the Arena?</p>
+                <Link href="/challenges" className="text-sm font-[family-name:var(--font-heading)] font-semibold text-[#adc6ff] hover:text-[#d8e2ff] transition-colors">
+                  Browse Challenges First →
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-8 font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest text-center">
+        <div className="flex gap-6">
+          <Link href="/terms" className="hover:text-[#adc6ff] transition-colors">Terms</Link>
+          <Link href="/privacy" className="hover:text-[#adc6ff] transition-colors">Privacy</Link>
+          <Link href="/fair-play" className="hover:text-[#adc6ff] transition-colors">Fair Play</Link>
         </div>
       </div>
     </div>

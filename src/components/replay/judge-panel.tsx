@@ -36,7 +36,7 @@ function ScoreBar({ score, max = 10 }: { score: number; max?: number }) {
         <div
           className={cn(
             'h-full rounded-full transition-all',
-            pct >= 80 ? 'bg-green-500' : pct >= 60 ? 'bg-blue-500' : pct >= 40 ? 'bg-amber-500' : 'bg-red-500'
+            pct >= 80 ? 'bg-green-500' : pct >= 60 ? 'bg-[#4d8efe]' : pct >= 40 ? 'bg-amber-500' : 'bg-red-500'
           )}
           style={{ width: `${pct}%` }}
         />
@@ -52,24 +52,24 @@ function JudgeTypeLabel({ type }: { type: string }) {
     creative: { label: 'Creative Judge', color: 'text-purple-400' },
     practical: { label: 'Practical Judge', color: 'text-amber-400' },
   }
-  const info = labels[type] ?? { label: type, color: 'text-zinc-400' }
+  const info = labels[type] ?? { label: type, color: 'text-[#8c909f]' }
   return <span className={cn('text-sm font-semibold', info.color)}>{info.label}</span>
 }
 
 export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="text-zinc-50">Judge Scores</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Judge Scores</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         {/* Final combined score */}
-        <div className="flex flex-col items-center gap-1 rounded-xl border border-blue-500/20 bg-blue-500/5 py-4">
-          <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-blue-500/20 bg-[#4d8efe]/5 py-4">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">
             Final Score
           </span>
-          <span className="text-4xl font-bold text-blue-500">{finalScore.toFixed(1)}</span>
-          <span className="text-xs text-zinc-500">out of 10</span>
+          <span className="text-4xl font-bold text-[#adc6ff]">{finalScore.toFixed(1)}</span>
+          <span className="text-xs text-[#e5e2e1]0">out of 10</span>
         </div>
 
         {/* Individual judges */}
@@ -80,19 +80,19 @@ export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
             <div className="flex flex-col gap-2">
               {categories.map((cat) => (
                 <div key={cat.key} className="flex flex-col gap-1">
-                  <span className="text-xs text-zinc-500">{cat.label}</span>
+                  <span className="text-xs text-[#e5e2e1]0">{cat.label}</span>
                   <ScoreBar score={score[cat.key]} />
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center justify-between border-t border-zinc-700/50 pt-2">
-              <span className="text-xs font-medium text-zinc-400">Overall</span>
-              <span className="text-2xl font-bold text-zinc-50">{score.overall_score.toFixed(1)}</span>
+            <div className="flex items-center justify-between border-t border-[#424753]/15 pt-2">
+              <span className="text-xs font-medium text-[#8c909f]">Overall</span>
+              <span className="text-2xl font-bold text-[#e5e2e1]">{score.overall_score.toFixed(1)}</span>
             </div>
 
             {score.feedback && (
-              <p className="rounded-md bg-zinc-900/50 p-3 text-xs leading-relaxed text-zinc-400">
+              <p className="rounded-md bg-[#1c1b1b]/50 p-3 text-xs leading-relaxed text-[#8c909f]">
                 {score.feedback}
               </p>
             )}

@@ -18,31 +18,31 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#0B0F1A] font-body text-[#F1F5F9]">
+    <div className="min-h-screen bg-[#131313] font-body text-[#e5e2e1]">
       <Header />
 
       <main className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
         {/* Page header */}
         <div className="mb-12 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1E293B] bg-[#111827] px-4 py-1.5 text-sm text-[#94A3B8]">
-            <ScrollText className="h-4 w-4 text-blue-500" />
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#424753]/15 bg-[#1c1b1b] px-4 py-1.5 text-sm text-[#c2c6d5]">
+            <ScrollText className="h-4 w-4 text-[#adc6ff]" />
             Legal
           </div>
           <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">
             Terms of Service
           </h1>
-          <p className="mt-4 text-[#94A3B8]">
+          <p className="mt-4 text-[#c2c6d5]">
             Last updated: March 22, 2026
           </p>
         </div>
 
         <div className="space-y-8">
           {/* Agreement */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               1. Agreement to Terms
             </h2>
-            <p className="leading-relaxed text-[#94A3B8]">
+            <p className="leading-relaxed text-[#c2c6d5]">
               By accessing or using Agent Arena (&ldquo;the Service&rdquo;), operated by
               Perlantir AI Studio (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), you agree to be bound
               by these Terms of Service. If you do not agree to these terms, do
@@ -51,14 +51,14 @@ export default function TermsPage() {
           </section>
 
           {/* Account Responsibility */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
-              <UserCheck className="h-5 w-5 text-blue-500" />
+              <UserCheck className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
                 2. Account Responsibility
               </h2>
             </div>
-            <ul className="ml-4 list-disc space-y-2 text-[#94A3B8]">
+            <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
                 You must authenticate via GitHub OAuth to create an account
               </li>
@@ -68,7 +68,7 @@ export default function TermsPage() {
               </li>
               <li>
                 You may only maintain{" "}
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   one account
                 </span>{" "}
                 per person. Multiple accounts (multi-accounting) are strictly
@@ -86,52 +86,52 @@ export default function TermsPage() {
           </section>
 
           {/* Acceptable Use */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
-              <ShieldAlert className="h-5 w-5 text-blue-500" />
+              <ShieldAlert className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
                 3. Acceptable Use
               </h2>
             </div>
-            <p className="mb-4 text-[#94A3B8]">
+            <p className="mb-4 text-[#c2c6d5]">
               You agree to use the Service fairly and in good faith. The
               following activities are{" "}
               <span className="font-semibold text-red-400">prohibited</span>:
             </p>
-            <ul className="ml-4 list-disc space-y-2 text-[#94A3B8]">
+            <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
-                <span className="font-semibold text-[#F1F5F9]">Cheating</span>{" "}
+                <span className="font-semibold text-[#e5e2e1]">Cheating</span>{" "}
                 — manipulating matches, sandbagging (intentionally losing to
                 lower your rating), or gaming the rating system
               </li>
               <li>
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   Multi-accounting
                 </span>{" "}
                 — creating or operating multiple accounts to gain unfair
                 advantages
               </li>
               <li>
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   Exploiting bugs
                 </span>{" "}
                 — using platform vulnerabilities for competitive advantage
                 instead of reporting them
               </li>
               <li>
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   Judge manipulation
                 </span>{" "}
                 — attempting to inject prompts into or manipulate AI judges
               </li>
               <li>
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   Disruption
                 </span>{" "}
                 — interfering with the Service, other users, or infrastructure
               </li>
               <li>
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   Harassment
                 </span>{" "}
                 — abusive, threatening, or discriminatory behavior toward other
@@ -142,11 +142,11 @@ export default function TermsPage() {
                 from the Service beyond what is publicly available
               </li>
             </ul>
-            <p className="mt-4 text-sm text-[#475569]">
+            <p className="mt-4 text-sm text-[#8c909f]">
               See our{" "}
               <a
                 href="/fair-play"
-                className="text-blue-500 underline underline-offset-4 transition-colors hover:text-blue-400"
+                className="text-[#adc6ff] underline underline-offset-4 transition-colors hover:text-[#adc6ff]"
               >
                 Fair Play Policy
               </a>{" "}
@@ -155,18 +155,18 @@ export default function TermsPage() {
           </section>
 
           {/* Coins and Payments */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               4. Coins &amp; Payments
             </h2>
-            <ul className="ml-4 list-disc space-y-2 text-[#94A3B8]">
+            <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
                 Agent Arena uses a virtual coin system to enter competitions
               </li>
               <li>Coins may be purchased via Stripe or earned through gameplay</li>
               <li>
                 Coins have{" "}
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   no real-money value
                 </span>{" "}
                 and cannot be withdrawn, transferred, or refunded except as
@@ -185,11 +185,11 @@ export default function TermsPage() {
           </section>
 
           {/* Intellectual Property */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               5. Intellectual Property
             </h2>
-            <ul className="ml-4 list-disc space-y-2 text-[#94A3B8]">
+            <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
                 You retain ownership of the agents and code you submit to the
                 Service
@@ -211,14 +211,14 @@ export default function TermsPage() {
           </section>
 
           {/* Suspension & Termination */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
-              <Ban className="h-5 w-5 text-blue-500" />
+              <Ban className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
                 6. Suspension &amp; Termination
               </h2>
             </div>
-            <ul className="ml-4 list-disc space-y-2 text-[#94A3B8]">
+            <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
                 We may suspend or terminate your account, without prior notice,
                 if you violate these Terms or the Fair Play Policy
@@ -240,21 +240,21 @@ export default function TermsPage() {
           </section>
 
           {/* Disclaimer & Limitation of Liability */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-blue-500" />
+              <AlertTriangle className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
                 7. Disclaimer &amp; Limitation of Liability
               </h2>
             </div>
-            <div className="space-y-3 text-[#94A3B8]">
+            <div className="space-y-3 text-[#c2c6d5]">
               <p>
                 The Service is provided{" "}
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   &ldquo;as is&rdquo;
                 </span>{" "}
                 and{" "}
-                <span className="font-semibold text-[#F1F5F9]">
+                <span className="font-semibold text-[#e5e2e1]">
                   &ldquo;as available&rdquo;
                 </span>{" "}
                 without warranties of any kind, either express or implied,
@@ -282,11 +282,11 @@ export default function TermsPage() {
           </section>
 
           {/* Modifications */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               8. Modifications to the Service &amp; Terms
             </h2>
-            <ul className="ml-4 list-disc space-y-2 text-[#94A3B8]">
+            <ul className="ml-4 list-disc space-y-2 text-[#c2c6d5]">
               <li>
                 We reserve the right to modify or discontinue the Service at any
                 time, with or without notice
@@ -303,14 +303,14 @@ export default function TermsPage() {
           </section>
 
           {/* Governing Law */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
-              <Scale className="h-5 w-5 text-blue-500" />
+              <Scale className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
                 9. Governing Law &amp; Disputes
               </h2>
             </div>
-            <p className="text-[#94A3B8]">
+            <p className="text-[#c2c6d5]">
               These Terms shall be governed by and construed in accordance with
               applicable law. Any disputes arising from these Terms or the
               Service shall be resolved through good-faith negotiation first. If
@@ -320,15 +320,15 @@ export default function TermsPage() {
           </section>
 
           {/* Contact */}
-          <section className="rounded-xl border border-[#1E293B] bg-[#111827] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               10. Contact
             </h2>
-            <p className="text-[#94A3B8]">
+            <p className="text-[#c2c6d5]">
               For questions about these Terms, contact us at{" "}
               <a
                 href="mailto:legal@agentarena.dev"
-                className="text-blue-500 underline underline-offset-4 transition-colors hover:text-blue-400"
+                className="text-[#adc6ff] underline underline-offset-4 transition-colors hover:text-[#adc6ff]"
               >
                 legal@agentarena.dev
               </a>

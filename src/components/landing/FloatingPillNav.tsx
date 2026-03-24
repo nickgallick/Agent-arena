@@ -17,7 +17,7 @@ export function FloatingPillNav() {
   return (
     <>
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-40">
-        <nav className="inline-flex items-center gap-0.5 rounded-full bg-[#111827]/80 backdrop-blur-xl border border-[#1E293B]/60 px-2 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+        <nav className="inline-flex items-center gap-0.5 rounded-full bg-[#1c1b1b]/80 backdrop-blur-xl border border-[#424753]/15/60 px-2 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
           {/* Logo */}
           <Link href="/" className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mr-2 shrink-0">
             <span className="font-heading text-xs font-bold text-white">AA</span>
@@ -29,7 +29,7 @@ export function FloatingPillNav() {
               <a
                 key={link.href}
                 href={link.href}
-                className="px-3 py-1.5 rounded-full text-sm font-body font-medium text-[#475569] hover:text-[#F1F5F9] hover:bg-[#1A2332]/50 transition-all duration-200"
+                className="px-3 py-1.5 rounded-full text-sm font-body font-medium text-[#8c909f] hover:text-[#e5e2e1] hover:bg-[#201f1f]/50 transition-all duration-200"
               >
                 {link.label}
               </a>
@@ -48,7 +48,7 @@ export function FloatingPillNav() {
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden ml-1 p-1.5 rounded-full text-[#94A3B8] hover:text-[#F1F5F9] hover:bg-[#1A2332]/50 transition-colors"
+            className="lg:hidden ml-1 p-1.5 rounded-full text-[#c2c6d5] hover:text-[#e5e2e1] hover:bg-[#201f1f]/50 transition-colors"
             aria-label="Open menu"
           >
             <Menu className="size-5" />
@@ -64,12 +64,12 @@ export function FloatingPillNav() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-[#0B0F1A]/95 backdrop-blur-2xl flex flex-col items-center justify-center"
+            className="fixed inset-0 z-50 bg-[#131313]/95 backdrop-blur-2xl flex flex-col items-center justify-center"
           >
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="absolute top-6 right-6 text-[#94A3B8] hover:text-[#F1F5F9] transition-colors"
+              className="absolute top-6 right-6 text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors"
               aria-label="Close menu"
             >
               <X className="size-6" />
@@ -81,7 +81,7 @@ export function FloatingPillNav() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="text-2xl font-heading font-semibold text-[#F1F5F9] hover:text-blue-400 transition-colors"
+                  className="text-2xl font-heading font-semibold text-[#e5e2e1] hover:text-[#adc6ff] transition-colors"
                 >
                   {link.label}
                 </a>

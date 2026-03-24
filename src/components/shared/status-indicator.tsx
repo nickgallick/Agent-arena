@@ -23,7 +23,7 @@ export function StatusIndicator({ isOnline, label, className }: StatusIndicatorP
         />
       </span>
       {label && (
-        <span className="text-xs text-zinc-400">{label}</span>
+        <span className="text-xs text-[#8c909f]">{label}</span>
       )}
     </span>
   )

@@ -38,7 +38,7 @@ function AnimatedNumber({ target, duration = 1500, format = true }: AnimatedNumb
   }, [isInView, target, duration])
 
   return (
-    <span ref={ref} className="text-lg font-bold text-zinc-50">
+    <span ref={ref} className="text-lg font-bold text-[#e5e2e1]">
       {format ? new Intl.NumberFormat('en-US').format(count) : count}
     </span>
   )
@@ -70,23 +70,23 @@ const stats = [
 
 export function LiveStatsBar() {
   return (
-    <section className="border-y border-zinc-800 bg-zinc-900/50 py-4">
+    <section className="border-y border-[#424753]/15 bg-[#1c1b1b]/50 py-4">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 md:grid-cols-4 lg:px-8">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
             <div key={stat.label} className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800">
-                <Icon className="size-5 text-blue-400" />
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#201f1f]">
+                <Icon className="size-5 text-[#adc6ff]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs uppercase tracking-wider text-zinc-500">
+                <span className="text-xs uppercase tracking-wider text-[#e5e2e1]0">
                   {stat.label}
                 </span>
                 {stat.value !== null ? (
                   <AnimatedNumber target={stat.value} />
                 ) : (
-                  <span className="text-lg font-bold text-zinc-50">
+                  <span className="text-lg font-bold text-[#e5e2e1]">
                     {stat.displayValue}
                   </span>
                 )}

@@ -47,7 +47,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
         <button
           onClick={onBack}
           aria-label="Back to grid view"
-          className="mb-4 flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+          className="mb-4 flex items-center gap-1.5 text-sm text-[#8c909f] hover:text-zinc-200 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Grid
@@ -58,8 +58,8 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
           className="flex flex-col gap-2 max-h-[70vh] overflow-y-auto pr-2"
         >
           {events.length === 0 && (
-            <div className="flex items-center justify-center rounded-lg border border-zinc-700/50 bg-zinc-800/30 py-12">
-              <p className="text-sm text-zinc-500">Waiting for events…</p>
+            <div className="flex items-center justify-center rounded-lg border border-[#424753]/15 bg-[#201f1f]/30 py-12">
+              <p className="text-sm text-[#e5e2e1]0">Waiting for events…</p>
             </div>
           )}
           {events.map((event, i) => (
@@ -71,7 +71,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
       {/* Right panel: Agent info + live stats (40%) */}
       <div className="flex-[2] space-y-4">
         {/* Agent profile card */}
-        <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-5">
+        <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-5">
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 overflow-hidden rounded-full bg-zinc-700">
               {entry.agent?.avatar_url && (
@@ -84,30 +84,30 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
               )}
             </div>
             <div>
-              <h3 className="text-lg font-bold text-zinc-50">
+              <h3 className="text-lg font-bold text-[#e5e2e1]">
                 {entry.agent?.name || 'Unknown Agent'}
               </h3>
               {entry.agent?.weight_class_id && (
-                <span className="text-sm text-zinc-400 capitalize">
+                <span className="text-sm text-[#8c909f] capitalize">
                   {entry.agent.weight_class_id}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="mt-3 text-xs text-zinc-500">
+          <div className="mt-3 text-xs text-[#e5e2e1]0">
             Joined {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}
           </div>
         </div>
 
         {/* Live stats */}
-        <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-5">
+        <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-5">
           <h4 className="mb-3 text-sm font-semibold text-zinc-300">Live Stats</h4>
           <div className="grid grid-cols-2 gap-3">
-            <StatItem icon={<Zap className="h-4 w-4 text-blue-400" />} label="Events" value={events.length} />
-            <StatItem icon={<Clock className="h-4 w-4 text-zinc-400" />} label="Elapsed" value={formatDistanceToNow(new Date(entry.created_at), { addSuffix: false })} />
+            <StatItem icon={<Zap className="h-4 w-4 text-[#adc6ff]" />} label="Events" value={events.length} />
+            <StatItem icon={<Clock className="h-4 w-4 text-[#8c909f]" />} label="Elapsed" value={formatDistanceToNow(new Date(entry.created_at), { addSuffix: false })} />
             <StatItem icon={<Terminal className="h-4 w-4 text-purple-400" />} label="Tools Used" value={stats.toolsUsed} />
-            <StatItem icon={<Code className="h-4 w-4 text-emerald-400" />} label="Lines Written" value={stats.linesWritten} />
+            <StatItem icon={<Code className="h-4 w-4 text-[#7dffa2]" />} label="Lines Written" value={stats.linesWritten} />
             <StatItem icon={<AlertTriangle className="h-4 w-4 text-red-400" />} label="Errors" value={stats.errorsHit} />
             <StatItem icon={<CheckCircle className="h-4 w-4 text-amber-400" />} label="Self-fixes" value={stats.selfCorrections} />
           </div>
@@ -127,11 +127,11 @@ function StatItem({
   value: string | number
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-zinc-900/50 px-3 py-2">
+    <div className="flex items-center gap-2 rounded-lg bg-[#1c1b1b]/50 px-3 py-2">
       {icon}
       <div>
-        <p className="text-sm font-bold tabular-nums text-zinc-50">{value}</p>
-        <p className="text-xs text-zinc-500">{label}</p>
+        <p className="text-sm font-bold tabular-nums text-[#e5e2e1]">{value}</p>
+        <p className="text-xs text-[#e5e2e1]0">{label}</p>
       </div>
     </div>
   )

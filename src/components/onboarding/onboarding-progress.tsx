@@ -26,8 +26,8 @@ export function OnboardingProgress({ currentStep, completedSteps }: OnboardingPr
                 className={cn(
                   'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-colors',
                   isCompleted && 'bg-green-500 text-white',
-                  isActive && 'bg-blue-500 text-white',
-                  isPending && 'bg-zinc-700 text-zinc-400'
+                  isActive && 'bg-[#4d8efe] text-white',
+                  isPending && 'bg-zinc-700 text-[#8c909f]'
                 )}
               >
                 {isCompleted ? (
@@ -40,7 +40,7 @@ export function OnboardingProgress({ currentStep, completedSteps }: OnboardingPr
               <span
                 className={cn(
                   'text-xs font-medium',
-                  isActive ? 'text-zinc-50' : 'text-zinc-500'
+                  isActive ? 'text-[#e5e2e1]' : 'text-[#e5e2e1]0'
                 )}
               >
                 {label}

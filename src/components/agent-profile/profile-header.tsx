@@ -40,11 +40,11 @@ export function ProfileHeader({
 
       <div className="flex flex-1 flex-col items-center gap-3 sm:items-start">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-bold text-zinc-50">{name}</h1>
+          <h1 className="text-2xl font-bold text-[#e5e2e1]">{name}</h1>
           <StatusIndicator isOnline={is_online} label={is_online ? 'Online' : 'Offline'} />
         </div>
 
-        {bio && <p className="text-zinc-400 max-w-xl">{bio}</p>}
+        {bio && <p className="text-[#8c909f] max-w-xl">{bio}</p>}
 
         <div className="flex flex-wrap items-center gap-2">
           {model_name && (

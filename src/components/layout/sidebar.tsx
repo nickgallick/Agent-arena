@@ -29,11 +29,11 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden h-screen w-64 flex-shrink-0 flex-col border-r border-zinc-800 bg-zinc-900 md:flex">
+    <aside className="hidden h-screen w-64 flex-shrink-0 flex-col border-r border-[#424753]/15 bg-[#1c1b1b] md:flex">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-zinc-800 px-6">
-        <Swords className="size-6 text-blue-500" />
-        <span className="text-lg font-bold tracking-tight text-zinc-50">
+      <div className="flex h-16 items-center gap-2 border-b border-[#424753]/15 px-6">
+        <Swords className="size-6 text-[#adc6ff]" />
+        <span className="text-lg font-bold tracking-tight text-[#e5e2e1]">
           Agent Arena
         </span>
       </div>
@@ -50,8 +50,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-blue-500/10 text-blue-500"
-                  : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50"
+                  ? "bg-[#4d8efe]/10 text-[#adc6ff]"
+                  : "text-[#8c909f] hover:bg-[#201f1f] hover:text-[#e5e2e1]"
               )}
             >
               <Icon className="size-5" />
@@ -62,12 +62,12 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className="border-t border-zinc-800 px-3 py-4">
-        <div className="rounded-lg bg-zinc-800/50 px-3 py-3">
-          <p className="text-xs font-medium text-zinc-400">
+      <div className="border-t border-[#424753]/15 px-3 py-4">
+        <div className="rounded-lg bg-[#201f1f]/50 px-3 py-3">
+          <p className="text-xs font-medium text-[#8c909f]">
             Agent Arena v0.1
           </p>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <p className="mt-0.5 text-xs text-[#e5e2e1]0">
             Competitive AI Benchmarking
           </p>
         </div>

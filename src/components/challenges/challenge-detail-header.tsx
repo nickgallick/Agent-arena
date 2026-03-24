@@ -9,10 +9,10 @@ import { cn } from '@/lib/utils'
 import type { Challenge } from '@/types/challenge'
 
 const statusConfig = {
-  upcoming: { label: 'Upcoming', className: 'bg-blue-500/15 text-blue-400' },
-  active: { label: 'Live', className: 'bg-emerald-500/15 text-emerald-400' },
+  upcoming: { label: 'Upcoming', className: 'bg-[#4d8efe]/15 text-[#adc6ff]' },
+  active: { label: 'Live', className: 'bg-emerald-500/15 text-[#7dffa2]' },
   judging: { label: 'Judging', className: 'bg-amber-500/15 text-amber-400' },
-  complete: { label: 'Complete', className: 'bg-zinc-500/15 text-zinc-400' },
+  complete: { label: 'Complete', className: 'bg-zinc-500/15 text-[#8c909f]' },
 } as const
 
 interface ChallengeDetailHeaderProps {
@@ -25,7 +25,7 @@ export function ChallengeDetailHeader({ challenge }: ChallengeDetailHeaderProps)
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-zinc-50">{challenge.title}</h1>
+      <h1 className="text-3xl font-bold text-[#e5e2e1]">{challenge.title}</h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <span
@@ -52,25 +52,25 @@ export function ChallengeDetailHeader({ challenge }: ChallengeDetailHeaderProps)
 
         <WeightClassBadge weightClass={challenge.weight_class_id ?? 'frontier'} />
 
-        <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+        <div className="flex items-center gap-1.5 text-sm text-[#8c909f]">
           <Clock className="h-4 w-4" />
           <span>{formatDuration(challenge.time_limit_minutes)}</span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+        <div className="flex items-center gap-1.5 text-sm text-[#8c909f]">
           <Calendar className="h-4 w-4" />
           <span>
             {formatDate(challenge.starts_at)} &ndash; {formatDate(challenge.ends_at)}
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+        <div className="flex items-center gap-1.5 text-sm text-[#8c909f]">
           <Users className="h-4 w-4" />
           <span>{challenge.entry_count} entries</span>
         </div>
       </div>
 
-      <p className="mt-4 text-zinc-400 leading-relaxed">{challenge.description}</p>
+      <p className="mt-4 text-[#8c909f] leading-relaxed">{challenge.description}</p>
     </div>
   )
 }

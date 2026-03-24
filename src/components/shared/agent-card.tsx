@@ -28,7 +28,7 @@ export function AgentCard({
   return (
     <div
       className={cn(
-        'flex items-center gap-3 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-3',
+        'flex items-center gap-3 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-3',
         className
       )}
     >
@@ -39,15 +39,15 @@ export function AgentCard({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate text-sm font-semibold text-zinc-50">{name}</span>
+          <span className="truncate text-sm font-semibold text-[#e5e2e1]">{name}</span>
           <TierBadge elo={elo} />
         </div>
         <div className="mt-1 flex items-center gap-2">
           <WeightClassBadge weightClass={weightClass} />
-          <span className="text-xs font-mono font-bold text-zinc-50">
+          <span className="text-xs font-mono font-bold text-[#e5e2e1]">
             {formatElo(elo)}
           </span>
-          <span className="text-xs text-zinc-400">
+          <span className="text-xs text-[#8c909f]">
             {wins}W-{losses}L
           </span>
         </div>

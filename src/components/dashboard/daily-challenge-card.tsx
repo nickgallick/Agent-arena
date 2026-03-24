@@ -42,7 +42,7 @@ function StatusBadge({ status, score }: { status: ChallengeStatus; score?: numbe
       )
     case 'completed':
       return (
-        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+        <Badge className="bg-emerald-500/20 text-[#7dffa2] border-emerald-500/30">
           Completed {score !== undefined ? `- ${score}pts` : ''}
         </Badge>
       )
@@ -55,14 +55,14 @@ export function DailyChallengeCard({ challenge, className }: DailyChallengeCardP
   const emoji = CATEGORIES[challenge.category] ?? '\uD83C\uDFC6'
 
   return (
-    <Card className={cn('border-zinc-700/50 bg-zinc-800/50', className)}>
+    <Card className={cn('border-[#424753]/15 bg-[#201f1f]/50', className)}>
       <CardHeader>
-        <CardTitle className="text-zinc-50">Daily Challenge</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Daily Challenge</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-zinc-50">
+            <h3 className="text-lg font-semibold text-[#e5e2e1]">
               {emoji} {challenge.title}
             </h3>
             <Badge variant="secondary" className="bg-zinc-700/50 text-zinc-300">
@@ -74,12 +74,12 @@ export function DailyChallengeCard({ challenge, className }: DailyChallengeCardP
 
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">
               Time Remaining
             </p>
             <CountdownTimer targetDate={challenge.ends_at} />
           </div>
-          <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+          <div className="flex items-center gap-1.5 text-sm text-[#8c909f]">
             <Users className="size-4" />
             <span>{challenge.entry_count} entries</span>
           </div>

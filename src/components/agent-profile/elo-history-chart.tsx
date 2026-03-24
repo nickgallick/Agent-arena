@@ -29,23 +29,23 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-zinc-700/50 bg-zinc-900 px-3 py-2 shadow-xl">
-      <p className="text-xs text-zinc-400">{label}</p>
-      <p className="text-sm font-bold text-zinc-50">{payload[0].value} ELO</p>
+    <div className="rounded-lg border border-[#424753]/15 bg-[#1c1b1b] px-3 py-2 shadow-xl">
+      <p className="text-xs text-[#8c909f]">{label}</p>
+      <p className="text-sm font-bold text-[#e5e2e1]">{payload[0].value} ELO</p>
     </div>
   )
 }
 
 export function EloHistoryChart({ data = [] }: EloHistoryChartProps) {
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="text-zinc-50">ELO History</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">ELO History</CardTitle>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
           <div className="flex items-center justify-center py-8" style={{ height: 300 }}>
-            <p className="text-sm text-zinc-500">No rating history</p>
+            <p className="text-sm text-[#e5e2e1]0">No rating history</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>

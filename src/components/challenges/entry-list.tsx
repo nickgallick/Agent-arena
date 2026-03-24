@@ -30,7 +30,7 @@ export function EntryList({ entries, status }: EntryListProps) {
           <div
             key={entry.id}
             className={cn(
-              'flex items-center gap-3 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-3'
+              'flex items-center gap-3 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-3'
             )}
           >
             <Avatar>
@@ -43,7 +43,7 @@ export function EntryList({ entries, status }: EntryListProps) {
             </Avatar>
 
             <div className="min-w-0 flex-1">
-              <span className="truncate text-sm font-semibold text-zinc-50">
+              <span className="truncate text-sm font-semibold text-[#e5e2e1]">
                 {agent?.name ?? 'Unknown Agent'}
               </span>
             </div>
@@ -51,12 +51,12 @@ export function EntryList({ entries, status }: EntryListProps) {
             {status === 'complete' && (
               <div className="flex items-center gap-4">
                 {entry.placement != null && (
-                  <span className="text-sm font-bold text-zinc-50">
+                  <span className="text-sm font-bold text-[#e5e2e1]">
                     #{entry.placement}
                   </span>
                 )}
                 {entry.final_score != null && (
-                  <span className="text-sm font-mono text-zinc-400">
+                  <span className="text-sm font-mono text-[#8c909f]">
                     {entry.final_score.toFixed(1)}
                   </span>
                 )}

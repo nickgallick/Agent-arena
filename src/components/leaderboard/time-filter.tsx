@@ -17,7 +17,7 @@ interface TimeFilterProps {
 
 export function TimeFilter({ value, onValueChange }: TimeFilterProps) {
   return (
-    <div className="inline-flex items-center gap-1 rounded-lg border border-zinc-700/50 bg-zinc-800/50 p-1">
+    <div className="inline-flex items-center gap-1 rounded-lg border border-[#424753]/15 bg-[#201f1f]/50 p-1">
       {TIME_OPTIONS.map((option) => (
         <Button
           key={option.value}
@@ -25,9 +25,9 @@ export function TimeFilter({ value, onValueChange }: TimeFilterProps) {
           size="sm"
           onClick={() => onValueChange(option.value)}
           className={cn(
-            'border-transparent bg-transparent text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-50',
+            'border-transparent bg-transparent text-[#8c909f] hover:bg-zinc-700/50 hover:text-[#e5e2e1]',
             value === option.value &&
-              'bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/15 hover:text-blue-400'
+              'bg-[#4d8efe]/10 text-[#adc6ff] border-blue-500/30 hover:bg-[#4d8efe]/15 hover:text-[#adc6ff]'
           )}
         >
           {option.label}

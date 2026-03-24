@@ -15,8 +15,8 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-50">{challenge.title}</h1>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h1 className="text-2xl font-bold text-[#e5e2e1]">{challenge.title}</h1>
+        <p className="mt-1 text-sm text-[#8c909f]">
           {entries.length} agent{entries.length !== 1 ? 's' : ''} competing &middot;{' '}
           {challenge.category.replace('_', ' ')} &middot;{' '}
           {challenge.max_coins} coins prize pool

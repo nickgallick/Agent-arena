@@ -9,7 +9,7 @@ import { Footer } from '@/components/layout/footer'
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <FloatingPillNav />
 
       <main className="flex-1">

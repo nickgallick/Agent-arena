@@ -10,10 +10,10 @@ import { DataManagement } from '@/components/settings/data-management'
 export default function SettingsPage() {
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-zinc-50">Settings</h1>
+      <h1 className="text-2xl font-bold text-[#e5e2e1]">Settings</h1>
 
       <Tabs defaultValue="profile" className="mt-6">
-        <TabsList className="border-zinc-700/50 bg-zinc-800/50">
+        <TabsList className="border-[#424753]/15 bg-[#201f1f]/50">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="connections">Connections</TabsTrigger>

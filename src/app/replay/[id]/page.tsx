@@ -68,7 +68,7 @@ export default function ReplayPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A]">
+      <div className="min-h-screen bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center py-20">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -80,12 +80,12 @@ export default function ReplayPage() {
 
   if (error || !result) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A]">
+      <div className="min-h-screen bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center py-20">
-          <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 px-8 py-12 text-center">
-            <p className="text-lg font-medium text-[#94A3B8]">{error ?? 'Replay not available'}</p>
-            <a href="/challenges" className="mt-4 inline-block text-sm text-blue-400 hover:underline">
+          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
+            <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Replay not available'}</p>
+            <a href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:underline">
               ← Browse challenges
             </a>
           </div>
@@ -96,26 +96,26 @@ export default function ReplayPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A]">
+    <div className="min-h-screen bg-[#131313]">
       <Header />
       <main className="mx-auto max-w-6xl px-4 py-8">
         <SectionReveal>
           <GlassCard className="p-8 mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-6">
               <div>
-                <h1 className="font-heading text-3xl font-bold text-[#F1F5F9]">
+                <h1 className="font-heading text-3xl font-bold text-[#e5e2e1]">
                   {result.challenge_title}
                 </h1>
-                <p className="text-[#94A3B8] font-body mt-2">
+                <p className="text-[#c2c6d5] font-body mt-2">
                   Replay entry #{params.id} • Challenge concluded
                 </p>
               </div>
               {result.placement !== null && (
                 <div className="text-right">
-                  <div className="font-mono text-4xl font-bold text-[#F1F5F9]">
+                  <div className="font-mono text-4xl font-bold text-[#e5e2e1]">
                     #{result.placement}
                   </div>
-                  <div className="text-[#475569] font-mono text-xs uppercase tracking-wider">
+                  <div className="text-[#8c909f] font-mono text-xs uppercase tracking-wider">
                     Placement
                   </div>
                 </div>
@@ -125,21 +125,21 @@ export default function ReplayPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {result.score !== null && (
                 <div>
-                  <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider">Score</div>
-                  <div className="font-mono text-2xl font-bold text-[#F1F5F9] mt-1">{result.score}/100</div>
+                  <div className="font-mono text-xs font-medium text-[#8c909f] uppercase tracking-wider">Score</div>
+                  <div className="font-mono text-2xl font-bold text-[#e5e2e1] mt-1">{result.score}/100</div>
                 </div>
               )}
               {result.elo_change !== null && (
                 <div>
-                  <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider">ELO Change</div>
-                  <div className={`font-mono text-2xl font-bold mt-1 ${result.elo_change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <div className="font-mono text-xs font-medium text-[#8c909f] uppercase tracking-wider">ELO Change</div>
+                  <div className={`font-mono text-2xl font-bold mt-1 ${result.elo_change >= 0 ? 'text-[#7dffa2]' : 'text-red-400'}`}>
                     {result.elo_change >= 0 ? '+' : ''}{result.elo_change}
                   </div>
                 </div>
               )}
               <div>
-                <div className="font-mono text-xs font-medium text-[#475569] uppercase tracking-wider">Category</div>
-                <div className="font-body text-sm font-medium text-[#F1F5F9] mt-1 capitalize">{result.category.replace('_', ' ')}</div>
+                <div className="font-mono text-xs font-medium text-[#8c909f] uppercase tracking-wider">Category</div>
+                <div className="font-body text-sm font-medium text-[#e5e2e1] mt-1 capitalize">{result.category.replace('_', ' ')}</div>
               </div>
             </div>
           </GlassCard>
@@ -148,20 +148,20 @@ export default function ReplayPage() {
         {result.screenshot_urls && result.screenshot_urls.length > 0 && (
           <SectionReveal delay={0.1}>
             <GlassCard className="p-8 mb-8">
-              <h2 className="font-heading text-xl font-semibold text-[#F1F5F9] mb-4">
+              <h2 className="font-heading text-xl font-semibold text-[#e5e2e1] mb-4">
                 Visual Output
               </h2>
               <div className="grid gap-4 md:grid-cols-2">
                 {result.screenshot_urls.map((ss) => (
-                  <div key={ss.viewport} className="rounded-xl border border-[#1E293B] bg-[#0B0F1A] overflow-hidden">
-                    <div className="px-4 py-2 border-b border-[#1E293B] text-xs font-mono text-[#475569] uppercase tracking-wider">
+                  <div key={ss.viewport} className="rounded-xl border border-[#424753]/15 bg-[#131313] overflow-hidden">
+                    <div className="px-4 py-2 border-b border-[#424753]/15 text-xs font-mono text-[#8c909f] uppercase tracking-wider">
                       {ss.viewport === 'desktop' ? '🖥️ Desktop (1280×800)' : '📱 Mobile (375×812)'}
                     </div>
                     <div className="p-2">
                       <img
                         src={ss.url}
                         alt={`${ss.viewport} screenshot`}
-                        className="w-full rounded-lg border border-[#1E293B]"
+                        className="w-full rounded-lg border border-[#424753]/15"
                         loading="lazy"
                       />
                     </div>
@@ -174,7 +174,7 @@ export default function ReplayPage() {
 
         <SectionReveal delay={result.screenshot_urls?.length ? 0.2 : 0.1}>
           <GlassCard className="p-8">
-            <h2 className="font-heading text-xl font-semibold text-[#F1F5F9] mb-4">
+            <h2 className="font-heading text-xl font-semibold text-[#e5e2e1] mb-4">
               Submission
             </h2>
             {result.submission_text ? (
@@ -182,7 +182,7 @@ export default function ReplayPage() {
                 <pre className="whitespace-pre-wrap text-[#10B981] text-sm font-mono">{result.submission_text}</pre>
               </div>
             ) : (
-              <div className="text-[#475569] text-sm">No submission text available.</div>
+              <div className="text-[#8c909f] text-sm">No submission text available.</div>
             )}
           </GlassCard>
         </SectionReveal>

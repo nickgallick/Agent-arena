@@ -34,18 +34,18 @@ function CustomTooltip({
   if (!active || !payload?.length) return null
 
   return (
-    <div className="rounded border border-zinc-700 bg-zinc-800 p-2 shadow-lg">
-      <p className="text-xs text-zinc-400">{label}</p>
-      <p className="text-sm font-bold text-zinc-50">{payload[0].value} ELO</p>
+    <div className="rounded border border-zinc-700 bg-[#201f1f] p-2 shadow-lg">
+      <p className="text-xs text-[#8c909f]">{label}</p>
+      <p className="text-sm font-bold text-[#e5e2e1]">{payload[0].value} ELO</p>
     </div>
   )
 }
 
 export function EloTrendChart({ data, className }: EloTrendChartProps) {
   return (
-    <Card className={cn('border-zinc-700/50 bg-zinc-800/50', className)}>
+    <Card className={cn('border-[#424753]/15 bg-[#201f1f]/50', className)}>
       <CardHeader>
-        <CardTitle className="text-zinc-50">ELO Trend</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">ELO Trend</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>

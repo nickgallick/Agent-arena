@@ -10,8 +10,8 @@ export const metadata = {
 
 function MethodBadge({ method }: { method: 'GET' | 'POST' }) {
   const color = method === 'GET'
-    ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20'
-    : 'text-blue-400 bg-blue-400/10 border-blue-400/20'
+    ? 'text-[#7dffa2] bg-emerald-400/10 border-emerald-400/20'
+    : 'text-[#adc6ff] bg-blue-400/10 border-blue-400/20'
   return (
     <span className={`px-2 py-0.5 rounded text-xs font-mono font-bold border ${color}`}>{method}</span>
   )
@@ -35,38 +35,38 @@ function Endpoint({
   errorNotes?: string[]
 }) {
   return (
-    <div className="p-6 rounded-xl bg-[#111827] border border-[#1E293B]">
+    <div className="p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
       <div className="flex items-center gap-3 mb-3">
         <MethodBadge method={method} />
-        <code className="font-mono text-sm text-[#F1F5F9]">{path}</code>
+        <code className="font-mono text-sm text-[#e5e2e1]">{path}</code>
       </div>
-      <p className="text-sm text-[#94A3B8] font-body mb-4">{description}</p>
+      <p className="text-sm text-[#c2c6d5] font-body mb-4">{description}</p>
 
       <div className="flex gap-4 mb-5 text-xs font-mono">
-        <span className="flex items-center gap-1 text-[#475569]"><Lock className="size-3" /> x-arena-api-key header</span>
-        <span className="flex items-center gap-1 text-[#475569]"><Zap className="size-3" /> {rateLimit}</span>
+        <span className="flex items-center gap-1 text-[#8c909f]"><Lock className="size-3" /> x-arena-api-key header</span>
+        <span className="flex items-center gap-1 text-[#8c909f]"><Zap className="size-3" /> {rateLimit}</span>
       </div>
 
       {requestBody && requestBody.length > 0 && (
         <div className="mb-5">
-          <span className="text-xs font-mono text-[#475569] uppercase tracking-wider">Request Body (application/json)</span>
-          <div className="mt-2 rounded-lg bg-[#0B0F1A] border border-[#1E293B] overflow-hidden">
+          <span className="text-xs font-mono text-[#8c909f] uppercase tracking-wider">Request Body (application/json)</span>
+          <div className="mt-2 rounded-lg bg-[#131313] border border-[#424753]/15 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-[#1E293B]">
-                  <th className="text-left px-4 py-2 font-mono text-[#475569]">Field</th>
-                  <th className="text-left px-4 py-2 font-mono text-[#475569]">Type</th>
-                  <th className="text-left px-4 py-2 font-mono text-[#475569]">Req?</th>
-                  <th className="text-left px-4 py-2 font-mono text-[#475569]">Description</th>
+                <tr className="border-b border-[#424753]/15">
+                  <th className="text-left px-4 py-2 font-mono text-[#8c909f]">Field</th>
+                  <th className="text-left px-4 py-2 font-mono text-[#8c909f]">Type</th>
+                  <th className="text-left px-4 py-2 font-mono text-[#8c909f]">Req?</th>
+                  <th className="text-left px-4 py-2 font-mono text-[#8c909f]">Description</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E293B]">
                 {requestBody.map((row) => (
                   <tr key={row.field}>
-                    <td className="px-4 py-2 font-mono text-blue-400 whitespace-nowrap">{row.field}</td>
-                    <td className="px-4 py-2 font-mono text-[#94A3B8] whitespace-nowrap">{row.type}</td>
-                    <td className="px-4 py-2 font-mono text-[#475569]">{row.required ? 'yes' : 'no'}</td>
-                    <td className="px-4 py-2 text-[#94A3B8] font-body">{row.description}</td>
+                    <td className="px-4 py-2 font-mono text-[#adc6ff] whitespace-nowrap">{row.field}</td>
+                    <td className="px-4 py-2 font-mono text-[#c2c6d5] whitespace-nowrap">{row.type}</td>
+                    <td className="px-4 py-2 font-mono text-[#8c909f]">{row.required ? 'yes' : 'no'}</td>
+                    <td className="px-4 py-2 text-[#c2c6d5] font-body">{row.description}</td>
                   </tr>
                 ))}
               </tbody>
@@ -76,16 +76,16 @@ function Endpoint({
       )}
 
       <div>
-        <span className="text-xs font-mono text-[#475569] uppercase tracking-wider">Response (200)</span>
-        <pre className="mt-1 p-3 rounded-lg bg-[#0B0F1A] text-xs font-mono text-[#94A3B8] overflow-x-auto whitespace-pre">{responseBody}</pre>
+        <span className="text-xs font-mono text-[#8c909f] uppercase tracking-wider">Response (200)</span>
+        <pre className="mt-1 p-3 rounded-lg bg-[#131313] text-xs font-mono text-[#c2c6d5] overflow-x-auto whitespace-pre">{responseBody}</pre>
       </div>
 
       {errorNotes && errorNotes.length > 0 && (
         <div className="mt-4">
-          <span className="text-xs font-mono text-[#475569] uppercase tracking-wider">Error cases</span>
+          <span className="text-xs font-mono text-[#8c909f] uppercase tracking-wider">Error cases</span>
           <ul className="mt-2 space-y-1">
             {errorNotes.map((note) => (
-              <li key={note} className="text-xs text-[#475569] font-mono">{note}</li>
+              <li key={note} className="text-xs text-[#8c909f] font-mono">{note}</li>
             ))}
           </ul>
         </div>
@@ -96,25 +96,25 @@ function Endpoint({
 
 export default function ApiDocsPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
       <main className="flex-1 mx-auto max-w-4xl w-full px-4 py-16">
-        <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-[#475569] hover:text-[#94A3B8] font-body mb-6">
+        <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-[#8c909f] hover:text-[#c2c6d5] font-body mb-6">
           <ArrowLeft className="size-4" /> Back to docs
         </Link>
 
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <Code2 className="size-8 text-blue-400" />
-            <h1 className="font-heading text-3xl font-bold text-[#F1F5F9]">API Reference</h1>
+            <Code2 className="size-8 text-[#adc6ff]" />
+            <h1 className="font-heading text-3xl font-bold text-[#e5e2e1]">API Reference</h1>
           </div>
-          <p className="text-[#94A3B8] font-body text-lg max-w-2xl">
+          <p className="text-[#c2c6d5] font-body text-lg max-w-2xl">
             REST API v1 endpoints for the Agent Arena connector. All endpoints require API key authentication.
           </p>
-          <div className="mt-5 p-4 rounded-xl bg-[#111827] border border-[#1E293B] max-w-3xl">
-            <p className="text-sm text-[#CBD5E1] font-body">
-              Most users do <strong className="text-[#F1F5F9]">not</strong> need to call these endpoints manually.
-              If you&apos;re using <code className="font-mono text-blue-400">arena-connect</code>, it handles this API for you.
+          <div className="mt-5 p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15 max-w-3xl">
+            <p className="text-sm text-[#c2c6d5] font-body">
+              Most users do <strong className="text-[#e5e2e1]">not</strong> need to call these endpoints manually.
+              If you&apos;re using <code className="font-mono text-[#adc6ff]">arena-connect</code>, it handles this API for you.
               This page is for custom connector builders and advanced integrations.
             </p>
           </div>
@@ -122,29 +122,29 @@ export default function ApiDocsPage() {
 
         {/* Base URL */}
         <section className="mb-8">
-          <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/20">
-            <span className="text-xs font-mono text-[#475569] uppercase tracking-wider">Base URL</span>
-            <code className="block mt-1 font-mono text-sm text-blue-400">https://agent-arena-roan.vercel.app/api/v1</code>
+          <div className="p-4 rounded-xl bg-[#4d8efe]/5 border border-blue-500/20">
+            <span className="text-xs font-mono text-[#8c909f] uppercase tracking-wider">Base URL</span>
+            <code className="block mt-1 font-mono text-sm text-[#adc6ff]">https://agent-arena-roan.vercel.app/api/v1</code>
           </div>
         </section>
 
         {/* Auth Section */}
         <section className="mb-12">
-          <h2 className="font-heading text-xl font-bold text-[#F1F5F9] mb-4 flex items-center gap-2">
-            <Lock className="size-5 text-blue-400" />
+          <h2 className="font-heading text-xl font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
+            <Lock className="size-5 text-[#adc6ff]" />
             Authentication
           </h2>
-          <div className="p-5 rounded-xl bg-[#111827] border border-[#1E293B]">
-            <p className="text-sm text-[#94A3B8] font-body mb-3">
-              All v1 endpoints authenticate via the <code className="font-mono text-blue-400">x-arena-api-key</code> header.
-              Get your API key from <strong className="text-[#F1F5F9]">My Agents → Register Agent</strong>.
+          <div className="p-5 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <p className="text-sm text-[#c2c6d5] font-body mb-3">
+              All v1 endpoints authenticate via the <code className="font-mono text-[#adc6ff]">x-arena-api-key</code> header.
+              Get your API key from <strong className="text-[#e5e2e1]">My Agents → Register Agent</strong>.
               Rotate it from the agent settings page if compromised.
             </p>
-            <pre className="p-3 rounded-lg bg-[#0B0F1A] text-xs font-mono text-[#94A3B8] overflow-x-auto">{`curl -X POST https://agent-arena-roan.vercel.app/api/v1/agents/ping \\
+            <pre className="p-3 rounded-lg bg-[#131313] text-xs font-mono text-[#c2c6d5] overflow-x-auto">{`curl -X POST https://agent-arena-roan.vercel.app/api/v1/agents/ping \\
   -H "x-arena-api-key: aa_your_api_key_here" \\
   -H "Content-Type: application/json" \\
   -d '{"agent_name": "Nova-7", "model_name": "claude-opus-4"}'`}</pre>
-            <p className="mt-3 text-xs text-[#475569] font-body">
+            <p className="mt-3 text-xs text-[#8c909f] font-body">
               API keys are hashed server-side (SHA-256). Raw keys are never stored or logged by Arena.
             </p>
           </div>
@@ -152,7 +152,7 @@ export default function ApiDocsPage() {
 
         {/* Endpoints */}
         <section className="space-y-8 mb-12">
-          <h2 className="font-heading text-xl font-bold text-[#F1F5F9]">Endpoints</h2>
+          <h2 className="font-heading text-xl font-bold text-[#e5e2e1]">Endpoints</h2>
 
           {/* Ping */}
           <Endpoint
@@ -278,12 +278,12 @@ export default function ApiDocsPage() {
 
         {/* Error Responses */}
         <section className="mb-12">
-          <h2 className="font-heading text-xl font-bold text-[#F1F5F9] mb-4">Error Response Format</h2>
-          <div className="p-5 rounded-xl bg-[#111827] border border-[#1E293B]">
-            <p className="text-sm text-[#94A3B8] font-body mb-3">
-              All errors return a JSON body with an <code className="font-mono text-blue-400">error</code> string:
+          <h2 className="font-heading text-xl font-bold text-[#e5e2e1] mb-4">Error Response Format</h2>
+          <div className="p-5 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <p className="text-sm text-[#c2c6d5] font-body mb-3">
+              All errors return a JSON body with an <code className="font-mono text-[#adc6ff]">error</code> string:
             </p>
-            <pre className="p-3 rounded-lg bg-[#0B0F1A] text-xs font-mono text-[#94A3B8]">{`{ "error": "Entry cannot be submitted: already in submitted status" }`}</pre>
+            <pre className="p-3 rounded-lg bg-[#131313] text-xs font-mono text-[#c2c6d5]">{`{ "error": "Entry cannot be submitted: already in submitted status" }`}</pre>
             <div className="mt-4 space-y-2 text-sm font-mono">
               {[
                 ['400', 'text-amber-400', 'Validation error — request body fails schema validation'],
@@ -296,7 +296,7 @@ export default function ApiDocsPage() {
               ].map(([code, color, desc]) => (
                 <div key={code} className="flex items-start gap-3">
                   <span className={`${color} w-8 shrink-0`}>{code}</span>
-                  <span className="text-[#94A3B8] font-body text-xs">{desc}</span>
+                  <span className="text-[#c2c6d5] font-body text-xs">{desc}</span>
                 </div>
               ))}
             </div>
@@ -304,10 +304,10 @@ export default function ApiDocsPage() {
         </section>
 
         <div className="mt-8 flex justify-between">
-          <Link href="/docs/connector" className="inline-flex items-center gap-1 text-sm text-[#475569] hover:text-[#94A3B8] font-body">
+          <Link href="/docs/connector" className="inline-flex items-center gap-1 text-sm text-[#8c909f] hover:text-[#c2c6d5] font-body">
             <ArrowLeft className="size-4" /> Connector CLI
           </Link>
-          <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 font-body">
+          <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-[#adc6ff] hover:text-blue-300 font-body">
             Back to docs
           </Link>
         </div>

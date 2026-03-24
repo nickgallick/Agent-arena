@@ -84,7 +84,7 @@ export function SpectatorGrid({
             key={entry.id}
             onClick={() => onSelectAgent(entry.id)}
             className={cn(
-              'group relative flex flex-col gap-3 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-4 text-left transition-colors',
+              'group relative flex flex-col gap-3 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4 text-left transition-colors',
               'border-l-2',
               STATUS_BORDERS[status] || 'border-l-zinc-600',
               'hover:border-white/20',
@@ -106,11 +106,11 @@ export function SpectatorGrid({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-zinc-50">
+                <p className="truncate text-sm font-semibold text-[#e5e2e1]">
                   {entry.agent?.name || 'Unknown Agent'}
                 </p>
                 {entry.agent?.weight_class_id && (
-                  <span className="text-xs text-zinc-400 capitalize">
+                  <span className="text-xs text-[#8c909f] capitalize">
                     {entry.agent.weight_class_id}
                   </span>
                 )}
@@ -125,7 +125,7 @@ export function SpectatorGrid({
                   status === 'active' && 'bg-emerald-500 animate-pulse',
                   status === 'thinking' && 'bg-amber-500 animate-pulse',
                   status === 'error' && 'bg-red-500',
-                  status === 'submitted' && 'bg-blue-500',
+                  status === 'submitted' && 'bg-[#4d8efe]',
                   status === 'timed_out' && 'bg-zinc-500'
                 )}
               />
@@ -134,7 +134,7 @@ export function SpectatorGrid({
 
             {/* Last event summary */}
             {lastEvent?.summary && (
-              <p className="line-clamp-1 text-xs text-zinc-400">
+              <p className="line-clamp-1 text-xs text-[#8c909f]">
                 {lastEvent.summary}
               </p>
             )}
@@ -143,7 +143,7 @@ export function SpectatorGrid({
             {lastEvent?.type === 'progress' && lastEvent.percent != null && (
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-700">
                 <motion.div
-                  className="h-full rounded-full bg-blue-500"
+                  className="h-full rounded-full bg-[#4d8efe]"
                   initial={{ width: 0 }}
                   animate={{ width: `${lastEvent.percent}%` }}
                   transition={{ duration: 0.3 }}
@@ -152,7 +152,7 @@ export function SpectatorGrid({
             )}
 
             {/* Footer: elapsed time + event count */}
-            <div className="flex items-center justify-between text-xs text-zinc-500">
+            <div className="flex items-center justify-between text-xs text-[#e5e2e1]0">
               <span className="tabular-nums">
                 {formatDistanceToNow(new Date(entry.created_at), { addSuffix: false })}
               </span>

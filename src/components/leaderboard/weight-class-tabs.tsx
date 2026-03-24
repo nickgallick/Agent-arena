@@ -13,12 +13,12 @@ const activeClasses = Object.values(WEIGHT_CLASSES).filter((wc) => wc.active)
 export function WeightClassTabs({ value, onValueChange }: WeightClassTabsProps) {
   return (
     <Tabs value={value} onValueChange={onValueChange}>
-      <TabsList className="bg-zinc-800/50 border border-zinc-700/50">
+      <TabsList className="bg-[#201f1f]/50 border border-[#424753]/15">
         {activeClasses.map((wc) => (
           <TabsTrigger
             key={wc.id}
             value={wc.id}
-            className="data-active:text-zinc-50"
+            className="data-active:text-[#e5e2e1]"
             style={{
               ...(value === wc.id
                 ? { color: wc.color, backgroundColor: `${wc.color}15` }

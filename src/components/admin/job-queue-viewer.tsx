@@ -38,8 +38,8 @@ interface Job {
 
 const statusColors: Record<JobStatus, string> = {
   pending: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
-  processing: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
-  completed: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+  processing: 'border-blue-500/30 bg-[#4d8efe]/10 text-[#adc6ff]',
+  completed: 'border-emerald-500/30 bg-[#7dffa2]/10 text-[#7dffa2]',
   failed: 'border-red-500/30 bg-red-500/10 text-red-400',
 }
 
@@ -90,16 +90,16 @@ export function JobQueueViewer() {
   }
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-zinc-50">Job Queue</CardTitle>
+          <CardTitle className="text-[#e5e2e1]">Job Queue</CardTitle>
           <div className="flex items-center gap-3">
             <Select value={filter} onValueChange={(v) => v !== null && setFilter(v)}>
-              <SelectTrigger aria-label="Filter job status" className="w-[140px] border-zinc-700 bg-zinc-900/50 text-zinc-300">
+              <SelectTrigger aria-label="Filter job status" className="w-[140px] border-zinc-700 bg-[#1c1b1b]/50 text-zinc-300">
                 <SelectValue placeholder="Filter status" />
               </SelectTrigger>
-              <SelectContent className="border-zinc-700 bg-zinc-900">
+              <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
@@ -130,24 +130,24 @@ export function JobQueueViewer() {
           </div>
         ) : jobs.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-zinc-400 text-sm">No jobs in queue</p>
+            <p className="text-[#8c909f] text-sm">No jobs in queue</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-zinc-700/50 hover:bg-transparent">
-                  <TableHead className="text-zinc-400">Type</TableHead>
-                  <TableHead className="text-zinc-400">Status</TableHead>
-                  <TableHead className="text-zinc-400">Payload</TableHead>
-                  <TableHead className="text-zinc-400 text-center">Attempts</TableHead>
-                  <TableHead className="text-zinc-400">Created</TableHead>
-                  <TableHead className="text-zinc-400">Completed</TableHead>
+                <TableRow className="border-[#424753]/15 hover:bg-transparent">
+                  <TableHead className="text-[#8c909f]">Type</TableHead>
+                  <TableHead className="text-[#8c909f]">Status</TableHead>
+                  <TableHead className="text-[#8c909f]">Payload</TableHead>
+                  <TableHead className="text-[#8c909f] text-center">Attempts</TableHead>
+                  <TableHead className="text-[#8c909f]">Created</TableHead>
+                  <TableHead className="text-[#8c909f]">Completed</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {jobs.map((job) => (
-                  <TableRow key={job.id} className="border-zinc-700/50 hover:bg-zinc-700/20">
+                  <TableRow key={job.id} className="border-[#424753]/15 hover:bg-zinc-700/20">
                     <TableCell className="font-mono text-sm text-zinc-300">
                       {job.type}
                     </TableCell>
@@ -157,20 +157,20 @@ export function JobQueueViewer() {
                       </Badge>
                     </TableCell>
                     <TableCell
-                      className="max-w-[200px] truncate font-mono text-xs text-zinc-500"
+                      className="max-w-[200px] truncate font-mono text-xs text-[#e5e2e1]0"
                       title={job.payload}
                     >
                       {job.payload.length > 50
                         ? `${job.payload.slice(0, 50)}...`
                         : job.payload}
                     </TableCell>
-                    <TableCell className="text-center text-sm text-zinc-400">
+                    <TableCell className="text-center text-sm text-[#8c909f]">
                       {job.attempts}
                     </TableCell>
-                    <TableCell className="text-sm text-zinc-400">
+                    <TableCell className="text-sm text-[#8c909f]">
                       {timeAgo(job.created_at)}
                     </TableCell>
-                    <TableCell className="text-sm text-zinc-400">
+                    <TableCell className="text-sm text-[#8c909f]">
                       {job.completed_at ? timeAgo(job.completed_at) : '—'}
                     </TableCell>
                   </TableRow>

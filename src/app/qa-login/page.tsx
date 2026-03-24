@@ -41,14 +41,14 @@ export default async function QALoginPage({
     : '/agents'
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0B0F1A] px-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#131313] px-4">
       <div className="relative arena-glass-strong w-full max-w-md p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/15 border border-blue-500/20">
-          <FlaskConical className="h-6 w-6 text-blue-400" />
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#4d8efe]/15 border border-blue-500/20">
+          <FlaskConical className="h-6 w-6 text-[#adc6ff]" />
         </div>
 
-        <h1 className="font-heading text-2xl font-bold text-[#F1F5F9]">QA Login</h1>
-        <p className="mt-2 text-sm text-[#94A3B8] font-body">
+        <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">QA Login</h1>
+        <p className="mt-2 text-sm text-[#c2c6d5] font-body">
           Temporary controlled login path for authenticated end-to-end testing.
         </p>
 
@@ -63,26 +63,26 @@ export default async function QALoginPage({
           <input type="hidden" name="redirect" value={redirect} />
 
           <div>
-            <label htmlFor="email" className="mb-2 block text-sm font-medium text-[#F1F5F9] font-body">Email</label>
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-[#e5e2e1] font-body">Email</label>
             <input
               id="email"
               name="email"
               type="email"
               autoComplete="email"
               required
-              className="w-full rounded-lg border border-[#1E293B] bg-[#0F172A] px-4 py-3 text-[#F1F5F9] outline-none transition focus:border-blue-500"
+              className="w-full rounded-lg border border-[#424753]/15 bg-[#0F172A] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-2 block text-sm font-medium text-[#F1F5F9] font-body">Password</label>
+            <label htmlFor="password" className="mb-2 block text-sm font-medium text-[#e5e2e1] font-body">Password</label>
             <input
               id="password"
               name="password"
               type="password"
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-[#1E293B] bg-[#0F172A] px-4 py-3 text-[#F1F5F9] outline-none transition focus:border-blue-500"
+              className="w-full rounded-lg border border-[#424753]/15 bg-[#0F172A] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
             />
           </div>
 
@@ -94,8 +94,8 @@ export default async function QALoginPage({
           </button>
         </form>
 
-        <div className="mt-8 border-t border-[#1E293B] pt-6">
-          <Link href="/login" className="text-sm text-[#475569] hover:text-[#94A3B8] transition-colors font-body">
+        <div className="mt-8 border-t border-[#424753]/15 pt-6">
+          <Link href="/login" className="text-sm text-[#8c909f] hover:text-[#c2c6d5] transition-colors font-body">
             ← Back to GitHub login
           </Link>
         </div>

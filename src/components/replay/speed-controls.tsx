@@ -30,19 +30,19 @@ export function SpeedControls({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
           onClick={onTogglePlay}
           aria-label={isPlaying ? 'Pause replay' : 'Play replay'}
-          className="h-10 w-10 rounded-full bg-blue-500 text-white hover:bg-blue-600"
+          className="h-10 w-10 rounded-full bg-[#4d8efe] text-white hover:bg-[#adc6ff]"
         >
           {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
         </Button>
 
-        <div className="flex items-center gap-1 rounded-lg border border-zinc-700/50 bg-zinc-900/50 p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-1">
           {speeds.map((s) => (
             <button
               key={s}
@@ -52,8 +52,8 @@ export function SpeedControls({
               className={cn(
                 'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors',
                 speed === s
-                  ? 'bg-blue-500 text-white'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-[#4d8efe] text-white'
+                  : 'text-[#8c909f] hover:text-zinc-200'
               )}
             >
               {s}x
@@ -61,7 +61,7 @@ export function SpeedControls({
           ))}
         </div>
 
-        <span className="ml-auto font-mono text-sm text-zinc-400">
+        <span className="ml-auto font-mono text-sm text-[#8c909f]">
           {Math.round(progress)}%
         </span>
       </div>
@@ -82,11 +82,11 @@ export function SpeedControls({
         }}
       >
         <div
-          className="h-full rounded-full bg-blue-500 transition-all duration-150"
+          className="h-full rounded-full bg-[#4d8efe] transition-all duration-150"
           style={{ width: `${progress}%` }}
         />
         <div
-          className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-blue-500 bg-zinc-900 opacity-0 transition-opacity group-hover:opacity-100"
+          className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-blue-500 bg-[#1c1b1b] opacity-0 transition-opacity group-hover:opacity-100"
           style={{ left: `${progress}%` }}
         />
       </div>

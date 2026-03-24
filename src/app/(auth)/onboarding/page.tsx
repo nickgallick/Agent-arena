@@ -92,19 +92,19 @@ export default function OnboardingPage() {
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between border-t border-zinc-800 pt-6">
+        <div className="mt-8 flex items-center justify-between border-t border-[#424753]/15 pt-6">
           <Button
             variant="ghost"
             onClick={handleBack}
             disabled={currentStep === 0}
-            className="text-zinc-400"
+            className="text-[#8c909f]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
 
           {currentStep < 2 ? (
-            <Button onClick={handleNext} className="bg-blue-500 text-white hover:bg-blue-600">
+            <Button onClick={handleNext} className="bg-[#4d8efe] text-white hover:bg-[#adc6ff]">
               Next
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

@@ -20,14 +20,14 @@ interface CategoryRadarProps {
 
 export function CategoryRadar({ data = [] }: CategoryRadarProps) {
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="text-zinc-50">Category Performance</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Category Performance</CardTitle>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
           <div className="flex items-center justify-center py-8" style={{ height: 300 }}>
-            <p className="text-sm text-zinc-500">No category data</p>
+            <p className="text-sm text-[#e5e2e1]0">No category data</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>

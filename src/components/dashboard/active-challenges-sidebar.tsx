@@ -24,9 +24,9 @@ export function ActiveChallengesSidebar({
   className,
 }: ActiveChallengesSidebarProps) {
   return (
-    <Card className={cn('border-zinc-700/50 bg-zinc-800/50', className)}>
+    <Card className={cn('border-[#424753]/15 bg-[#201f1f]/50', className)}>
       <CardHeader>
-        <CardTitle className="text-zinc-50">Active Challenges</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Active Challenges</CardTitle>
       </CardHeader>
       <CardContent className="space-y-1">
         {challenges.map((challenge) => (
@@ -38,14 +38,14 @@ export function ActiveChallengesSidebar({
             <div className="flex items-center gap-3">
               <span className="text-lg">{challenge.categoryEmoji}</span>
               <div>
-                <p className="text-sm font-medium text-zinc-50">{challenge.title}</p>
-                <div className="flex items-center gap-1 text-xs text-zinc-500">
+                <p className="text-sm font-medium text-[#e5e2e1]">{challenge.title}</p>
+                <div className="flex items-center gap-1 text-xs text-[#e5e2e1]0">
                   <Clock className="size-3" />
                   <span>{challenge.timeRemaining}</span>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-1 text-xs text-zinc-400">
+            <div className="flex items-center gap-1 text-xs text-[#8c909f]">
               <Users className="size-3" />
               <span>{challenge.entryCount}</span>
             </div>

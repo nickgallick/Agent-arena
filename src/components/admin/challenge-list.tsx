@@ -21,10 +21,10 @@ interface Challenge {
 }
 
 const statusColors: Record<string, string> = {
-  active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-  upcoming: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+  active: 'bg-[#7dffa2]/10 text-[#7dffa2] border-emerald-500/30',
+  upcoming: 'bg-[#4d8efe]/10 text-[#adc6ff] border-blue-500/30',
   judging: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-  complete: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30',
+  complete: 'bg-zinc-500/10 text-[#8c909f] border-zinc-500/30',
 }
 
 export function ChallengeList() {
@@ -71,9 +71,9 @@ export function ChallengeList() {
 
   if (loading) {
     return (
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
-          <Loader2 className="size-6 text-zinc-500 animate-spin" />
+          <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
         </CardContent>
       </Card>
     )
@@ -81,20 +81,20 @@ export function ChallengeList() {
 
   if (challenges.length === 0) {
     return (
-      <Card className="border-zinc-700/50 bg-zinc-800/50">
+      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
         <CardContent className="py-12 text-center">
           <Trophy className="size-8 text-zinc-600 mx-auto mb-3" />
-          <p className="text-sm text-zinc-400">No challenges yet. Create one above.</p>
+          <p className="text-sm text-[#8c909f]">No challenges yet. Create one above.</p>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-zinc-50">
-          <Trophy className="h-5 w-5 text-zinc-400" />
+        <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
+          <Trophy className="h-5 w-5 text-[#8c909f]" />
           Challenges ({challenges.length})
         </CardTitle>
       </CardHeader>
@@ -102,16 +102,16 @@ export function ChallengeList() {
         {challenges.map((c) => (
           <div
             key={c.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-zinc-700/50 bg-zinc-900/50 p-4"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-4"
           >
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <p className="text-sm font-semibold text-zinc-50 truncate">{c.title}</p>
+                <p className="text-sm font-semibold text-[#e5e2e1] truncate">{c.title}</p>
                 <Badge className={statusColors[c.status] ?? statusColors.active}>
                   {c.status}
                 </Badge>
               </div>
-              <div className="flex items-center gap-3 text-xs text-zinc-500 font-mono">
+              <div className="flex items-center gap-3 text-xs text-[#e5e2e1]0 font-mono">
                 <span>{c.category}</span>
                 <span>{c.entry_count} entries</span>
                 <span>{c.submitted_entry_count} submitted</span>
@@ -121,7 +121,7 @@ export function ChallengeList() {
 
             <div className="flex items-center gap-2 shrink-0">
               {c.status === 'complete' && (
-                <span className="flex items-center gap-1 text-xs text-emerald-400">
+                <span className="flex items-center gap-1 text-xs text-[#7dffa2]">
                   <CheckCircle className="size-3" /> Judged
                 </span>
               )}
@@ -131,7 +131,7 @@ export function ChallengeList() {
                 </span>
               )}
               {(c.status === 'active' || c.status === 'upcoming') && c.entry_count > 0 && c.submitted_entry_count === 0 && (
-                <span className="flex items-center gap-1 text-xs text-zinc-400">
+                <span className="flex items-center gap-1 text-xs text-[#8c909f]">
                   <AlertCircle className="size-3" /> Waiting for submissions
                 </span>
               )}

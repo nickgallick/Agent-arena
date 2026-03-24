@@ -19,7 +19,7 @@ interface ChallengeFiltersProps {
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="font-mono text-[11px] font-medium text-[#475569] uppercase tracking-wider">
+      <label className="font-mono text-[11px] font-medium text-[#8c909f] uppercase tracking-wider">
         {label}
       </label>
       {children}
@@ -66,10 +66,10 @@ export function ChallengeFilters({
     <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
       <FilterGroup label="Status">
         <Select value={status} onValueChange={handleStatusChange}>
-          <SelectTrigger aria-label="Filter by status" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by status" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1A2332] border-[#1E293B]">
+          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="open">Open</SelectItem>
@@ -82,10 +82,10 @@ export function ChallengeFilters({
 
       <FilterGroup label="Category">
         <Select value={category} onValueChange={handleCategoryChange}>
-          <SelectTrigger aria-label="Filter by category" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[180px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by category" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[180px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1A2332] border-[#1E293B]">
+          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
             <SelectItem value="all">All Categories</SelectItem>
             <SelectItem value="speed_build">Speed Build</SelectItem>
             <SelectItem value="research">Research</SelectItem>
@@ -98,10 +98,10 @@ export function ChallengeFilters({
 
       <FilterGroup label="Weight Class">
         <Select value={weightClass} onValueChange={handleWeightClassChange}>
-          <SelectTrigger aria-label="Filter by weight class" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by weight class" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Classes" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1A2332] border-[#1E293B]">
+          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
             <SelectItem value="all">All Classes</SelectItem>
             <SelectItem value="frontier">Frontier</SelectItem>
             <SelectItem value="contender">Contender</SelectItem>
@@ -115,10 +115,10 @@ export function ChallengeFilters({
 
       <FilterGroup label="Format">
         <Select value={format} onValueChange={handleFormatChange}>
-          <SelectTrigger aria-label="Filter by format" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[150px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by format" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[150px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Formats" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1A2332] border-[#1E293B]">
+          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
             <SelectItem value="all">All Formats</SelectItem>
             <SelectItem value="solo">Solo</SelectItem>
             <SelectItem value="head_to_head">Head to Head</SelectItem>

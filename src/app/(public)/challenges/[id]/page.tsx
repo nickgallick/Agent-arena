@@ -88,9 +88,9 @@ function ChallengeDetailContent() {
       <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-          <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 px-8 py-12 text-center">
-            <p className="text-lg font-medium text-[#94A3B8]">{error ?? 'Challenge not found'}</p>
-            <a href="/challenges" className="mt-4 inline-block text-sm text-blue-400 hover:underline">
+          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
+            <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Challenge not found'}</p>
+            <a href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:underline">
               ← Back to challenges
             </a>
           </div>
@@ -115,12 +115,12 @@ function ChallengeDetailContent() {
             {(challenge.status === 'active' || challenge.status === 'judging') && (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-zinc-50">
+                  <h2 className="text-xl font-bold text-[#e5e2e1]">
                     🔴 Live — {entries.length} Agents Competing
                   </h2>
                   <Link
                     href={`/challenges/${challenge.id}/spectate`}
-                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-500"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#05e777] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-500"
                   >
                     <Eye className="size-4" />
                     Watch Live
@@ -138,22 +138,22 @@ function ChallengeDetailContent() {
 
             {challenge.status === 'complete' ? (
               <>
-                <h2 className="text-xl font-bold text-zinc-50 mb-4">
+                <h2 className="text-xl font-bold text-[#e5e2e1] mb-4">
                   Final Rankings
                 </h2>
                 {entries.length > 0 ? (
-                  <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 overflow-hidden">
+                  <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 overflow-hidden">
                     <ResultsTable entries={entries} />
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 px-6 py-12 text-center">
-                    <p className="text-[#94A3B8]">No entries were submitted for this challenge.</p>
+                  <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 px-6 py-12 text-center">
+                    <p className="text-[#c2c6d5]">No entries were submitted for this challenge.</p>
                   </div>
                 )}
 
                 {judgeScores.length > 0 && topEntry && (
                   <div className="mt-8">
-                    <h2 className="text-xl font-bold text-zinc-50 mb-4">
+                    <h2 className="text-xl font-bold text-[#e5e2e1] mb-4">
                       Judge Feedback &mdash; #{topEntry.placement} {(topEntry.agent as { name?: string })?.name ?? 'Winner'}
                     </h2>
                     <JudgeFeedback scores={judgeScores} />
@@ -162,14 +162,14 @@ function ChallengeDetailContent() {
               </>
             ) : challenge.status !== 'active' ? (
               <>
-                <h2 className="text-xl font-bold text-zinc-50 mb-4">
+                <h2 className="text-xl font-bold text-[#e5e2e1] mb-4">
                   Entries ({entries.length})
                 </h2>
                 {entries.length > 0 ? (
                   <EntryList entries={entries} status={challenge.status} />
                 ) : (
-                  <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 px-6 py-12 text-center">
-                    <p className="text-[#94A3B8]">No entries yet — be the first to compete!</p>
+                  <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 px-6 py-12 text-center">
+                    <p className="text-[#c2c6d5]">No entries yet — be the first to compete!</p>
                   </div>
                 )}
               </>
@@ -178,13 +178,13 @@ function ChallengeDetailContent() {
         </div>
 
         {challenge.status !== 'complete' && (
-          <div className="sticky bottom-0 border-t border-zinc-700/50 bg-zinc-900/95 backdrop-blur-xl">
+          <div className="sticky bottom-0 border-t border-[#424753]/15 bg-[#131313]/95 backdrop-blur-xl">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
               <div>
-                <p className="text-sm font-semibold text-zinc-50">
+                <p className="text-sm font-semibold text-[#e5e2e1]">
                   {challenge.title}
                 </p>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-[#8c909f]">
                   {challenge.max_coins} coins prize pool
                 </p>
               </div>

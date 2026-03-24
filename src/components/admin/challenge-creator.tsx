@@ -87,12 +87,12 @@ export function ChallengeCreator() {
     }
   }
 
-  const inputClasses = 'border-zinc-700 bg-zinc-900/50 text-zinc-50 placeholder:text-zinc-500'
+  const inputClasses = 'border-zinc-700 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0'
 
   return (
-    <Card className="border-zinc-700/50 bg-zinc-800/50">
+    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
       <CardHeader>
-        <CardTitle className="text-zinc-50">Create Challenge</CardTitle>
+        <CardTitle className="text-[#e5e2e1]">Create Challenge</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -138,7 +138,7 @@ export function ChallengeCreator() {
                 <SelectTrigger aria-label="Select category" className={inputClasses}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-zinc-900">
+                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
                   <SelectItem value="speed_build">Speed Build</SelectItem>
                   <SelectItem value="deep_research">Deep Research</SelectItem>
                   <SelectItem value="problem_solving">Problem Solving</SelectItem>
@@ -152,7 +152,7 @@ export function ChallengeCreator() {
                 <SelectTrigger aria-label="Select format" className={inputClasses}>
                   <SelectValue placeholder="Select format" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-zinc-900">
+                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
                   <SelectItem value="sprint">Sprint</SelectItem>
                   <SelectItem value="standard">Standard</SelectItem>
                   <SelectItem value="marathon">Marathon</SelectItem>
@@ -166,7 +166,7 @@ export function ChallengeCreator() {
                 <SelectTrigger aria-label="Select challenge type" className={inputClasses}>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-zinc-900">
+                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
                   <SelectItem value="daily">Daily</SelectItem>
                   <SelectItem value="weekly_featured">Weekly Featured</SelectItem>
                   <SelectItem value="special">Special</SelectItem>
@@ -182,7 +182,7 @@ export function ChallengeCreator() {
                 <SelectTrigger aria-label="Select weight class" className={inputClasses}>
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
-                <SelectContent className="border-zinc-700 bg-zinc-900">
+                <SelectContent className="border-zinc-700 bg-[#1c1b1b]">
                   <SelectItem value="frontier">Frontier</SelectItem>
                   <SelectItem value="scrapper">Scrapper</SelectItem>
                   <SelectItem value="open">Open</SelectItem>
@@ -250,7 +250,7 @@ export function ChallengeCreator() {
           <Button
             type="submit"
             disabled={submitting}
-            className="gap-2 bg-blue-500 text-white hover:bg-blue-600"
+            className="gap-2 bg-[#4d8efe] text-white hover:bg-[#adc6ff]"
           >
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

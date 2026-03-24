@@ -56,7 +56,7 @@ const eventColors = {
   tool_call: 'text-amber-400',
   model_response: 'text-purple-400',
   file_op: 'text-cyan-400',
-  thinking: 'text-zinc-400',
+  thinking: 'text-[#8c909f]',
   result: 'text-green-400',
 } as const
 
@@ -156,9 +156,9 @@ export default function ReplayPage() {
       <div className="flex min-h-screen flex-col bg-[#0A0A0B]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-          <div className="rounded-xl border border-[#1E293B] bg-[#111827]/50 px-8 py-12 text-center">
-            <p className="text-lg font-medium text-[#94A3B8]">{error ?? 'Replay not available'}</p>
-            <a href="/challenges" className="mt-4 inline-block text-sm text-blue-400 hover:underline">
+          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
+            <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Replay not available'}</p>
+            <a href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:underline">
               ← Browse challenges
             </a>
           </div>
@@ -181,8 +181,8 @@ export default function ReplayPage() {
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {/* Title */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-zinc-50">Replay Viewer</h1>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h1 className="text-2xl font-bold text-[#e5e2e1]">Replay Viewer</h1>
+          <p className="mt-1 text-sm text-[#8c909f]">
             {replay.challenge?.title ?? `Entry ${entryId}`}
             {replay.agent && <> &middot; {replay.agent.name}</>}
           </p>
@@ -193,7 +193,7 @@ export default function ReplayPage() {
             {/* Two-column layout */}
             <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
               {/* Left: Timeline */}
-              <div className="max-h-[70vh] overflow-y-auto rounded-xl border border-zinc-700/50 bg-zinc-800/30 p-4">
+              <div className="max-h-[70vh] overflow-y-auto rounded-xl border border-[#424753]/15 bg-[#201f1f]/30 p-4">
                 <ReplayTimeline
                   events={events}
                   currentIndex={currentIndex}
@@ -213,19 +213,19 @@ export default function ReplayPage() {
                 />
 
                 {/* Active event detail */}
-                <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-6">
+                <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-6">
                   <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/20">
-                      <ActiveIcon className={cn('h-5 w-5', eventColors[activeEvent.type] ?? 'text-zinc-400')} />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#4d8efe]/20">
+                      <ActiveIcon className={cn('h-5 w-5', eventColors[activeEvent.type] ?? 'text-[#8c909f]')} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-zinc-50">{activeEvent.title}</h3>
-                      <p className="text-xs text-zinc-500">
+                      <h3 className="font-semibold text-[#e5e2e1]">{activeEvent.title}</h3>
+                      <p className="text-xs text-[#e5e2e1]0">
                         {formatTimestamp(activeEvent.timestamp)} &middot; Step {currentIndex + 1} of {events.length}
                       </p>
                     </div>
                   </div>
-                  <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-4 font-mono text-sm leading-relaxed text-zinc-300">
+                  <pre className="overflow-x-auto rounded-lg bg-[#1c1b1b] p-4 font-mono text-sm leading-relaxed text-zinc-300">
                     <code>{activeEvent.content}</code>
                   </pre>
                 </div>
@@ -233,26 +233,26 @@ export default function ReplayPage() {
             </div>
           </>
         ) : (
-          <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 px-6 py-12 text-center mb-6">
-            <p className="text-[#94A3B8]">No transcript available for this replay.</p>
+          <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 px-6 py-12 text-center mb-6">
+            <p className="text-[#c2c6d5]">No transcript available for this replay.</p>
           </div>
         )}
 
         {/* Screenshots for visual challenges */}
         {replay.screenshot_urls && Array.isArray(replay.screenshot_urls) && replay.screenshot_urls.length > 0 && (
           <div className="mt-6">
-            <h2 className="text-lg font-semibold text-zinc-50 mb-4">Visual Output</h2>
+            <h2 className="text-lg font-semibold text-[#e5e2e1] mb-4">Visual Output</h2>
             <div className="grid gap-4 md:grid-cols-2">
               {(replay.screenshot_urls as Array<{ viewport: string; url: string }>).map((ss) => (
-                <div key={ss.viewport} className="rounded-xl border border-zinc-700/50 bg-zinc-800/30 overflow-hidden">
-                  <div className="px-4 py-2 border-b border-zinc-700/50 text-xs font-mono text-zinc-500 uppercase tracking-wider">
+                <div key={ss.viewport} className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/30 overflow-hidden">
+                  <div className="px-4 py-2 border-b border-[#424753]/15 text-xs font-mono text-[#e5e2e1]0 uppercase tracking-wider">
                     {ss.viewport === 'desktop' ? '🖥️ Desktop (1280×800)' : '📱 Mobile (375×812)'}
                   </div>
                   <div className="p-2">
                     <img
                       src={ss.url}
                       alt={`${ss.viewport} screenshot`}
-                      className="w-full rounded-lg border border-zinc-700/30"
+                      className="w-full rounded-lg border border-[#424753]/15"
                       loading="lazy"
                     />
                   </div>
