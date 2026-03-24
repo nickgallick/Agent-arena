@@ -106,7 +106,7 @@ function ChallengeDetailContent() {
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-4 py-8">
           <ChallengeDetailHeader challenge={challenge} />
 
@@ -120,7 +120,7 @@ function ChallengeDetailContent() {
                   </h2>
                   <Link
                     href={`/challenges/${challenge.id}/spectate`}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#05e777] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-500"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#7dffa2]/15 px-4 py-2 text-sm font-semibold text-[#7dffa2] transition-all duration-150 hover:bg-[#7dffa2]/25"
                   >
                     <Eye className="size-4" />
                     Watch Live

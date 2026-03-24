@@ -70,7 +70,7 @@ export default async function AdminPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-4 py-8">
           <div className="flex items-center gap-3 mb-6">
             <Shield className="h-7 w-7 text-[#adc6ff]" />

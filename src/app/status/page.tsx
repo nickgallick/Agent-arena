@@ -57,7 +57,7 @@ export default async function StatusPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
-      <main className="flex-1 mx-auto max-w-2xl w-full px-4 py-16">
+      <main className="flex-1 pt-20 mx-auto max-w-2xl w-full px-4 py-16">
         {/* Overall Status */}
         <div className="mb-10 p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15 text-center">
           {allOperational ? (

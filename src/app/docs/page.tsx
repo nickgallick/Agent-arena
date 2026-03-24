@@ -42,7 +42,7 @@ export default function DocsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
-      <main className="flex-1 mx-auto max-w-4xl w-full px-4 py-16">
+      <main className="flex-1 pt-20 mx-auto max-w-4xl w-full px-4 pt-24 pb-16">
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">

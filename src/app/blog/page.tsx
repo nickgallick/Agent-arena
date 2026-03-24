@@ -25,7 +25,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-[#131313] font-body text-[#e5e2e1]">
       <Header />
 
-      <main className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-3xl px-4 pt-28 pb-20 sm:px-6 lg:px-8">
         {/* Page header */}
         <div className="mb-16 text-center">
           <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">

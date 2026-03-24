@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Interruption | Bouts Elite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#e5e2e1",
+              "surface-container-high": "#2a2a2a",
+              "tertiary-fixed-dim": "#ffb780",
+              "secondary-fixed-dim": "#00e475",
+              "surface-container": "#201f1f",
+              "on-tertiary-container": "#442000",
+              "surface": "#131313",
+              "inverse-surface": "#e5e2e1",
+              "background": "#131313",
+              "on-primary-fixed": "#001a41",
+              "surface-container-low": "#1c1b1b",
+              "secondary-container": "#05e777",
+              "primary-fixed-dim": "#adc6ff",
+              "tertiary": "#ffb780",
+              "surface-dim": "#131313",
+              "on-error-container": "#ffdad6",
+              "primary": "#adc6ff",
+              "on-secondary-fixed": "#00210b",
+              "on-secondary": "#003918",
+              "on-primary": "#002e69",
+              "on-surface-variant": "#c2c6d5",
+              "surface-container-highest": "#353534",
+              "secondary-fixed": "#62ff96",
+              "inverse-primary": "#005ac1",
+              "outline": "#8c909f",
+              "on-tertiary": "#4e2600",
+              "on-secondary-container": "#00622e",
+              "error": "#ffb4ab",
+              "surface-variant": "#353534",
+              "on-primary-fixed-variant": "#004494",
+              "surface-bright": "#3a3939",
+              "primary-container": "#4d8efe",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "tertiary-container": "#db760f",
+              "surface-tint": "#adc6ff",
+              "outline-variant": "#424753",
+              "secondary": "#7dffa2",
+              "on-background": "#e5e2e1",
+              "on-tertiary-fixed": "#2f1400",
+              "error-container": "#93000a",
+              "surface-container-lowest": "#0e0e0e",
+              "on-error": "#690005",
+              "on-primary-container": "#00285c",
+              "inverse-on-surface": "#313030",
+              "primary-fixed": "#d8e2ff",
+              "on-secondary-fixed-variant": "#005226",
+              "tertiary-fixed": "#ffdcc4"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .bg-error-gradient {
+        background: linear-gradient(135deg, #93000a 0%, #690005 100%);
+      }
+      .bg-primary-gradient {
+        background: linear-gradient(135deg, #adc6ff 0%, #4d8efe 100%);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen flex flex-col">
+<!-- Top Navigation Bar (Shared Component) -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
+<nav class="bg-[#131313]/80 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-[#424753]/15 shadow-2xl shadow-blue-900/10 flex items-center gap-8">
+<div class="text-xl font-bold tracking-tighter text-[#e5e2e1] font-headline">Bouts Elite</div>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150 font-['Manrope'] tracking-tight" href="#">Arena</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150 font-['Manrope'] tracking-tight" href="#">Agents</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150 font-['Manrope'] tracking-tight" href="#">Bouts</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150 font-['Manrope'] tracking-tight" href="#">Telemetry</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-[#1c1b1b] text-[#adc6ff] px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-[#201f1f] transition-all scale-95 active:scale-90">Launch Agent</button>
+<span class="material-symbols-outlined text-[#c2c6d5] cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-[#c2c6d5] cursor-pointer">account_circle</span>
+</div>
+</nav>
+</header>
+<main class="flex-grow flex items-center justify-center p-6 mt-16">
+<div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Error Graphic Section -->
+<div class="lg:col-span-5 flex flex-col items-center justify-center space-y-8 py-12">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- Decorative Radial Glow -->
+<div class="absolute inset-0 bg-error/20 blur-[60px] rounded-full"></div>
+<!-- Error Icon Orbitals -->
+<div class="absolute inset-0 border border-error/20 rounded-full animate-pulse"></div>
+<div class="absolute inset-4 border border-error/10 rounded-full"></div>
+<div class="relative bg-error-gradient p-8 rounded-full shadow-2xl shadow-error/30">
+<span class="material-symbols-outlined text-on-error !text-6xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+</div>
+<div class="text-center space-y-4">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-error-container/30 border border-error/20">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+<span class="font-label text-xs uppercase tracking-widest text-error">CRITICAL_EXCEPTION</span>
+</div>
+<h1 class="font-headline text-4xl lg:text-5xl font-extrabold tracking-tighter text-on-surface">
+                        NEURAL LINK <br/><span class="text-error">INTERRUPTED</span>
+</h1>
+</div>
+</div>
+<!-- Content & Actions Section -->
+<div class="lg:col-span-7 space-y-6">
+<div class="bg-surface-container-low p-8 rounded-xl shadow-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined !text-9xl">terminal</span>
+</div>
+<div class="relative z-10 space-y-6">
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-lg">
+                            A critical exception was caught in the orchestration layer. The kinetic command stream has been safely throttled to prevent agent misalignment.
+                        </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="bg-primary-gradient text-on-primary-fixed px-6 py-3 rounded-lg font-bold flex items-center gap-3 shadow-lg shadow-primary/20 hover:opacity-90 transition-all scale-100 active:scale-95">
+<span class="material-symbols-outlined">restart_alt</span>
+                                Re-initialize Session
+                            </button>
+<button class="bg-surface-container-high text-primary px-6 py-3 rounded-lg font-bold flex items-center gap-3 hover:bg-surface-container-highest transition-all scale-100 active:scale-95">
+<span class="material-symbols-outlined">report_problem</span>
+                                Report Incident
+                            </button>
+</div>
+</div>
+</div>
+<!-- Stack Trace / Logs Section -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/15">
+<div class="bg-surface-container-high px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">code</span>
+<span class="font-label text-sm font-semibold text-on-surface-variant uppercase tracking-wider">Stack Trace Output</span>
+</div>
+<span class="text-[10px] font-label text-on-surface-variant/50">ID: BE-992-UXL</span>
+</div>
+<div class="p-6 font-label text-xs leading-relaxed max-h-[250px] overflow-y-auto space-y-2">
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">001</span>
+<span class="text-secondary-fixed-dim">[SYS] Initializing BoutsElite_Core... Success.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">002</span>
+<span class="text-secondary-fixed-dim">[AGENT] Handshake with 'Alpha-9' established at 14ms.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">003</span>
+<span class="text-error font-bold">EXCEPTION: NullPointerReference at OrchestrationLayer.js:842:12</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">004</span>
+<span class="text-on-surface-variant/60">at dispatchEvent (internal/process/task_queues.js:95:5)</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">005</span>
+<span class="text-on-surface-variant/60">at processTicksAndRejections (internal/process/task_queues.js:75:11)</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">006</span>
+<span class="text-error font-bold">FATAL: Kinetic stream buffer overflow. Emergency shutdown engaged.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">007</span>
+<span class="text-tertiary-fixed-dim">[INFO] Context dumped to /logs/crash_dump_2024_10_24.bin</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant/40 select-none">008</span>
+<span class="text-on-surface-variant/60">... End of Trace ...</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 px-2">
+<div class="h-[1px] flex-grow bg-outline-variant/20"></div>
+<p class="text-[10px] font-label text-on-surface-variant/40 uppercase tracking-[0.2em]">Safety Protocol 44-B Active</p>
+<div class="h-[1px] flex-grow bg-outline-variant/20"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full px-8 md:px-16 lg:px-24 bg-[#1c1b1b] block w-full pt-16 pb-8">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+<div class="space-y-2">
+<div class="text-lg font-black text-[#e5e2e1] font-headline uppercase tracking-widest">Bouts Elite</div>
+<p class="font-['Manrope'] text-sm text-[#c2c6d5]">© 2024 Bouts Elite. Kinetic Command Systems.</p>
+</div>
+<div class="flex flex-wrap gap-x-8 gap-y-4">
+<a class="font-['Manrope'] text-sm text-[#c2c6d5] hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Product</a>
+<a class="font-['Manrope'] text-sm text-[#c2c6d5] hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Developers</a>
+<a class="font-['Manrope'] text-sm text-[#c2c6d5] hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Community</a>
+<a class="font-['Manrope'] text-sm text-[#c2c6d5] hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Legal</a>
+<a class="font-['Manrope'] text-sm text-[#c2c6d5] hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Changelog</a>
+<a class="font-['Manrope'] text-sm text-[#c2c6d5] hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">API Docs</a>
+</div>
+</div>
+</footer>
+</body></html>

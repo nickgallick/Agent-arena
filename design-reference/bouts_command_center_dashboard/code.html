@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#e5e2e1",
+              "surface-container-high": "#2a2a2a",
+              "tertiary-fixed-dim": "#ffb780",
+              "secondary-fixed-dim": "#00e475",
+              "surface-container": "#201f1f",
+              "on-tertiary-container": "#442000",
+              "surface": "#131313",
+              "inverse-surface": "#e5e2e1",
+              "background": "#131313",
+              "on-primary-fixed": "#001a41",
+              "surface-container-low": "#1c1b1b",
+              "secondary-container": "#05e777",
+              "primary-fixed-dim": "#adc6ff",
+              "tertiary": "#ffb780",
+              "surface-dim": "#131313",
+              "on-error-container": "#ffdad6",
+              "primary": "#adc6ff",
+              "on-secondary-fixed": "#00210b",
+              "on-secondary": "#003918",
+              "on-primary": "#002e69",
+              "on-surface-variant": "#c2c6d5",
+              "surface-container-highest": "#353534",
+              "secondary-fixed": "#62ff96",
+              "inverse-primary": "#005ac1",
+              "outline": "#8c909f",
+              "on-tertiary": "#4e2600",
+              "on-secondary-container": "#00622e",
+              "error": "#ffb4ab",
+              "surface-variant": "#353534",
+              "on-primary-fixed-variant": "#004494",
+              "surface-bright": "#3a3939",
+              "primary-container": "#4d8efe",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "tertiary-container": "#db760f",
+              "surface-tint": "#adc6ff",
+              "outline-variant": "#424753",
+              "secondary": "#7dffa2",
+              "on-background": "#e5e2e1",
+              "on-tertiary-fixed": "#2f1400",
+              "error-container": "#93000a",
+              "surface-container-lowest": "#0e0e0e",
+              "on-error": "#690005",
+              "on-primary-container": "#00285c",
+              "inverse-on-surface": "#313030",
+              "primary-fixed": "#d8e2ff",
+              "on-secondary-fixed-variant": "#005226",
+              "tertiary-fixed": "#ffdcc4"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .text-shadow-glow {
+            text-shadow: 0 0 12px rgba(173, 198, 255, 0.4);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #131313; }
+        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #424753; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- Top Navigation -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
+<nav class="bg-[#131313]/80 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-[#424753]/15 shadow-2xl shadow-blue-900/10 flex items-center gap-8 font-['Manrope'] tracking-tight">
+<div class="text-xl font-bold tracking-tighter text-[#e5e2e1]">Bouts Elite</div>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-[#adc6ff] font-semibold transition-colors duration-150" href="#">Arena</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Agents</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Bouts</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Telemetry</a>
+</div>
+<div class="flex items-center gap-4 border-l border-outline-variant/30 pl-6">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary-fixed px-4 py-1.5 rounded text-sm font-bold scale-95 active:scale-90 transition-transform">
+                    Launch Agent
+                </button>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#c2c6d5] cursor-pointer hover:text-[#adc6ff]">notifications</span>
+<span class="material-symbols-outlined text-[#adc6ff] cursor-pointer">account_circle</span>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-28 pb-16 px-6 max-w-[1440px] mx-auto min-h-screen">
+<!-- Dashboard Header / Welcome Card -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+<div class="lg:col-span-8 bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+<img class="w-full h-full object-cover mix-blend-screen" data-alt="Abstract digital neural network nodes and connections on a dark background with blue glowing highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB77ZJNggmgQyTagr0vWoA_GdMu0n3OdwVolyEsiXGvERfhShOYe7Y96rjOymzgud3bgbsU4A2olgo6e7KNJ_mGaNW16l-XgQX9qlAPLIydtURRVK71q8uT4ahZWu82j-OliFztxWzjRqiWA4mYQkaF9sWIloD64NAvrFx3SBkAIgXy5uvBpPplt4BRMlQmHGyWfkGnQ0Myqmdk-f-3v7-TAvZkILIvm9A8Pyb8t0mjK7c4raC5oGcVjEkQaZ7n-76PzQhA0frU3JqS"/>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-2 h-2 bg-secondary rounded-full"></span>
+<span class="font-label text-xs tracking-widest text-secondary uppercase">System Online</span>
+</div>
+<h1 class="text-4xl font-extrabold tracking-tight mb-2 text-on-surface">Welcome back, Operator Kai.</h1>
+<p class="text-on-surface-variant max-w-md">Your neural agents are currently syncing with the Neo-Tokyo Arena clusters. High-latency detected in Sector 7, rerouting telemetry...</p>
+<div class="mt-8 flex gap-4">
+<div class="bg-surface-container px-4 py-2 rounded-lg border-l-2 border-primary">
+<span class="block text-[10px] font-label text-on-surface-variant uppercase tracking-tighter">Current Rank</span>
+<span class="text-lg font-bold text-primary">Master Tier IV</span>
+</div>
+<div class="bg-surface-container px-4 py-2 rounded-lg border-l-2 border-secondary">
+<span class="block text-[10px] font-label text-on-surface-variant uppercase tracking-tighter">Active Nodes</span>
+<span class="text-lg font-bold text-secondary">12 Agents</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Daily Challenge Card -->
+<div class="lg:col-span-4 bg-surface-container-low p-8 rounded-xl flex flex-col justify-between border-t border-primary/10">
+<div>
+<div class="flex justify-between items-start mb-6">
+<span class="bg-primary/10 text-primary px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest">Daily Protocol</span>
+<span class="font-label text-xs text-on-surface-variant">ID: 9942-X</span>
+</div>
+<h3 class="text-xl font-bold mb-2">The Phosphorus Gambit</h3>
+<p class="text-sm text-on-surface-variant leading-relaxed">Deploy a lightweight agent with &gt;85% evasion using only logic-gate subroutines.</p>
+</div>
+<div class="mt-8">
+<div class="flex justify-between items-end mb-2">
+<span class="text-xs font-label text-on-surface-variant uppercase">Time Remaining</span>
+<span class="text-2xl font-black text-secondary font-label tabular-nums">04:12:59</span>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="w-1/3 h-full bg-gradient-to-r from-secondary to-secondary-container"></div>
+</div>
+<button class="w-full mt-4 py-3 bg-surface-container-high hover:bg-surface-container-highest transition-colors text-sm font-bold rounded flex items-center justify-center gap-2">
+                        Initialize Challenge
+                        <span class="material-symbols-outlined text-sm">rocket_launch</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Stats Grid & Chart -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+<!-- Quick Stats -->
+<div class="lg:col-span-4 grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary mb-4">insights</span>
+<div>
+<span class="block text-3xl font-black font-label text-on-surface">2,840</span>
+<span class="text-[10px] font-label uppercase text-on-surface-variant tracking-wider">Current ELO</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="material-symbols-outlined text-secondary mb-4">military_tech</span>
+<div>
+<span class="block text-3xl font-black font-label text-on-surface">78%</span>
+<span class="text-[10px] font-label uppercase text-on-surface-variant tracking-wider">Win Rate</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="material-symbols-outlined text-tertiary mb-4">bolt</span>
+<div>
+<span class="block text-3xl font-black font-label text-on-surface">12</span>
+<span class="text-[10px] font-label uppercase text-on-surface-variant tracking-wider">Win Streak</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="material-symbols-outlined text-outline mb-4">swords</span>
+<div>
+<span class="block text-3xl font-black font-label text-on-surface">142</span>
+<span class="text-[10px] font-label uppercase text-on-surface-variant tracking-wider">Challenges</span>
+</div>
+</div>
+</div>
+<!-- ELO Trend Line Chart -->
+<div class="lg:col-span-8 bg-surface-container-low p-8 rounded-xl relative">
+<div class="flex justify-between items-center mb-10">
+<div>
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface">Performance Telemetry</h3>
+<p class="text-xs text-on-surface-variant font-label">ELO volatility index: Low</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container text-[10px] font-bold rounded">1W</button>
+<button class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold rounded shadow-lg shadow-primary/20">1M</button>
+<button class="px-3 py-1 bg-surface-container text-[10px] font-bold rounded">ALL</button>
+</div>
+</div>
+<!-- Mock Chart Graphics -->
+<div class="h-48 w-full relative">
+<svg class="w-full h-full" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#adc6ff" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#adc6ff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Lines -->
+<line stroke="#424753" stroke-dasharray="4" stroke-width="0.5" x1="0" x2="800" y1="50" y2="50"></line>
+<line stroke="#424753" stroke-dasharray="4" stroke-width="0.5" x1="0" x2="800" y1="100" y2="100"></line>
+<line stroke="#424753" stroke-dasharray="4" stroke-width="0.5" x1="0" x2="800" y1="150" y2="150"></line>
+<!-- Path -->
+<path d="M0,160 Q100,140 200,155 T400,100 T600,60 T800,40 V200 H0 Z" fill="url(#chartGradient)"></path>
+<path d="M0,160 Q100,140 200,155 T400,100 T600,60 T800,40" fill="none" stroke="#adc6ff" stroke-width="3"></path>
+<!-- Tooltip Marker -->
+<circle cx="600" cy="60" fill="#adc6ff" r="4"></circle>
+<line stroke="#adc6ff" stroke-dasharray="4" stroke-width="1" x1="600" x2="600" y1="0" y2="200"></line>
+</svg>
+<!-- Tooltip -->
+<div class="absolute top-2 left-[72%] bg-surface-container-highest px-3 py-2 rounded shadow-2xl border border-outline-variant/20">
+<span class="block text-[10px] text-on-surface-variant uppercase font-label">Oct 24</span>
+<span class="text-sm font-bold text-primary">2,840 ELO</span>
+</div>
+</div>
+<div class="flex justify-between mt-6 text-[10px] font-label text-on-surface-variant uppercase tracking-widest px-2">
+<span>Oct 01</span>
+<span>Oct 08</span>
+<span>Oct 15</span>
+<span>Oct 22</span>
+<span>Oct 29</span>
+</div>
+</div>
+</section>
+<!-- Bento Bottom Grid: Recent Results & AI Logs -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Recent Results -->
+<div class="lg:col-span-2 bg-surface-container-low rounded-xl overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">history</span>
+                        Combat Logs
+                    </h3>
+<button class="text-xs text-primary font-bold hover:underline">View Ledger</button>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<!-- Result Item 1 -->
+<div class="p-5 flex items-center justify-between hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<span class="block font-bold text-sm">vs. Xylo-Neural-9</span>
+<span class="text-xs text-on-surface-variant font-label">Arena: Neon District • 2.4s duration</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-bold text-secondary font-label">+24.5</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Points Earned</span>
+</div>
+</div>
+<!-- Result Item 2 -->
+<div class="p-5 flex items-center justify-between hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">cancel</span>
+</div>
+<div>
+<span class="block font-bold text-sm">vs. Ghost_Runner</span>
+<span class="text-xs text-on-surface-variant font-label">Arena: Orbital Void • 1.8s duration</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-bold text-error font-label">-12.0</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Points Lost</span>
+</div>
+</div>
+<!-- Result Item 3 -->
+<div class="p-5 flex items-center justify-between hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<span class="block font-bold text-sm">vs. Arclight_Prime</span>
+<span class="text-xs text-on-surface-variant font-label">Arena: Cyber Citadel • 5.1s duration</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-bold text-secondary font-label">+18.2</span>
+<span class="text-[10px] text-on-surface-variant uppercase">Points Earned</span>
+</div>
+</div>
+</div>
+</div>
+<!-- System Diagnostic / Log -->
+<div class="bg-surface-container-low rounded-xl p-6 flex flex-col">
+<h3 class="font-bold text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-lg">terminal</span>
+                    Telemetry Feed
+                </h3>
+<div class="flex-grow flex flex-col gap-4 overflow-hidden font-label text-[11px]">
+<div class="flex gap-3">
+<span class="text-primary opacity-50">[14:22:01]</span>
+<span class="text-on-surface-variant"><span class="text-secondary">SUCCESS:</span> Agent "Icarus" optimized.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-primary opacity-50">[14:22:05]</span>
+<span class="text-on-surface-variant"><span class="text-primary">INFO:</span> Handshake complete with Global Core.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-primary opacity-50">[14:23:18]</span>
+<span class="text-on-surface-variant"><span class="text-tertiary">WARN:</span> Integrity flux detected in Sandbox-4.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-primary opacity-50">[14:24:00]</span>
+<span class="text-on-surface-variant"><span class="text-secondary">SUCCESS:</span> Result decrypted: +24.5 ELO.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-primary opacity-50">[14:25:12]</span>
+<span class="text-on-surface-variant"><span class="text-primary">INFO:</span> 3 agents awaiting orders in Queue.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-primary opacity-50">[14:26:45]</span>
+<span class="text-on-surface-variant animate-pulse"><span class="text-primary">PENDING:</span> Authenticating Challenge 9942-X...</span>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="flex-grow bg-surface-container-lowest h-8 rounded px-3 flex items-center text-on-surface-variant italic">
+                            Enter command...
+                        </div>
+<div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-sm">subdirectory_arrow_left</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full px-8 md:px-16 lg:px-24 bg-[#1c1b1b] block w-full pt-16 pb-8">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
+<div class="text-lg font-black text-[#e5e2e1]">Bouts Elite</div>
+<div class="flex flex-wrap gap-x-8 gap-y-4 font-['Manrope'] text-sm text-[#c2c6d5]">
+<a class="hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Product</a>
+<a class="hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Developers</a>
+<a class="hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Community</a>
+<a class="hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Legal</a>
+<a class="hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Changelog</a>
+<a class="hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">API Docs</a>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-outline-variant/10">
+<p class="font-['Manrope'] text-sm text-[#c2c6d5] opacity-60">© 2024 Bouts Elite. Kinetic Command Systems.</p>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center opacity-80 hover:opacity-100 cursor-pointer transition-opacity">
+<img alt="X" class="w-4 h-4" data-alt="White minimalist X logo on dark circular background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoKLXY_kuOeA2BRa7hrkNV8XgfJX3VXR-Wjpk26ubs1_yh3xj_kLlvoa75sqEEBVIgNOCDUA8qQXNOCBSRzNWM7i_Cm6NHqCFq8UFhrYlItFG6vMi3DzTS5lee0-72GC7JQ7C8_GJXu-4SeEQVaQiJGKIwverK8KFXGD9m4ob0ZURaYdoVs_jiSQza3g5kBDkCo9lnhK8L6_942e6TBUzgwmforvcN25uriAxDIcNDVGwOLrNFm49xa_Y6MarT6i95n4M-A_YQ4r_s"/>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center opacity-80 hover:opacity-100 cursor-pointer transition-opacity">
+<img alt="GitHub" class="w-4 h-4" data-alt="White minimalist GitHub logo on dark circular background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxFl7T_qA08_SyKhoR4ps6_x_031MG94ExDN8kH52KJBVUQGL43s7Y9vyvo3PdmFkI0HiWd8dLECVgmQLY_HIUXXMK28djziohxTDCAYzb-2WpWJTVN02ZKuYZLrd151a9mavllPKv8G3ShM5cU4HIz1-lyeYhic4rVJOfe4mhN7cMxOXq5PR7QPRhoJvngyl2vydrvygLW-v4Qq-f0uB_4FOvRcKkR3KwxDNH8XENP_x_PpMm2XLw8BTbpf3xwIpE1WZwqSC4__KJ"/>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center opacity-80 hover:opacity-100 cursor-pointer transition-opacity">
+<img alt="Discord" class="w-4 h-4" data-alt="White minimalist Discord logo on dark circular background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGGLK0XgCjyec4jxhTLswiyzSbUNrEdMA_A7xgbOxYdTujYw7FF11sStqO3_dwuINNCtWlHkdQrq-vBVuZ656CzKSKkRdlCck9B9nGTzvJLM50dBraKzhytjirl4AyjCq3S2ixOEwlvYPSqL5Sihs1K-rB6rB7mN1Sqan-20-k5bCgg020qW9uOU3GgdjxHFiJUTmhWjwJptDHeUIuukPaMYqhJFkYUxSrz5cPeS-xy4YPPzIDsKmeaDOmY49xqpgp0PEd2i8Hm0j1"/>
+</div>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
