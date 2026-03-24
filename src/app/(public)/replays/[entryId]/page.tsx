@@ -178,100 +178,105 @@ export default function ReplayPage() {
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
-        {/* Title */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-[#e5e2e1]">Replay Viewer</h1>
-          <p className="mt-1 text-sm text-[#8c909f]">
-            {replay.challenge?.title ?? `Entry ${entryId}`}
-            {replay.agent && <> &middot; {replay.agent.name}</>}
-          </p>
-        </div>
+      <main className="flex-1 pt-20 p-6 lg:p-8 max-w-[1600px] mx-auto w-full grid grid-cols-12 gap-6">
+        {/* Header */}
+        <header className="col-span-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-[#8c909f]">
+                Bouts // Replay System
+              </span>
+            </div>
+            <h1 className="font-[family-name:var(--font-heading)] text-3xl font-extrabold tracking-tight text-[#e5e2e1]">
+              {replay.challenge?.title ?? `Entry ${entryId}`}
+            </h1>
+            {replay.agent && (
+              <p className="font-[family-name:var(--font-mono)] text-sm text-[#8c909f] mt-1">
+                AGENT_SIG: <span className="text-[#7dffa2]">{replay.agent.name}</span>
+              </p>
+            )}
+          </div>
+        </header>
 
-        {events.length > 0 && activeEvent ? (
-          <>
-            {/* Two-column layout */}
-            <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-              {/* Left: Timeline */}
-              <div className="max-h-[70vh] overflow-y-auto rounded-xl border border-[#424753]/15 bg-[#201f1f]/30 p-4">
+        {/* Left: Visual + Code (8 cols) */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          {/* Visual Output */}
+          {replay.screenshot_urls && Array.isArray(replay.screenshot_urls) && replay.screenshot_urls.length > 0 && (
+            <section className="bg-[#1c1b1b] p-1 rounded-xl overflow-hidden shadow-2xl">
+              <div className="bg-[#201f1f] flex items-center justify-between px-4 py-2">
+                <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#8c909f] flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] animate-pulse" />
+                  Visual Output Rendering
+                </span>
+              </div>
+              <div className="bg-black">
+                {(replay.screenshot_urls as Array<{ viewport: string; url: string }>).map((ss) => (
+                  <img
+                    key={ss.viewport}
+                    src={ss.url}
+                    alt={`${ss.viewport} screenshot`}
+                    className="w-full object-cover opacity-80"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Code / Transcript */}
+          {events.length > 0 && activeEvent ? (
+            <section className="bg-[#1c1b1b] rounded-xl overflow-hidden flex flex-col">
+              <SpeedControls
+                isPlaying={isPlaying}
+                speed={speed}
+                progress={progress}
+                onTogglePlay={() => setIsPlaying((p) => !p)}
+                onSpeedChange={setSpeed}
+                onSeek={handleSeek}
+              />
+              <div className="bg-[#353534] p-4 font-[family-name:var(--font-mono)] text-sm text-[#adc6ff] overflow-y-auto max-h-[400px]">
+                <div className="mb-4 flex items-center gap-3">
+                  <ActiveIcon className={cn('h-5 w-5', eventColors[activeEvent.type] ?? 'text-[#8c909f]')} />
+                  <span className="font-semibold text-[#e5e2e1]">{activeEvent.title}</span>
+                  <span className="text-[#8c909f] text-xs">
+                    {formatTimestamp(activeEvent.timestamp)} · Step {currentIndex + 1}/{events.length}
+                  </span>
+                </div>
+                <pre className="whitespace-pre-wrap">{activeEvent.content}</pre>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto p-4 bg-[#0e0e0e]">
                 <ReplayTimeline
                   events={events}
                   currentIndex={currentIndex}
                   onSelectEvent={setCurrentIndex}
                 />
               </div>
-
-              {/* Right: Controls + Active event */}
-              <div className="flex flex-col gap-4">
-                <SpeedControls
-                  isPlaying={isPlaying}
-                  speed={speed}
-                  progress={progress}
-                  onTogglePlay={() => setIsPlaying((p) => !p)}
-                  onSpeedChange={setSpeed}
-                  onSeek={handleSeek}
-                />
-
-                {/* Active event detail */}
-                <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-6">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#4d8efe]/20">
-                      <ActiveIcon className={cn('h-5 w-5', eventColors[activeEvent.type] ?? 'text-[#8c909f]')} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[#e5e2e1]">{activeEvent.title}</h3>
-                      <p className="text-xs text-[#e5e2e1]0">
-                        {formatTimestamp(activeEvent.timestamp)} &middot; Step {currentIndex + 1} of {events.length}
-                      </p>
-                    </div>
-                  </div>
-                  <pre className="overflow-x-auto rounded-lg bg-[#1c1b1b] p-4 font-mono text-sm leading-relaxed text-[#c2c6d5]">
-                    <code>{activeEvent.content}</code>
-                  </pre>
-                </div>
-              </div>
+            </section>
+          ) : (
+            <div className="bg-[#1c1b1b] rounded-xl px-6 py-12 text-center">
+              <p className="text-[#c2c6d5]">No transcript available for this replay.</p>
             </div>
-          </>
-        ) : (
-          <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 px-6 py-12 text-center mb-6">
-            <p className="text-[#c2c6d5]">No transcript available for this replay.</p>
-          </div>
-        )}
+          )}
 
-        {/* Screenshots for visual challenges */}
-        {replay.screenshot_urls && Array.isArray(replay.screenshot_urls) && replay.screenshot_urls.length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold text-[#e5e2e1] mb-4">Visual Output</h2>
-            <div className="grid gap-4 md:grid-cols-2">
-              {(replay.screenshot_urls as Array<{ viewport: string; url: string }>).map((ss) => (
-                <div key={ss.viewport} className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/30 overflow-hidden">
-                  <div className="px-4 py-2 border-b border-[#424753]/15 text-xs font-mono text-[#e5e2e1]0 uppercase tracking-wider">
-                    {ss.viewport === 'desktop' ? '🖥️ Desktop (1280×800)' : '📱 Mobile (375×812)'}
-                  </div>
-                  <div className="p-2">
-                    <img
-                      src={ss.url}
-                      alt={`${ss.viewport} screenshot`}
-                      className="w-full rounded-lg border border-[#424753]/15"
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Bottom panels */}
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          {/* Submission */}
           <SubmissionPanel
             submissionText={replay.submission_text ?? 'No submission text available.'}
             files={submissionFiles}
           />
+        </div>
+
+        {/* Right: Judge Evaluation (4 cols) */}
+        <div className="col-span-12 lg:col-span-4 space-y-6">
           <JudgePanel
             scores={replay.judge_scores ?? []}
             finalScore={replay.final_score ?? 0}
           />
+          <a
+            href={replay.challenge ? `/challenges/${replay.challenge.id}` : '/challenges'}
+            className="block w-full text-center py-4 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold rounded-lg hover:opacity-90 transition-all"
+          >
+            Back to Challenge
+          </a>
         </div>
       </main>
 

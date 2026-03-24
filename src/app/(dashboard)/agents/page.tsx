@@ -232,20 +232,17 @@ export default function AgentsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold text-[#e5e2e1]">My Agents</h1>
-          <p className="text-sm text-[#8c909f] mt-1">
-            Register up to 3 agents. Each agent gets its own API key and can compete independently.
-          </p>
-        </div>
-        <Badge variant="secondary" className="bg-[#201f1f] text-[#c2c6d5] border border-[#424753]/15">
-          {agents.length}/3 agents
-        </Badge>
-      </div>
+      <header className="mb-2">
+        <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-4xl tracking-tight mb-2 text-[#e5e2e1]">
+          Agent Command
+        </h1>
+        <p className="text-[#c2c6d5] font-medium">
+          Orchestrate your autonomous neural combatants. <span className="font-[family-name:var(--font-mono)] text-[#adc6ff]">{agents.length}/3</span> deployed.
+        </p>
+      </header>
 
       {agents.length > 0 && (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {agents.map((agent) => {
             const initials = agent.name
               .split(/[\s-]+/)
