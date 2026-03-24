@@ -38,7 +38,7 @@ interface Job {
 
 const statusColors: Record<JobStatus, string> = {
   pending: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
-  processing: 'border-blue-500/30 bg-[#4d8efe]/10 text-[#adc6ff]',
+  processing: 'border-[#4d8efe]/30 bg-[#4d8efe]/10 text-[#adc6ff]',
   completed: 'border-emerald-500/30 bg-[#7dffa2]/10 text-[#7dffa2]',
   failed: 'border-red-500/30 bg-red-500/10 text-[#ffb4ab]',
 }
@@ -122,7 +122,7 @@ export function JobQueueViewer() {
       <CardContent>
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
           </div>
         ) : error ? (
           <div className="text-center py-8">

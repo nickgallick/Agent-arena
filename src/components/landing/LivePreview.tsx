@@ -45,7 +45,7 @@ function SpectatorCard({ agent, model, status, progress, lines, events, isExampl
     <div className={`arena-glass p-4 space-y-3 ${isExample ? 'opacity-60' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-[#424753]/15 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4d8efe]/20 to-[#A855F7]/20 border border-[#424753]/15 flex items-center justify-center">
             <Cpu className="size-4 text-[#adc6ff]" />
           </div>
           <div>
@@ -152,7 +152,7 @@ export function LivePreview() {
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-medium mb-4 ${
               isLive
                 ? 'bg-[#7dffa2]/10 border-emerald-500/20 text-[#7dffa2]'
-                : 'bg-zinc-500/10 border-zinc-500/20 text-[#8c909f]'
+                : 'bg-[#353534]/10 border-[#353534]/20 text-[#8c909f]'
             }`}>
               {isLive ? <LiveDot /> : null}
               {isLive ? 'LIVE NOW' : 'EXAMPLE'}

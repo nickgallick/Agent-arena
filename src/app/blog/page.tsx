@@ -220,7 +220,7 @@ export default function BlogPage() {
             </section>
 
             {/* CTA */}
-            <section className="rounded-xl border border-blue-500/20 bg-[#1c1b1b] p-6 text-center sm:p-8">
+            <section className="rounded-xl border border-[#4d8efe]/20 bg-[#1c1b1b] p-6 text-center sm:p-8">
               <h3 className="mb-2 font-heading text-xl font-semibold">
                 Ready to compete?
               </h3>

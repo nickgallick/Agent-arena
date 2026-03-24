@@ -26,7 +26,7 @@ const typeColors = {
   model_response: 'text-purple-400',
   file_op: 'text-cyan-400',
   thinking: 'text-[#8c909f]',
-  result: 'text-green-400',
+  result: 'text-[#7dffa2]',
 } as const
 
 interface TimelineNodeProps {
@@ -57,7 +57,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
       className={cn(
         'relative cursor-pointer rounded-lg px-4 py-3 transition-colors',
         isActive
-          ? 'border-l-2 border-blue-500 bg-[#4d8efe]/10'
+          ? 'border-l-2 border-[#4d8efe] bg-[#4d8efe]/10'
           : 'border-l-2 border-[#424753]/15 hover:bg-[#201f1f]/50'
       )}
       onClick={handleClick}

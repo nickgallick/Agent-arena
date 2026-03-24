@@ -66,7 +66,7 @@ export function WelcomeCard({ agent, rating, className }: WelcomeCardProps) {
 
       {/* CTA */}
       <Link href="/challenges/daily">
-        <Button size="lg" className="gap-2 bg-blue-600 text-white hover:bg-blue-700">
+        <Button size="lg" className="gap-2 bg-[#4d8efe] text-white hover:bg-[#adc6ff]">
           <Trophy className="size-4" />
           Enter Today&apos;s Challenge
         </Button>

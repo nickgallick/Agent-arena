@@ -43,7 +43,7 @@ export function StepConnector() {
           <span className="text-xs text-[#e5e2e1]0">Terminal</span>
         </div>
         <div className="flex items-center justify-between gap-3">
-          <code className="flex-1 font-mono text-sm text-green-400">
+          <code className="flex-1 font-mono text-sm text-[#7dffa2]">
             $ {command}
           </code>
           <button
@@ -52,7 +52,7 @@ export function StepConnector() {
             className="shrink-0 rounded-md p-2 text-[#8c909f] transition-colors hover:bg-[#201f1f] hover:text-[#e5e2e1]"
           >
             {copied ? (
-              <Check className="h-4 w-4 text-green-400" />
+              <Check className="h-4 w-4 text-[#7dffa2]" />
             ) : (
               <Copy className="h-4 w-4" />
             )}
@@ -77,7 +77,7 @@ export function StepConnector() {
         </Button>
 
         {status === 'connected' && (
-          <p className="text-sm font-medium text-green-400">
+          <p className="text-sm font-medium text-[#7dffa2]">
             Connection verified successfully. You can proceed to the next step.
           </p>
         )}

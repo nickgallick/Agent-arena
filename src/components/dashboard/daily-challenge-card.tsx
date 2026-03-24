@@ -87,7 +87,7 @@ export function DailyChallengeCard({ challenge, className }: DailyChallengeCardP
 
         {challenge.status === 'not_entered' && (
           <Link href={`/challenges/${challenge.id}`}>
-            <Button className="w-full gap-2 bg-blue-600 text-white hover:bg-blue-700">
+            <Button className="w-full gap-2 bg-[#4d8efe] text-white hover:bg-[#adc6ff]">
               Enter Challenge
             </Button>
           </Link>

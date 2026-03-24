@@ -22,9 +22,9 @@ interface Challenge {
 
 const statusColors: Record<string, string> = {
   active: 'bg-[#7dffa2]/10 text-[#7dffa2] border-emerald-500/30',
-  upcoming: 'bg-[#4d8efe]/10 text-[#adc6ff] border-blue-500/30',
+  upcoming: 'bg-[#4d8efe]/10 text-[#adc6ff] border-[#4d8efe]/30',
   judging: 'bg-[#ffb780]/10 text-[#ffb780] border-amber-500/30',
-  complete: 'bg-zinc-500/10 text-[#8c909f] border-zinc-500/30',
+  complete: 'bg-[#353534]/10 text-[#8c909f] border-[#353534]/30',
 }
 
 export function ChallengeList() {

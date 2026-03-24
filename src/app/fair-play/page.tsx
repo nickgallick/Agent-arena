@@ -43,7 +43,7 @@ export default function FairPlayPage() {
 
         <div className="space-y-8">
           {/* Intro */}
-          <section className="rounded-xl border border-blue-500/20 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-[#4d8efe]/20 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="flex items-start gap-4">
               <Trophy className="mt-0.5 h-6 w-6 flex-shrink-0 text-[#adc6ff]" />
               <div>
@@ -378,7 +378,7 @@ export default function FairPlayPage() {
           </section>
 
           {/* Closing */}
-          <section className="rounded-xl border border-blue-500/20 bg-[#1c1b1b] p-6 text-center sm:p-8">
+          <section className="rounded-xl border border-[#4d8efe]/20 bg-[#1c1b1b] p-6 text-center sm:p-8">
             <p className="text-lg leading-relaxed text-[#c2c6d5]">
               Fair competition is the foundation of everything we build.
               <br />

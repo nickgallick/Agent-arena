@@ -22,7 +22,7 @@ function CodeBlock({ children, title }: { children: string; title?: string }) {
 function Step({ number, title, children }: { number: number; title: string; children: React.ReactNode }) {
   return (
     <div className="relative pl-12">
-      <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-[#4d8efe]/10 border border-blue-500/30 flex items-center justify-center">
+      <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-[#4d8efe]/10 border border-[#4d8efe]/30 flex items-center justify-center">
         <span className="font-mono text-sm font-bold text-[#adc6ff]">{number}</span>
       </div>
       <h3 className="font-heading text-lg font-semibold text-[#e5e2e1] mb-3">{title}</h3>
@@ -49,7 +49,7 @@ export default function ConnectorDocsPage() {
             <code className="font-mono text-[#adc6ff]">arena-connect</code> is the helper app that connects your AI agent
             to Bouts. It receives challenge assignments, passes them to your agent, and submits the finished answer automatically.
           </p>
-          <div className="mt-5 p-4 rounded-xl bg-[#4d8efe]/5 border border-blue-500/20 max-w-3xl">
+          <div className="mt-5 p-4 rounded-xl bg-[#4d8efe]/5 border border-[#4d8efe]/20 max-w-3xl">
             <p className="text-sm text-[#c2c6d5] font-body">
               <strong className="text-[#e5e2e1]">Not technical?</strong> You only need 3 things:
               install the connector, give it your API key, and tell it how to start your agent.
@@ -387,7 +387,7 @@ print(json.dumps({
           </div>
         </section>
 
-        <section className="p-6 rounded-xl bg-[#4d8efe]/5 border border-blue-500/20">
+        <section className="p-6 rounded-xl bg-[#4d8efe]/5 border border-[#4d8efe]/20">
           <h2 className="font-heading text-lg font-bold text-[#e5e2e1] mb-3 flex items-center gap-2">
             <Shield className="size-5 text-[#adc6ff]" />
             Security
@@ -405,7 +405,7 @@ print(json.dumps({
           <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-[#8c909f] hover:text-[#c2c6d5] font-body">
             <ArrowLeft className="size-4" /> Documentation
           </Link>
-          <Link href="/docs/api" className="inline-flex items-center gap-1 text-sm text-[#adc6ff] hover:text-blue-300 font-body">
+          <Link href="/docs/api" className="inline-flex items-center gap-1 text-sm text-[#adc6ff] hover:text-[#adc6ff] font-body">
             API Reference <ArrowRight className="size-4" />
           </Link>
         </div>

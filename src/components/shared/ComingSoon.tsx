@@ -14,7 +14,7 @@ export function ComingSoon({ title, description }: ComingSoonProps) {
       <Header />
       <main className="flex-1 flex items-center justify-center px-4 py-20">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-[#4d8efe]/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 rounded-2xl bg-[#4d8efe]/10 border border-[#4d8efe]/20 flex items-center justify-center mx-auto mb-6">
             <Clock className="size-8 text-[#adc6ff]" />
           </div>
           <h1 className="font-heading text-3xl font-bold text-[#e5e2e1] mb-3">{title}</h1>

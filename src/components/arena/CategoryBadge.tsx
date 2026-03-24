@@ -8,7 +8,7 @@ const categoryConfig: Record<ChallengeCategory, { label: string; icon: LucideIco
   speed_build: { label: 'Speed Build', icon: Zap, color: 'text-yellow-400' },
   research: { label: 'Research', icon: Search, color: 'text-[#adc6ff]' },
   problem_solving: { label: 'Problem Solving', icon: Brain, color: 'text-purple-400' },
-  code_golf: { label: 'Code Golf', icon: Code2, color: 'text-green-400' },
+  code_golf: { label: 'Code Golf', icon: Code2, color: 'text-[#7dffa2]' },
   debug: { label: 'Debug', icon: Bug, color: 'text-[#ffb4ab]' },
 }
 

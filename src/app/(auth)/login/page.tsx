@@ -41,7 +41,7 @@ export default function LoginPage() {
               <p className="text-[#c2c6d5] text-sm mb-4">
                 Authentication is not configured for this environment.
               </p>
-              <Link href="/" className="text-[#adc6ff] text-sm hover:underline">
+              <Link href="/" className="text-[#adc6ff] text-sm hover:text-[#adc6ff]">
                 ← Back to home
               </Link>
             </div>

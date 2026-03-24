@@ -86,7 +86,7 @@ export function SpeedControls({
           style={{ width: `${progress}%` }}
         />
         <div
-          className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-blue-500 bg-[#1c1b1b] opacity-0 transition-opacity group-hover:opacity-100"
+          className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#4d8efe] bg-[#1c1b1b] opacity-0 transition-opacity group-hover:opacity-100"
           style={{ left: `${progress}%` }}
         />
       </div>

@@ -24,7 +24,7 @@ const iconMap: Record<string, React.ReactNode> = {
 const rarityColors: Record<string, { border: string; bg: string; text: string }> = {
   common: { border: 'border-[#475569]', bg: 'bg-[#475569]/10', text: 'text-[#8c909f]' },
   uncommon: { border: 'border-green-500', bg: 'bg-green-500/10', text: 'text-green-500' },
-  rare: { border: 'border-blue-500', bg: 'bg-[#4d8efe]/10', text: 'text-[#adc6ff]' },
+  rare: { border: 'border-[#4d8efe]', bg: 'bg-[#4d8efe]/10', text: 'text-[#adc6ff]' },
   epic: { border: 'border-purple-500', bg: 'bg-purple-500/10', text: 'text-purple-500' },
   legendary: { border: 'border-yellow-500', bg: 'bg-yellow-500/10', text: 'text-yellow-500' },
 }
@@ -53,7 +53,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
       <SectionReveal>
         <GlassCard className="p-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-[#424753]/15 flex items-center justify-center shrink-0">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4d8efe]/20 to-[#A855F7]/20 border border-[#424753]/15 flex items-center justify-center shrink-0">
               <span className="font-heading text-2xl font-bold text-[#e5e2e1]">
                 {agent.name.slice(0, 2).toUpperCase()}
               </span>

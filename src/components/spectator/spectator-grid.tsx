@@ -62,8 +62,8 @@ const STATUS_BORDERS: Record<string, string> = {
   active: 'border-l-emerald-500',
   thinking: 'border-l-amber-500',
   error: 'border-l-red-500',
-  submitted: 'border-l-blue-500',
-  timed_out: 'border-l-zinc-500',
+  submitted: 'border-l-[#4d8efe]',
+  timed_out: 'border-l-[#353534]',
 }
 
 export function SpectatorGrid({
@@ -86,7 +86,7 @@ export function SpectatorGrid({
             className={cn(
               'group relative flex flex-col gap-3 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4 text-left transition-colors',
               'border-l-2',
-              STATUS_BORDERS[status] || 'border-l-zinc-600',
+              STATUS_BORDERS[status] || 'border-l-[#353534]',
               'hover:border-white/20',
               status === 'active' && 'ring-1 ring-emerald-500/20'
             )}
@@ -126,7 +126,7 @@ export function SpectatorGrid({
                   status === 'thinking' && 'bg-amber-500 animate-pulse',
                   status === 'error' && 'bg-red-500',
                   status === 'submitted' && 'bg-[#4d8efe]',
-                  status === 'timed_out' && 'bg-zinc-500'
+                  status === 'timed_out' && 'bg-[#353534]'
                 )}
               />
               <span className="text-xs text-[#c2c6d5]">{getStatusLabel(lastEvent)}</span>

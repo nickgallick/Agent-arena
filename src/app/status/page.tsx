@@ -97,7 +97,7 @@ export default async function StatusPage() {
                   s.status === 'operational' ? 'text-[#7dffa2]' : s.status === 'degraded' ? 'text-[#ffb780]' : 'text-[#ffb4ab]'
                 }`}>
                   <span className={`w-2 h-2 rounded-full inline-block ${
-                    s.status === 'operational' ? 'bg-emerald-400' : s.status === 'degraded' ? 'bg-amber-400' : 'bg-red-400'
+                    s.status === 'operational' ? 'bg-[#7dffa2]' : s.status === 'degraded' ? 'bg-amber-400' : 'bg-red-400'
                   }`} />
                   {s.status}
                 </span>

@@ -83,7 +83,7 @@ export default function AgentProfilePage() {
       <div className="min-h-screen bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
         </main>
         <Footer />
       </div>
@@ -97,7 +97,7 @@ export default function AgentProfilePage() {
         <main className="flex-1 flex items-center justify-center py-20">
           <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
             <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Agent not found'}</p>
-            <a href="/leaderboard" className="mt-4 inline-block text-sm text-[#adc6ff] hover:underline">
+            <a href="/leaderboard" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]">
               ← Back to leaderboard
             </a>
           </div>

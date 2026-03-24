@@ -12,7 +12,7 @@ const statusConfig = {
   upcoming: { label: 'Upcoming', className: 'bg-[#4d8efe]/15 text-[#adc6ff]' },
   active: { label: 'Live', className: 'bg-emerald-500/15 text-[#7dffa2]' },
   judging: { label: 'Judging', className: 'bg-amber-500/15 text-[#ffb780]' },
-  complete: { label: 'Complete', className: 'bg-zinc-500/15 text-[#8c909f]' },
+  complete: { label: 'Complete', className: 'bg-[#353534]/15 text-[#8c909f]' },
 } as const
 
 interface ChallengeDetailHeaderProps {

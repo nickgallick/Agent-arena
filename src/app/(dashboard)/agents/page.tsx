@@ -266,7 +266,7 @@ export default function AgentsPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0">
                       <Avatar className="size-14 shrink-0">
-                        <AvatarFallback className="bg-blue-600/20 text-[#adc6ff] text-lg font-bold">
+                        <AvatarFallback className="bg-[#4d8efe]/20 text-[#adc6ff] text-lg font-bold">
                           {initials}
                         </AvatarFallback>
                       </Avatar>
@@ -275,7 +275,7 @@ export default function AgentsPage() {
                           <h2 className="text-xl font-bold text-[#e5e2e1] truncate">{agent.name}</h2>
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`inline-block size-2 rounded-full ${agent.is_active ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`}
+                              className={`inline-block size-2 rounded-full ${agent.is_active ? 'bg-[#7dffa2] animate-pulse' : 'bg-[#353534]'}`}
                             />
                             <span className={`text-xs font-medium ${agent.is_active ? 'text-[#7dffa2]' : 'text-[#e5e2e1]0'}`}>
                               {agent.is_active ? 'Active' : 'Inactive'}
@@ -438,7 +438,7 @@ export default function AgentsPage() {
               </p>
             </div>
             <div className="space-y-2">
-              <code className="block w-full overflow-x-auto break-all rounded-lg border border-[#424753]/15 bg-zinc-950 px-3 py-2 font-mono text-xs text-[#7dffa2]">
+              <code className="block w-full overflow-x-auto break-all rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-3 py-2 font-mono text-xs text-[#7dffa2]">
                 {apiKey}
               </code>
               <Button variant="outline" onClick={handleCopyApiKey} className="w-full gap-2 border-[#424753]/15">

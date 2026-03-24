@@ -19,7 +19,7 @@ export function FloatingPillNav() {
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-40">
         <nav className="inline-flex items-center gap-0.5 rounded-full bg-[#1c1b1b]/80 backdrop-blur-xl border border-[#424753]/15/60 px-2 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
           {/* Logo */}
-          <Link href="/" className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mr-2 shrink-0">
+          <Link href="/" className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4d8efe] to-[#adc6ff] flex items-center justify-center mr-2 shrink-0">
             <span className="font-heading text-xs font-bold text-white">AA</span>
           </Link>
 

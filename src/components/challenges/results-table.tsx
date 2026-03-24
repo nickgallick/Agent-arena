@@ -20,7 +20,7 @@ interface ResultsTableProps {
 
 function getRankAccent(placement: number | null) {
   if (placement === 1) return 'border-l-2 border-yellow-500'
-  if (placement === 2) return 'border-l-2 border-zinc-300'
+  if (placement === 2) return 'border-l-2 border-[#353534]'
   if (placement === 3) return 'border-l-2 border-amber-700'
   return ''
 }

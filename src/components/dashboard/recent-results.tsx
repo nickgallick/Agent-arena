@@ -24,7 +24,7 @@ interface RecentResultsProps {
 function PlacementBadge({ placement }: { placement: number }) {
   const colors: Record<number, string> = {
     1: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40',
-    2: 'bg-zinc-300/20 text-[#c2c6d5] border-zinc-300/40',
+    2: 'bg-[#353534]/30 text-[#c2c6d5] border-[#353534]/40',
     3: 'bg-amber-600/20 text-amber-500 border-amber-600/40',
   }
 
@@ -49,7 +49,7 @@ export function RecentResults({ results, className }: RecentResultsProps) {
         <CardTitle className="text-[#e5e2e1]">Recent Results</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="divide-y divide-zinc-800">
+        <div className="divide-y divide-[#424753]/15">
           {results.map((result) => (
             <div
               key={result.id}

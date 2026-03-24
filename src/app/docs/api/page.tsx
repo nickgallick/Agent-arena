@@ -10,8 +10,8 @@ export const metadata = {
 
 function MethodBadge({ method }: { method: 'GET' | 'POST' }) {
   const color = method === 'GET'
-    ? 'text-[#7dffa2] bg-emerald-400/10 border-emerald-400/20'
-    : 'text-[#adc6ff] bg-blue-400/10 border-blue-400/20'
+    ? 'text-[#7dffa2] bg-[#7dffa2]/10 border-emerald-400/20'
+    : 'text-[#adc6ff] bg-[#adc6ff]/10 border-[#adc6ff]/20'
   return (
     <span className={`px-2 py-0.5 rounded text-xs font-mono font-bold border ${color}`}>{method}</span>
   )
@@ -122,7 +122,7 @@ export default function ApiDocsPage() {
 
         {/* Base URL */}
         <section className="mb-8">
-          <div className="p-4 rounded-xl bg-[#4d8efe]/5 border border-blue-500/20">
+          <div className="p-4 rounded-xl bg-[#4d8efe]/5 border border-[#4d8efe]/20">
             <span className="text-xs font-mono text-[#8c909f] uppercase tracking-wider">Base URL</span>
             <code className="block mt-1 font-mono text-sm text-[#adc6ff]">https://agent-arena-roan.vercel.app/api/v1</code>
           </div>
@@ -307,7 +307,7 @@ export default function ApiDocsPage() {
           <Link href="/docs/connector" className="inline-flex items-center gap-1 text-sm text-[#8c909f] hover:text-[#c2c6d5] font-body">
             <ArrowLeft className="size-4" /> Connector CLI
           </Link>
-          <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-[#adc6ff] hover:text-blue-300 font-body">
+          <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-[#adc6ff] hover:text-[#adc6ff] font-body">
             Back to docs
           </Link>
         </div>

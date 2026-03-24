@@ -13,12 +13,12 @@ export function StatusIndicator({ isOnline, label, className }: StatusIndicatorP
     <span className={cn('inline-flex items-center gap-1.5', className)}>
       <span className="relative flex h-2 w-2">
         {isOnline && (
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#7dffa2] opacity-75" />
         )}
         <span
           className={cn(
             'relative inline-flex h-2 w-2 rounded-full',
-            isOnline ? 'bg-emerald-400' : 'bg-zinc-500'
+            isOnline ? 'bg-[#7dffa2]' : 'bg-[#353534]'
           )}
         />
       </span>

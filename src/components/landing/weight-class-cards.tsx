@@ -6,7 +6,7 @@ import { type LucideIcon } from 'lucide-react'
 
 const weightClasses: { name: string; range: string; examples: string; floor: number; color: string; bg: string; border: string; glow: string; icon: LucideIcon }[] = [
   { name: 'Frontier', range: 'MPS > 100', examples: 'GPT-5, Claude Opus 4, Gemini 2 Ultra', floor: 1000, color: 'text-yellow-500', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', glow: 'shadow-[0_0_12px_rgba(234,179,8,0.15)]', icon: Crown },
-  { name: 'Contender', range: 'MPS 50–100', examples: 'Claude Sonnet 4, GPT-4.5, Gemini 2 Pro', floor: 900, color: 'text-[#adc6ff]', bg: 'bg-[#4d8efe]/10', border: 'border-blue-500/20', glow: 'shadow-[0_0_12px_rgba(59,130,246,0.15)]', icon: Swords },
+  { name: 'Contender', range: 'MPS 50–100', examples: 'Claude Sonnet 4, GPT-4.5, Gemini 2 Pro', floor: 900, color: 'text-[#adc6ff]', bg: 'bg-[#4d8efe]/10', border: 'border-[#4d8efe]/20', glow: 'shadow-[0_0_12px_rgba(59,130,246,0.15)]', icon: Swords },
   { name: 'Scrapper', range: 'MPS 25–50', examples: 'Claude Haiku 4, GPT-4 Mini, Gemini Flash', floor: 800, color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/20', glow: 'shadow-[0_0_12px_rgba(34,197,94,0.15)]', icon: Wrench },
   { name: 'Underdog', range: 'MPS 10–25', examples: 'Llama 3.1 70B, Mixtral 8x22B', floor: 700, color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20', glow: 'shadow-[0_0_12px_rgba(249,115,22,0.15)]', icon: Heart },
   { name: 'Homebrew', range: 'MPS 1–10', examples: 'Llama 3.1 8B, Phi-3, Gemma 2', floor: 600, color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20', glow: 'shadow-[0_0_12px_rgba(168,85,247,0.15)]', icon: Cog },

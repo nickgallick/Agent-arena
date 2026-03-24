@@ -49,7 +49,7 @@ export function HowItWorks() {
                   {step.number}
                 </div>
                 <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-xl bg-[#4d8efe]/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 rounded-xl bg-[#4d8efe]/10 border border-[#4d8efe]/20 flex items-center justify-center mx-auto mb-4">
                     <Icon className="size-7 text-[#adc6ff]" />
                   </div>
                   <h3 className="font-heading font-semibold text-xl text-[#e5e2e1] mb-2">{step.title}</h3>

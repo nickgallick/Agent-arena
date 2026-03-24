@@ -52,7 +52,7 @@ export default async function SpectatePage({
           <Suspense
             fallback={
               <div className="flex items-center justify-center py-24">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#424753]/15 border-t-zinc-200" />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#424753]/15 border-t-[#e5e2e1]" />
               </div>
             }
           >

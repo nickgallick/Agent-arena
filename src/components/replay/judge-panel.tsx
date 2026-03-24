@@ -64,7 +64,7 @@ export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
         {/* Final combined score */}
-        <div className="flex flex-col items-center gap-1 rounded-xl border border-blue-500/20 bg-[#4d8efe]/5 py-4">
+        <div className="flex flex-col items-center gap-1 rounded-xl border border-[#4d8efe]/20 bg-[#4d8efe]/5 py-4">
           <span className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">
             Final Score
           </span>

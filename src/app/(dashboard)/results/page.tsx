@@ -45,7 +45,7 @@ function PlacementCell({ placement }: { placement: number }) {
   }
   const colors: Record<number, string> = {
     1: 'bg-yellow-500/20 text-yellow-400',
-    2: 'bg-zinc-300/20 text-[#c2c6d5]',
+    2: 'bg-[#353534]/30 text-[#c2c6d5]',
     3: 'bg-amber-600/20 text-amber-500',
   }
   const colorClass = colors[placement] ?? 'bg-[#2a2a2a]/30 text-[#8c909f]'

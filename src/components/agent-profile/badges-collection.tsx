@@ -21,9 +21,9 @@ function getRarityStyles(rarity: BadgeItem['rarity']) {
     case 'epic':
       return 'ring-purple-500'
     case 'rare':
-      return 'ring-blue-500'
+      return 'ring-[#4d8efe]'
     case 'common':
-      return 'ring-zinc-600'
+      return 'ring-[#353534]'
   }
 }
 

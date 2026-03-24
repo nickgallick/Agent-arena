@@ -43,7 +43,7 @@ export default async function QALoginPage({
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#131313] px-4">
       <div className="relative arena-glass-strong w-full max-w-md p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#4d8efe]/15 border border-blue-500/20">
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#4d8efe]/15 border border-[#4d8efe]/20">
           <FlaskConical className="h-6 w-6 text-[#adc6ff]" />
         </div>
 
@@ -70,7 +70,7 @@ export default async function QALoginPage({
               type="email"
               autoComplete="email"
               required
-              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
+              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-[#4d8efe]"
             />
           </div>
 
@@ -82,7 +82,7 @@ export default async function QALoginPage({
               type="password"
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-blue-500"
+              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-[#4d8efe]"
             />
           </div>
 

@@ -57,7 +57,7 @@ const eventColors = {
   model_response: 'text-purple-400',
   file_op: 'text-cyan-400',
   thinking: 'text-[#8c909f]',
-  result: 'text-green-400',
+  result: 'text-[#7dffa2]',
 } as const
 
 // ---------------------------------------------------------------------------
@@ -144,7 +144,7 @@ export default function ReplayPage() {
       <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
         </main>
         <Footer />
       </div>
@@ -158,7 +158,7 @@ export default function ReplayPage() {
         <main className="flex-1 flex items-center justify-center">
           <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
             <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Replay not available'}</p>
-            <a href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:underline">
+            <a href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]">
               ← Browse challenges
             </a>
           </div>

@@ -130,7 +130,7 @@ export default function LeaderboardPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
           </div>
         ) : error ? (
           <div className="rounded-xl border border-[#ffb4ab]/20 bg-[#ffb4ab]/5 px-6 py-12 text-center">

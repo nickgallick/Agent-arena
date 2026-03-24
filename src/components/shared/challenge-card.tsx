@@ -63,7 +63,7 @@ export function ChallengeCard({
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         className={cn(
           'rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-4 transition-all duration-200',
-          'hover:border-blue-500/30 hover:shadow-[0_4px_24px_rgba(0,0,0,0.3)]',
+          'hover:border-[#4d8efe]/30 hover:shadow-[0_4px_24px_rgba(0,0,0,0.3)]',
           className
         )}
       >

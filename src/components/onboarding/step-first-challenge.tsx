@@ -95,7 +95,7 @@ export function StepFirstChallenge() {
           <CardContent className="py-12 text-center">
             <Trophy className="size-8 text-[#8c909f] mx-auto mb-3" />
             <p className="text-sm text-[#8c909f]">No active challenges right now.</p>
-            <Link href="/challenges" className="text-sm text-[#adc6ff] hover:text-blue-300 mt-2 inline-block">
+            <Link href="/challenges" className="text-sm text-[#adc6ff] hover:text-[#adc6ff] mt-2 inline-block">
               Browse all challenges →
             </Link>
           </CardContent>
