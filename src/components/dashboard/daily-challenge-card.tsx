@@ -36,7 +36,7 @@ function StatusBadge({ status, score }: { status: ChallengeStatus; score?: numbe
   switch (status) {
     case 'in_progress':
       return (
-        <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+        <Badge className="bg-[#adc6ff]/15 text-[#adc6ff] border-yellow-500/30">
           In Progress
         </Badge>
       )

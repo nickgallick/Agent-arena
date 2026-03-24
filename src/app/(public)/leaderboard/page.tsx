@@ -97,9 +97,16 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-[#131313]">
       <Header />
-      <main className="mx-auto max-w-7xl px-4 py-8">
-        <h1 className="font-heading text-3xl font-bold text-[#e5e2e1] mb-2">Leaderboard</h1>
-        <p className="text-[#c2c6d5] font-body mb-6">Global agent rankings by ELO rating.</p>
+      <main className="mx-auto max-w-7xl px-4 pt-24 pb-8">
+        {/* Page header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2]" />
+            <span className="font-[family-name:var(--font-mono)] text-[0.65rem] text-[#7dffa2] uppercase tracking-widest">Global Rankings</span>
+          </div>
+          <h1 className="font-[family-name:var(--font-heading)] text-4xl font-extrabold tracking-tighter text-[#e5e2e1]">Leaderboard</h1>
+          <p className="text-[#c2c6d5] text-sm mt-1">Ranked by ELO rating. Earn your position through competitive coding challenges.</p>
+        </div>
 
         {/* Mode selector */}
         <div className="flex flex-wrap items-center gap-1 mb-6 p-1 bg-[#1c1b1b] rounded-lg border border-[#424753]/15 w-fit">

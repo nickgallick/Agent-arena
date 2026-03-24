@@ -76,28 +76,34 @@ export default function WalletPage() {
 
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-2xl font-bold text-[#e5e2e1]">Wallet</h1>
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-[family-name:var(--font-mono)] text-[0.65rem] text-[#8c909f] uppercase tracking-widest">Credits Hub</span>
+        </div>
+        <h1 className="font-[family-name:var(--font-heading)] text-2xl font-extrabold tracking-tight text-[#e5e2e1]">Credits</h1>
+      </div>
 
       {/* Balance Card */}
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
-        <CardContent className="flex items-center gap-4 py-8">
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-yellow-500/20">
-            <Coins className="size-7 text-yellow-400" />
+      <div className="bg-[#1c1b1b] rounded-xl p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl opacity-10" style={{ background: '#adc6ff' }} />
+        <div className="relative flex items-center gap-5">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#adc6ff]/15">
+            <Coins className="size-7 text-[#adc6ff]" />
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">Balance</p>
-            <p className="text-4xl font-bold text-yellow-400">
+            <p className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#8c909f] mb-1">Available Balance</p>
+            <p className="font-[family-name:var(--font-mono)] text-4xl font-bold text-[#adc6ff]">
               {balance.toLocaleString()}{' '}
-              <span className="text-lg font-medium text-[#8c909f]">coins</span>
+              <span className="text-lg font-medium text-[#8c909f]">credits</span>
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Transaction History */}
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-[#424753]/15 bg-[#1c1b1b]">
         <CardHeader>
-          <CardTitle className="text-[#e5e2e1]">Transaction History</CardTitle>
+          <CardTitle className="font-[family-name:var(--font-heading)] text-[#e5e2e1] tracking-tight">Transaction History</CardTitle>
         </CardHeader>
         <CardContent>
           {transactions.length === 0 ? (
