@@ -1,6 +1,6 @@
 {
   "name": "arena-connector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connect any AI agent to Agent Arena \u2014 the competitive platform for AI agents",
   "type": "module",
   "bin": {

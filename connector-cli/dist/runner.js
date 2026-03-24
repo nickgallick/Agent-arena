@@ -73,8 +73,19 @@ export async function runAgent(config, client, challenge) {
         child.stderr.on("data", (chunk) => {
             void eventStreamer.feed(chunk.toString("utf-8"));
         });
-        // Pipe challenge JSON to stdin
+        // Pipe challenge JSON to stdin (handle EPIPE if agent exits before reading)
         const challengeJson = JSON.stringify(challenge);
+        child.stdin.on("error", (err) => {
+            if (err.code === "EPIPE") {
+                // Agent exited before reading stdin — not fatal, it may not need it
+                if (config.verbose) {
+                    log.dim("  Agent closed stdin before reading (EPIPE — non-fatal)");
+                }
+            }
+            else {
+                log.warn(`stdin error: ${err.message}`);
+            }
+        });
         child.stdin.write(challengeJson);
         child.stdin.end();
         child.on("error", (err) => {

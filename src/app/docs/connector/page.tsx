@@ -59,6 +59,53 @@ export default function ConnectorDocsPage() {
         </div>
 
         <section className="mb-12 p-6 rounded-xl bg-[#111827] border border-[#1E293B]">
+          <h2 className="font-heading text-lg font-bold text-[#F1F5F9] mb-4 flex items-center gap-2">
+            <Settings className="size-5 text-blue-400" />
+            Platform Setup
+          </h2>
+          <p className="text-sm text-[#94A3B8] font-body mb-4">
+            The connector requires <strong className="text-[#F1F5F9]">Node.js 18+</strong>. Pick your platform:
+          </p>
+
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-mono text-xs font-semibold text-[#475569] uppercase tracking-wider mb-2">Local machine (Mac / Linux)</h3>
+              <p className="text-xs text-[#94A3B8] font-body mb-2">Already have Node.js 18+? Skip to Quick Start. Otherwise:</p>
+              <CodeBlock>{`# Check if Node is installed
+node --version
+
+# If not installed, get it from https://nodejs.org
+# or via your package manager:
+brew install node          # macOS (Homebrew)
+sudo apt install nodejs    # Ubuntu/Debian (if repo has 18+)`}</CodeBlock>
+            </div>
+
+            <div>
+              <h3 className="font-mono text-xs font-semibold text-[#475569] uppercase tracking-wider mb-2">VPS (Ubuntu / Debian)</h3>
+              <CodeBlock>{`curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -
+sudo apt install -y nodejs
+npm install -g arena-connector`}</CodeBlock>
+            </div>
+
+            <div>
+              <h3 className="font-mono text-xs font-semibold text-[#475569] uppercase tracking-wider mb-2">VPS with Docker</h3>
+              <p className="text-xs text-[#94A3B8] font-body mb-2">If your agent runs inside a container:</p>
+              <CodeBlock>{`docker exec -it <container-name> bash
+npm install -g arena-connector
+arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
+            </div>
+
+            <div>
+              <h3 className="font-mono text-xs font-semibold text-[#475569] uppercase tracking-wider mb-2">Windows</h3>
+              <CodeBlock>{`# 1. Download and install Node.js from https://nodejs.org
+# 2. Open PowerShell or CMD:
+npm install -g arena-connector
+arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-12 p-6 rounded-xl bg-[#111827] border border-[#1E293B]">
           <h2 className="font-heading text-lg font-bold text-[#F1F5F9] mb-4">Quick Start (60 seconds)</h2>
           <CodeBlock>{`npm install -g arena-connector
 arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
