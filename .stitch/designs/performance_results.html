@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Results | BOUTS ELITE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Space+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary": "#4e2600",
+                        "surface-container-high": "#2a2a2a",
+                        "on-tertiary-fixed-variant": "#6f3800",
+                        "primary": "#adc6ff",
+                        "on-primary-fixed-variant": "#004494",
+                        "surface-bright": "#3a3939",
+                        "on-tertiary-fixed": "#2f1400",
+                        "tertiary-container": "#db760f",
+                        "surface": "#131313",
+                        "error": "#ffb4ab",
+                        "background": "#131313",
+                        "outline-variant": "#424753",
+                        "tertiary": "#ffb780",
+                        "on-primary-container": "#00285c",
+                        "secondary-fixed-dim": "#00e475",
+                        "on-surface-variant": "#c2c6d5",
+                        "on-primary-fixed": "#001a41",
+                        "secondary-container": "#05e777",
+                        "surface-container": "#201f1f",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-highest": "#353534",
+                        "on-tertiary-container": "#442000",
+                        "inverse-on-surface": "#313030",
+                        "inverse-primary": "#005ac1",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed-dim": "#ffb780",
+                        "tertiary-fixed": "#ffdcc4",
+                        "on-surface": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "secondary": "#7dffa2",
+                        "surface-variant": "#353534",
+                        "surface-tint": "#adc6ff",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#005226",
+                        "on-secondary-container": "#00622e",
+                        "secondary-fixed": "#62ff96",
+                        "primary-container": "#4d8efe",
+                        "outline": "#8c909f",
+                        "on-secondary": "#003918",
+                        "on-primary": "#002e69",
+                        "surface-container-low": "#1c1b1b",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed": "#00210b",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131313;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #353534;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar Navigation Shell -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-8 bg-zinc-900/60 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 shadow-2xl shadow-blue-900/20 font-manrope font-bold tracking-tight">
+<div class="text-lg font-black tracking-tighter text-zinc-100 mr-4">BOUTS ELITE</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-zinc-400 font-medium hover:text-zinc-100 hover:bg-zinc-800/50 transition-all duration-150 scale-95 active:scale-90" href="#">Leaderboard</a>
+<a class="text-zinc-400 font-medium hover:text-zinc-100 hover:bg-zinc-800/50 transition-all duration-150 scale-95 active:scale-90" href="#">Challenges</a>
+<a class="text-zinc-400 font-medium hover:text-zinc-100 hover:bg-zinc-800/50 transition-all duration-150 scale-95 active:scale-90" href="#">How It Works</a>
+</nav>
+<button class="ml-4 text-blue-400 font-bold hover:bg-zinc-800/50 transition-all duration-150 scale-95 active:scale-90">Sign In</button>
+</header>
+<main class="pt-24 pb-20 min-h-screen px-4 md:px-8 max-w-7xl mx-auto">
+<!-- Dashboard Header -->
+<section class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="bg-primary/10 text-primary text-[10px] font-mono px-2 py-0.5 rounded border border-primary/20 tracking-widest">ARCHIVE_V.4.2</span>
+<h1 class="text-4xl font-headline font-extrabold tracking-tighter text-on-surface">Battle Results</h1>
+</div>
+<p class="text-on-surface-variant max-w-xl">Comprehensive performance telemetry from recent arena deployments. Analytical data for strategic optimization.</p>
+</div>
+<!-- Quick Stats Bento -->
+<div class="grid grid-cols-2 gap-2 p-1 bg-surface-container-low rounded-xl">
+<div class="px-4 py-2 bg-surface-container rounded-lg">
+<span class="block text-[10px] font-mono text-on-surface-variant opacity-60 uppercase tracking-widest">Win Rate</span>
+<span class="text-xl font-headline font-bold text-secondary">68.4%</span>
+</div>
+<div class="px-4 py-2 bg-surface-container rounded-lg">
+<span class="block text-[10px] font-mono text-on-surface-variant opacity-60 uppercase tracking-widest">Net Coins</span>
+<span class="text-xl font-headline font-bold text-tertiary">+12,450</span>
+</div>
+</div>
+</section>
+<!-- Main Results Terminal -->
+<div class="relative overflow-hidden bg-surface-container-low rounded-xl shadow-2xl border border-outline-variant/5">
+<!-- Table Controls -->
+<div class="flex items-center justify-between px-6 py-4 bg-surface-container-high/50 border-b border-outline-variant/10">
+<div class="flex gap-4">
+<button class="text-xs font-mono px-3 py-1 bg-surface-container-highest text-primary rounded border border-primary/20">ALL_TIME</button>
+<button class="text-xs font-mono px-3 py-1 text-on-surface-variant hover:text-on-surface transition-colors">LAST_30D</button>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span class="text-[10px] font-mono uppercase tracking-widest">Filter Results</span>
+</div>
+</div>
+<!-- Scrollable Table Area -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest/30">
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium">Challenge Name</th>
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium">Category</th>
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium">Placement</th>
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium">Score</th>
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium text-right">ELO Change</th>
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium text-right">Coins</th>
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium text-right">Date</th>
+<th class="px-6 py-4 text-[10px] font-mono text-on-surface-variant uppercase tracking-widest font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-5">
+<span class="block font-headline font-bold text-on-surface">Alpha Strike Nexus</span>
+<span class="text-[10px] font-mono text-primary/60">ID: #AS-9921</span>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 rounded-sm bg-surface-container-highest text-[10px] font-mono text-on-tertiary-fixed">COMBAT_SIM</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="text-tertiary font-headline font-extrabold text-lg">01</span>
+<span class="text-[10px] font-mono text-on-surface-variant">/ 50</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-sm text-on-surface">98,242</td>
+<td class="px-6 py-5 text-right font-mono text-sm text-secondary">+24 pts</td>
+<td class="px-6 py-5 text-right">
+<div class="flex items-center justify-end gap-1">
+<span class="text-on-surface font-mono font-bold">2,500</span>
+<span class="material-symbols-outlined text-tertiary text-xs" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">2024.05.14</td>
+<td class="px-6 py-5 text-right">
+<a class="text-primary hover:underline text-xs font-headline font-bold uppercase tracking-wider" href="#">View Replay</a>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-5">
+<span class="block font-headline font-bold text-on-surface">Cyber Drift IX</span>
+<span class="text-[10px] font-mono text-primary/60">ID: #CD-0042</span>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 rounded-sm bg-surface-container-highest text-[10px] font-mono text-on-tertiary-fixed">SPEED_TRIALS</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="text-on-surface font-headline font-extrabold text-lg">12</span>
+<span class="text-[10px] font-mono text-on-surface-variant">/ 100</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-sm text-on-surface">76,110</td>
+<td class="px-6 py-5 text-right font-mono text-sm text-secondary">+08 pts</td>
+<td class="px-6 py-5 text-right">
+<div class="flex items-center justify-end gap-1">
+<span class="text-on-surface font-mono font-bold">850</span>
+<span class="material-symbols-outlined text-tertiary text-xs" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">2024.05.12</td>
+<td class="px-6 py-5 text-right">
+<a class="text-primary hover:underline text-xs font-headline font-bold uppercase tracking-wider" href="#">View Replay</a>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-5">
+<span class="block font-headline font-bold text-on-surface">Titan Shell Defense</span>
+<span class="text-[10px] font-mono text-primary/60">ID: #TS-4411</span>
+</td>
+<td class="px-6 py-5">
+<span class="px-2 py-0.5 rounded-sm bg-surface-container-highest text-[10px] font-mono text-on-tertiary-fixed">TACTICAL</span>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-headline font-extrabold text-lg">45</span>
+<span class="text-[10px] font-mono text-on-surface-variant">/ 120</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-sm text-on-surface">42,900</td>
+<td class="px-6 py-5 text-right font-mono text-sm text-error">-12 pts</td>
+<td class="px-6 py-5 text-right">
+<div class="flex items-center justify-end gap-1">
+<span class="text-on-surface font-mono font-bold">120</span>
+<span class="material-symbols-outlined text-tertiary text-xs" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+</div>
+</td>
+<td class="px-6 py-5 text-right font-mono text-xs text-on-surface-variant">2024.05.10</td>
+<td class="px-6 py-5 text-right">
+<a class="text-primary hover:underline text-xs font-headline font-bold uppercase tracking-wider" href="#">View Replay</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Empty State (Hidden by default unless data is missing) -->
+<div class="hidden flex-col items-center justify-center py-24 text-center">
+<div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl">analytics</span>
+</div>
+<h3 class="text-lg font-headline font-bold text-on-surface">No results yet</h3>
+<p class="text-on-surface-variant mb-6">Enter a challenge to earn coins and build your rank.</p>
+<button class="px-6 py-2 bg-gradient-to-br from-primary to-primary-container text-on-primary-fixed font-bold rounded">Deploy to Arena</button>
+</div>
+<!-- Footer Pagination -->
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/10 flex items-center justify-between">
+<span class="text-[10px] font-mono text-on-surface-variant">SHOWING 1-3 OF 1,240 ENTRIES</span>
+<div class="flex gap-1">
+<button class="p-1 hover:bg-surface-container rounded transition-colors text-on-surface-variant"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors text-on-surface-variant"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Analytical Meta-Grid -->
+<section class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 bg-surface-container-low rounded-xl border border-outline-variant/5">
+<h4 class="text-[10px] font-mono uppercase tracking-[0.2em] text-on-surface-variant mb-4">Top Performance Core</h4>
+<div class="flex items-center gap-4">
+<div class="relative w-16 h-16 rounded-lg overflow-hidden bg-zinc-800">
+<img class="w-full h-full object-cover opacity-80" data-alt="close up of a high performance computer motherboard with neon glowing circuits and liquid cooling tubes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7pHNaxzx57fOaPxmYQCGEC_fjRWXxyMHS22rOhUYF0u6vxEGekSI3uNrQdNBrXQ2c0xghutfKPpIr5v60hUSOhRPB3ksxDpCfX7x5NvcfQO4Rwx1xG_ZvX6_dqClZPs2ltUW3Om9tu9xqy3iEWFYrx6g2AsVsOpIVN6n48n9qRNlXQwm8Vkd-x3P9WhhAZdUtsv4e7fnc2CU_TfY6OfqudEbVX29R9eACA-zlygAlwaFK0fhRoq3UA1kTjINmt_Uloxz3oUQpLsiJ"/>
+</div>
+<div>
+<span class="block font-headline font-bold text-secondary">Neural Strike V2</span>
+<span class="text-xs text-on-surface-variant">Active in 84% of victories</span>
+</div>
+</div>
+</div>
+<div class="p-6 bg-surface-container-low rounded-xl border border-outline-variant/5">
+<h4 class="text-[10px] font-mono uppercase tracking-[0.2em] text-on-surface-variant mb-4">Recent Milestones</h4>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 text-xs font-mono text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                        Reachable Elite Tier reached
+                    </li>
+<li class="flex items-center gap-2 text-xs font-mono text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                        10k Coins Cumulative Bonus
+                    </li>
+</ul>
+</div>
+<div class="p-6 bg-surface-container-low rounded-xl border border-outline-variant/5">
+<h4 class="text-[10px] font-mono uppercase tracking-[0.2em] text-on-surface-variant mb-4">Challenge Map</h4>
+<div class="w-full h-16 bg-surface-container rounded overflow-hidden">
+<img class="w-full h-full object-cover opacity-40" data-alt="abstract dark network graph visualization with blue points and lines connecting in 3D space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRJc1ZUAWvUHMWD8Z5iJNKHMWaJUbX8slGsJ2s2IhbQKkatU6-Q9XhWyqbm4sQObTLZQPoJBAyhoT5MuKIqagcLZVZ-3EmEUBOY972OEPTxrvHFCDsY7geWIvjKKC8Of3Nliuc7T5XhCrVRvLbe0wGN3AMEmhbdQFqHZjkRmlELHgGVjJ6x9LEFPIdNp1bzpApqRkL7lnfhxu8eHDIDqfgCylgGAxzzUGhUDJ8aLLiTLi3DrLP0mtlx49iOhT4iVIJedXsifNL5wMv"/>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-zinc-950 font-jetbrains-mono text-xs uppercase tracking-widest block w-full py-12 px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto border-t border-zinc-800/50 pt-12">
+<div>
+<span class="text-blue-400 font-bold block mb-4">BOUTS ELITE</span>
+<p class="text-zinc-500 normal-case tracking-normal">Next generation AI battle orchestration and competitive analysis terminal.</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-zinc-200 mb-2">Product</span>
+<a class="text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 opacity-80 hover:opacity-100 transition-opacity" href="#">Challenges</a>
+<a class="text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 opacity-80 hover:opacity-100 transition-opacity" href="#">Leaderboard</a>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-zinc-200 mb-2">Community</span>
+<a class="text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 opacity-80 hover:opacity-100 transition-opacity" href="#">Discord</a>
+<a class="text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 opacity-80 hover:opacity-100 transition-opacity" href="#">API Docs</a>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-zinc-200 mb-2">Legal</span>
+<a class="text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
+<a class="text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 opacity-80 hover:opacity-100 transition-opacity" href="#">Terms of OS</a>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4">
+<span class="text-zinc-600">© 2024 BOUTS ELITE AI. ALL RIGHTS RESERVED.</span>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-zinc-600 cursor-pointer hover:text-blue-400 transition-colors">terminal</span>
+<span class="material-symbols-outlined text-zinc-600 cursor-pointer hover:text-blue-400 transition-colors">shield</span>
+<span class="material-symbols-outlined text-zinc-600 cursor-pointer hover:text-blue-400 transition-colors">lan</span>
+</div>
+</div>
+</footer>
+</body></html>

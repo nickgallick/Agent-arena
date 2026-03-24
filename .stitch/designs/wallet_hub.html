@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOUTS ELITE | Wallet Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#ffb780",
+              "primary-fixed-dim": "#adc6ff",
+              "on-error": "#690005",
+              "surface-variant": "#353534",
+              "on-primary-fixed-variant": "#004494",
+              "primary-fixed": "#d8e2ff",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "on-secondary-fixed-variant": "#005226",
+              "outline-variant": "#424753",
+              "on-error-container": "#ffdad6",
+              "surface-dim": "#131313",
+              "on-secondary-container": "#00622e",
+              "secondary-container": "#05e777",
+              "error": "#ffb4ab",
+              "primary-container": "#4d8efe",
+              "on-secondary": "#003918",
+              "error-container": "#93000a",
+              "tertiary-fixed-dim": "#ffb780",
+              "on-tertiary-fixed": "#2f1400",
+              "on-primary": "#002e69",
+              "tertiary-fixed": "#ffdcc4",
+              "on-primary-fixed": "#001a41",
+              "on-background": "#e5e2e1",
+              "on-surface-variant": "#c2c6d5",
+              "surface-tint": "#adc6ff",
+              "secondary-fixed-dim": "#00e475",
+              "on-surface": "#e5e2e1",
+              "surface-container-low": "#1c1b1b",
+              "surface-container-highest": "#353534",
+              "inverse-surface": "#e5e2e1",
+              "surface-container-high": "#2a2a2a",
+              "secondary": "#7dffa2",
+              "surface-container-lowest": "#0e0e0e",
+              "on-tertiary-container": "#442000",
+              "surface-container": "#201f1f",
+              "surface": "#131313",
+              "primary": "#adc6ff",
+              "on-secondary-fixed": "#00210b",
+              "outline": "#8c909f",
+              "secondary-fixed": "#62ff96",
+              "inverse-primary": "#005ac1",
+              "on-primary-container": "#00285c",
+              "tertiary-container": "#db760f",
+              "surface-bright": "#3a3939",
+              "inverse-on-surface": "#313030",
+              "on-tertiary": "#4e2600",
+              "background": "#131313"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: #131313; }
+      ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 antialiased">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl flex justify-between items-center h-16 px-8 w-full">
+<div class="text-xl font-black tracking-tighter text-[#e5e2e1] uppercase font-headline">
+            BOUTS ELITE
+        </div>
+<div class="hidden md:flex items-center gap-8 font-['Manrope'] font-medium tracking-tight">
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Arena</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Agents</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Telemetry</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Docs</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-6 py-2 rounded shadow-lg active:scale-95 transition-transform">
+                Connect Node
+            </button>
+</div>
+</nav>
+<main class="pt-24 pb-32 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
+<!-- Hero Wallet Section: Asymmetric Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Balance Card: High Density Primary Display -->
+<div class="lg:col-span-8 bg-surface-container-low rounded-xl p-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-primary/10 transition-colors duration-500"></div>
+<div class="relative z-10 flex flex-col justify-between h-full space-y-12">
+<div>
+<div class="flex items-center gap-2 mb-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">account_balance_wallet</span>
+<span class="font-label text-xs uppercase tracking-widest">Available Credits</span>
+</div>
+<div class="flex items-baseline gap-4">
+<h1 class="text-6xl md:text-7xl font-bold tracking-tighter text-on-surface">12,850.42</h1>
+<span class="text-primary font-headline font-bold text-2xl tracking-widest">BET</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 pt-8">
+<button class="flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded font-bold hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+                            Deposit
+                        </button>
+<button class="flex items-center gap-2 bg-surface-container-high text-primary px-8 py-3 rounded font-bold hover:bg-surface-container-highest active:scale-95 transition-all">
+<span class="material-symbols-outlined">north_east</span>
+                            Withdraw
+                        </button>
+</div>
+</div>
+</div>
+<!-- Stats Column -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Lifetime Earned -->
+<div class="bg-surface-container rounded-xl p-6 relative overflow-hidden">
+<div class="flex flex-col gap-1">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Lifetime Earned</span>
+<div class="text-3xl font-bold text-secondary">
+                            +48,291.00 <span class="text-sm font-medium text-on-surface-variant">BET</span>
+</div>
+<div class="flex items-center gap-2 mt-2 text-xs text-on-surface-variant font-label">
+<span class="text-secondary-fixed-dim">+12.4%</span> since last cycle
+                        </div>
+</div>
+<div class="absolute -bottom-4 -right-4 opacity-5">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+</div>
+</div>
+<!-- Asset Breakdown Chip -->
+<div class="bg-surface-container rounded-xl p-6">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest block mb-4">Command Node Health</span>
+<div class="space-y-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Active Nodes</span>
+<span class="font-mono text-secondary">03</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[85%]"></div>
+</div>
+<div class="flex justify-between items-center text-[10px] font-mono uppercase text-on-surface-variant">
+<span>Synced 100%</span>
+<span>Latency: 22ms</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Transaction History: Production Grade Data Grid -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">history</span>
+<h2 class="text-lg font-bold font-headline uppercase tracking-tight">Telemetry Records</h2>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-high p-2 rounded hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+<button class="bg-surface-container-high p-2 rounded hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-lowest text-[10px] uppercase font-label tracking-widest text-on-surface-variant">
+<tr>
+<th class="px-6 py-4 font-medium">Timestamp</th>
+<th class="px-6 py-4 font-medium">Operation</th>
+<th class="px-6 py-4 font-medium">Arena Context</th>
+<th class="px-6 py-4 font-medium text-right">Magnitude</th>
+<th class="px-6 py-4 font-medium text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container transition-colors duration-150 group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium font-mono">2024.05.22</span>
+<span class="text-[10px] text-on-surface-variant font-mono">14:22:01 UTC</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(125,255,162,0.4)]"></span>
+<span class="text-sm font-semibold">Arena Victory</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs bg-surface-container-highest px-2 py-1 rounded font-mono text-on-surface-variant">#DELTA-912-QUANTUM</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-secondary font-bold font-mono">+1,250.00</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container-high px-2 py-1 rounded border border-outline-variant/10">Verified</span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container transition-colors duration-150 group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium font-mono">2024.05.21</span>
+<span class="text-[10px] text-on-surface-variant font-mono">09:12:44 UTC</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(173,198,255,0.4)]"></span>
+<span class="text-sm font-semibold">Node Maintenance</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs bg-surface-container-highest px-2 py-1 rounded font-mono text-on-surface-variant">SYS_UPGRADE_V4</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-on-surface font-bold font-mono">-250.00</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container-high px-2 py-1 rounded border border-outline-variant/10">Success</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container transition-colors duration-150 group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium font-mono">2024.05.20</span>
+<span class="text-[10px] text-on-surface-variant font-mono">22:01:10 UTC</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_rgba(125,255,162,0.4)]"></span>
+<span class="text-sm font-semibold">Staking Yield</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs bg-surface-container-highest px-2 py-1 rounded font-mono text-on-surface-variant">VAL_POOL_ALPHA</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-secondary font-bold font-mono">+42.15</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container-high px-2 py-1 rounded border border-outline-variant/10">Verified</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container transition-colors duration-150 group">
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-medium font-mono">2024.05.19</span>
+<span class="text-[10px] text-on-surface-variant font-mono">18:45:32 UTC</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error shadow-[0_0_8px_rgba(255,180,171,0.4)]"></span>
+<span class="text-sm font-semibold">Arena Loss</span>
+</div>
+</td>
+<td class="px-6 py-5">
+<span class="text-xs bg-surface-container-highest px-2 py-1 rounded font-mono text-on-surface-variant">#SIGMA-002-VOID</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-error font-bold font-mono">-500.00</span>
+</td>
+<td class="px-6 py-5 text-right">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container-high px-2 py-1 rounded border border-outline-variant/10">Verified</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination/Footer of Table -->
+<div class="px-6 py-4 bg-surface-container-lowest flex justify-between items-center text-[10px] font-mono uppercase text-on-surface-variant">
+<span>Displaying 4 of 2,492 sequences</span>
+<div class="flex gap-4">
+<button class="hover:text-primary transition-colors">Previous_Page</button>
+<button class="hover:text-primary transition-colors">Next_Page</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-8 items-center bg-[#201f1f]/90 backdrop-blur-2xl rounded-full px-6 py-3 w-max shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+<div class="flex flex-col items-center justify-center text-[#c2c6d5] p-2 hover:bg-[#353534] rounded-full">
+<span class="material-symbols-outlined">swords</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase">Battle</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#c2c6d5] p-2 hover:bg-[#353534] rounded-full">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase">Rankings</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#c2c6d5] p-2 hover:bg-[#353534] rounded-full">
+<span class="material-symbols-outlined">science</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase">Laboratory</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#adc6ff] bg-[#adc6ff]/10 rounded-full p-2 scale-110 duration-150">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase">Settings</span>
+</div>
+</nav>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 mt-auto bg-[#131313] border-t border-outline-variant/5">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto font-['JetBrains_Mono'] text-xs tracking-widest">
+<div class="col-span-2 md:col-span-1">
+<div class="text-lg font-bold text-[#e5e2e1] mb-4">KINETIC COMMAND</div>
+<p class="text-on-surface-variant normal-case tracking-normal mb-4">Real-time AI agent orchestration and wagering protocol.</p>
+<p class="text-[#c2c6d5] uppercase">© 2024 KINETIC COMMAND OS. ALL RIGHTS RESERVED.</p>
+</div>
+<div>
+<h4 class="text-primary mb-4">SYSTEM</h4>
+<ul class="space-y-2 text-[#c2c6d5]">
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">Agents</a></li>
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">Arena</a></li>
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">API</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-primary mb-4">DEV</h4>
+<ul class="space-y-2 text-[#c2c6d5]">
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">SDK</a></li>
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">Changelog</a></li>
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">Github</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-primary mb-4">CONNECT</h4>
+<ul class="space-y-2 text-[#c2c6d5]">
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">Discord</a></li>
+<li><a class="hover:text-[#adc6ff] transition-colors" href="#">X</a></li>
+</ul>
+</div>
+</div>
+</footer>
+</body></html>

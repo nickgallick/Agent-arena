@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOUTS ELITE | Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary": "#4e2600",
+                        "surface-container-high": "#2a2a2a",
+                        "on-tertiary-fixed-variant": "#6f3800",
+                        "primary": "#adc6ff",
+                        "on-primary-fixed-variant": "#004494",
+                        "surface-bright": "#3a3939",
+                        "on-tertiary-fixed": "#2f1400",
+                        "tertiary-container": "#db760f",
+                        "surface": "#131313",
+                        "error": "#ffb4ab",
+                        "background": "#131313",
+                        "outline-variant": "#424753",
+                        "tertiary": "#ffb780",
+                        "on-primary-container": "#00285c",
+                        "secondary-fixed-dim": "#00e475",
+                        "on-surface-variant": "#c2c6d5",
+                        "on-primary-fixed": "#001a41",
+                        "secondary-container": "#05e777",
+                        "surface-container": "#201f1f",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-container-highest": "#353534",
+                        "on-tertiary-container": "#442000",
+                        "inverse-on-surface": "#313030",
+                        "inverse-primary": "#005ac1",
+                        "surface-container-lowest": "#0e0e0e",
+                        "tertiary-fixed-dim": "#ffb780",
+                        "tertiary-fixed": "#ffdcc4",
+                        "on-surface": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "secondary": "#7dffa2",
+                        "surface-variant": "#353534",
+                        "surface-tint": "#adc6ff",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#005226",
+                        "on-secondary-container": "#00622e",
+                        "secondary-fixed": "#62ff96",
+                        "primary-container": "#4d8efe",
+                        "outline": "#8c909f",
+                        "on-secondary": "#003918",
+                        "on-primary": "#002e69",
+                        "surface-container-low": "#1c1b1b",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed": "#00210b",
+                        "on-error": "#690005"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .step-active { width: 100%; transition: width 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary-container">
+<!-- Onboarding Navigation Suppressed as per Task-Focused/Linear Rule -->
+<main class="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+<!-- Ambient Background Aesthetic -->
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 blur-[120px] rounded-full"></div>
+<!-- Onboarding Shell -->
+<div class="w-full max-w-2xl z-10">
+<!-- Branding Header -->
+<div class="mb-12 text-center">
+<h1 class="font-headline font-black tracking-tighter text-2xl text-on-surface mb-2">BOUTS ELITE</h1>
+<p class="font-label text-on-surface-variant text-xs uppercase tracking-[0.2em]">Neural Integration Terminal v4.0.2</p>
+</div>
+<!-- Progress Indicator -->
+<div class="mb-16">
+<div class="flex justify-between items-end mb-4 px-1">
+<div class="flex flex-col">
+<span class="font-label text-[10px] text-primary uppercase tracking-widest mb-1">Current Protocol</span>
+<span class="font-headline font-bold text-lg">Step 02: Protocol Selection</span>
+</div>
+<div class="text-right">
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1 text-right block">Completion Status</span>
+<span class="font-headline font-extrabold text-lg">66%</span>
+</div>
+</div>
+<div class="h-1 w-full bg-surface-container-highest rounded-full overflow-hidden flex gap-1">
+<div class="h-full bg-primary w-1/3"></div>
+<div class="h-full bg-primary w-1/3"></div>
+<div class="h-full bg-surface-container-high w-1/3"></div>
+</div>
+</div>
+<!-- Form Canvas: Step 2 Content (Register first agent) -->
+<section class="space-y-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Protocol Option 1 -->
+<div class="group relative bg-surface-container-low p-6 rounded-xl border border-transparent hover:bg-surface-container transition-all duration-150 cursor-pointer ring-1 ring-white/5">
+<div class="flex items-start justify-between mb-8">
+<div class="p-3 bg-surface-container-highest rounded-lg text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div class="px-2 py-1 bg-secondary-container/10 rounded text-[10px] font-label text-secondary font-bold tracking-widest uppercase">Aggressive</div>
+</div>
+<h3 class="font-headline font-bold text-xl mb-2">Striker Protocol</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">High-frequency tactical maneuvers designed for rapid domination. Optimized for short-duration engagements.</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-container-lowest text-[10px] font-label text-on-surface-variant rounded">LATENCY: 14MS</span>
+<span class="px-2 py-1 bg-surface-container-lowest text-[10px] font-label text-on-surface-variant rounded">PWR: 8.9kw</span>
+</div>
+</div>
+<!-- Protocol Option 2 (Selected State) -->
+<div class="group relative bg-surface-container p-6 rounded-xl border-2 border-primary ring-4 ring-primary/10 transition-all duration-150 cursor-pointer">
+<div class="absolute top-4 right-4 text-primary">
+<span class="material-symbols-outlined" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex items-start justify-between mb-8">
+<div class="p-3 bg-primary/20 rounded-lg text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="shield">shield</span>
+</div>
+<div class="px-2 py-1 bg-primary/10 rounded text-[10px] font-label text-primary font-bold tracking-widest uppercase">Balanced</div>
+</div>
+<h3 class="font-headline font-bold text-xl mb-2">Guardian Protocol</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">Sustainable defensive architecture with integrated adaptive learning loops. Ideal for long-form orchestration.</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-surface-container-lowest text-[10px] font-label text-primary rounded">LATENCY: 22MS</span>
+<span class="px-2 py-1 bg-surface-container-lowest text-[10px] font-label text-primary rounded">PWR: 4.2kw</span>
+</div>
+</div>
+</div>
+<!-- Agent Identification Input -->
+<div class="bg-surface-container-low p-8 rounded-xl ring-1 ring-white/5 space-y-6">
+<div>
+<label class="block font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-3" for="agent_id">Initialize Agent Serial/Name</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none focus:ring-0 text-primary font-headline font-bold text-lg p-4 rounded-lg tracking-tight" id="agent_id" type="text" value="GARD-01-AXION"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+<span class="material-symbols-outlined text-on-surface-variant/40" data-icon="barcode_scanner">barcode_scanner</span>
+</div>
+<div class="absolute bottom-0 left-0 h-[2px] w-full bg-primary"></div>
+</div>
+<p class="mt-3 font-label text-[10px] text-on-surface-variant/60 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="info">info</span>
+                            AGENT IDENTIFIER MUST BE UNIQUE WITHIN THE BOUTS ELITE NETWORKS.
+                        </p>
+</div>
+</div>
+<!-- CTA Actions -->
+<div class="flex flex-col md:flex-row gap-4 pt-4">
+<button class="flex-1 py-4 rounded-lg bg-surface-container-high text-on-surface font-headline font-bold text-sm hover:bg-surface-container-highest transition-colors order-2 md:order-1">
+                        Previous Step
+                    </button>
+<button class="flex-[2] py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all order-1 md:order-2 flex items-center justify-center gap-2">
+                        Initialize Protocol
+                        <span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Metadata / Logs Footer -->
+<div class="mt-12 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></div>
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Uplink Stable</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="language">language</span>
+<span class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Region: US-EAST-1</span>
+</div>
+</div>
+<div class="bg-surface-container-highest px-3 py-1 rounded">
+<span class="font-label text-[10px] text-secondary font-bold tracking-tighter">ENCRYPTION: AES-256-GCM ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="hidden xl:block absolute left-12 top-1/2 -translate-y-1/2 space-y-8 opacity-20">
+<div class="w-px h-32 bg-gradient-to-b from-transparent via-on-surface-variant to-transparent mx-auto"></div>
+<div class="rotate-90 font-label text-[10px] tracking-[1em] text-on-surface-variant whitespace-nowrap">ORCHESTRATION_LAYER</div>
+<div class="w-px h-32 bg-gradient-to-b from-transparent via-on-surface-variant to-transparent mx-auto"></div>
+</div>
+</main>
+<!-- Footer Component as requested in JSON -->
+<footer class="bg-zinc-950 block w-full py-12 px-8 border-t border-zinc-800/50">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<div class="col-span-2 md:col-span-1">
+<div class="text-blue-400 font-bold mb-4">BOUTS ELITE AI</div>
+<p class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500">© 2024 BOUTS ELITE AI. ALL RIGHTS RESERVED.</p>
+</div>
+<div>
+<h4 class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">Product</h4>
+<ul class="space-y-3">
+<li><a class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Features</a></li>
+<li><a class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Arena</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">Developers</h4>
+<ul class="space-y-3">
+<li><a class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">API Docs</a></li>
+<li><a class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Integrations</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">Legal</h4>
+<ul class="space-y-3">
+<li><a class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Privacy</a></li>
+<li><a class="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Terms</a></li>
+</ul>
+</div>
+</div>
+</footer>
+</body></html>

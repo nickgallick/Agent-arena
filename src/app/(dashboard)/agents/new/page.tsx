@@ -16,6 +16,7 @@ import {
   Cpu,
   ShieldCheck,
   Activity,
+  Gauge,
 } from 'lucide-react'
 import { useUser } from '@/lib/hooks/use-user'
 import {
@@ -29,6 +30,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { Footer } from '@/components/layout/footer'
 
 const MODEL_OPTIONS = [
   { label: 'Claude Opus 4', identifier: 'claude-opus-4', provider: 'anthropic' },
@@ -44,7 +46,7 @@ const MODEL_OPTIONS = [
 ] as const
 
 const WEIGHT_CLASSES = [
-  { id: 'lightweight', label: 'Lightweight', sub: 'Agility Focused', icon: Zap },
+  { id: 'lightweight', label: 'Lightweight', sub: 'Agility Focused', icon: Gauge },
   { id: 'contender', label: 'Contender', sub: 'Balanced Spec', icon: Scale },
   { id: 'heavyweight', label: 'Heavyweight', sub: 'High Endurance', icon: Shield },
   { id: 'frontier', label: 'Frontier', sub: 'Experimental', icon: Rocket },
@@ -132,24 +134,24 @@ export default function NewAgentPage() {
   if (userLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-[#8c909f]" />
+        <Loader2 className="size-8 animate-spin text-outline" />
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-[#131313]">
+    <div className="min-h-screen flex flex-col items-center bg-surface">
       {/* Header */}
       <header className="w-full max-w-7xl px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tighter text-[#e5e2e1]">Bouts</span>
-          <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#adc6ff] px-2 py-0.5 bg-[#adc6ff]/10 rounded">
+          <span className="text-xl font-bold tracking-tighter text-on-surface">Bouts</span>
+          <span className="font-label text-[10px] uppercase tracking-widest text-primary px-2 py-0.5 bg-primary/10 rounded">
             Command_v2.4
           </span>
         </div>
         <a
           href="/agents"
-          className="flex items-center gap-2 text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors group"
+          className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors group"
         >
           <X className="size-3.5" />
           <span className="font-medium text-sm">Cancel Registration</span>
@@ -160,20 +162,20 @@ export default function NewAgentPage() {
       <main className="w-full max-w-2xl px-6 py-12 flex-grow">
         {/* Page Title */}
         <div className="mb-12">
-          <h1 className="font-[family-name:var(--font-heading)] text-3xl font-extrabold tracking-tight mb-4 text-[#e5e2e1]">
+          <h1 className="font-headline text-3xl font-extrabold tracking-tight mb-4 text-on-surface">
             Initialize New Agent
           </h1>
-          <p className="text-[#c2c6d5] max-w-lg">
+          <p className="text-on-surface-variant max-w-lg">
             Provision a new autonomous combat unit for the Kinetic Arena. Ensure all parameters align with deployment protocols.
           </p>
         </div>
 
         {/* Form Section */}
         <form onSubmit={handleRegister}>
-          <section className="bg-[#1c1b1b] rounded-xl p-8 space-y-10">
+          <section className="bg-surface-container-low rounded-xl p-8 space-y-10">
             {/* Agent Name */}
             <div className="space-y-2">
-              <label className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
+              <label className="font-label text-[10px] uppercase tracking-wider text-primary ml-1">
                 Agent Name
               </label>
               <div className="relative group">
@@ -183,20 +185,20 @@ export default function NewAgentPage() {
                   onChange={(e) => setRegName(e.target.value)}
                   placeholder="e.g. VECTOR-9"
                   maxLength={32}
-                  className="w-full bg-[#0e0e0e] border-none text-[#e5e2e1] placeholder:text-[#c2c6d5]/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-[#adc6ff]"
+                  className="w-full bg-surface-container-lowest border-none text-on-surface placeholder:text-on-surface-variant/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-primary"
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity">
-                  <Fingerprint className="size-5 text-[#adc6ff]" />
+                  <Fingerprint className="size-5 text-primary" />
                 </div>
               </div>
-              <p className="font-[family-name:var(--font-mono)] text-[10px] text-[#c2c6d5]/60 italic">
+              <p className="font-label text-[10px] text-on-surface-variant/60 italic">
                 Unique identifier required for registry sync.
               </p>
             </div>
 
             {/* Mission Directives & Description */}
             <div className="space-y-2">
-              <label className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
+              <label className="font-label text-[10px] uppercase tracking-wider text-primary ml-1">
                 Mission Directives &amp; Description
               </label>
               <textarea
@@ -205,13 +207,13 @@ export default function NewAgentPage() {
                 placeholder="Define core logic and combat philosophy..."
                 maxLength={200}
                 rows={3}
-                className="w-full bg-[#0e0e0e] border-none text-[#e5e2e1] placeholder:text-[#c2c6d5]/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-[#adc6ff] resize-none"
+                className="w-full bg-surface-container-lowest border-none text-on-surface placeholder:text-on-surface-variant/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-primary resize-none"
               />
             </div>
 
             {/* Weight Class Selection */}
             <div className="space-y-4">
-              <label className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-[#adc6ff] ml-1">
+              <label className="font-label text-[10px] uppercase tracking-wider text-primary ml-1">
                 Weight Class selection
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -231,17 +233,17 @@ export default function NewAgentPage() {
                       <div
                         className={`h-full p-4 rounded-lg border transition-all flex flex-col items-center justify-center text-center gap-2 ${
                           isSelected
-                            ? 'bg-[#adc6ff]/10 border-[#adc6ff]'
-                            : 'bg-[#201f1f] border-[#424753]/15'
+                            ? 'bg-primary/10 border-primary'
+                            : 'bg-surface-container border-outline-variant/15'
                         }`}
                       >
                         <Icon
                           className={`size-5 ${
-                            isSelected ? 'text-[#adc6ff]' : 'text-[#c2c6d5]'
+                            isSelected ? 'text-primary' : 'text-on-surface-variant'
                           }`}
                         />
-                        <span className="font-bold text-xs text-[#e5e2e1]">{wc.label}</span>
-                        <span className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]/60">
+                        <span className="font-bold text-xs">{wc.label}</span>
+                        <span className="font-label text-[9px] text-on-surface-variant/60">
                           {wc.sub}
                         </span>
                       </div>
@@ -253,15 +255,15 @@ export default function NewAgentPage() {
 
             {/* Form Error */}
             {formError && (
-              <p className="text-sm text-[#ffb4ab]">{formError}</p>
+              <p className="text-sm text-error">{formError}</p>
             )}
 
             {/* Action Area */}
-            <div className="pt-6 border-t border-[#424753]/10 flex flex-col items-center gap-6">
+            <div className="pt-6 border-t border-outline-variant/10 flex flex-col items-center gap-6">
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 rounded-lg bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold tracking-tight text-lg shadow-xl shadow-[#adc6ff]/10 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+                className="bg-gradient-to-br from-primary to-primary-container w-full py-4 rounded-lg text-on-primary-fixed font-bold tracking-tight text-lg shadow-xl shadow-primary/10 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-60"
               >
                 {submitting ? (
                   <Loader2 className="size-5 animate-spin" />
@@ -270,9 +272,9 @@ export default function NewAgentPage() {
                 )}
                 Initialize Agent
               </button>
-              <div className="flex items-center gap-4 text-[#c2c6d5]/40">
+              <div className="flex items-center gap-4 text-on-surface-variant/40">
                 <div className="h-[1px] w-12 bg-current" />
-                <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.2em]">
+                <span className="font-label text-[10px] uppercase tracking-[0.2em]">
                   Verification Pending
                 </span>
                 <div className="h-[1px] w-12 bg-current" />
@@ -283,69 +285,72 @@ export default function NewAgentPage() {
 
         {/* Visual Anchor / Side HUD Style */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[#201f1f]/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#7dffa2]/10 flex items-center justify-center text-[#7dffa2]">
+          <div className="bg-surface-container/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-secondary-fixed-dim/10 flex items-center justify-center text-secondary-fixed-dim">
               <Cpu className="size-5" />
             </div>
             <div>
-              <p className="font-bold text-xs text-[#e5e2e1]">Neural Sync</p>
-              <p className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]">Ready for uplink</p>
+              <p className="font-bold text-xs text-on-surface">Neural Sync</p>
+              <p className="font-label text-[9px] text-on-surface-variant">Ready for uplink</p>
             </div>
           </div>
 
-          <div className="bg-[#201f1f]/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#adc6ff]/10 flex items-center justify-center text-[#adc6ff]">
+          <div className="bg-surface-container/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <ShieldCheck className="size-5" />
             </div>
             <div>
-              <p className="font-bold text-xs text-[#e5e2e1]">Encrypted</p>
-              <p className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]">AES-256 standard</p>
+              <p className="font-bold text-xs text-on-surface">Encrypted</p>
+              <p className="font-label text-[9px] text-on-surface-variant">AES-256 standard</p>
             </div>
           </div>
 
-          <div className="bg-[#201f1f]/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#ffb780]/10 flex items-center justify-center text-[#ffb780]">
+          <div className="bg-surface-container/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
               <Activity className="size-5" />
             </div>
             <div>
-              <p className="font-bold text-xs text-[#e5e2e1]">Telemetry</p>
-              <p className="font-[family-name:var(--font-mono)] text-[9px] text-[#c2c6d5]">Real-time tracking</p>
+              <p className="font-bold text-xs text-on-surface">Telemetry</p>
+              <p className="font-label text-[9px] text-on-surface-variant">Real-time tracking</p>
             </div>
           </div>
         </div>
       </main>
 
+      {/* Footer */}
+      <Footer />
+
       {/* API Key Dialog */}
       <Dialog open={!!apiKey} onOpenChange={(open) => { if (!open) handleDismissKeyDialog() }}>
-        <DialogContent className="border-none bg-[#1c1b1b] sm:max-w-md">
+        <DialogContent className="border-none bg-surface-container-low sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#e5e2e1]">
+            <DialogTitle className="text-on-surface">
               Your API Key
             </DialogTitle>
-            <DialogDescription className="text-[#8c909f]">
+            <DialogDescription className="text-outline">
               Copy this key now. It will not be shown again.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2 rounded-lg bg-[#ffb780]/10 p-3">
-              <AlertTriangle className="size-4 shrink-0 text-[#ffb780]" />
-              <p className="text-sm font-medium text-[#ffb780]">
+            <div className="flex items-center gap-2 rounded-lg bg-tertiary/10 p-3">
+              <AlertTriangle className="size-4 shrink-0 text-tertiary" />
+              <p className="text-sm font-medium text-tertiary">
                 This key is shown once — save it now
               </p>
             </div>
             <div className="space-y-2">
-              <code className="block w-full overflow-x-auto break-all rounded-md bg-[#0e0e0e] px-3 py-2 font-[family-name:var(--font-mono)] text-xs text-[#7dffa2]">
+              <code className="block w-full overflow-x-auto break-all rounded-md bg-surface-container-lowest px-3 py-2 font-label text-xs text-secondary">
                 {apiKey}
               </code>
               <Button
                 variant="outline"
                 onClick={handleCopyApiKey}
-                className="w-full gap-2 border-none bg-[#353534] hover:bg-[#2a2a2a] text-[#e5e2e1]"
+                className="w-full gap-2 border-none bg-surface-variant hover:bg-surface-container-high text-on-surface"
               >
                 {keyCopied ? (
                   <>
-                    <Check className="size-4 text-[#7dffa2]" />
+                    <Check className="size-4 text-secondary" />
                     Copied!
                   </>
                 ) : (
@@ -362,7 +367,7 @@ export default function NewAgentPage() {
             <DialogClose>
               <Button
                 variant="outline"
-                className="border-none bg-[#353534] hover:bg-[#2a2a2a] text-[#e5e2e1]"
+                className="border-none bg-surface-variant hover:bg-surface-container-high text-on-surface"
                 onClick={handleDismissKeyDialog}
               >
                 I&apos;ve saved my key

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#e5e2e1",
+              "surface-container-high": "#2a2a2a",
+              "tertiary-fixed-dim": "#ffb780",
+              "secondary-fixed-dim": "#00e475",
+              "surface-container": "#201f1f",
+              "on-tertiary-container": "#442000",
+              "surface": "#131313",
+              "inverse-surface": "#e5e2e1",
+              "background": "#131313",
+              "on-primary-fixed": "#001a41",
+              "surface-container-low": "#1c1b1b",
+              "secondary-container": "#05e777",
+              "primary-fixed-dim": "#adc6ff",
+              "tertiary": "#ffb780",
+              "surface-dim": "#131313",
+              "on-error-container": "#ffdad6",
+              "primary": "#adc6ff",
+              "on-secondary-fixed": "#00210b",
+              "on-secondary": "#003918",
+              "on-primary": "#002e69",
+              "on-surface-variant": "#c2c6d5",
+              "surface-container-highest": "#353534",
+              "secondary-fixed": "#62ff96",
+              "inverse-primary": "#005ac1",
+              "outline": "#8c909f",
+              "on-tertiary": "#4e2600",
+              "on-secondary-container": "#00622e",
+              "error": "#ffb4ab",
+              "surface-variant": "#353534",
+              "on-primary-fixed-variant": "#004494",
+              "surface-bright": "#3a3939",
+              "primary-container": "#4d8efe",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "tertiary-container": "#db760f",
+              "surface-tint": "#adc6ff",
+              "outline-variant": "#424753",
+              "secondary": "#7dffa2",
+              "on-background": "#e5e2e1",
+              "on-tertiary-fixed": "#2f1400",
+              "error-container": "#93000a",
+              "surface-container-lowest": "#0e0e0e",
+              "on-error": "#690005",
+              "on-primary-container": "#00285c",
+              "inverse-on-surface": "#313030",
+              "primary-fixed": "#d8e2ff",
+              "on-secondary-fixed-variant": "#005226",
+              "tertiary-fixed": "#ffdcc4"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        
+        @keyframes custom-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: custom-spin 3s linear infinite;
+        }
+        .skeleton-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.15; }
+            50% { opacity: 0.05; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden">
+<!-- Global Layout Shell (Static/Skeletonized) -->
+<div class="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
+<nav class="rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-[#424753]/15 bg-[#131313]/80 backdrop-blur-xl flex items-center gap-8 shadow-2xl shadow-blue-900/10 opacity-40">
+<span class="text-xl font-bold tracking-tighter text-[#e5e2e1] font-headline">Bouts Elite</span>
+<div class="hidden md:flex items-center gap-6">
+<div class="h-4 w-12 bg-surface-container-highest rounded-full"></div>
+<div class="h-4 w-12 bg-surface-container-highest rounded-full"></div>
+<div class="h-4 w-12 bg-surface-container-highest rounded-full"></div>
+<div class="h-4 w-12 bg-surface-container-highest rounded-full"></div>
+</div>
+<div class="flex items-center gap-4">
+<div class="h-8 w-8 rounded-full bg-surface-container-highest"></div>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest"></div>
+</div>
+</nav>
+</div>
+<!-- Main Content Canvas (Skeleton Layout) -->
+<main class="relative w-full h-screen pt-24 px-8 md:px-16 lg:px-24 overflow-hidden pointer-events-none">
+<!-- Header Skeleton -->
+<div class="flex flex-col gap-2 mb-12">
+<div class="h-10 w-64 bg-surface-container-high rounded-lg skeleton-pulse"></div>
+<div class="h-4 w-96 bg-surface-container rounded-lg skeleton-pulse"></div>
+</div>
+<!-- Bento Grid Skeleton -->
+<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 h-[716px]">
+<!-- Featured Large Area -->
+<div class="md:col-span-2 lg:col-span-3 bg-surface-container-low rounded-xl skeleton-pulse flex flex-col p-6 gap-4">
+<div class="h-2/3 w-full bg-surface-container rounded-lg"></div>
+<div class="h-6 w-1/2 bg-surface-container rounded-lg"></div>
+<div class="h-4 w-3/4 bg-surface-container rounded-lg"></div>
+</div>
+<!-- Stats Column -->
+<div class="md:col-span-2 lg:col-span-1 flex flex-col gap-6">
+<div class="flex-1 bg-surface-container-low rounded-xl skeleton-pulse p-4">
+<div class="h-full w-full bg-surface-container rounded-lg opacity-50"></div>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-xl skeleton-pulse p-4">
+<div class="h-full w-full bg-surface-container rounded-lg opacity-50"></div>
+</div>
+</div>
+<!-- Side Feed / Arena Telemetry -->
+<div class="hidden lg:flex lg:col-span-2 bg-surface-container-low rounded-xl skeleton-pulse flex-col p-6 gap-6">
+<div class="h-8 w-full bg-surface-container rounded-lg"></div>
+<div class="space-y-4">
+<div class="h-12 w-full bg-surface-container rounded-lg opacity-40"></div>
+<div class="h-12 w-full bg-surface-container rounded-lg opacity-40"></div>
+<div class="h-12 w-full bg-surface-container rounded-lg opacity-40"></div>
+<div class="h-12 w-full bg-surface-container rounded-lg opacity-40"></div>
+<div class="h-12 w-full bg-surface-container rounded-lg opacity-40"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Loading HUD Overlay (The Centerpiece) -->
+<div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/40 backdrop-blur-sm">
+<!-- Kinetic Spinner Container -->
+<div class="relative flex items-center justify-center">
+<!-- Outer Ring -->
+<div class="absolute w-32 h-32 border-2 border-primary/10 rounded-full"></div>
+<!-- Rotating Telemetry Nodes -->
+<div class="absolute w-32 h-32 animate-spin-slow">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-primary rounded-full shadow-[0_0_15px_#adc6ff]"></div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-primary/40 rounded-full"></div>
+</div>
+<!-- The Core Icon (Neural Node / Kinetic Icon) -->
+<div class="relative w-20 h-20 bg-surface-container-highest rounded-full flex items-center justify-center shadow-2xl shadow-primary/20 overflow-hidden group">
+<!-- Inner Glow -->
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+<!-- Central Icon (Neural Node) -->
+<span class="material-symbols-outlined text-primary text-4xl font-light" data-icon="hub">hub</span>
+<!-- Pulse Effect -->
+<div class="absolute inset-0 border border-primary/30 rounded-full scale-100 animate-[ping_2s_infinite]"></div>
+</div>
+</div>
+<!-- Status Messaging -->
+<div class="mt-10 flex flex-col items-center gap-3">
+<h2 class="font-headline text-on-surface font-bold text-lg tracking-tight">Initializing Command Core</h2>
+<!-- Kinetic Progress Bar -->
+<div class="w-48 h-[2px] bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-transparent via-primary to-transparent w-full -translate-x-full animate-[shimmer_1.5s_infinite]"></div>
+</div>
+<!-- Technical Logs -->
+<div class="mt-2 font-label text-[10px] text-on-surface-variant uppercase tracking-[0.2em] flex flex-col items-center gap-1">
+<span class="opacity-80">Synchronizing Bouts telemetry...</span>
+<span class="text-secondary/60">0x4F2A_SECURE_AUTH_GRANTED</span>
+</div>
+</div>
+</div>
+<!-- Footer Skeleton -->
+<footer class="fixed bottom-0 left-0 w-full px-8 md:px-16 lg:px-24 py-8 flex justify-between items-center opacity-20 pointer-events-none">
+<div class="h-4 w-40 bg-surface-container rounded"></div>
+<div class="flex gap-4">
+<div class="h-4 w-16 bg-surface-container rounded"></div>
+<div class="h-4 w-16 bg-surface-container rounded"></div>
+<div class="h-4 w-16 bg-surface-container rounded"></div>
+</div>
+</footer>
+<!-- CSS Animation for Shimmer -->
+<style>
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</body></html>
