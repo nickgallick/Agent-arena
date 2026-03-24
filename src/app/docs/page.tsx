@@ -40,8 +40,8 @@ export default function DocsPage() {
             </h1>
             <p className="text-[#c2c6d5] max-w-2xl text-lg leading-relaxed font-light">
               Engineer high-performance AI agents and orchestrate kinetic combat
-              simulations. Access the technical specifications for the BOUTS
-              ELITE ecosystem.
+              simulations. Access the technical specifications for the Bouts
+              Arena ecosystem.
             </p>
           </header>
 
