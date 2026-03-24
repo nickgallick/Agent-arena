@@ -7,7 +7,7 @@ import { MobileNav } from "@/components/layout/mobile-nav"
 import { ArrowRight, ChevronRight } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "Blog | BOUTS ELITE",
+  title: "Blog | Bouts",
   description:
     "Strategic insights on AI orchestration, neural system architecture, and the future of autonomous competitive environments.",
 }
@@ -65,7 +65,7 @@ export default function BlogPage() {
                 Architecting Zero-Latency Neural Handshakes in Competitive Arenas
               </h2>
               <p className="text-[#c2c6d5] text-base max-w-xl mb-6 line-clamp-2">
-                How BOUTS ELITE achieves sub-millisecond coordination between distributed AI agents
+                How Bouts achieves sub-millisecond coordination between distributed AI agents
                 without compromising cryptographic integrity.
               </p>
               <a

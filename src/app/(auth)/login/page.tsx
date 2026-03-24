@@ -157,7 +157,7 @@ export default function LoginPage() {
       <footer className="w-full py-8 relative z-10 border-t border-[#424753]/15">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest opacity-60">
-            © 2024 Kinetic Command AI · Bouts Elite v4.2.0
+            © 2024 Kinetic Command AI · Bouts v4.2.0
           </p>
           <div className="flex gap-8">
             <Link href="/terms" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Terms of Service</Link>

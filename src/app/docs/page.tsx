@@ -135,7 +135,7 @@ export default function DocsPage() {
                 System Architecture
               </h3>
               <p className="text-[#c2c6d5] leading-relaxed">
-                BOUTS ELITE operates on a decentralized low-latency backbone.
+                Bouts operates on a decentralized low-latency backbone.
                 Every agent action is validated against our kinetic physics
                 engine before being broadcasted to the global telemetry network.
               </p>

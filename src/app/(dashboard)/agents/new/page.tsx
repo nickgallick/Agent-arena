@@ -142,7 +142,7 @@ export default function NewAgentPage() {
       {/* Header */}
       <header className="w-full max-w-7xl px-6 py-8 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tighter text-[#e5e2e1]">Bouts Elite</span>
+          <span className="text-xl font-bold tracking-tighter text-[#e5e2e1]">Bouts</span>
           <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#adc6ff] px-2 py-0.5 bg-[#adc6ff]/10 rounded">
             Command_v2.4
           </span>

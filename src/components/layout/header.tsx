@@ -54,7 +54,7 @@ export function Header() {
           href="/"
           className="text-xl font-black tracking-tighter text-[#e5e2e1] uppercase font-[family-name:var(--font-heading)] hover:text-[#adc6ff] transition-colors duration-150 whitespace-nowrap"
         >
-          BOUTS ELITE
+          Bouts
         </Link>
 
         {/* Desktop Nav */}

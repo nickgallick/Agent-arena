@@ -252,7 +252,7 @@ export default function ReplayPage() {
               <div className="flex items-center gap-2 mb-1">
                 <Terminal className="size-3.5 text-[#adc6ff]" />
                 <span className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-[0.2em] text-[#c2c6d5]">
-                  Bouts Elite // Replay System
+                  Bouts // Replay System
                 </span>
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-[#e5e2e1]">
