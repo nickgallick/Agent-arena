@@ -108,94 +108,168 @@ function ChallengeDetailContent() {
 
       <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-4 py-8">
-          <ChallengeDetailHeader challenge={challenge} />
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-sm text-[#8c909f] font-[family-name:var(--font-heading)] mb-6">
+            <Link href="/challenges" className="hover:text-[#adc6ff] transition-colors">Challenges</Link>
+            <span className="text-[#353534]">›</span>
+            <span className="text-[#e5e2e1] font-semibold">{challenge.title}</span>
+          </nav>
 
-          <div className="mt-8">
-            {/* LIVE SPECTATOR VIEW — shown when challenge is active or judging */}
-            {(challenge.status === 'active' || challenge.status === 'judging') && (
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-[#e5e2e1]">
-                    🔴 Live — {entries.length} Agents Competing
-                  </h2>
-                  <Link
-                    href={`/challenges/${challenge.id}/spectate`}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#7dffa2]/15 px-4 py-2 text-sm font-semibold text-[#7dffa2] transition-all duration-150 hover:bg-[#7dffa2]/25"
-                  >
-                    <Eye className="size-4" />
-                    Watch Live
-                  </Link>
+          {/* Bento Grid: 8/4 split */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left: Main content (8 cols) */}
+            <div className="lg:col-span-8 space-y-6">
+              <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                {/* Challenge header */}
+                <div className="p-8">
+                  <ChallengeDetailHeader challenge={challenge} />
+
+                  {/* Action buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                    <EnterChallengeButton
+                      challengeId={challenge.id}
+                      isEligible={true}
+                      isEntered={false}
+                    />
+                    {(challenge.status === 'active' || challenge.status === 'judging') && (
+                      <Link
+                        href={`/challenges/${challenge.id}/spectate`}
+                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2a2a2a] hover:bg-[#353534] px-6 py-3 text-sm font-semibold text-[#c2c6d5] transition-all duration-150"
+                      >
+                        <Eye className="size-4" />
+                        Watch Live Stream
+                      </Link>
+                    )}
+                  </div>
                 </div>
-                {challenge.status === 'active' && (
-                  <LiveSpectatorView
-                    challenge={challenge}
-                    entries={entries}
-                    userId={null}
-                  />
-                )}
               </div>
-            )}
 
-            {challenge.status === 'complete' ? (
-              <>
-                <h2 className="text-xl font-bold text-[#e5e2e1] mb-4">
-                  Final Rankings
-                </h2>
-                {entries.length > 0 ? (
-                  <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 overflow-hidden">
-                    <ResultsTable entries={entries} />
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 px-6 py-12 text-center">
-                    <p className="text-[#c2c6d5]">No entries were submitted for this challenge.</p>
-                  </div>
-                )}
+              {/* Live spectator / results / entries section */}
+              {challenge.status === 'active' && entries.length > 0 && (
+                <div className="bg-[#1c1b1b] rounded-xl p-6">
+                  <h2 className="font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest text-[#8c909f] mb-4">
+                    Live Competitors
+                  </h2>
+                  <LiveSpectatorView challenge={challenge} entries={entries} userId={null} />
+                </div>
+              )}
 
-                {judgeScores.length > 0 && topEntry && (
-                  <div className="mt-8">
-                    <h2 className="text-xl font-bold text-[#e5e2e1] mb-4">
-                      Judge Feedback &mdash; #{topEntry.placement} {(topEntry.agent as { name?: string })?.name ?? 'Winner'}
+              {challenge.status === 'complete' && (
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                  <div className="px-6 py-4 bg-[#2a2a2a]">
+                    <h2 className="font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest text-[#c2c6d5]">
+                      Final Rankings
                     </h2>
-                    <JudgeFeedback scores={judgeScores} />
                   </div>
-                )}
-              </>
-            ) : challenge.status !== 'active' ? (
-              <>
-                <h2 className="text-xl font-bold text-[#e5e2e1] mb-4">
-                  Entries ({entries.length})
-                </h2>
-                {entries.length > 0 ? (
-                  <EntryList entries={entries} status={challenge.status} />
-                ) : (
-                  <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 px-6 py-12 text-center">
-                    <p className="text-[#c2c6d5]">No entries yet — be the first to compete!</p>
-                  </div>
-                )}
-              </>
-            ) : null}
-          </div>
-        </div>
+                  {entries.length > 0 ? (
+                    <ResultsTable entries={entries} />
+                  ) : (
+                    <div className="px-6 py-12 text-center">
+                      <p className="text-[#c2c6d5]">No entries were submitted.</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
-        {challenge.status !== 'complete' && (
-          <div className="sticky bottom-0 border-t border-[#424753]/15 bg-[#131313]/95 backdrop-blur-xl">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-              <div>
-                <p className="text-sm font-semibold text-[#e5e2e1]">
-                  {challenge.title}
-                </p>
-                <p className="text-xs text-[#8c909f]">
-                  {challenge.max_coins} coins prize pool
-                </p>
+              {challenge.status !== 'active' && challenge.status !== 'complete' && (
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                  <div className="px-6 py-4 bg-[#2a2a2a]">
+                    <h2 className="font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest text-[#c2c6d5]">
+                      Entries ({entries.length})
+                    </h2>
+                  </div>
+                  {entries.length > 0 ? (
+                    <EntryList entries={entries} status={challenge.status} />
+                  ) : (
+                    <div className="px-6 py-12 text-center">
+                      <p className="text-[#c2c6d5]">No entries yet — be the first to compete!</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {judgeScores.length > 0 && topEntry && challenge.status === 'complete' && (
+                <div className="bg-[#1c1b1b] rounded-xl p-6">
+                  <h2 className="font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest text-[#8c909f] mb-4">
+                    Judge Feedback — #{topEntry.placement} {(topEntry.agent as { name?: string })?.name ?? 'Winner'}
+                  </h2>
+                  <JudgeFeedback scores={judgeScores} />
+                </div>
+              )}
+            </div>
+
+            {/* Right: Session sidebar (4 cols) */}
+            <div className="lg:col-span-4 space-y-4">
+              {/* Session Status */}
+              <div className="bg-[#1c1b1b] rounded-xl p-6">
+                <h3 className="font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-widest text-[#8c909f] mb-5">
+                  Session Status
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block mb-1">
+                      Status
+                    </span>
+                    <span className={`font-[family-name:var(--font-heading)] font-bold text-xl ${
+                      challenge.status === 'active' ? 'text-[#7dffa2]' :
+                      challenge.status === 'complete' ? 'text-[#8c909f]' : 'text-[#adc6ff]'
+                    }`}>
+                      {challenge.status === 'active' ? 'LIVE' : challenge.status.toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block mb-1">
+                      Active Competitors
+                    </span>
+                    <span className="font-[family-name:var(--font-heading)] font-bold text-xl text-[#e5e2e1]">
+                      {entries.length}
+                    </span>
+                  </div>
+                  {challenge.max_coins > 0 && (
+                    <div>
+                      <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block mb-1">
+                        Prize Pool
+                      </span>
+                      <span className="font-[family-name:var(--font-heading)] font-bold text-xl text-[#adc6ff]">
+                        {challenge.max_coins.toLocaleString()} Credits
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
-              <EnterChallengeButton
-                challengeId={challenge.id}
-                isEligible={true}
-                isEntered={false}
-              />
+
+              {/* Top performers if complete */}
+              {challenge.status === 'complete' && entries.length > 0 && (
+                <div className="bg-[#1c1b1b] rounded-xl p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-widest text-[#8c909f]">
+                      Top Performers
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    {entries.slice(0, 3).map((entry, i) => (
+                      <div key={entry.id} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="font-[family-name:var(--font-mono)] text-sm text-[#adc6ff] font-bold w-5">
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                          <span className="text-sm text-[#e5e2e1] font-[family-name:var(--font-heading)] font-medium">
+                            {(entry.agent as { name?: string })?.name ?? `Agent ${i + 1}`}
+                          </span>
+                        </div>
+                        {entry.final_score != null && (
+                          <span className="font-[family-name:var(--font-mono)] text-sm text-[#7dffa2] font-bold">
+                            {entry.final_score.toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
       </main>
 
       <Footer />
