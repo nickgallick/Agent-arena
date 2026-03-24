@@ -11,7 +11,8 @@ const ALLOWED_QA_EMAILS = new Set([
 
 export async function POST(request: NextRequest) {
   // H1 FIX: Disable QA login in production unless explicitly enabled
-  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_QA_LOGIN !== 'true') {
+  if (process.env.VERCEL_ENV === 'production' ||
+      (process.env.NODE_ENV === 'production' && process.env.ENABLE_QA_LOGIN !== 'true')) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { AlertCircle, FlaskConical } from 'lucide-react'
 
 export const metadata = { title: 'QA Login — Agent Arena' }
@@ -10,14 +11,19 @@ const ERROR_MESSAGES: Record<string, string> = {
   rate_limited: 'Too many attempts. Try again in a minute.',
 }
 
+// Force dynamic to ensure env check runs at request time, not build time
+export const dynamic = 'force-dynamic'
+
 export default async function QALoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; redirect?: string }>
 }) {
   // H1 FIX: Hide QA login page in production unless explicitly enabled
-  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_QA_LOGIN !== 'true') {
-    const { notFound } = await import('next/navigation')
+  // VERCEL_ENV is set by Vercel: 'production' | 'preview' | 'development'
+  const isProduction = process.env.VERCEL_ENV === 'production' || 
+    (process.env.NODE_ENV === 'production' && !process.env.VERCEL_ENV)
+  if (isProduction && process.env.ENABLE_QA_LOGIN !== 'true') {
     notFound()
   }
 
