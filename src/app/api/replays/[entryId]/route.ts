@@ -68,6 +68,7 @@ export async function GET(
         transcript: entry.transcript,
         submission_text: entry.submission_text,
         submission_files: entry.submission_files,
+        screenshot_urls: (entry as Record<string, unknown>).screenshot_urls ?? null,
         judge_scores: judgeScores ?? [],
         final_score: entry.final_score,
         placement: entry.placement,
