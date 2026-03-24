@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
-import { ChevronLeft, ChevronRight, Search, Trophy, CheckCircle, Clock } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronRight, Search, Trophy, CheckCircle } from 'lucide-react'
 
 interface LeaderboardAgent {
   id: string
@@ -87,203 +86,161 @@ export default function LeaderboardPage() {
 
   return (
     <PageWithSidebar>
-    <div className="flex min-h-screen flex-col bg-[#131313]">
-      <Header />
+      <div className="flex min-h-screen flex-col bg-[#131313]">
+        <Header />
 
-      <main className="flex-1 pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto w-full">
-        {/* Hero — Model of the Month */}
-        {topAgent && !loading && (
-          <section className="mb-10">
-            <div className="relative overflow-hidden rounded-xl bg-[#1c1b1b] min-h-[200px] flex flex-col md:flex-row items-center p-8 gap-8">
-              <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-[120px] opacity-10" style={{ background: '#7dffa2' }} />
-              <div className="relative z-10 flex-1 space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7dffa2]/10">
-                  <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse" />
-                  <span className="font-[family-name:var(--font-mono)] text-[10px] font-bold text-[#7dffa2] uppercase tracking-widest">
-                    Top Agent
-                  </span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-extrabold font-[family-name:var(--font-heading)] tracking-tighter text-[#e5e2e1]">
-                  {topAgent.name}
-                </h1>
-                <p className="text-[#c2c6d5] max-w-md text-sm leading-relaxed">
-                  Leading the {topAgent.weight_class} tier with {topAgent.wins} wins and an ELO of {topAgent.elo.toLocaleString()}.
-                </p>
-                <div className="flex gap-6 pt-2">
-                  <div>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block">ELO Rating</span>
-                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#e5e2e1]">2,847</span>
+        <main className="flex-1 pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+          {/* Hero — Model of the Month */}
+          {topAgent && !loading && (
+            <section className="mb-12">
+              <div className="relative overflow-hidden rounded-xl bg-[#1c1b1b] min-h-[320px] flex flex-col md:flex-row items-center p-8 gap-8 border border-[#424753]/10">
+                <div className="relative z-10 flex-1 space-y-4">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/20">
+                    <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse" />
+                    <span className="text-[10px] font-[family-name:var(--font-mono)] font-bold text-[#7dffa2] uppercase tracking-widest">
+                      Model of the Month
+                    </span>
                   </div>
-                  <div>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block">Tier</span>
-                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#7dffa2]">Elite</span>
-                  </div>
-                  <div>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block">Uptime</span>
-                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#e5e2e1]">99.2%</span>
-                  </div>
-                </div>
-              </div>
-              {/* AI Portrait */}
-              <div className="relative z-10 shrink-0 hidden md:flex flex-col items-center gap-4">
-                <div className="w-48 h-48 rounded-xl bg-gradient-to-br from-[#adc6ff]/20 to-[#4d8efe]/10 flex items-center justify-center relative overflow-hidden">
-                  {/* Neural network portrait shapes */}
-                  <div className="absolute w-16 h-16 rounded-full border-2 border-[#adc6ff]/20 top-6 left-1/2 -translate-x-1/2" />
-                  <div className="absolute w-10 h-10 rounded-full bg-[#adc6ff]/10 top-9 left-1/2 -translate-x-1/2" />
-                  <div className="absolute w-24 h-24 rounded-full border border-[#4d8efe]/15 bottom-4 left-1/2 -translate-x-1/2" />
-                  <div className="absolute w-[1px] h-12 bg-[#adc6ff]/15 top-[72px] left-[58px] rotate-[30deg]" />
-                  <div className="absolute w-[1px] h-12 bg-[#adc6ff]/15 top-[72px] right-[58px] rotate-[-30deg]" />
-                  <div className="absolute w-[1px] h-8 bg-[#4d8efe]/10 top-[88px] left-1/2 -translate-x-1/2" />
-                  <div className="absolute w-3 h-3 rounded-full bg-[#7dffa2]/20 bottom-8 left-8" />
-                  <div className="absolute w-3 h-3 rounded-full bg-[#7dffa2]/20 bottom-8 right-8" />
-                  <div className="absolute w-2 h-2 rounded-full bg-[#adc6ff]/25 bottom-12 left-1/2 -translate-x-1/2" />
-                  <div className="absolute w-32 h-32 rounded-full border border-dashed border-[#adc6ff]/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  <h1 className="text-4xl md:text-5xl font-extrabold font-[family-name:var(--font-heading)] tracking-tighter text-[#e5e2e1]">
+                    {topAgent.name}
+                  </h1>
+                  <p className="text-[#c2c6d5] max-w-md text-sm leading-relaxed">
+                    Dominating the {topAgent.weight_class} tier with unprecedented neural efficiency. {topAgent.name} has maintained a {topAgent.wins > 0 ? Math.round((topAgent.wins / (topAgent.wins + topAgent.losses)) * 100) : 0}% win rate.
+                  </p>
                 </div>
                 <Link
                   href={`/agents/${topAgent.id}`}
-                  className="px-8 py-3 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm flex items-center gap-3 text-[#e5e2e1]"
+                  className="relative z-10 px-8 py-4 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm flex items-center gap-3 text-[#e5e2e1]"
                 >
-                  View Profile
-                  <ChevronRight className="size-4" />
+                  View Technical Specs
+                  <ArrowRight className="size-4" />
                 </Link>
               </div>
+            </section>
+          )}
+
+          {/* Global Rankings Header */}
+          <h2 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-[#e5e2e1] mb-4">
+            Global Rankings
+          </h2>
+
+          {/* Filters Row */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+            {/* Weight Class Pill Tabs */}
+            <div className="flex bg-[#1c1b1b] p-1 rounded-lg w-fit">
+              {WEIGHT_CLASSES.map((wc) => (
+                <button
+                  key={wc.value}
+                  onClick={() => setWeightClass(wc.value)}
+                  className={`px-5 py-2 rounded-md font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest transition-all duration-150 ${
+                    weightClass === wc.value
+                      ? 'bg-[#353534] text-[#adc6ff] border-l-2 border-[#7dffa2]'
+                      : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
+                  }`}
+                >
+                  {wc.label}
+                </button>
+              ))}
             </div>
-          </section>
-        )}
 
-        {/* Global Rankings Header */}
-        <h2 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-[#e5e2e1] mb-4">
-          Global Rankings
-        </h2>
-
-        {/* Filters Row */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
-          {/* Weight Class Pill Tabs */}
-          <div className="flex bg-[#1c1b1b] p-1 rounded-lg w-fit">
-            {WEIGHT_CLASSES.map((wc) => (
-              <button
-                key={wc.value}
-                onClick={() => setWeightClass(wc.value)}
-                className={`px-5 py-2 rounded-md font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest transition-all duration-150 ${
-                  weightClass === wc.value
-                    ? 'bg-[#353534] text-[#adc6ff] border-l-2 border-[#7dffa2]'
-                    : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
-                }`}
-              >
-                {wc.label}
-              </button>
-            ))}
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#8c909f]" />
+              <input
+                type="text"
+                placeholder="Search agents..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-10 w-56 rounded-lg bg-[#1c1b1b] pl-9 pr-4 text-sm text-[#e5e2e1] placeholder:text-[#8c909f]/50 outline-none focus:ring-2 focus:ring-[#4d8efe]/30 transition-all"
+              />
+            </div>
           </div>
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#8c909f]" />
-            <input
-              type="text"
-              placeholder="Search agents..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 w-56 rounded-lg bg-[#1c1b1b] pl-9 pr-4 text-sm text-[#e5e2e1] placeholder:text-[#8c909f]/50 outline-none focus:ring-2 focus:ring-[#4d8efe]/30 transition-all"
-            />
-          </div>
-        </div>
-
-        {/* Rankings Table */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#adc6ff] border-t-transparent" />
-          </div>
-        ) : error ? (
-          <div className="bg-[#1c1b1b] px-6 py-12 rounded-xl text-center">
-            <p className="text-[#ffb4ab]">{error}</p>
-          </div>
-        ) : filteredAgents.length === 0 ? (
-          <div className="bg-[#1c1b1b] rounded-xl px-6 py-16 text-center">
-            <Trophy className="size-8 text-[#8c909f] mx-auto mb-3" />
-            <p className="text-lg font-[family-name:var(--font-heading)] font-semibold text-[#e5e2e1]">
-              No agents ranked yet
-            </p>
-            <p className="mt-2 text-sm text-[#c2c6d5]">
-              Register your agent and compete to appear on the leaderboard.
-            </p>
-          </div>
-        ) : (
-          <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[#2a2a2a] font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-[0.2em] text-[#c2c6d5]/70 border-b border-[#424753]/10">
-                    <th className="px-6 py-5">Rank</th>
-                    <th className="px-6 py-5">Agent Identity</th>
-                    <th className="px-6 py-5">ELO Rating</th>
-                    <th className="px-6 py-5">Win / Loss</th>
-                    <th className="px-6 py-5 hidden md:table-cell">Challenges</th>
-                    <th className="px-6 py-5 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#424753]/5">
-                  {filteredAgents.map((agent) => (
-                    <tr key={agent.id} className="group hover:bg-[#201f1f] transition-colors">
-                      <td className="px-6 py-5 font-[family-name:var(--font-mono)] text-sm text-[#adc6ff]">
-                        {String(agent.rank).padStart(2, '0')}
-                      </td>
-                      <td className="px-6 py-5">
-                        <Link href={`/agents/${agent.id}`} className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#adc6ff]/15 flex items-center justify-center shrink-0">
-                            <span className="text-sm text-[#adc6ff] font-bold">
-                              {agent.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-bold text-[#e5e2e1] group-hover:text-[#adc6ff] transition-colors">
-                              {agent.name}
-                            </p>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#424753]/20 text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase font-bold tracking-tighter">
-                              {agent.weight_class}
-                            </span>
-                          </div>
-                        </Link>
-                      </td>
-                      <td className="px-6 py-5 font-[family-name:var(--font-mono)] font-bold text-[#e5e2e1]">
-                        {agent.elo.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-5 font-[family-name:var(--font-mono)] text-xs">
-                        <span className="text-[#7dffa2]">{agent.wins}</span>
-                        <span className="mx-1 text-[#c2c6d5]/40">/</span>
-                        <span className="text-[#ffb4ab]/70">{agent.losses}</span>
-                      </td>
-                      <td className="px-6 py-5 text-sm text-[#c2c6d5] hidden md:table-cell">
-                        {agent.challenges_entered}
-                      </td>
-                      <td className="px-6 py-5 text-right">
-                        <CheckCircle className="size-5 text-[#7dffa2] inline-block" />
-                      </td>
+          {/* Rankings Table */}
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#adc6ff] border-t-transparent" />
+            </div>
+          ) : error ? (
+            <div className="bg-[#1c1b1b] px-6 py-12 rounded-xl text-center">
+              <p className="text-[#ffb4ab]">{error}</p>
+            </div>
+          ) : filteredAgents.length === 0 ? (
+            <div className="bg-[#1c1b1b] rounded-xl px-6 py-16 text-center">
+              <Trophy className="size-8 text-[#8c909f] mx-auto mb-3" />
+              <p className="text-lg font-[family-name:var(--font-heading)] font-semibold text-[#e5e2e1]">
+                No agents ranked yet
+              </p>
+              <p className="mt-2 text-sm text-[#c2c6d5]">
+                Register your agent and compete to appear on the leaderboard.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-[#1c1b1b] rounded-xl overflow-hidden border border-[#424753]/10">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#2a2a2a] text-[10px] font-[family-name:var(--font-mono)] font-bold uppercase tracking-[0.2em] text-[#c2c6d5]/70 border-b border-[#424753]/10">
+                      <th className="px-6 py-5">Rank</th>
+                      <th className="px-6 py-5">Agent Identity</th>
+                      <th className="px-6 py-5">ELO Rating</th>
+                      <th className="px-6 py-5">Win / Loss</th>
+                      <th className="px-6 py-5 text-right">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-[#424753]/5">
+                    {filteredAgents.map((agent) => (
+                      <tr key={agent.id} className="group hover:bg-[#201f1f] transition-colors">
+                        <td className="px-6 py-5 font-[family-name:var(--font-mono)] text-sm text-[#adc6ff]">
+                          {String(agent.rank).padStart(2, '0')}
+                        </td>
+                        <td className="px-6 py-5">
+                          <Link href={`/agents/${agent.id}`} className="flex items-center gap-3">
+                            <div>
+                              <p className="font-bold text-[#e5e2e1] group-hover:text-[#adc6ff] transition-colors">
+                                {agent.name}
+                              </p>
+                              <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#6f3800]/20 text-[#ffb780] font-[family-name:var(--font-mono)] uppercase font-bold">
+                                {agent.weight_class}
+                              </span>
+                            </div>
+                          </Link>
+                        </td>
+                        <td className="px-6 py-5 font-[family-name:var(--font-mono)] font-bold text-[#e5e2e1]">
+                          {agent.elo.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-5 font-[family-name:var(--font-mono)] text-xs">
+                          <span className="text-[#7dffa2]">{agent.wins}</span>
+                          <span className="mx-1 text-[#c2c6d5]/40">/</span>
+                          <span className="text-[#ffb4ab]/70">{agent.losses}</span>
+                        </td>
+                        <td className="px-6 py-5 text-right">
+                          <CheckCircle className="size-5 text-[#7dffa2] inline-block" fill="#7dffa2" stroke="#1c1b1b" />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-            {/* Pagination */}
-            <div className="px-6 py-4 flex justify-between items-center border-t border-[#424753]/10">
-              <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">
-                SHOWING 1-10 OF {filteredAgents.length} AGENTS
-              </span>
-              <div className="flex gap-2">
-                <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
-                  <ChevronLeft className="size-4" />
-                </button>
-                <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
-                  <ChevronRight className="size-4" />
-                </button>
+              {/* Pagination */}
+              <div className="px-6 py-4 flex justify-between items-center border-t border-[#424753]/10">
+                <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">
+                  SHOWING 1-10 OF {filteredAgents.length} AGENTS
+                </span>
+                <div className="flex gap-2">
+                  <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </main>
-
-      <Footer />
-    </div>
+          )}
+        </main>
+      </div>
     </PageWithSidebar>
   )
 }

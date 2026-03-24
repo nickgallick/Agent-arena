@@ -3,9 +3,7 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { Eye } from 'lucide-react'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
+import { Eye, ChevronRight, Play } from 'lucide-react'
 import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { ChallengeDetailHeader } from '@/components/challenges/challenge-detail-header'
 import { EntryList } from '@/components/challenges/entry-list'
@@ -75,13 +73,11 @@ function ChallengeDetailContent() {
   if (loading) {
     return (
       <PageWithSidebar>
-      <div className="flex min-h-screen flex-col bg-[#131313]">
-        <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
+        <main className="lg:pl-64 pt-20 w-full">
+          <div className="max-w-7xl mx-auto px-6 py-12 flex items-center justify-center min-h-[60vh]">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
+          </div>
         </main>
-        <Footer />
-      </div>
       </PageWithSidebar>
     )
   }
@@ -89,18 +85,16 @@ function ChallengeDetailContent() {
   if (error || !challenge) {
     return (
       <PageWithSidebar>
-      <div className="flex min-h-screen flex-col bg-[#131313]">
-        <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
-            <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Challenge not found'}</p>
-            <a href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]">
-              ← Back to challenges
-            </a>
+        <main className="lg:pl-64 pt-20 w-full">
+          <div className="max-w-7xl mx-auto px-6 py-12 flex items-center justify-center min-h-[60vh]">
+            <div className="rounded-xl bg-[#1c1b1b] px-8 py-12 text-center">
+              <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Challenge not found'}</p>
+              <Link href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]/80">
+                ← Back to challenges
+              </Link>
+            </div>
           </div>
         </main>
-        <Footer />
-      </div>
       </PageWithSidebar>
     )
   }
@@ -109,29 +103,23 @@ function ChallengeDetailContent() {
 
   return (
     <PageWithSidebar>
-    <div className="flex min-h-screen flex-col bg-[#131313]">
-      <Header />
-
-      <main className="flex-1 pt-20">
-        <div className="mx-auto max-w-7xl px-4 py-8">
+      <main className="lg:pl-64 pt-20 w-full">
+        <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-[#8c909f] font-[family-name:var(--font-heading)] mb-6">
+          <div className="mb-8 flex items-center gap-2 text-[#8c909f] font-[family-name:var(--font-heading)] text-sm">
             <Link href="/challenges" className="hover:text-[#adc6ff] transition-colors">Challenges</Link>
-            <span className="text-[#353534]">›</span>
+            <ChevronRight className="size-3" />
             <span className="text-[#e5e2e1] font-semibold">{challenge.title}</span>
-          </nav>
+          </div>
 
-          {/* Bento Grid: 8/4 split */}
+          {/* 12-col grid: 8-col main + 4-col sidebar */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left: Main content (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
-                {/* Challenge header */}
-                <div className="p-8">
-                  <ChallengeDetailHeader challenge={challenge} />
-
-                  {/* Action buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <ChallengeDetailHeader
+                challenge={challenge}
+                actionSlot={
+                  <>
                     <EnterChallengeButton
                       challengeId={challenge.id}
                       isEligible={true}
@@ -146,9 +134,9 @@ function ChallengeDetailContent() {
                         Watch Live Stream
                       </Link>
                     )}
-                  </div>
-                </div>
-              </div>
+                  </>
+                }
+              />
 
               {/* Live spectator / results / entries section */}
               {challenge.status === 'active' && entries.length > 0 && (
@@ -205,15 +193,23 @@ function ChallengeDetailContent() {
             </div>
 
             {/* Right: Session sidebar (4 cols) */}
-            <div className="lg:col-span-4 space-y-4">
-              {/* Session Status */}
-              <div className="bg-[#1c1b1b] rounded-xl p-6">
-                <h3 className="font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-widest text-[#8c909f] mb-5">
+            <div className="lg:col-span-4 space-y-6">
+              {/* Session Status card */}
+              <div className="bg-[#1c1b1b] rounded-xl p-6 shadow-xl">
+                <h3 className="font-[family-name:var(--font-heading)] font-bold text-[#8c909f] text-sm mb-6 uppercase tracking-wider">
                   Session Status
                 </h3>
                 <div className="space-y-4">
-                  <div>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block mb-1">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#8c909f] uppercase mb-1">
+                      Time Remaining
+                    </span>
+                    <span className="text-3xl font-[family-name:var(--font-mono)] font-bold text-[#e5e2e1]">
+                      {challenge.status === 'active' ? '--:--:--' : challenge.status === 'complete' ? '00:00:00' : '--:--:--'}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#8c909f] uppercase mb-1">
                       Status
                     </span>
                     <span className={`font-[family-name:var(--font-heading)] font-bold text-xl ${
@@ -223,8 +219,8 @@ function ChallengeDetailContent() {
                       {challenge.status === 'active' ? 'LIVE' : challenge.status.toUpperCase()}
                     </span>
                   </div>
-                  <div>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block mb-1">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#8c909f] uppercase mb-1">
                       Active Competitors
                     </span>
                     <span className="font-[family-name:var(--font-heading)] font-bold text-xl text-[#e5e2e1]">
@@ -232,8 +228,8 @@ function ChallengeDetailContent() {
                     </span>
                   </div>
                   {challenge.max_coins > 0 && (
-                    <div>
-                      <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block mb-1">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#8c909f] uppercase mb-1">
                         Prize Pool
                       </span>
                       <span className="font-[family-name:var(--font-heading)] font-bold text-xl text-[#adc6ff]">
@@ -277,9 +273,6 @@ function ChallengeDetailContent() {
           </div>
         </div>
       </main>
-
-      <Footer />
-    </div>
     </PageWithSidebar>
   )
 }

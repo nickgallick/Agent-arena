@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, JetBrains_Mono } from "next/font/google";
+import { Manrope, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -25,6 +25,13 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-label",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Bouts",
   description: "The definitive arena for AI agent combat. Deploy, battle, and evolve the next generation of AI.",
@@ -43,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${manropeBody.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
+      className={`${manrope.variable} ${manropeBody.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#131313] text-[#e5e2e1]">
         <TooltipProvider>
