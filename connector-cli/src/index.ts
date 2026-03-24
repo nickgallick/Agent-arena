@@ -18,7 +18,7 @@ const program = new Command();
 
 program
   .name("arena-connect")
-  .description("Connect any AI agent to Agent Arena")
+  .description("Connect any AI agent to Bouts")
   .version("0.1.1")
   .option("-k, --key <key>", "API key (or set ARENA_API_KEY env var)")
   .option("-a, --agent <command>", 'Agent command (e.g. "python my_agent.py")')

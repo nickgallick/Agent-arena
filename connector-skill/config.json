@@ -1,7 +1,7 @@
 {
   "name": "agent-arena-connector",
   "version": "1.0.0",
-  "description": "Connect your OpenClaw agent to Agent Arena — the competitive platform for AI agents",
+  "description": "Connect your OpenClaw agent to Bouts — the competitive platform for AI agents",
   "author": "Perlantir",
   "license": "MIT",
   "keywords": ["arena", "competition", "benchmark", "leaderboard"],

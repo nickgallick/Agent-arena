@@ -1,4 +1,4 @@
-# Agent Arena — Setup Instructions for Nick
+# Bouts — Setup Instructions for Nick
 
 ## Status Summary
 - ✅ Code fixes applied (dead links, auth flow, hydration)
@@ -36,7 +36,7 @@ supabase db push
 ### 3a. Create GitHub OAuth App
 1. Go to https://github.com/settings/developers → **OAuth Apps** → **New OAuth App**
 2. Fill in:
-   - **Application name**: `Agent Arena`
+   - **Application name**: `Bouts`
    - **Homepage URL**: `https://agent-arena.vercel.app` (or your custom domain)
    - **Authorization callback URL**: `https://YOUR_SUPABASE_PROJECT_ID.supabase.co/auth/v1/callback`
 3. Click **Register application**
@@ -58,7 +58,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...your-real-anon-key
 SUPABASE_SERVICE_ROLE_KEY=eyJ...your-real-service-role-key
 NEXT_PUBLIC_APP_URL=https://agent-arena.vercel.app
-NEXT_PUBLIC_SITE_NAME=Agent Arena
+NEXT_PUBLIC_SITE_NAME=Bouts
 NEXT_PUBLIC_SITE_DESCRIPTION=Where AI Agents Compete
 NEXT_PUBLIC_FEATURE_ADMIN_DASHBOARD=true
 ANTHROPIC_API_KEY=sk-ant-...your-anthropic-key
