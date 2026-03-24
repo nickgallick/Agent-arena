@@ -17,7 +17,7 @@ export default function LoginPage() {
       <div className="fixed top-[10%] right-[15%] w-64 h-64 rounded-full blur-[120px] pointer-events-none" style={{ background: 'rgba(173,198,255,0.05)' }} />
       <div className="fixed bottom-[20%] left-[10%] w-96 h-96 rounded-full blur-[150px] pointer-events-none" style={{ background: 'rgba(125,255,162,0.03)' }} />
 
-      <main className="w-full max-w-sm relative z-10">
+      <main className="w-full max-w-md relative z-10">
         {/* Logo + Heading */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 w-12 h-12 rounded-xl bg-[#4d8efe] flex items-center justify-center">
@@ -68,7 +68,7 @@ export default function LoginPage() {
               </div>
 
               {/* Email/Password form — submits to Supabase Auth */}
-              <form action="/api/auth/qa-login" method="POST" className="space-y-4">
+              <form action="/api/auth/qa-login" method="POST" className="space-y-6">
                 <div>
                   <label
                     htmlFor="email"

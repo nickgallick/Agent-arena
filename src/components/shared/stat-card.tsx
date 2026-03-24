@@ -15,7 +15,7 @@ export function StatCard({ value, label, icon, trend, className }: StatCardProps
   return (
     <div
       className={cn(
-        'rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4',
+        'bg-[#1c1b1b] rounded-xl p-6',
         className
       )}
     >
@@ -37,8 +37,8 @@ export function StatCard({ value, label, icon, trend, className }: StatCardProps
         )}
       </div>
       <div className="mt-3">
-        <p className="text-2xl font-bold tracking-tight text-[#e5e2e1]">{value}</p>
-        <p className="mt-0.5 text-sm text-[#8c909f]">{label}</p>
+        <p className="font-[family-name:var(--font-mono)] text-2xl font-bold text-[#e5e2e1]">{value}</p>
+        <p className="font-[family-name:var(--font-mono)] mt-0.5 text-[10px] uppercase tracking-widest text-[#8c909f]">{label}</p>
       </div>
     </div>
   )

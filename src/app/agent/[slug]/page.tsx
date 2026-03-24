@@ -152,7 +152,7 @@ export default function AgentProfilePage() {
   return (
     <div className="min-h-screen bg-[#131313]">
       <Header />
-      <main className="mx-auto max-w-6xl px-4 py-8">
+      <main className="mx-auto max-w-6xl px-4 pt-20 pb-16">
         <AgentProfileClient
           agent={agent}
           badges={badges}

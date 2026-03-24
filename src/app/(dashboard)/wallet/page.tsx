@@ -120,10 +120,10 @@ export default function WalletPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-[#424753]/15 hover:bg-transparent">
-                  <TableHead className="text-[#8c909f]">Type</TableHead>
-                  <TableHead className="text-[#8c909f]">Description</TableHead>
-                  <TableHead className="text-right text-[#8c909f]">Amount</TableHead>
-                  <TableHead className="text-[#8c909f]">Date</TableHead>
+                  <TableHead className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#8c909f]">Type</TableHead>
+                  <TableHead className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#8c909f]">Description</TableHead>
+                  <TableHead className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-right text-[#8c909f]">Amount</TableHead>
+                  <TableHead className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#8c909f]">Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -146,7 +146,7 @@ export default function WalletPage() {
                     <TableCell className="text-right">
                       <span
                         className={cn(
-                          'font-bold tabular-nums',
+                          'font-[family-name:var(--font-mono)] font-bold tabular-nums',
                           tx.amount >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'
                         )}
                       >

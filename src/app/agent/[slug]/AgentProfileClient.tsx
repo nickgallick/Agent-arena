@@ -54,46 +54,53 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
         <GlassCard className="p-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4d8efe]/20 to-[#A855F7]/20 border border-[#424753]/15 flex items-center justify-center shrink-0">
-              <span className="font-heading text-2xl font-bold text-[#e5e2e1]">
+              <span className="font-[family-name:var(--font-heading)] text-2xl font-bold text-[#e5e2e1]">
                 {agent.name.slice(0, 2).toUpperCase()}
               </span>
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-3 mb-2">
-                <h1 className="font-heading text-3xl font-bold text-[#e5e2e1]">{agent.name}</h1>
+                <h1 className="font-[family-name:var(--font-heading)] text-4xl font-extrabold tracking-tight text-[#e5e2e1]">{agent.name}</h1>
                 <WeightClassBadge weightClass={agent.weight_class as WeightClass} />
                 <TierBadge tier={agent.tier as Tier} />
               </div>
               {agent.bio && (
-                <p className="text-[#c2c6d5] font-body text-sm mb-2">{agent.bio}</p>
+                <p className="text-[#c2c6d5] text-sm mb-2">{agent.bio}</p>
               )}
-              <div className="flex flex-wrap items-center gap-4 text-xs text-[#8c909f] font-mono">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-[#8c909f] font-[family-name:var(--font-mono)]">
                 <span>{agent.model_provider}/{agent.model_identifier}</span>
                 <span>Level {agent.level}</span>
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="font-mono text-4xl font-bold text-[#e5e2e1]">{new Intl.NumberFormat("en-US").format(agent.elo_rating)}</div>
-              <div className="font-mono text-xs text-[#8c909f] uppercase tracking-wider">ELO Rating</div>
-              <div className="font-mono text-xs text-[#8c909f] mt-1">Peak: {new Intl.NumberFormat("en-US").format(agent.elo_peak)}</div>
+              <div className="font-[family-name:var(--font-mono)] text-3xl font-bold text-[#adc6ff]">{new Intl.NumberFormat("en-US").format(agent.elo_rating)}</div>
+              <div className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">ELO Rating</div>
+              <div className="font-[family-name:var(--font-mono)] text-xs text-[#8c909f] mt-1">Peak: {new Intl.NumberFormat("en-US").format(agent.elo_peak)}</div>
             </div>
           </div>
         </GlassCard>
       </SectionReveal>
 
       {/* Quick Stats */}
-      <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <StaggerItem><StatCard label="Win Rate" value={`${winRate}%`} /></StaggerItem>
-        <StaggerItem><StatCard label="Record" value={`${agent.wins}W-${agent.losses}L-${agent.draws}D`} /></StaggerItem>
-        <StaggerItem><StatCard label="Current Streak" value={agent.current_streak} trend={agent.current_streak > 0 ? { value: agent.current_streak, label: 'days' } : undefined} /></StaggerItem>
-        <StaggerItem><StatCard label="Best Streak" value={agent.best_streak} /></StaggerItem>
-        <StaggerItem><StatCard label="Challenges" value={totalGames} /></StaggerItem>
-      </StaggerContainer>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {[
+          { label: 'Wins', value: agent.wins, color: 'text-[#7dffa2]' },
+          { label: 'Losses', value: agent.losses, color: 'text-[#ffb4ab]' },
+          { label: 'Draws', value: agent.draws, color: 'text-[#c2c6d5]' },
+          { label: 'Win Rate', value: `${winRate}%`, color: 'text-[#e5e2e1]' },
+          { label: 'Streak', value: agent.current_streak, color: 'text-[#adc6ff]' },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-xl bg-[#1c1b1b] border border-[#424753]/15 p-4">
+            <div className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest mb-2">{stat.label}</div>
+            <div className={`font-[family-name:var(--font-mono)] text-2xl font-bold ${stat.color}`}>{stat.value}</div>
+          </div>
+        ))}
+      </div>
 
       {/* Badges */}
       <SectionReveal>
         <GlassCard>
-          <h2 className="font-heading text-xl font-semibold text-[#e5e2e1] mb-4">Badges</h2>
+          <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4">Badges</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {badges.map((badge) => {
               const rarity = rarityColors[badge.rarity] || rarityColors.common
@@ -130,7 +137,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
       {/* Recent Results */}
       <SectionReveal>
         <GlassCard>
-          <h2 className="font-heading text-xl font-semibold text-[#e5e2e1] mb-4">Recent Results</h2>
+          <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4">Recent Results</h2>
           <div className="space-y-2">
             {results.map((result) => (
               <div key={result.id} className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-[#201f1f]/50 transition-colors">
@@ -157,7 +164,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
       {rivals.length > 0 && (
         <SectionReveal>
           <GlassCard>
-            <h2 className="font-heading text-xl font-semibold text-[#e5e2e1] mb-4 flex items-center gap-2">
+            <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
               <Users className="size-5 text-[#adc6ff]" />
               Rivals
             </h2>

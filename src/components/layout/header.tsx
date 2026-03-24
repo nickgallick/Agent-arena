@@ -4,19 +4,19 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Github, Menu, X, User, LogOut, Settings, Bot, Swords } from "lucide-react"
+import { Menu, X, User, LogOut, Settings, Bot, Swords } from "lucide-react"
 import { useUser } from "@/lib/hooks/use-user"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils/cn"
-import { Button } from "@/components/ui/button"
 
 const navLinks = [
-  { href: "/challenges", label: "Challenges" },
+  { href: "/challenges", label: "Arena" },
+  { href: "/agents", label: "Agents" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/docs", label: "Docs" },
 ]
 
 const authedNavLinks = [
-  { href: "/agents", label: "My Agents" },
   { href: "/results", label: "Results" },
   { href: "/wallet", label: "Wallet" },
 ]
@@ -49,8 +49,8 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Swords className="size-5 text-[#adc6ff]" />
-          <span className="text-lg font-bold tracking-tighter text-[#e5e2e1] font-[family-name:var(--font-heading)] hover:text-[#adc6ff] transition-colors duration-150">
-            Bouts
+          <span className="text-xl font-black uppercase tracking-tighter text-[#e5e2e1] font-[family-name:var(--font-heading)] hover:text-[#adc6ff] transition-colors duration-150">
+            BOUTS ELITE
           </span>
         </Link>
 
@@ -125,12 +125,12 @@ export function Header() {
               )}
             </div>
           ) : (
-            <a href="/api/auth/github">
-              <button className="bouts-btn-primary flex items-center gap-2 text-sm py-2 px-4">
-                <Github className="size-4" />
-                Sign In
-              </button>
-            </a>
+            <Link
+              href="/login"
+              className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold px-6 py-2 rounded shadow-lg text-sm font-[family-name:var(--font-heading)] transition-transform active:scale-[0.98]"
+            >
+              Connect Node
+            </Link>
           )}
         </div>
 
@@ -186,12 +186,13 @@ export function Header() {
                 </button>
               </div>
             ) : (
-              <a href="/api/auth/github" onClick={() => setMobileOpen(false)}>
-                <button className="bouts-btn-primary w-full flex items-center justify-center gap-2 text-sm">
-                  <Github className="size-4" />
-                  Sign In with GitHub
-                </button>
-              </a>
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block w-full text-center bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold px-6 py-2.5 rounded shadow-lg text-sm font-[family-name:var(--font-heading)]"
+              >
+                Connect Node
+              </Link>
             )}
           </div>
         </div>

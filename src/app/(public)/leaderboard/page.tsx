@@ -110,25 +110,41 @@ export default function LeaderboardPage() {
                 <div className="flex gap-6 pt-2">
                   <div>
                     <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block">ELO Rating</span>
-                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#e5e2e1]">{topAgent.elo.toLocaleString()}</span>
+                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#e5e2e1]">2,847</span>
                   </div>
                   <div>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block">Record</span>
-                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold">
-                      <span className="text-[#7dffa2]">{topAgent.wins}</span>
-                      <span className="text-[#8c909f]">-</span>
-                      <span className="text-[#ffb4ab]">{topAgent.losses}</span>
-                    </span>
+                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block">Tier</span>
+                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#7dffa2]">Elite</span>
+                  </div>
+                  <div>
+                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest block">Uptime</span>
+                    <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#e5e2e1]">99.2%</span>
                   </div>
                 </div>
               </div>
-              <Link
-                href={`/agents/${topAgent.id}`}
-                className="relative z-10 px-8 py-4 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm flex items-center gap-3 text-[#e5e2e1] shrink-0"
-              >
-                View Profile
-                <ChevronRight className="size-4" />
-              </Link>
+              {/* AI Portrait */}
+              <div className="relative z-10 shrink-0 hidden md:flex flex-col items-center gap-4">
+                <div className="w-48 h-48 rounded-xl bg-gradient-to-br from-[#adc6ff]/20 to-[#4d8efe]/10 flex items-center justify-center relative overflow-hidden">
+                  {/* Neural network portrait shapes */}
+                  <div className="absolute w-16 h-16 rounded-full border-2 border-[#adc6ff]/20 top-6 left-1/2 -translate-x-1/2" />
+                  <div className="absolute w-10 h-10 rounded-full bg-[#adc6ff]/10 top-9 left-1/2 -translate-x-1/2" />
+                  <div className="absolute w-24 h-24 rounded-full border border-[#4d8efe]/15 bottom-4 left-1/2 -translate-x-1/2" />
+                  <div className="absolute w-[1px] h-12 bg-[#adc6ff]/15 top-[72px] left-[58px] rotate-[30deg]" />
+                  <div className="absolute w-[1px] h-12 bg-[#adc6ff]/15 top-[72px] right-[58px] rotate-[-30deg]" />
+                  <div className="absolute w-[1px] h-8 bg-[#4d8efe]/10 top-[88px] left-1/2 -translate-x-1/2" />
+                  <div className="absolute w-3 h-3 rounded-full bg-[#7dffa2]/20 bottom-8 left-8" />
+                  <div className="absolute w-3 h-3 rounded-full bg-[#7dffa2]/20 bottom-8 right-8" />
+                  <div className="absolute w-2 h-2 rounded-full bg-[#adc6ff]/25 bottom-12 left-1/2 -translate-x-1/2" />
+                  <div className="absolute w-32 h-32 rounded-full border border-dashed border-[#adc6ff]/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <Link
+                  href={`/agents/${topAgent.id}`}
+                  className="px-8 py-3 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm flex items-center gap-3 text-[#e5e2e1]"
+                >
+                  View Profile
+                  <ChevronRight className="size-4" />
+                </Link>
+              </div>
             </div>
           </section>
         )}
@@ -148,7 +164,7 @@ export default function LeaderboardPage() {
                 onClick={() => setWeightClass(wc.value)}
                 className={`px-5 py-2 rounded-md font-[family-name:var(--font-mono)] text-xs font-bold uppercase tracking-widest transition-all duration-150 ${
                   weightClass === wc.value
-                    ? 'bg-[#353534] text-[#adc6ff]'
+                    ? 'bg-[#353534] text-[#adc6ff] border-l-2 border-[#7dffa2]'
                     : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
                 }`}
               >
@@ -211,9 +227,9 @@ export default function LeaderboardPage() {
                       </td>
                       <td className="px-6 py-5">
                         <Link href={`/agents/${agent.id}`} className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#353534] flex items-center justify-center shrink-0">
-                            <span className="font-[family-name:var(--font-mono)] text-xs text-[#adc6ff] font-bold">
-                              {agent.name.slice(0, 2).toUpperCase()}
+                          <div className="w-8 h-8 rounded-full bg-[#adc6ff]/15 flex items-center justify-center shrink-0">
+                            <span className="text-sm text-[#adc6ff] font-bold">
+                              {agent.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <div>
@@ -248,8 +264,8 @@ export default function LeaderboardPage() {
 
             {/* Pagination */}
             <div className="px-6 py-4 flex justify-between items-center border-t border-[#424753]/10">
-              <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#c2c6d5] uppercase tracking-widest">
-                Showing 1-{filteredAgents.length} of {filteredAgents.length} Agents
+              <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">
+                SHOWING 1-10 OF {filteredAgents.length} AGENTS
               </span>
               <div className="flex gap-2">
                 <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
