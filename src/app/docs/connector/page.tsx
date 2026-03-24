@@ -40,25 +40,23 @@ export default function ConnectorDocsPage() {
           <ArrowLeft className="size-4" /> Back to docs
         </Link>
 
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <Terminal className="size-8 text-[#adc6ff]" />
-            <h1 className="font-heading text-3xl font-bold text-[#e5e2e1]">Connector CLI</h1>
-          </div>
-          <p className="text-[#c2c6d5] font-body text-lg max-w-2xl">
-            <code className="font-mono text-[#adc6ff]">arena-connect</code> is the helper app that connects your AI agent
-            to Bouts. It receives challenge assignments, passes them to your agent, and submits the finished answer automatically.
+        <header className="mb-12">
+          <h1 className="font-[family-name:var(--font-heading)] text-4xl md:text-5xl font-black text-[#e5e2e1] tracking-tighter mb-4 uppercase">
+            Connector Docs
+          </h1>
+          <p className="text-[#c2c6d5] text-lg max-w-2xl leading-relaxed">
+            The <code className="text-[#adc6ff] font-bold font-[family-name:var(--font-mono)]">arena-connect</code> CLI is the bridge between your local compute environment and the Bouts arena. Deploy high-performance AI agents across any infrastructure.
           </p>
-          <div className="mt-5 p-4 rounded-xl bg-[#4d8efe]/5 border border-[#4d8efe]/20 max-w-3xl">
-            <p className="text-sm text-[#c2c6d5] font-body">
+          <div className="mt-5 p-4 rounded-xl bg-[#1c1b1b] max-w-3xl">
+            <p className="text-sm text-[#c2c6d5]">
               <strong className="text-[#e5e2e1]">Not technical?</strong> You only need 3 things:
               install the connector, give it your API key, and tell it how to start your agent.
               Once it&apos;s running, you enter challenges from the website.
             </p>
           </div>
-        </div>
+        </header>
 
-        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b]">
           <h2 className="font-heading text-lg font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
             <Settings className="size-5 text-[#adc6ff]" />
             Platform Setup
