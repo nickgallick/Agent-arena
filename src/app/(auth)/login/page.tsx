@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { Github, ShieldCheck, Zap, Swords } from 'lucide-react'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
 
 function isSupabaseConfigured() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -12,7 +14,7 @@ export default function LoginPage() {
   const configured = isSupabaseConfigured()
 
   return (
-    <div className="relative min-h-screen bg-[#131313] text-[#e5e2e1] font-['Manrope'] flex flex-col overflow-hidden selection:bg-[#adc6ff]/30">
+    <div className="relative min-h-screen bg-[#131313] text-[#e5e2e1] font-[family-name:var(--font-heading)] flex flex-col overflow-hidden selection:bg-[#adc6ff]/30">
       {/* Neural grid */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -25,6 +27,8 @@ export default function LoginPage() {
       {/* Centered radial glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none" style={{ background: 'radial-gradient(circle at center, rgba(173,198,255,0.08) 0%, transparent 70%)' }} />
 
+      <Header />
+
       <main className="flex-grow flex items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-md">
           {/* Logo + Heading */}
@@ -32,10 +36,10 @@ export default function LoginPage() {
             <div className="w-12 h-12 bg-[#4d8efe] rounded-lg flex items-center justify-center shadow-lg shadow-[#adc6ff]/10 mb-6 group transition-transform hover:scale-105 duration-300">
               <Swords className="size-7 text-[#00285c]" />
             </div>
-            <h1 className="font-['Manrope'] font-extrabold text-3xl tracking-tighter text-[#e5e2e1] mb-2">
+            <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tighter text-[#e5e2e1] mb-2">
               Sign in to Bouts
             </h1>
-            <p className="font-['Space_Grotesk'] text-[#c2c6d5] text-sm tracking-wide uppercase opacity-70">
+            <p className="font-[family-name:var(--font-mono)] text-[#c2c6d5] text-sm tracking-wide uppercase opacity-70">
               Precision Tier Authentication
             </p>
           </div>
@@ -58,9 +62,11 @@ export default function LoginPage() {
                 {/* GitHub OAuth — primary */}
                 <a
                   href="/api/auth/github"
-                  className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-[#353534] hover:bg-[#3a3939] text-[#e5e2e1] font-['Manrope'] font-semibold rounded-lg transition-all duration-150 active:scale-[0.98] group"
+                  className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-[#353534] hover:bg-[#3a3939] text-[#e5e2e1] font-[family-name:var(--font-heading)] font-semibold rounded-lg transition-all duration-150 active:scale-[0.98] group"
                 >
-                  <Github className="size-6" />
+                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                  </svg>
                   <span className="text-lg">Sign in with GitHub</span>
                 </a>
 
@@ -69,7 +75,7 @@ export default function LoginPage() {
                   <div aria-hidden="true" className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-[#424753]/15" />
                   </div>
-                  <div className="relative flex justify-center text-xs uppercase tracking-widest font-['Space_Grotesk']">
+                  <div className="relative flex justify-center text-xs uppercase tracking-widest font-[family-name:var(--font-mono)]">
                     <span className="bg-[#1c1b1b] px-4 text-[#c2c6d5]">
                       System Gateway
                     </span>
@@ -81,7 +87,7 @@ export default function LoginPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block font-['Space_Grotesk'] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1"
+                      className="block font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1"
                     >
                       User Identifier
                     </label>
@@ -92,13 +98,13 @@ export default function LoginPage() {
                       autoComplete="email"
                       required
                       placeholder="agent@kinetic.command"
-                      className="w-full bg-[#0e0e0e] border-none rounded-lg p-3 text-sm text-[#e5e2e1] placeholder:text-[#424753]/50 focus:ring-0 focus:border-b-2 focus:border-[#adc6ff] transition-all font-['Manrope']"
+                      className="w-full bg-[#0e0e0e] border-none rounded-lg p-3 text-sm text-[#e5e2e1] placeholder:text-[#424753]/50 focus:ring-0 focus:border-b-2 focus:border-[#adc6ff] transition-all font-[family-name:var(--font-heading)]"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="password"
-                      className="block font-['Space_Grotesk'] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1"
+                      className="block font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1"
                     >
                       Encrypted Token
                     </label>
@@ -109,25 +115,25 @@ export default function LoginPage() {
                       autoComplete="current-password"
                       required
                       placeholder="••••••••"
-                      className="w-full bg-[#0e0e0e] border-none rounded-lg p-3 text-sm text-[#e5e2e1] placeholder:text-[#424753]/50 focus:ring-0 focus:border-b-2 focus:border-[#adc6ff] transition-all font-['Manrope']"
+                      className="w-full bg-[#0e0e0e] border-none rounded-lg p-3 text-sm text-[#e5e2e1] placeholder:text-[#424753]/50 focus:ring-0 focus:border-b-2 focus:border-[#adc6ff] transition-all font-[family-name:var(--font-heading)]"
                     />
                   </div>
                   <input type="hidden" name="redirect" value="/agents" />
                   <button
                     type="submit"
-                    className="w-full py-3 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] font-['Manrope'] font-bold rounded-lg transition-transform active:scale-95 shadow-lg shadow-[#adc6ff]/10"
+                    className="w-full py-3 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-[family-name:var(--font-heading)] font-bold rounded-lg transition-transform active:scale-95 shadow-lg shadow-[#adc6ff]/10"
                   >
                     Authorize Session
                   </button>
                 </form>
               </div>
 
-              {/* New to Arena */}
+              {/* New to the Arena */}
               <div className="mt-8 pt-6 border-t border-[#424753]/15 flex flex-col items-center gap-2">
-                <p className="text-xs text-[#c2c6d5] font-['Manrope']">New to the Arena?</p>
+                <p className="text-xs text-[#c2c6d5] font-[family-name:var(--font-heading)]">New to the Arena?</p>
                 <Link
                   href="/challenges"
-                  className="text-sm font-['Manrope'] font-semibold text-[#adc6ff] hover:text-[#d8e2ff] transition-colors"
+                  className="text-sm font-[family-name:var(--font-heading)] font-semibold text-[#adc6ff] hover:text-[#d8e2ff] transition-colors"
                 >
                   Request Access Protocol
                 </Link>
@@ -139,13 +145,13 @@ export default function LoginPage() {
           <div className="mt-8 grid grid-cols-2 gap-4">
             <div className="bg-[#1c1b1b]/40 p-3 rounded-lg flex items-center gap-3">
               <ShieldCheck className="size-4 text-[#7dffa2]" />
-              <span className="font-['Space_Grotesk'] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">
+              <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">
                 End-to-End Secure
               </span>
             </div>
             <div className="bg-[#1c1b1b]/40 p-3 rounded-lg flex items-center gap-3">
               <Zap className="size-4 text-[#7dffa2]" />
-              <span className="font-['Space_Grotesk'] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">
+              <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">
                 Low Latency Auth
               </span>
             </div>
@@ -153,19 +159,7 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full py-8 relative z-10 border-t border-[#424753]/15">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest opacity-60">
-            © 2024 Kinetic Command AI · Bouts v4.2.0
-          </p>
-          <div className="flex gap-8">
-            <Link href="/terms" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Terms of Service</Link>
-            <Link href="/privacy" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Privacy Policy</Link>
-            <Link href="/status" className="font-['Space_Grotesk'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors">Support</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Ambient orbs */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">

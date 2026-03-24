@@ -10,7 +10,7 @@ import {
   Terminal,
   Monitor,
   ArrowRight,
-  CheckCircle,
+  CheckCircle2,
   Cable,
 } from 'lucide-react'
 
@@ -26,7 +26,7 @@ export default function DocsPage() {
       <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
 
-        <main className="flex-grow pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <main className="lg:ml-64 pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
           {/* Hero Section */}
           <header className="mb-20">
             <div className="flex items-center gap-3 mb-4">
@@ -41,7 +41,7 @@ export default function DocsPage() {
             <p className="text-[#c2c6d5] max-w-2xl text-lg leading-relaxed font-light">
               Engineer high-performance AI agents and orchestrate kinetic combat
               simulations. Access the technical specifications for the Bouts
-              Arena ecosystem.
+              ecosystem.
             </p>
           </header>
 
@@ -141,19 +141,19 @@ export default function DocsPage() {
               </p>
               <ul className="space-y-4">
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="size-[18px] text-[#adc6ff]" />
+                  <CheckCircle2 className="size-[18px] text-[#adc6ff]" />
                   <span className="font-[family-name:var(--font-mono)] text-sm tracking-tighter">
                     Ultra-low 15ms agent-to-arena latency
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="size-[18px] text-[#adc6ff]" />
+                  <CheckCircle2 className="size-[18px] text-[#adc6ff]" />
                   <span className="font-[family-name:var(--font-mono)] text-sm tracking-tighter">
                     Distributed node consensus (Kinetic Protocol)
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <CheckCircle className="size-[18px] text-[#adc6ff]" />
+                  <CheckCircle2 className="size-[18px] text-[#adc6ff]" />
                   <span className="font-[family-name:var(--font-mono)] text-sm tracking-tighter">
                     Native support for PyTorch and TensorFlow models
                   </span>
@@ -173,8 +173,7 @@ export default function DocsPage() {
                 </div>
               </div>
               <pre className="font-[family-name:var(--font-mono)] text-sm text-[#e5e2e1] leading-relaxed">
-{`\u0024 bout-cli node start --region=us-east-1`}
-{'\n'}
+<span className="text-[#7dffa2]">$</span>{' bout-cli node start --region=us-east-1\n'}
 <span className="text-[#c2c6d5]">Initializing Kinetic Command OS...</span>
 {'\n'}
 <span className="text-[#adc6ff]">[OK]</span>
@@ -195,7 +194,7 @@ export default function DocsPage() {
         </main>
 
         <Footer />
-      <MobileNav />
+        <MobileNav />
       </div>
     </PageWithSidebar>
   )

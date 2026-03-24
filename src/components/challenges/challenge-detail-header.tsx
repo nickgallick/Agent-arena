@@ -1,5 +1,6 @@
 'use client'
 
+import { Play, Video } from 'lucide-react'
 import { CATEGORIES, type CategoryId } from '@/lib/constants/categories'
 import { formatDuration } from '@/lib/utils/format'
 import type { Challenge } from '@/types/challenge'
@@ -15,11 +16,21 @@ export function ChallengeDetailHeader({ challenge, actionSlot }: ChallengeDetail
   return (
     <div className="bg-[#1c1b1b] rounded-xl overflow-hidden shadow-2xl">
       {/* Hero image area with gradient overlay */}
-      <div className="relative h-64 w-full bg-[#2a2a2a]">
-        {/* Dark placeholder — no real image */}
-        <div className="w-full h-full bg-[#2a2a2a] opacity-50" />
+      <div className="relative h-64 w-full">
+        <div className="w-full h-full bg-[#2a2a2a] opacity-50 grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1c1b1b] via-[#1c1b1b]/40 to-transparent" />
         <div className="absolute bottom-6 left-6 right-6">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="px-2 py-0.5 bg-[#7dffa2]/10 text-[#7dffa2] text-[10px] font-[family-name:var(--font-mono)] uppercase tracking-tighter rounded">
+              {challenge.status === 'active' ? 'Active' : challenge.status === 'complete' ? 'Complete' : challenge.status === 'judging' ? 'Judging' : 'Upcoming'}
+            </span>
+            {challenge.status === 'active' && (
+              <span className="flex items-center gap-1 text-[#adc6ff] font-[family-name:var(--font-mono)] text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#adc6ff] animate-pulse" />
+                LIVE SESSION
+              </span>
+            )}
+          </div>
           <h1 className="text-4xl md:text-5xl font-extrabold font-[family-name:var(--font-heading)] tracking-tighter text-[#e5e2e1]">
             {challenge.title}
           </h1>
@@ -32,40 +43,37 @@ export function ChallengeDetailHeader({ challenge, actionSlot }: ChallengeDetail
         <div className="flex flex-wrap gap-3 mb-8">
           {cat && (
             <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
-              <span className="text-[10px] text-[#8c909f] font-[family-name:var(--font-mono)] uppercase tracking-widest">Category</span>
-              <span className="text-[#e5e2e1] font-[family-name:var(--font-heading)] font-bold">{cat.icon} {cat.name}</span>
+              <span className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest">Category</span>
+              <span className="text-[#e5e2e1] font-[family-name:var(--font-heading)] font-bold">{cat.name}</span>
             </div>
           )}
           <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
-            <span className="text-[10px] text-[#8c909f] font-[family-name:var(--font-mono)] uppercase tracking-widest">Weight Class</span>
+            <span className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest">Format</span>
+            <span className="text-[#e5e2e1] font-[family-name:var(--font-heading)] font-bold capitalize">{challenge.format}</span>
+          </div>
+          <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
+            <span className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest">Weight Class</span>
             <span className="text-[#7dffa2] font-[family-name:var(--font-heading)] font-bold capitalize">{challenge.weight_class_id ?? 'Open'}</span>
           </div>
           <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
-            <span className="text-[10px] text-[#8c909f] font-[family-name:var(--font-mono)] uppercase tracking-widest">Time Limit</span>
+            <span className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest">Time Limit</span>
             <span className="text-[#e5e2e1] font-[family-name:var(--font-heading)] font-bold">{formatDuration(challenge.time_limit_minutes)}</span>
           </div>
-          <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
-            <span className="text-[10px] text-[#8c909f] font-[family-name:var(--font-mono)] uppercase tracking-widest">Format</span>
-            <span className="text-[#e5e2e1] font-[family-name:var(--font-heading)] font-bold capitalize">{challenge.format}</span>
-          </div>
-          {challenge.entry_count > 0 && (
-            <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
-              <span className="text-[10px] text-[#8c909f] font-[family-name:var(--font-mono)] uppercase tracking-widest">Competitors</span>
-              <span className="text-[#e5e2e1] font-[family-name:var(--font-heading)] font-bold">{challenge.entry_count}</span>
-            </div>
-          )}
         </div>
 
         {/* Description */}
         {challenge.description && (
-          <p className="text-[#c2c6d5] leading-relaxed text-lg mb-10">
-            {challenge.description}
-          </p>
+          <div className="space-y-4 max-w-2xl">
+            <h3 className="text-lg font-[family-name:var(--font-heading)] font-bold border-l-4 border-[#adc6ff] pl-4">Mission Objectives</h3>
+            <p className="text-[#c2c6d5] leading-relaxed text-lg">
+              {challenge.description}
+            </p>
+          </div>
         )}
 
-        {/* Action buttons slot */}
+        {/* CTA Actions */}
         {actionSlot && (
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row gap-4">
             {actionSlot}
           </div>
         )}
