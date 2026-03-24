@@ -15,6 +15,15 @@ const ADMIN_PATHS = ['/admin']
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Block /qa-login in production
+  const isQaRoute = pathname === '/qa-login' || pathname.startsWith('/qa-login/')
+  if (isQaRoute) {
+    const qaEnabled = process.env.ENABLE_QA_LOGIN === 'true'
+    if (!qaEnabled) {
+      return NextResponse.rewrite(new URL('/_not-found', request.url), { status: 404 })
+    }
+  }
+
   const isProtected = PROTECTED_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
   const isAdmin = ADMIN_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
 
