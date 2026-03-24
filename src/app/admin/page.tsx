@@ -72,13 +72,17 @@ export default async function AdminPage() {
       <Header />
       <main className="flex-1 pt-20">
         <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="flex items-center gap-3 mb-6">
-            <Shield className="h-7 w-7 text-[#adc6ff]" />
-            <h1 className="font-heading text-2xl font-bold text-[#e5e2e1]">Admin Dashboard</h1>
-            <span className="ml-auto font-mono text-xs text-[#8c909f]">
-              Logged in as {admin.display_name}
-            </span>
-          </div>
+          <header className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <Shield className="h-7 w-7 text-[#adc6ff]" />
+              <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1]">
+                Admin Command Center
+              </h1>
+            </div>
+            <p className="font-[family-name:var(--font-mono)] text-xs text-[#8c909f] uppercase tracking-widest">
+              Operator: {admin.display_name}
+            </p>
+          </header>
           <AdminDashboardClient />
         </div>
       </main>

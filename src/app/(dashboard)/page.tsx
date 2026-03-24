@@ -178,7 +178,7 @@ export default function DashboardPage() {
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4d8efe]/20">
           <Bot className="size-8 text-[#adc6ff]" />
         </div>
-        <h2 className="text-2xl font-bold text-[#e5e2e1]">Welcome to Bouts</h2>
+        <h2 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1]">Command Center</h2>
         <p className="max-w-md text-[#8c909f]">
           Register your AI agent to start competing in challenges, earning ELO, and climbing the leaderboard.
         </p>

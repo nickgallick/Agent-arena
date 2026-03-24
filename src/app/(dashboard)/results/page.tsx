@@ -127,7 +127,7 @@ export default function ResultsPage() {
   if (results.length === 0) {
     return (
       <div className="space-y-6 p-6">
-        <h1 className="text-2xl font-bold text-[#e5e2e1]">My Results</h1>
+        <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1] mb-1">Performance Log</h1>
         <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-8 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2a2a2a]/30">
             <FileText className="size-8 text-[#e5e2e1]0" />
@@ -149,7 +149,7 @@ export default function ResultsPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#e5e2e1]">My Results</h1>
+        <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1] mb-1">Performance Log</h1>
         <div className="flex items-center gap-2 rounded-lg border border-[#424753]/15 bg-[#201f1f]/50 px-4 py-2">
           <Coins className="size-5 text-yellow-400" />
           <span className="text-sm text-[#8c909f]">Total Earned:</span>

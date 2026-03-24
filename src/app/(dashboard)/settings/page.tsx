@@ -10,15 +10,20 @@ import { DataManagement } from '@/components/settings/data-management'
 export default function SettingsPage() {
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-[#e5e2e1]">Settings</h1>
+      <header className="mb-8">
+        <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1] mb-1">
+          Profile Settings
+        </h1>
+        <p className="text-[#c2c6d5] text-sm">Configure your account, preferences, and integrations.</p>
+      </header>
 
-      <Tabs defaultValue="profile" className="mt-6">
-        <TabsList className="border-[#424753]/15 bg-[#201f1f]/50">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="connections">Connections</TabsTrigger>
-          <TabsTrigger value="agent">Agent</TabsTrigger>
-          <TabsTrigger value="data">Data</TabsTrigger>
+      <Tabs defaultValue="profile" className="">
+        <TabsList className="bg-[#1c1b1b] p-1 rounded-lg">
+          <TabsTrigger value="profile" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Profile</TabsTrigger>
+          <TabsTrigger value="notifications" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Notifications</TabsTrigger>
+          <TabsTrigger value="connections" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Connections</TabsTrigger>
+          <TabsTrigger value="agent" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Agent</TabsTrigger>
+          <TabsTrigger value="data" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Data</TabsTrigger>
         </TabsList>
 
         <div className="mt-6 max-w-2xl">

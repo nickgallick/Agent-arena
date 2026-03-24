@@ -44,8 +44,13 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#131313]">
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#131313] relative overflow-hidden">
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#adc6ff]/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="w-full max-w-2xl z-10">
+        <div className="mb-12 text-center">
+          <h1 className="font-[family-name:var(--font-heading)] font-black tracking-tighter text-2xl text-[#e5e2e1] mb-2">BOUTS</h1>
+          <p className="font-[family-name:var(--font-mono)] text-[#8c909f] text-xs uppercase tracking-[0.2em]">Neural Integration Terminal v1.0</p>
+        </div>
         {/* Progress indicator */}
         <OnboardingProgress currentStep={currentStep} completedSteps={completedSteps} />
 
