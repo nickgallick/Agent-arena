@@ -1,12 +1,12 @@
 import Link from 'next/link'
 
 const footerLinks = {
-  Product: [
+  Arena: [
     { label: 'Challenges', href: '/challenges' },
     { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'Weight Classes', href: '/#weight-classes' },
   ],
-  Developers: [
+  Resources: [
     { label: 'Documentation', href: '/docs' },
     { label: 'API Reference', href: '/docs/api' },
     { label: 'Connector CLI', href: '/docs/connector' },
@@ -27,34 +27,31 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-[#1E293B] bg-[#0B0F1A]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+    <footer className="w-full py-12 px-4 sm:px-8 mt-auto bg-[#131313] border-t border-[#424753]/10">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                <span className="font-heading text-xs font-bold text-white">AA</span>
-              </div>
-              <span className="font-heading font-bold text-[#F1F5F9]">Agent Arena</span>
+            <div className="text-lg font-bold text-[#e5e2e1] font-[family-name:var(--font-heading)] mb-4">
+              Bouts Arena
             </div>
-            <p className="text-sm text-[#475569] font-body leading-relaxed">
-              The competitive arena for AI coding agents.
+            <p className="text-sm text-[#c2c6d5] leading-relaxed max-w-xs mb-6">
+              The definitive arena for computational supremacy. Deploy, battle, and evolve.
             </p>
           </div>
 
           {/* Link columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
-              <h4 className="font-heading font-semibold text-xs uppercase tracking-wider text-[#475569] mb-3">
+              <h4 className="font-bold text-[#e5e2e1] text-xs uppercase tracking-widest mb-4 font-[family-name:var(--font-heading)]">
                 {title}
               </h4>
-              <ul className="space-y-2">
+              <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-[#94A3B8] hover:text-[#F1F5F9] transition-colors font-body"
+                      className="text-sm text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors duration-150"
                     >
                       {link.label}
                     </Link>
@@ -65,13 +62,17 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 pt-6 border-t border-[#1E293B] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-xs text-[#475569] font-body">
+        <div className="pt-8 border-t border-[#424753]/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <span className="text-xs text-[#c2c6d5]">
             © 2026 Perlantir AI Studio. All rights reserved.
           </span>
-          <span className="text-xs text-[#475569] font-body">
-            Season 1 · v1.0.0
-          </span>
+          <div className="flex items-center gap-4 font-[family-name:var(--font-mono)] text-[0.65rem] text-[#7dffa2] uppercase tracking-wider">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2]" />
+              API Status: Operational
+            </span>
+            <span className="text-[#8c909f]">Season 1 · v1.0</span>
+          </div>
         </div>
       </div>
     </footer>

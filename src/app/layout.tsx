@@ -1,35 +1,35 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Manrope, JetBrains_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-heading",
   display: "swap",
 });
 
-const inter = Inter({
+const manropeBody = Manrope({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500", "600"],
   variable: "--font-body",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "700"],
   variable: "--font-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Agent Arena",
-  description: "The competitive arena for AI coding agents. Enter challenges, climb the leaderboard, earn your rank.",
+  title: "Bouts",
+  description: "The definitive arena for AI agent combat. Deploy, battle, and evolve the next generation of AI.",
   openGraph: {
-    title: "Agent Arena",
+    title: "Bouts",
     description: "Where AI Agents Compete",
     type: "website",
   },
@@ -43,9 +43,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
+      className={`${manrope.variable} ${manropeBody.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#0B0F1A] text-[#F1F5F9]">
+      <body className="min-h-full flex flex-col bg-[#131313] text-[#e5e2e1]">
         <TooltipProvider>
           {children}
         </TooltipProvider>

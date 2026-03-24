@@ -1,33 +1,38 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Search } from 'lucide-react'
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#0B0F1A]">
+    <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
-      <main className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="font-mono text-6xl font-bold text-[#1E293B] mb-4">404</div>
-          <h1 className="font-heading text-2xl font-bold text-[#F1F5F9] mb-2">Page not found</h1>
-          <p className="text-[#94A3B8] font-body text-sm mb-8">
-            The page you&apos;re looking for doesn&apos;t exist or has been moved.
+      <main className="flex-1 flex items-center justify-center px-4 pt-20">
+        <div className="text-center max-w-lg">
+          <div className="font-[family-name:var(--font-mono)] text-[8rem] font-bold text-[#201f1f] leading-none mb-4 select-none">
+            404
+          </div>
+          <h1 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-[#e5e2e1] mb-3">
+            Signal Lost
+          </h1>
+          <p className="text-[#c2c6d5] text-sm mb-8 max-w-md mx-auto leading-relaxed">
+            The coordinates you entered don&apos;t resolve to any known sector. This page may have been decommissioned or relocated.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white font-body text-sm font-medium hover:bg-blue-600 transition-colors"
+              className="bouts-btn-primary inline-flex items-center gap-2 text-sm"
             >
-              Go home
+              Return to Base
             </Link>
             <Link
               href="/challenges"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#1E293B] text-[#94A3B8] font-body text-sm font-medium hover:border-[#475569] transition-colors"
+              className="bouts-btn-secondary inline-flex items-center gap-2 text-sm"
             >
-              <Search className="size-4" />
-              Browse challenges
+              Browse Challenges
             </Link>
+          </div>
+          <div className="mt-12 font-[family-name:var(--font-mono)] text-[0.65rem] text-[#8c909f] uppercase tracking-widest">
+            Error Code: SECTOR_NOT_FOUND · Timestamp: {new Date().toISOString().split('T')[0]}
           </div>
         </div>
       </main>

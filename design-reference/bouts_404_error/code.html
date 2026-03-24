@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Space+Grotesk:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-bright": "#3a3939",
+              "on-primary-fixed-variant": "#004494",
+              "secondary-container": "#05e777",
+              "on-error-container": "#ffdad6",
+              "primary-fixed": "#d8e2ff",
+              "on-tertiary-container": "#442000",
+              "inverse-on-surface": "#313030",
+              "primary-container": "#4d8efe",
+              "on-secondary-fixed": "#00210b",
+              "surface-container-lowest": "#0e0e0e",
+              "outline-variant": "#424753",
+              "on-surface-variant": "#c2c6d5",
+              "inverse-primary": "#005ac1",
+              "surface-variant": "#353534",
+              "inverse-surface": "#e5e2e1",
+              "on-primary-container": "#00285c",
+              "tertiary": "#ffb780",
+              "surface-container-highest": "#353534",
+              "on-primary": "#002e69",
+              "on-secondary-fixed-variant": "#005226",
+              "on-secondary": "#003918",
+              "background": "#131313",
+              "on-error": "#690005",
+              "surface-container": "#201f1f",
+              "on-surface": "#e5e2e1",
+              "surface": "#131313",
+              "tertiary-fixed": "#ffdcc4",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "surface-dim": "#131313",
+              "primary-fixed-dim": "#adc6ff",
+              "error": "#ffb4ab",
+              "surface-container-high": "#2a2a2a",
+              "tertiary-container": "#db760f",
+              "primary": "#adc6ff",
+              "surface-tint": "#adc6ff",
+              "secondary": "#7dffa2",
+              "on-background": "#e5e2e1",
+              "error-container": "#93000a",
+              "surface-container-low": "#1c1b1b",
+              "on-primary-fixed": "#001a41",
+              "on-tertiary": "#4e2600",
+              "tertiary-fixed-dim": "#ffb780",
+              "on-tertiary-fixed": "#2f1400",
+              "outline": "#8c909f",
+              "on-secondary-container": "#00622e",
+              "secondary-fixed-dim": "#00e475",
+              "secondary-fixed": "#62ff96"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #131313; }
+        .technical-grid {
+            background-image: 
+                linear-gradient(to right, rgba(173, 198, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(173, 198, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col selection:bg-primary/30">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl h-16 px-8 flex justify-between items-center w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black tracking-tighter text-[#e5e2e1] uppercase">BOUTS ELITE</span>
+<nav class="hidden md:flex gap-6 items-center font-['Manrope'] font-medium tracking-tight">
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Arena</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Agents</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Telemetry</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" href="#">Docs</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="active:scale-95 transition-transform bg-gradient-to-br from-primary to-primary-container text-on-primary-container px-5 py-2 rounded font-bold text-sm">
+                Connect Node
+            </button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 relative overflow-hidden technical-grid">
+<!-- Ambient Light Effects -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<!-- 404 Visual Content -->
+<div class="relative z-10 flex flex-col items-center text-center max-w-2xl">
+<!-- Glitch Indicator -->
+<div class="mb-6 flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-['JetBrains_Mono'] text-xs uppercase tracking-[0.3em] text-error">System Error: 0x00404</span>
+</div>
+<!-- Hero Text -->
+<h1 class="text-8xl md:text-9xl font-black tracking-tighter text-on-surface mb-2 opacity-10 font-headline">
+                404
+            </h1>
+<h2 class="text-4xl md:text-6xl font-extrabold tracking-tighter uppercase mb-6 leading-none">
+                PAGE NOT FOUND
+            </h2>
+<p class="text-on-surface-variant text-lg md:text-xl font-medium leading-relaxed mb-10 max-w-lg">
+                The neural path you are seeking does not exist or has been relocated within the Kinetic Command matrix.
+            </p>
+<!-- Action Cluster -->
+<div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+<a class="group relative px-8 py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary-container rounded font-bold flex items-center justify-center gap-3 hover:shadow-[0_0_20px_rgba(173,198,255,0.3)] transition-all active:scale-95" href="/">
+<span class="material-symbols-outlined text-xl">home</span>
+                    Go Home
+                </a>
+<a class="px-8 py-4 bg-surface-container-high text-primary rounded font-bold flex items-center justify-center gap-3 hover:bg-surface-container-highest transition-all active:scale-95" href="/challenges">
+<span class="material-symbols-outlined text-xl">rocket_launch</span>
+                    Browse Challenges
+                </a>
+</div>
+<!-- Terminal Decorum -->
+<div class="mt-16 w-full max-w-md bg-surface-container-low p-4 rounded-lg border border-outline-variant/10 text-left">
+<div class="flex gap-2 mb-3">
+<div class="w-2 h-2 rounded-full bg-surface-bright"></div>
+<div class="w-2 h-2 rounded-full bg-surface-bright"></div>
+<div class="w-2 h-2 rounded-full bg-surface-bright"></div>
+</div>
+<div class="font-['JetBrains_Mono'] text-[10px] leading-relaxed text-on-surface-variant/60 uppercase">
+<div>&gt; INITIALIZING TRACE_ROUTE...</div>
+<div>&gt; SECTOR: 0xFF04 (VOID)</div>
+<div>&gt; STATUS: RESOURCE_UNREACHABLE</div>
+<div class="text-secondary">&gt; AUTOMATIC REDIRECT SUGGESTED: COMMAND_ROOT</div>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute left-10 top-1/4 hidden lg:block opacity-20 rotate-90">
+<span class="font-['JetBrains_Mono'] text-[10px] tracking-widest text-primary uppercase">Telemetry-Void-Sequence-99</span>
+</div>
+<div class="absolute right-10 bottom-1/4 hidden lg:block opacity-20 -rotate-90">
+<span class="font-['JetBrains_Mono'] text-[10px] tracking-widest text-secondary uppercase">Kinetic-Command-OS-v2.4</span>
+</div>
+</main>
+<!-- BottomNavBar (Suppressed on 404 per UI focus rules, but kept for context as requested in prompt "Includes signature Bouts floating nav") -->
+<!-- Applying the logic: On focus/404 we might hide, but user specifically asked for "signature Bouts floating nav" -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-8 items-center bg-[#201f1f]/90 backdrop-blur-2xl rounded-full px-6 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+<a class="flex flex-col items-center justify-center text-[#c2c6d5] p-2 hover:bg-[#353534] rounded-full transition-all" href="#">
+<span class="material-symbols-outlined">swords</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase mt-1">Battle</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#c2c6d5] p-2 hover:bg-[#353534] rounded-full transition-all" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase mt-1">Rankings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#c2c6d5] p-2 hover:bg-[#353534] rounded-full transition-all" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase mt-1">Laboratory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#c2c6d5] p-2 hover:bg-[#353534] rounded-full transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['JetBrains_Mono'] text-[10px] uppercase mt-1">Settings</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 mt-auto bg-[#131313] border-t border-surface-container-low">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto font-['JetBrains_Mono'] text-xs tracking-widest">
+<div class="col-span-2 md:col-span-1">
+<span class="text-lg font-bold text-[#e5e2e1] block mb-4">BOUTS ELITE</span>
+<p class="text-[#c2c6d5] normal-case tracking-normal max-w-xs leading-relaxed">
+                    Advanced AI orchestration and competitive telemetry environment.
+                </p>
+</div>
+<div class="flex flex-col gap-3">
+<span class="text-primary font-bold mb-2">NETWORK</span>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">Agents</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">Arena</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="text-primary font-bold mb-2">DEVELOPMENT</span>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">API</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">SDK</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="text-primary font-bold mb-2">COMMUNITY</span>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">Github</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">Discord</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">X</a>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-surface-container-low flex justify-between items-center text-[10px] text-[#c2c6d5]">
+<span>© 2024 KINETIC COMMAND OS. ALL RIGHTS RESERVED.</span>
+<div class="flex gap-6">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    SYSTEMS_NOMINAL
+                </span>
+<span>UTC: 14:22:01</span>
+</div>
+</div>
+</footer>
+</body></html>

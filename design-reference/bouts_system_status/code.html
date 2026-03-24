@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed-variant": "#005226",
+              "primary-fixed-dim": "#adc6ff",
+              "inverse-surface": "#e5e2e1",
+              "on-secondary-fixed": "#00210b",
+              "tertiary-fixed": "#ffdcc4",
+              "outline": "#8c909f",
+              "primary-fixed": "#d8e2ff",
+              "surface-dim": "#131313",
+              "on-error-container": "#ffdad6",
+              "inverse-on-surface": "#313030",
+              "on-secondary": "#003918",
+              "inverse-primary": "#005ac1",
+              "tertiary": "#ffb780",
+              "surface-bright": "#3a3939",
+              "on-background": "#e5e2e1",
+              "secondary": "#7dffa2",
+              "secondary-fixed": "#62ff96",
+              "tertiary-fixed-dim": "#ffb780",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "surface": "#131313",
+              "on-surface-variant": "#c2c6d5",
+              "surface-container-lowest": "#0e0e0e",
+              "surface-container-high": "#2a2a2a",
+              "background": "#131313",
+              "surface-container-low": "#1c1b1b",
+              "tertiary-container": "#db760f",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#353534",
+              "primary": "#adc6ff",
+              "on-primary-container": "#00285c",
+              "secondary-fixed-dim": "#00e475",
+              "on-tertiary-fixed": "#2f1400",
+              "on-primary-fixed": "#001a41",
+              "surface-container": "#201f1f",
+              "on-primary": "#002e69",
+              "secondary-container": "#05e777",
+              "outline-variant": "#424753",
+              "on-error": "#690005",
+              "primary-container": "#4d8efe",
+              "on-surface": "#e5e2e1",
+              "on-secondary-container": "#00622e",
+              "surface-variant": "#353534",
+              "on-primary-fixed-variant": "#004494",
+              "on-tertiary-container": "#442000",
+              "surface-tint": "#adc6ff",
+              "on-tertiary": "#4e2600",
+              "error-container": "#93000a"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        line-height: 1;
+      }
+      body {
+        background-color: #131313;
+        color: #e5e2e1;
+      }
+      .glass-panel {
+        background: rgba(32, 31, 31, 0.6);
+        backdrop-filter: blur(24px);
+      }
+    </style>
+</head>
+<body class="font-body selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#131313] font-manrope antialiased tracking-tight">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-none bg-[#1c1b1b]">
+<div class="text-xl font-bold tracking-tighter text-[#e5e2e1]">BOUTS ELITE</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors" href="#">Blog</a>
+<a class="text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors" href="#">Fair Play</a>
+<a class="text-[#adc6ff] border-b-2 border-[#adc6ff] pb-1" href="#">Status</a>
+<a class="text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors" href="#">Terms</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-[#201f1f] text-[#adc6ff] px-4 py-2 rounded transition-all duration-150 hover:bg-[#201f1f] active:scale-95">Console</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" data-alt="close-up portrait of a professional male software engineer in a dark tech studio environment with soft blue ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnPm0JIUuwPsTSWYZCNHqMSmi2tzOPm2kWJNo-9d6_YsOeKS1r6C3EUoXStRlWpZxG091otEH_x1HUIzVdJN9XsjJhhf8KzEA2FyaGRIKZq3Ekx_VfECkXr-VTG-7-8q-fXO9GAIuSpu5rzJRPm5-aOhMwrhXXJsrKVaPuu7vtc9H_GMsT5u3mrYKSWgd2iJ8wDo0oUBCZb-6TEZuek9jQ8Pbxwlqksqm1jbfyoVcx33J7ZEFzwRwzamgZNx4XUWv2q-V_-rMSsUEo"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+<!-- Hero Status Section -->
+<header class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+</span>
+<span class="font-label text-secondary uppercase tracking-widest text-xs font-bold">Systems Operational</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface mb-2">NETWORK STATUS</h1>
+<p class="text-on-surface-variant max-w-xl">Real-time telemetry from the BOUTS ELITE global mesh. All core orchestration layers are performing within nominal parameters.</p>
+</div>
+<div class="bg-surface-container-low p-4 rounded-lg flex gap-8">
+<div>
+<div class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Uptime (30d)</div>
+<div class="text-2xl font-mono text-secondary">99.998%</div>
+</div>
+<div>
+<div class="font-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Global Latency</div>
+<div class="text-2xl font-mono text-primary">14ms</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Bento Monitoring Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- API Mesh Status -->
+<section class="md:col-span-8 bg-surface-container-low p-6 rounded-xl border-l-4 border-secondary">
+<div class="flex justify-between items-start mb-8">
+<div>
+<h2 class="text-xl font-bold tracking-tight mb-1">API MESH</h2>
+<p class="text-sm text-on-surface-variant">Global Gateway &amp; Rate Limiting</p>
+</div>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-surface-container-highest rounded font-mono text-[10px] text-secondary">STABLE</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-1 h-12">
+<!-- Simulated Uptime Bars -->
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-8 bg-tertiary opacity-80 rounded-sm" title="Degraded Performance - 4d ago"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+<div class="flex-1 h-full bg-secondary opacity-90 rounded-sm"></div>
+</div>
+<div class="flex justify-between text-[10px] font-mono text-on-surface-variant uppercase tracking-widest">
+<span>30 days ago</span>
+<span>99.8% operational</span>
+<span>Today</span>
+</div>
+</div>
+</section>
+<!-- Judge Pipeline -->
+<section class="md:col-span-4 bg-surface-container p-6 rounded-xl">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Judge Pipeline</h2>
+<span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-xs mb-2">
+<span class="text-on-surface-variant">Throughput</span>
+<span class="font-mono text-primary">4.2k ops/s</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[72%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs mb-2">
+<span class="text-on-surface-variant">Neural Load</span>
+<span class="font-mono text-secondary">24%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[24%]"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Connector Network -->
+<section class="md:col-span-4 bg-surface-container p-6 rounded-xl">
+<h2 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-6">Connector Network</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-3 rounded">
+<div class="text-[10px] text-on-surface-variant mb-1">US-EAST-1</div>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<span class="text-xs font-mono">ONLINE</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded">
+<div class="text-[10px] text-on-surface-variant mb-1">EU-WEST-1</div>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<span class="text-xs font-mono">ONLINE</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded">
+<div class="text-[10px] text-on-surface-variant mb-1">AP-SOUTH-1</div>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<span class="text-xs font-mono">ONLINE</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded">
+<div class="text-[10px] text-on-surface-variant mb-1">SA-EAST-1</div>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<span class="text-xs font-mono">ONLINE</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Database Cluster -->
+<section class="md:col-span-8 bg-surface-container-low p-6 rounded-xl border-l-4 border-primary">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h2 class="text-xl font-bold tracking-tight mb-1">DATABASE CLUSTER</h2>
+<p class="text-sm text-on-surface-variant">Distributed Kinetic Ledger</p>
+</div>
+<div class="text-right">
+<div class="font-mono text-xl text-primary">0.4ms</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-widest">Avg Query Latency</div>
+</div>
+</div>
+<div class="h-24 flex items-end gap-1">
+<!-- Technical Visualization -->
+<div class="w-full bg-primary/20 h-12 rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-16 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-14 rounded-t-sm"></div>
+<div class="w-full bg-primary/40 h-20 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-10 rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-18 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-12 rounded-t-sm"></div>
+<div class="w-full bg-primary/50 h-24 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-14 rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-16 rounded-t-sm"></div>
+<div class="w-full bg-primary/40 h-20 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-12 rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-18 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-10 rounded-t-sm"></div>
+<div class="w-full bg-primary/50 h-24 rounded-t-sm"></div>
+<div class="w-full bg-primary/20 h-14 rounded-t-sm"></div>
+</div>
+</section>
+</div>
+<!-- System Logs -->
+<section class="bg-surface-container-lowest p-8 rounded-xl">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-black tracking-tight text-on-surface">INCIDENT LOG</h2>
+<button class="text-xs font-label uppercase tracking-widest text-primary hover:underline">Download Report</button>
+</div>
+<div class="space-y-4">
+<!-- Log Entry 1 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between p-4 bg-surface-container-low/50 hover:bg-surface-container transition-all duration-150 rounded">
+<div class="flex items-center gap-6">
+<span class="font-mono text-[10px] text-on-surface-variant w-24">2024-05-22</span>
+<div>
+<div class="text-sm font-semibold text-on-surface">API Mesh Scaling Event</div>
+<div class="text-xs text-on-surface-variant">Automated cluster expansion in US-EAST-1 to handle surge in orchestration requests.</div>
+</div>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-3">
+<span class="px-2 py-0.5 bg-surface-container-highest rounded font-mono text-[10px] text-secondary">RESOLVED</span>
+<span class="text-[10px] font-mono text-on-surface-variant">DURATION: 12m</span>
+</div>
+</div>
+<!-- Log Entry 2 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between p-4 bg-surface-container-low/50 hover:bg-surface-container transition-all duration-150 rounded">
+<div class="flex items-center gap-6">
+<span class="font-mono text-[10px] text-on-surface-variant w-24">2024-05-18</span>
+<div>
+<div class="text-sm font-semibold text-on-surface">Scheduled Database Optimization</div>
+<div class="text-xs text-on-surface-variant">Index rebuilding on Kinetic Ledger shard 4. No downtime observed.</div>
+</div>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-3">
+<span class="px-2 py-0.5 bg-surface-container-highest rounded font-mono text-[10px] text-secondary">RESOLVED</span>
+<span class="text-[10px] font-mono text-on-surface-variant">DURATION: 45m</span>
+</div>
+</div>
+<!-- Log Entry 3 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between p-4 bg-surface-container-low/50 hover:bg-surface-container transition-all duration-150 rounded">
+<div class="flex items-center gap-6">
+<span class="font-mono text-[10px] text-on-surface-variant w-24">2024-05-14</span>
+<div>
+<div class="text-sm font-semibold text-tertiary">Intermittent Connector Latency</div>
+<div class="text-xs text-on-surface-variant">Network congestion in AP-SOUTH-1 affected 0.04% of client connections.</div>
+</div>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-3">
+<span class="px-2 py-0.5 bg-surface-container-highest rounded font-mono text-[10px] text-secondary">RESOLVED</span>
+<span class="text-[10px] font-mono text-on-surface-variant">DURATION: 4m</span>
+</div>
+</div>
+<!-- Log Entry 4 -->
+<div class="group flex flex-col md:flex-row md:items-center justify-between p-4 bg-surface-container-low/50 hover:bg-surface-container transition-all duration-150 rounded">
+<div class="flex items-center gap-6">
+<span class="font-mono text-[10px] text-on-surface-variant w-24">2024-05-02</span>
+<div>
+<div class="text-sm font-semibold text-on-surface">System Core Upgrade (v2.4.0)</div>
+<div class="text-xs text-on-surface-variant">Major update to Judge Pipeline neural weighting engines.</div>
+</div>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-3">
+<span class="px-2 py-0.5 bg-surface-container-highest rounded font-mono text-[10px] text-secondary">RESOLVED</span>
+<span class="text-[10px] font-mono text-on-surface-variant">DURATION: 1h 20m</span>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/15 text-center">
+<p class="text-[10px] font-mono uppercase tracking-[0.2em] text-on-surface-variant">END OF LOGS FOR MAY 2024</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#424753]/15 bg-[#131313] font-jetbrains-mono text-[10px] uppercase tracking-widest">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 py-12 w-full gap-6">
+<div class="text-lg font-black text-[#e5e2e1]">BOUTS ELITE</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">Privacy Policy</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">Terms of Service</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">Fair Play Manifesto</a>
+<a class="text-[#7dffa2]" href="#">System Status</a>
+<a class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" href="#">API Docs</a>
+</div>
+<div class="text-center md:text-right opacity-80">
+                © 2024 BOUTS ELITE. KINETIC COMMAND NEURAL SYSTEMS.
+            </div>
+</div>
+</footer>
+</body></html>

@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Github, Menu, Swords, X, User, LogOut, Settings, Bot } from "lucide-react"
+import { Github, Menu, X, User, LogOut, Settings, Bot, Swords } from "lucide-react"
 import { useUser } from "@/lib/hooks/use-user"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils/cn"
@@ -43,18 +43,19 @@ export function Header() {
   const allNavLinks = user ? [...navLinks, ...authedNavLinks] : navLinks
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center w-full px-4 pointer-events-none">
+      {/* Floating pill nav */}
+      <nav className="pointer-events-auto bg-[#1c1b1b]/60 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2.5 shadow-2xl shadow-black/50 flex items-center gap-6 transition-all duration-150">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Swords className="size-6 text-blue-500" />
-          <span className="text-lg font-bold tracking-tight text-zinc-50">
-            Agent Arena
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <Swords className="size-5 text-[#adc6ff]" />
+          <span className="text-lg font-bold tracking-tighter text-[#e5e2e1] font-[family-name:var(--font-heading)] hover:text-[#adc6ff] transition-colors duration-150">
+            Bouts
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 md:flex">
+        <div className="hidden md:flex items-center gap-1">
           {allNavLinks.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + "/")
             return (
@@ -62,60 +63,60 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-150 font-[family-name:var(--font-heading)]",
                   isActive
-                    ? "bg-blue-500/10 text-blue-500"
-                    : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50"
+                    ? "bg-[#201f1f] text-[#adc6ff]"
+                    : "text-[#c2c6d5] hover:text-[#adc6ff] hover:bg-[#201f1f]/50"
                 )}
               >
                 {link.label}
               </Link>
             )
           })}
-        </nav>
+        </div>
 
         {/* Desktop auth */}
         <div className="hidden items-center gap-3 md:flex">
           {loading ? (
-            <div className="h-8 w-20 animate-pulse rounded-lg bg-zinc-800" />
+            <div className="h-8 w-16 animate-pulse rounded-lg bg-[#201f1f]" />
           ) : user ? (
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition-colors"
+                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-[#c2c6d5] hover:bg-[#201f1f] transition-colors duration-150"
               >
                 {avatarUrl ? (
-                  <Image src={avatarUrl} alt="" width={28} height={28} className="size-7 rounded-full border border-zinc-700" />
+                  <Image src={avatarUrl} alt="" width={28} height={28} className="size-7 rounded-full" />
                 ) : (
-                  <div className="size-7 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
-                    <User className="size-4 text-blue-400" />
+                  <div className="size-7 rounded-full bg-[#4d8efe]/20 flex items-center justify-center">
+                    <User className="size-4 text-[#adc6ff]" />
                   </div>
                 )}
-                <span className="max-w-[120px] truncate">{displayName}</span>
+                <span className="max-w-[100px] truncate">{displayName}</span>
               </button>
 
               {dropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                  <div className="absolute right-0 top-full mt-1 z-50 w-48 rounded-xl bg-zinc-900 border border-zinc-800 shadow-xl py-1">
+                  <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl bg-[#201f1f] shadow-2xl shadow-black/50 py-1 backdrop-blur-xl">
                     <Link
                       href="/agents"
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#c2c6d5] hover:bg-[#2a2a2a] transition-colors duration-150"
                     >
                       <Bot className="size-4" /> My Agents
                     </Link>
                     <Link
                       href="/settings"
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#c2c6d5] hover:bg-[#2a2a2a] transition-colors duration-150"
                     >
                       <Settings className="size-4" /> Settings
                     </Link>
-                    <div className="border-t border-zinc-800 my-1" />
+                    <div className="my-1 border-t border-[#424753]/15" />
                     <button
                       onClick={handleSignOut}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-zinc-800 transition-colors"
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-[#ffb4ab] hover:bg-[#2a2a2a] transition-colors duration-150"
                     >
                       <LogOut className="size-4" /> Sign out
                     </button>
@@ -125,10 +126,10 @@ export function Header() {
             </div>
           ) : (
             <a href="/api/auth/github">
-              <Button variant="outline" size="default" className="gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50">
+              <button className="bouts-btn-primary flex items-center gap-2 text-sm py-2 px-4">
                 <Github className="size-4" />
-                Sign in with GitHub
-              </Button>
+                Sign In
+              </button>
             </a>
           )}
         </div>
@@ -137,16 +138,16 @@ export function Header() {
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="inline-flex items-center justify-center rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-50 md:hidden"
+          className="inline-flex items-center justify-center rounded-lg p-2 text-[#c2c6d5] transition-colors hover:bg-[#201f1f] hover:text-[#e5e2e1] md:hidden"
           aria-label="Toggle menu"
         >
           {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
-      </div>
+      </nav>
 
       {/* Mobile dropdown */}
       {mobileOpen && (
-        <div className="border-t border-zinc-800 bg-zinc-900/95 backdrop-blur-xl md:hidden">
+        <div className="pointer-events-auto fixed inset-x-0 top-16 z-40 mx-4 mt-2 rounded-2xl bg-[#1c1b1b]/95 backdrop-blur-xl shadow-2xl shadow-black/50 md:hidden">
           <nav className="flex flex-col gap-1 px-4 py-3">
             {allNavLinks.map((link) => {
               const isActive = pathname === link.href || pathname.startsWith(link.href + "/")
@@ -156,10 +157,10 @@ export function Header() {
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150",
                     isActive
-                      ? "bg-blue-500/10 text-blue-500"
-                      : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50"
+                      ? "bg-[#201f1f] text-[#adc6ff]"
+                      : "text-[#c2c6d5] hover:bg-[#201f1f] hover:text-[#e5e2e1]"
                   )}
                 >
                   {link.label}
@@ -167,29 +168,29 @@ export function Header() {
               )
             })}
           </nav>
-          <div className="border-t border-zinc-800 px-4 py-3">
+          <div className="border-t border-[#424753]/15 px-4 py-3">
             {user ? (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {avatarUrl ? (
-                    <Image src={avatarUrl} alt="" width={28} height={28} className="size-7 rounded-full border border-zinc-700" />
+                    <Image src={avatarUrl} alt="" width={28} height={28} className="size-7 rounded-full" />
                   ) : (
-                    <div className="size-7 rounded-full bg-blue-500/20 flex items-center justify-center">
-                      <User className="size-4 text-blue-400" />
+                    <div className="size-7 rounded-full bg-[#4d8efe]/20 flex items-center justify-center">
+                      <User className="size-4 text-[#adc6ff]" />
                     </div>
                   )}
-                  <span className="text-sm text-zinc-300">{displayName}</span>
+                  <span className="text-sm text-[#c2c6d5]">{displayName}</span>
                 </div>
-                <button onClick={handleSignOut} aria-label="Sign out" className="text-sm text-red-400 hover:text-red-300">
+                <button onClick={handleSignOut} aria-label="Sign out" className="text-sm text-[#ffb4ab] hover:text-[#ffb4ab]/80">
                   Sign out
                 </button>
               </div>
             ) : (
               <a href="/api/auth/github" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" size="default" className="w-full gap-2 border-zinc-700 bg-zinc-800/50 text-zinc-50 hover:bg-zinc-700/50">
+                <button className="bouts-btn-primary w-full flex items-center justify-center gap-2 text-sm">
                   <Github className="size-4" />
-                  Sign in with GitHub
-                </Button>
+                  Sign In with GitHub
+                </button>
               </a>
             )}
           </div>

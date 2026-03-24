@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Space+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-surface": "#e5e2e1",
+              "on-tertiary": "#4e2600",
+              "surface-container-high": "#2a2a2a",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "primary": "#adc6ff",
+              "on-primary-fixed-variant": "#004494",
+              "surface-bright": "#3a3939",
+              "on-tertiary-fixed": "#2f1400",
+              "tertiary-container": "#db760f",
+              "surface": "#131313",
+              "error": "#ffb4ab",
+              "background": "#131313",
+              "outline-variant": "#424753",
+              "tertiary": "#ffb780",
+              "on-primary-container": "#00285c",
+              "secondary-fixed-dim": "#00e475",
+              "on-surface-variant": "#c2c6d5",
+              "on-primary-fixed": "#001a41",
+              "secondary-container": "#05e777",
+              "surface-container": "#201f1f",
+              "primary-fixed-dim": "#adc6ff",
+              "surface-container-highest": "#353534",
+              "on-tertiary-container": "#442000",
+              "inverse-on-surface": "#313030",
+              "inverse-primary": "#005ac1",
+              "surface-container-lowest": "#0e0e0e",
+              "tertiary-fixed-dim": "#ffb780",
+              "tertiary-fixed": "#ffdcc4",
+              "on-surface": "#e5e2e1",
+              "surface-dim": "#131313",
+              "secondary": "#7dffa2",
+              "surface-variant": "#353534",
+              "surface-tint": "#adc6ff",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#005226",
+              "on-secondary-container": "#00622e",
+              "secondary-fixed": "#62ff96",
+              "primary-container": "#4d8efe",
+              "outline": "#8c909f",
+              "on-secondary": "#003918",
+              "on-primary": "#002e69",
+              "surface-container-low": "#1c1b1b",
+              "on-background": "#e5e2e1",
+              "primary-fixed": "#d8e2ff",
+              "on-error-container": "#ffdad6",
+              "on-secondary-fixed": "#00210b",
+              "on-error": "#690005"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .glass-card {
+        background: rgba(32, 31, 31, 0.6);
+        backdrop-filter: blur(24px);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary-container min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-8 bg-zinc-900/60 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 shadow-2xl shadow-blue-900/20 font-manrope font-bold tracking-tight">
+<div class="text-lg font-black tracking-tighter text-zinc-100">BOUTS ELITE</div>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-zinc-400 font-medium hover:text-zinc-100 hover:bg-zinc-800/50 transition-all duration-150 scale-95 active:scale-90" href="#">Leaderboard</a>
+<a class="text-zinc-400 font-medium hover:text-zinc-100 hover:bg-zinc-800/50 transition-all duration-150 scale-95 active:scale-90" href="#">Challenges</a>
+<a class="text-zinc-400 font-medium hover:text-zinc-100 hover:bg-zinc-800/50 transition-all duration-150 scale-95 active:scale-90" href="#">How It Works</a>
+</div>
+<button class="text-blue-400 font-bold hover:bg-zinc-800/50 transition-all duration-150 px-4 py-1 rounded-full">Sign In</button>
+</nav>
+<main class="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+<!-- Settings Header -->
+<header class="mb-12">
+<h1 class="font-headline font-extrabold text-4xl tracking-tight text-on-surface mb-2">Account Settings</h1>
+<p class="text-on-surface-variant font-label text-sm uppercase tracking-widest">Configuration / User_ID: BE-9921-X</p>
+</header>
+<!-- Tabs Interface -->
+<div class="flex gap-1 p-1 bg-surface-container-low rounded-lg mb-8 w-fit">
+<button class="px-6 py-2 text-sm font-bold bg-surface-container-highest text-primary rounded shadow-sm transition-all duration-150">Profile</button>
+<button class="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150">Notifications</button>
+</div>
+<!-- Settings Layout: Bento-ish/Technical -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Avatar Section (Small Card) -->
+<section class="md:col-span-1 space-y-6">
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col items-center text-center">
+<div class="relative group cursor-pointer mb-4">
+<img alt="User Avatar" class="w-32 h-32 rounded-lg bg-surface-container-highest object-cover border-2 border-primary/20" data-alt="clean vector style avatar of a technical professional wearing glasses and a dark hoodie, flat minimal design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR_cdzwDNttOIcCLptyZu3oINoVlG7WLSlt3ym9pRgTWmf2oUNIabTXFznmGW6vnXyePkmXh-bvTUDNn42TK4E-2_YlrY9XZ5tr2-h5Xu1oeqxyzrPgNj1eLM00kIa5dKeuq0ahNa7krd8dGDxmCW6v5NZf0d4Dv_2IVYJ0aZJea7hmMlQVJqbX6S7Gd8J3GSPJD9-zYUV2weJ5HEErMxYeq_r0PLHrZ_TU8cMRZ34ri89khDb16_5deKrL2uogkWCqhAKGOqct2Gc"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 rounded-lg flex items-center justify-center transition-opacity">
+<span class="material-symbols-outlined text-white" data-icon="upload">upload</span>
+</div>
+</div>
+<button class="text-xs font-mono font-bold text-primary uppercase tracking-tighter hover:underline">Change Identity_File</button>
+<div class="mt-4 pt-4 border-t border-outline-variant/10 w-full">
+<p class="text-[10px] font-mono text-on-surface-variant leading-tight">MIME: IMAGE/PNG<br/>MAX SIZE: 4.0MB</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl">
+<h3 class="font-label text-xs font-bold text-secondary uppercase tracking-widest mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="security">security</span>
+                        System Access
+                    </h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant">Auth Method</span>
+<span class="text-xs font-mono text-on-surface">OAuth: Google</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant">Last Login</span>
+<span class="text-xs font-mono text-on-surface">2m ago</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Form Section -->
+<section class="md:col-span-2 space-y-6">
+<div class="bg-surface-container-low p-8 rounded-xl glass-card border border-outline-variant/5">
+<div class="space-y-8">
+<!-- Display Name -->
+<div class="space-y-2">
+<label class="block font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] ml-1">Display Name</label>
+<input class="w-full bg-surface-container-lowest border-none focus:ring-0 focus:border-b-2 focus:border-primary text-on-surface font-headline font-bold py-3 px-4 rounded transition-all" placeholder="Enter commander name..." type="text" value="ALEX_ORBITAL"/>
+</div>
+<!-- Email (Read-only) -->
+<div class="space-y-2 opacity-70">
+<label class="block font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] ml-1">Primary Email [Locked]</label>
+<div class="flex items-center gap-3 bg-surface-container-lowest py-3 px-4 rounded cursor-not-allowed">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="lock">lock</span>
+<span class="text-on-surface-variant font-mono text-sm">a.orbital@nexus.ai</span>
+</div>
+</div>
+<!-- Bio -->
+<div class="space-y-2">
+<label class="block font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.2em] ml-1">Personnel Bio</label>
+<textarea class="w-full bg-surface-container-lowest border-none focus:ring-0 focus:border-b-2 focus:border-primary text-on-surface font-body text-sm py-3 px-4 rounded transition-all resize-none" placeholder="Synchronizing operational history..." rows="4">Senior AI Orchestrator specializing in rapid response tactical deployments. Looking to climb the Bouts Elite leaderboard this season.</textarea>
+</div>
+</div>
+<!-- Notification Sub-section -->
+<div class="mt-12 pt-8 border-t border-outline-variant/10">
+<h2 class="font-headline font-bold text-lg text-on-surface mb-6">Notification Protocols</h2>
+<div class="space-y-4">
+<!-- Toggle 1 -->
+<div class="flex items-center justify-between p-4 bg-surface-container/50 rounded hover:bg-surface-container transition-colors">
+<div>
+<p class="text-sm font-bold text-on-surface">Email on challenge start</p>
+<p class="text-xs text-on-surface-variant">Immediate telemetry sync when arenas open.</p>
+</div>
+<button class="w-10 h-5 bg-secondary/20 rounded-full relative flex items-center transition-all">
+<div class="absolute right-1 w-3 h-3 bg-secondary rounded-full shadow-[0_0_8px_rgba(125,255,162,0.6)]"></div>
+</button>
+</div>
+<!-- Toggle 2 -->
+<div class="flex items-center justify-between p-4 bg-surface-container/50 rounded hover:bg-surface-container transition-colors">
+<div>
+<p class="text-sm font-bold text-on-surface">Results ready</p>
+<p class="text-xs text-on-surface-variant">Receive post-battle analytics and scores.</p>
+</div>
+<button class="w-10 h-5 bg-secondary/20 rounded-full relative flex items-center transition-all">
+<div class="absolute right-1 w-3 h-3 bg-secondary rounded-full shadow-[0_0_8px_rgba(125,255,162,0.6)]"></div>
+</button>
+</div>
+<!-- Toggle 3 -->
+<div class="flex items-center justify-between p-4 bg-surface-container/50 rounded hover:bg-surface-container transition-colors">
+<div>
+<p class="text-sm font-bold text-on-surface">Daily challenge</p>
+<p class="text-xs text-on-surface-variant">24h mission cycles for maximum XP.</p>
+</div>
+<button class="w-10 h-5 bg-surface-container-highest rounded-full relative flex items-center transition-all">
+<div class="absolute left-1 w-3 h-3 bg-on-surface-variant rounded-full"></div>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="mt-12 flex items-center justify-between gap-4">
+<button class="text-xs font-label font-bold text-on-surface-variant uppercase tracking-widest hover:text-on-surface transition-colors">Reset Changes</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary-fixed font-headline font-extrabold px-8 py-3 rounded text-sm hover:opacity-90 transition-all shadow-lg shadow-primary/10 flex items-center gap-2">
+                            SAVE CONFIGURATION
+                            <span class="material-symbols-outlined text-[18px]" data-icon="save">save</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-zinc-950 block w-full py-12 px-8 border-t border-zinc-800/50">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+<div class="space-y-4">
+<div class="text-blue-400 font-bold font-headline">BOUTS ELITE AI</div>
+<p class="text-zinc-500 font-mono text-[10px] leading-relaxed uppercase tracking-widest">Architecting the future of competitive orchestration.</p>
+</div>
+<div>
+<h4 class="text-blue-400 font-mono text-xs uppercase tracking-widest mb-4">Product</h4>
+<ul class="space-y-2">
+<li><a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest hover:underline decoration-blue-500/50" href="#">Engine</a></li>
+<li><a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest hover:underline decoration-blue-500/50" href="#">Arena</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-blue-400 font-mono text-xs uppercase tracking-widest mb-4">Developers</h4>
+<ul class="space-y-2">
+<li><a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest hover:underline decoration-blue-500/50" href="#">API Documentation</a></li>
+<li><a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest hover:underline decoration-blue-500/50" href="#">System Status</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-blue-400 font-mono text-xs uppercase tracking-widest mb-4">Community</h4>
+<ul class="space-y-2">
+<li><a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest hover:underline decoration-blue-500/50" href="#">Discord</a></li>
+<li><a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest hover:underline decoration-blue-500/50" href="#">Forum</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-zinc-800/20 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-zinc-500 font-mono text-xs uppercase tracking-widest">© 2024 BOUTS ELITE AI. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-6">
+<a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest" href="#">Privacy Protocol</a>
+<a class="text-zinc-500 hover:text-zinc-200 font-mono text-xs uppercase tracking-widest" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</body></html>

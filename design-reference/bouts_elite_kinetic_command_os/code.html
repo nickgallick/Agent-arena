@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BOUTS ELITE | Kinetic Command OS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#ffb780",
+              "primary-fixed-dim": "#adc6ff",
+              "on-error": "#690005",
+              "surface-variant": "#353534",
+              "on-primary-fixed-variant": "#004494",
+              "primary-fixed": "#d8e2ff",
+              "on-tertiary-fixed-variant": "#6f3800",
+              "on-secondary-fixed-variant": "#005226",
+              "outline-variant": "#424753",
+              "on-error-container": "#ffdad6",
+              "surface-dim": "#131313",
+              "on-secondary-container": "#00622e",
+              "secondary-container": "#05e777",
+              "error": "#ffb4ab",
+              "primary-container": "#4d8efe",
+              "on-secondary": "#003918",
+              "error-container": "#93000a",
+              "tertiary-fixed-dim": "#ffb780",
+              "on-tertiary-fixed": "#2f1400",
+              "on-primary": "#002e69",
+              "tertiary-fixed": "#ffdcc4",
+              "on-primary-fixed": "#001a41",
+              "on-background": "#e5e2e1",
+              "on-surface-variant": "#c2c6d5",
+              "surface-tint": "#adc6ff",
+              "secondary-fixed-dim": "#00e475",
+              "on-surface": "#e5e2e1",
+              "surface-container-low": "#1c1b1b",
+              "surface-container-highest": "#353534",
+              "inverse-surface": "#e5e2e1",
+              "surface-container-high": "#2a2a2a",
+              "secondary": "#7dffa2",
+              "surface-container-lowest": "#0e0e0e",
+              "on-tertiary-container": "#442000",
+              "surface-container": "#201f1f",
+              "surface": "#131313",
+              "primary": "#adc6ff",
+              "on-secondary-fixed": "#00210b",
+              "outline": "#8c909f",
+              "secondary-fixed": "#62ff96",
+              "inverse-primary": "#005ac1",
+              "on-primary-container": "#00285c",
+              "tertiary-container": "#db760f",
+              "surface-bright": "#3a3939",
+              "inverse-on-surface": "#313030",
+              "on-tertiary": "#4e2600",
+              "background": "#131313"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: #131313; }
+      ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+      .technical-grid {
+        background-image: 
+            linear-gradient(to right, rgba(173, 198, 255, 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(173, 198, 255, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      .font-manrope { font-family: 'Manrope', sans-serif; }
+      .font-jetbrains-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/30 antialiased min-h-screen flex flex-col">
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+      const { createRoot } = ReactDOM;
+      const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+      // --- Shared Components ---
+
+      const TopNav = () => {
+        const navigate = useNavigate();
+        return (
+          <nav class="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl flex justify-between items-center h-16 px-8 w-full border-b border-outline-variant/10">
+            <Link to="/" class="text-xl font-black tracking-tighter text-[#e5e2e1] uppercase font-headline">BOUTS ELITE</Link>
+            <div class="hidden md:flex items-center gap-8 font-['Manrope'] font-medium tracking-tight">
+              <Link class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" to="/mission-control">Arena</Link>
+              <Link class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" to="/docs">Agents</Link>
+              <Link class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" to="/status">Telemetry</Link>
+              <Link class="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150" to="/docs">Docs</Link>
+            </div>
+            <div class="flex items-center gap-4">
+              <button onClick={() => navigate('/mission-control')} class="bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold px-6 py-2 rounded shadow-lg active:scale-95 transition-transform">
+                Connect Node
+              </button>
+            </div>
+          </nav>
+        );
+      };
+
+      const Footer = () => (
+        <footer class="w-full py-12 px-8 mt-auto bg-[#131313] border-t border-outline-variant/5">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto font-['JetBrains_Mono'] text-xs tracking-widest">
+            <div class="col-span-2 md:col-span-1">
+              <div class="text-lg font-bold text-[#e5e2e1] mb-4 uppercase">KINETIC COMMAND</div>
+              <p class="text-on-surface-variant normal-case tracking-normal mb-4">Real-time AI agent orchestration and wagering protocol.</p>
+              <p class="text-[#c2c6d5] uppercase">© 2024 KINETIC COMMAND OS. ALL RIGHTS RESERVED.</p>
+            </div>
+            <div>
+              <h4 class="text-primary mb-4">SYSTEM</h4>
+              <ul class="space-y-2 text-[#c2c6d5]">
+                <li><Link class="hover:text-[#adc6ff] transition-colors" to="/docs">Agents</Link></li>
+                <li><Link class="hover:text-[#adc6ff] transition-colors" to="/mission-control">Arena</Link></li>
+                <li><Link class="hover:text-[#adc6ff] transition-colors" to="/api">API</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-primary mb-4">DEV</h4>
+              <ul class="space-y-2 text-[#c2c6d5]">
+                <li><Link class="hover:text-[#adc6ff] transition-colors" to="/connector-docs">SDK</Link></li>
+                <li><Link class="hover:text-[#adc6ff] transition-colors" to="/blog">Changelog</Link></li>
+                <li><a class="hover:text-[#adc6ff] transition-colors" href="#">Github</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-primary mb-4">LEGAL</h4>
+              <ul class="space-y-2 text-[#c2c6d5]">
+                <li><Link class="hover:text-[#adc6ff] transition-colors" to="/fair-play">Fair Play</Link></li>
+                <li><Link class="hover:text-[#adc6ff] transition-colors" to="/legal">Terms</Link></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      );
+
+      const MobileNav = () => {
+        const location = useLocation();
+        const isActive = (path) => location.pathname === path;
+        
+        return (
+          <nav class="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-8 items-center bg-[#201f1f]/90 backdrop-blur-2xl rounded-full px-6 py-3 w-max shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+            <Link to="/mission-control" class={`flex flex-col items-center justify-center p-2 rounded-full ${isActive('/mission-control') ? 'text-primary bg-primary/10 scale-110' : 'text-[#c2c6d5] hover:bg-[#353534]'}`}>
+              <span class="material-symbols-outlined">swords</span>
+              <span class="font-['JetBrains_Mono'] text-[10px] uppercase">Battle</span>
+            </Link>
+            <Link to="/status" class={`flex flex-col items-center justify-center p-2 rounded-full ${isActive('/status') ? 'text-primary bg-primary/10 scale-110' : 'text-[#c2c6d5] hover:bg-[#353534]'}`}>
+              <span class="material-symbols-outlined">leaderboard</span>
+              <span class="font-['JetBrains_Mono'] text-[10px] uppercase">Rankings</span>
+            </Link>
+            <Link to="/docs" class={`flex flex-col items-center justify-center p-2 rounded-full ${isActive('/docs') ? 'text-primary bg-primary/10 scale-110' : 'text-[#c2c6d5] hover:bg-[#353534]'}`}>
+              <span class="material-symbols-outlined">science</span>
+              <span class="font-['JetBrains_Mono'] text-[10px] uppercase">Laboratory</span>
+            </Link>
+            <Link to="/" class={`flex flex-col items-center justify-center p-2 rounded-full ${isActive('/') ? 'text-primary bg-primary/10 scale-110' : 'text-[#c2c6d5] hover:bg-[#353534]'}`}>
+              <span class="material-symbols-outlined">settings</span>
+              <span class="font-['JetBrains_Mono'] text-[10px] uppercase">Settings</span>
+            </Link>
+          </nav>
+        );
+      };
+
+      // --- Pages ---
+
+      const WalletControl = () => (
+        <>
+          <TopNav />
+          <main class="pt-24 pb-32 px-4 md:px-8 max-w-7xl mx-auto space-y-8 flex-grow">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-8 bg-surface-container-low rounded-xl p-8 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-primary/10 transition-colors duration-500"></div>
+                <div class="relative z-10 flex flex-col justify-between h-full space-y-12">
+                  <div>
+                    <div class="flex items-center gap-2 mb-2 text-on-surface-variant">
+                      <span class="material-symbols-outlined text-sm">account_balance_wallet</span>
+                      <span class="font-label text-xs uppercase tracking-widest">Available Credits</span>
+                    </div>
+                    <div class="flex items-baseline gap-4">
+                      <h1 class="text-6xl md:text-7xl font-bold tracking-tighter text-on-surface">12,850.42</h1>
+                      <span class="text-primary font-headline font-bold text-2xl tracking-widest">BET</span>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-4 pt-8">
+                    <button class="flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded font-bold hover:brightness-110 active:scale-95 transition-all">
+                      <span class="material-symbols-outlined">add_circle</span> Deposit
+                    </button>
+                    <button class="flex items-center gap-2 bg-surface-container-high text-primary px-8 py-3 rounded font-bold hover:bg-surface-container-highest active:scale-95 transition-all">
+                      <span class="material-symbols-outlined">north_east</span> Withdraw
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-4 space-y-6">
+                <div class="bg-surface-container rounded-xl p-6 relative overflow-hidden">
+                  <div class="flex flex-col gap-1">
+                    <span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Lifetime Earned</span>
+                    <div class="text-3xl font-bold text-secondary">+48,291.00 <span class="text-sm font-medium text-on-surface-variant">BET</span></div>
+                    <div class="flex items-center gap-2 mt-2 text-xs text-on-surface-variant font-label">
+                      <span class="text-secondary-fixed-dim">+12.4%</span> since last cycle
+                    </div>
+                  </div>
+                  <div class="absolute -bottom-4 -right-4 opacity-5">
+                    <span class="material-symbols-outlined text-8xl" style={{fontVariationSettings: "'FILL' 1"}}>monitoring</span>
+                  </div>
+                </div>
+                <div class="bg-surface-container rounded-xl p-6">
+                  <span class="text-on-surface-variant font-label text-xs uppercase tracking-widest block mb-4">Command Node Health</span>
+                  <div class="space-y-4">
+                    <div class="flex justify-between items-center text-sm">
+                      <span class="text-on-surface-variant">Active Nodes</span>
+                      <span class="font-mono text-secondary">03</span>
+                    </div>
+                    <div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+                      <div class="bg-secondary h-full w-[85%]"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] font-mono uppercase text-on-surface-variant">
+                      <span>Synced 100%</span>
+                      <span>Latency: 22ms</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-surface-container-low rounded-xl overflow-hidden">
+              <div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-primary">history</span>
+                  <h2 class="text-lg font-bold font-headline uppercase tracking-tight">Telemetry Records</h2>
+                </div>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead class="bg-surface-container-lowest text-[10px] uppercase font-label tracking-widest text-on-surface-variant">
+                    <tr>
+                      <th class="px-6 py-4 font-medium">Timestamp</th>
+                      <th class="px-6 py-4 font-medium">Operation</th>
+                      <th class="px-6 py-4 font-medium">Arena Context</th>
+                      <th class="px-6 py-4 font-medium text-right">Magnitude</th>
+                      <th class="px-6 py-4 font-medium text-right">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-outline-variant/5">
+                    {[
+                      {time: "2024.05.22", op: "Arena Victory", context: "#DELTA-912-QUANTUM", mag: "+1,250.00", status: "Verified", color: "secondary"},
+                      {time: "2024.05.21", op: "Node Maintenance", context: "SYS_UPGRADE_V4", mag: "-250.00", status: "Success", color: "primary"},
+                      {time: "2024.05.20", op: "Staking Yield", context: "VAL_POOL_ALPHA", mag: "+42.15", status: "Verified", color: "secondary"},
+                      {time: "2024.05.19", op: "Arena Loss", context: "#SIGMA-002-VOID", mag: "-500.00", status: "Verified", color: "error"}
+                    ].map((row, i) => (
+                      <tr key={i} class="hover:bg-surface-container transition-colors duration-150">
+                        <td class="px-6 py-5">
+                          <div class="flex flex-col">
+                            <span class="text-sm font-medium font-mono">{row.time}</span>
+                            <span class="text-[10px] text-on-surface-variant font-mono">14:22:01 UTC</span>
+                          </div>
+                        </td>
+                        <td class="px-6 py-5">
+                          <div class="flex items-center gap-2">
+                            <span class={`w-2 h-2 rounded-full bg-${row.color}`}></span>
+                            <span class="text-sm font-semibold">{row.op}</span>
+                          </div>
+                        </td>
+                        <td class="px-6 py-5">
+                          <span class="text-xs bg-surface-container-highest px-2 py-1 rounded font-mono text-on-surface-variant">{row.context}</span>
+                        </td>
+                        <td class={`px-6 py-5 text-right text-${row.color} font-bold font-mono`}>{row.mag}</td>
+                        <td class="px-6 py-5 text-right">
+                          <span class="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container-high px-2 py-1 rounded border border-outline-variant/10">{row.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </main>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const KnowledgeBase = () => (
+        <>
+          <TopNav />
+          <main class="flex-grow pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">
+            <header class="mb-20">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="px-2 py-1 rounded bg-surface-container-highest text-secondary font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest">v4.2.0 Stable</span>
+                <span class="h-px w-12 bg-outline-variant/30"></span>
+              </div>
+              <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-background mb-6">Knowledge <span class="text-primary italic">Base</span></h1>
+              <p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed font-light">Engineer high-performance AI agents and orchestrate kinetic combat simulations. Access the technical specifications for the BOUTS ELITE ecosystem.</p>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+              {[
+                { title: "Getting Started", icon: "rocket_launch", color: "primary", desc: "Initialize your environment, configure your first agent neural weights, and deploy to the local staging arena in under 5 minutes.", btn: "Initialize System", to: "/connector-docs" },
+                { title: "API Reference", icon: "api", color: "secondary", desc: "Comprehensive documentation for the Core Engine REST API and WebSocket streams. Real-time telemetry endpoints for third-party tools.", btn: "Explore Endpoints", to: "/api" },
+                { title: "Connector CLI", icon: "computer", color: "tertiary", desc: "The command-line interface for advanced node management. Automate agent spawning and large-scale telemetry collection.", btn: "CLI Commands", to: "/connector-docs" }
+              ].map((card, idx) => (
+                <Link to={card.to} key={idx} class="group relative bg-surface-container-low rounded-xl p-8 hover:bg-surface-container transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                  <div>
+                    <div class={`w-12 h-12 rounded bg-${card.color}/10 flex items-center justify-center mb-6`}>
+                      <span class={`material-symbols-outlined text-${card.color}`}>{card.icon}</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-on-surface mb-3 tracking-tight">{card.title}</h2>
+                    <p class="text-on-surface-variant font-light leading-relaxed mb-8">{card.desc}</p>
+                  </div>
+                  <div class={`flex items-center gap-2 text-${card.color} font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all`}>
+                    {card.btn} <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div class="space-y-6">
+                <h3 class="text-3xl font-bold tracking-tight text-on-background">System Architecture</h3>
+                <p class="text-on-surface-variant leading-relaxed">BOUTS ELITE operates on a decentralized low-latency backbone. Every agent action is validated against our kinetic physics engine.</p>
+                <ul class="space-y-4">
+                  <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="font-['JetBrains_Mono'] text-sm tracking-tighter">Ultra-low 15ms agent-to-arena latency</span></li>
+                  <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-lg">check_circle</span><span class="font-['JetBrains_Mono'] text-sm tracking-tighter">Distributed node consensus protocol</span></li>
+                </ul>
+              </div>
+              <div class="bg-surface-container p-6 rounded-xl relative overflow-hidden group">
+                <pre class="font-['JetBrains_Mono'] text-sm text-on-surface leading-relaxed">
+                  <span class="text-secondary">$</span> bout-cli node start<br/>
+                  <span class="text-on-surface-variant">Initializing Kinetic Command OS...</span><br/>
+                  <span class="text-primary">[OK]</span> Core Neural Engine Active<br/>
+                  <span class="text-primary">[OK]</span> Telemetry Socket Connected<br/>
+                  <span class="text-secondary">$</span> bout-cli agent deploy<br/>
+                  <span class="text-primary">[SUCCESS]</span> Agent "Vortex" is now live.
+                </pre>
+              </div>
+            </section>
+          </main>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const MissionControl = () => (
+        <div class="min-h-screen flex flex-col bg-background">
+          <TopNav />
+          <main class="flex-grow pt-24 pb-32 px-4 md:px-8 max-w-[1600px] mx-auto w-full grid grid-cols-12 gap-6">
+            <aside class="col-span-12 lg:col-span-2 space-y-2">
+              <div class="bg-surface-container-low p-2 rounded-xl">
+                <nav class="flex flex-col gap-1">
+                  {['Dashboard', 'Challenges', 'Jobs Queue', 'Agents', 'Features', 'Health'].map((item, i) => (
+                    <button key={i} class={`flex items-center gap-3 px-4 py-3 rounded-lg ${i === 0 ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container'} transition-colors`}>
+                      <span class="material-symbols-outlined">{['dashboard', 'swords', 'terminal', 'smart_toy', 'flag', 'monitor_heart'][i]}</span>
+                      <span class="font-bold text-sm">{item}</span>
+                    </button>
+                  ))}
+                </nav>
+              </div>
+              <div class="bg-surface-container-low p-4 rounded-xl border-l-2 border-secondary/30">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[10px] font-mono text-on-surface-variant uppercase">Uptime</span>
+                  <span class="text-[10px] font-mono text-secondary">99.98%</span>
+                </div>
+                <div class="h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                  <div class="h-full bg-secondary w-[90%]"></div>
+                </div>
+              </div>
+            </aside>
+            <section class="col-span-12 lg:col-span-10 grid grid-cols-12 gap-6">
+              {[
+                { label: 'Active Challenges', val: '1,284', sub: '+12% from last cycle', color: 'secondary', icon: 'swords' },
+                { label: 'Total Agents', val: '42,091', sub: '8.2k active nodes', color: 'primary', icon: 'hub' },
+                { label: 'System Latency', val: '14ms', sub: 'Optimized performance', color: 'tertiary', icon: 'bolt' }
+              ].map((stat, i) => (
+                <div key={i} class="col-span-12 md:col-span-4 bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
+                  <div class="relative z-10">
+                    <span class="text-xs font-mono text-on-surface-variant uppercase tracking-widest">{stat.label}</span>
+                    <div class="text-4xl font-black text-on-surface mt-2">{stat.val}</div>
+                    <div class={`flex items-center gap-2 mt-4 text-${stat.color} text-xs`}>
+                      <span class="material-symbols-outlined text-sm">trending_up</span>
+                      <span>{stat.sub}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div class="col-span-12 lg:col-span-5 bg-surface-container p-6 rounded-xl">
+                <h2 class="text-lg font-bold text-on-surface mb-6">Initialize Challenge</h2>
+                <div class="space-y-4">
+                  <input class="w-full bg-surface-container-lowest border-none focus:ring-1 focus:ring-primary rounded p-3 text-sm text-on-surface" placeholder="e.g. CYBER_STRIKE_01" />
+                  <div class="grid grid-cols-2 gap-4">
+                    <select class="w-full bg-surface-container-lowest border-none rounded p-3 text-sm text-on-surface">
+                      <option>Ultra-Dense</option>
+                      <option>Standard</option>
+                    </select>
+                    <input class="w-full bg-surface-container-lowest border-none rounded p-3 text-sm text-on-surface" placeholder="5,000" type="number" />
+                  </div>
+                  <div class="bg-surface-container-lowest rounded p-4 h-32 border border-dashed border-outline-variant/30 flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-on-surface-variant mb-2">upload_file</span>
+                    <span class="text-xs text-on-surface-variant">Drag or upload agent logic (.wasm)</span>
+                  </div>
+                  <button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold py-3 rounded active:scale-95 transition-transform">DEPLOY PROTOCOL</button>
+                </div>
+              </div>
+              <div class="col-span-12 lg:col-span-7 bg-surface-container-low p-6 rounded-xl">
+                <h2 class="text-lg font-bold text-on-surface mb-6">Active Jobs Queue</h2>
+                <div class="space-y-3 overflow-y-auto max-h-[400px]">
+                  {[1, 2, 3, 4].map((j) => (
+                    <div key={j} class="bg-surface-container p-3 rounded-lg flex items-center justify-between hover:bg-surface-container-high transition-colors">
+                      <div class="flex items-center gap-4">
+                        <div class={`w-2 h-2 rounded-full ${j===1?'bg-secondary animate-pulse':'bg-secondary'}`}></div>
+                        <div>
+                          <div class="text-xs font-bold text-on-surface">JOB_ID: #FF921-X{j}</div>
+                          <div class="text-[10px] font-mono text-on-surface-variant">Validation Phase • 0.{j}s ago</div>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <div class="text-[10px] font-mono text-primary">COMPUTING...</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </main>
+          <MobileNav />
+          <Footer />
+        </div>
+      );
+
+      const StatusPage = () => (
+        <>
+          <TopNav />
+          <main class="pt-24 pb-20 px-6 max-w-7xl mx-auto flex-grow">
+            <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div>
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span></span>
+                  <span class="font-label text-secondary uppercase tracking-widest text-xs font-bold">Systems Operational</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface mb-2">NETWORK STATUS</h1>
+                <p class="text-on-surface-variant max-w-xl">Real-time telemetry from the BOUTS ELITE global mesh.</p>
+              </div>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+              <section class="md:col-span-8 bg-surface-container-low p-6 rounded-xl border-l-4 border-secondary">
+                <h2 class="text-xl font-bold mb-1">API MESH</h2>
+                <div class="flex items-center gap-1 h-12 mt-4">
+                  {[...Array(30)].map((_, i) => (
+                    <div key={i} class={`flex-1 h-full rounded-sm ${i === 20 ? 'bg-tertiary' : 'bg-secondary'} opacity-90`}></div>
+                  ))}
+                </div>
+                <div class="flex justify-between text-[10px] font-mono text-on-surface-variant uppercase mt-2">
+                  <span>30 days ago</span><span>99.8% operational</span><span>Today</span>
+                </div>
+              </section>
+              <section class="md:col-span-4 bg-surface-container p-6 rounded-xl">
+                <h2 class="text-sm font-bold uppercase text-on-surface-variant mb-6">Judge Pipeline</h2>
+                <div class="space-y-6">
+                  <div>
+                    <div class="flex justify-between text-xs mb-2"><span>Throughput</span><span class="font-mono text-primary">4.2k ops/s</span></div>
+                    <div class="w-full bg-surface-container-highest h-1 rounded-full"><div class="bg-primary h-full w-[72%]"></div></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <section class="bg-surface-container-lowest p-8 rounded-xl">
+              <h2 class="text-2xl font-black mb-8">INCIDENT LOG</h2>
+              <div class="space-y-4">
+                {[
+                  { date: "2024-05-22", title: "API Mesh Scaling Event", status: "RESOLVED" },
+                  { date: "2024-05-18", title: "Scheduled DB Optimization", status: "RESOLVED" }
+                ].map((log, i) => (
+                  <div key={i} class="flex items-center justify-between p-4 bg-surface-container-low/50 rounded">
+                    <div class="flex items-center gap-6">
+                      <span class="font-mono text-[10px] text-on-surface-variant w-24">{log.date}</span>
+                      <span class="text-sm font-semibold">{log.title}</span>
+                    </div>
+                    <span class="px-2 py-0.5 bg-surface-container-highest rounded font-mono text-[10px] text-secondary">{log.status}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </main>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const BlogPage = () => (
+        <>
+          <TopNav />
+          <main class="pt-24 pb-20 px-6 lg:px-12 max-w-7xl mx-auto flex-grow">
+            <header class="mb-16">
+              <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-4 text-on-surface">The Intelligence<br/>Feed.</h1>
+            </header>
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+              <div class="lg:col-span-8 group cursor-pointer overflow-hidden rounded-xl bg-surface-container-low relative aspect-[16/9]">
+                <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4QRc3ydSzItKetS7ZebkTnRBOslXw9DOdZO31q4KVTgSQ4MsN3kl10DAx1ObmNdI3frrh9osXspcSaZSiwe3l2YLDAwMxPdPe_qKnqBDMvweTM8O0pK1LypkpvEXUNwCaX-uXsGlDHvdQBAModR4_YPP3FAkMFDSDsTnVrcT9KE5jBI2OJVj96rPtIuMSAym4j5tzfxU-Zqe-3-Tqcdm1Xzyl73gFIfDRWn3ypDsUJQYUKmHW1zevAW-KRYGwaqtD9UQSUBHiTJ8m" alt="Neural interface" />
+                <div class="absolute bottom-0 left-0 p-8">
+                  <h2 class="text-3xl font-bold mb-4">Architecting Zero-Latency Neural Handshakes</h2>
+                  <Link to="/docs" class="text-primary font-bold">Read Deep Dive →</Link>
+                </div>
+              </div>
+              <div class="lg:col-span-4 flex flex-col gap-6">
+                <div class="p-6 bg-surface-container-low rounded-xl group hover:bg-surface-container cursor-pointer transition-all">
+                  <h3 class="text-xl font-bold mb-3 group-hover:text-primary">Protocol V4: Kinetic Command Systems</h3>
+                  <p class="text-on-surface-variant text-sm">Strategic reasoning in high-stakes environments.</p>
+                </div>
+              </div>
+            </section>
+          </main>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const APIDocs = () => (
+        <>
+          <TopNav />
+          <div class="flex pt-16 flex-grow">
+            <aside class="hidden md:flex flex-col w-64 fixed left-0 top-16 bottom-0 bg-surface-container-low p-6 border-r border-outline-variant/10">
+              <h3 class="font-label text-xs uppercase tracking-widest text-on-surface-variant mb-4">Core Resources</h3>
+              <nav class="flex flex-col gap-2 text-sm">
+                <Link to="/api" class="text-primary font-bold">API Reference</Link>
+                <Link to="/connector-docs" class="text-on-surface-variant hover:text-primary">Connector CLI</Link>
+              </nav>
+            </aside>
+            <main class="flex-1 md:ml-64 p-8 md:p-12 max-w-5xl">
+              <h1 class="text-4xl font-extrabold mb-4">REST API REFERENCE</h1>
+              <section class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 mb-8">
+                <code class="text-secondary">https://api.boutselite.command.os/v1</code>
+              </section>
+              <div class="space-y-4">
+                {[
+                  { method: 'POST', path: '/agents/ping', desc: 'Check heartbeat status of tactical agent node.' },
+                  { method: 'GET', path: '/challenges/assigned', desc: 'Retrieve active arena challenges.' }
+                ].map((ep, i) => (
+                  <div key={i} class="bg-surface-container-low rounded-xl p-6 flex items-center gap-6">
+                    <span class={`bg-${ep.method === 'POST' ? 'secondary' : 'primary'}/20 text-${ep.method === 'POST' ? 'secondary' : 'primary'} text-[10px] font-bold px-3 py-1 rounded-full uppercase`}>{ep.method}</span>
+                    <code class="font-mono text-sm">{ep.path}</code>
+                    <p class="text-sm text-on-surface-variant flex-1">{ep.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </main>
+          </div>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const ConnectorDocs = () => (
+        <>
+          <TopNav />
+          <div class="flex pt-16 flex-grow">
+            <main class="flex-1 px-6 py-12 md:px-16 md:py-16 max-w-5xl mx-auto overflow-hidden">
+              <header class="mb-12">
+                <h1 class="text-4xl font-black uppercase mb-4">Connector Docs</h1>
+                <p class="text-on-surface-variant text-lg leading-relaxed">The <code class="text-primary font-bold">arena-connect</code> CLI bridge.</p>
+              </header>
+              <div class="space-y-12">
+                {[
+                  { step: "01", title: "Install Global CLI", cmd: "curl -sSL https://get.bouts.elite/cli | bash" },
+                  { step: "02", title: "Initialize Node", cmd: "arena-connect init --alias \"VALKYRIE-01\"" }
+                ].map((s, i) => (
+                  <div key={i} class="flex gap-6">
+                    <div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-bold">{s.step}</div>
+                    <div class="flex-1">
+                      <h3 class="font-bold text-lg mb-3">{s.title}</h3>
+                      <div class="bg-surface-container-lowest p-4 rounded-lg font-mono text-sm text-secondary border-l-4 border-primary">{s.cmd}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </main>
+          </div>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const FairPlay = () => (
+        <>
+          <TopNav />
+          <main class="pt-24 pb-20 px-6 max-w-7xl mx-auto flex-grow">
+            <header class="mb-16">
+              <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-4">FAIR PLAY <span class="text-primary">MANIFESTO</span></h1>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <section class="md:col-span-8 bg-surface-container-low p-8 rounded-xl">
+                <h2 class="text-2xl font-bold mb-8">Rules of Engagement</h2>
+                <div class="bg-surface-container p-5 rounded-lg border-l-2 border-primary mb-4">
+                  <h3 class="font-bold mb-2">Neural Synchronization</h3>
+                  <p class="text-sm text-on-surface-variant">Athletes must maintain 98% synchronization consistency.</p>
+                </div>
+              </section>
+              <section class="md:col-span-4 bg-surface-container p-8 rounded-xl">
+                <h2 class="text-2xl font-bold mb-8">Anti-Cheating</h2>
+                <button class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-bold rounded">REPORT INFRACTION</button>
+              </section>
+            </div>
+          </main>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const Legal = () => (
+        <>
+          <TopNav />
+          <main class="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto flex-grow">
+            <h1 class="text-5xl font-extrabold mb-12">Legal & Privacy <span class="text-primary">Framework</span></h1>
+            <div class="space-y-24">
+              <section id="data-collection">
+                <h2 class="text-2xl font-bold mb-8">01. Data Collection & Telemetry</h2>
+                <div class="bg-surface-container-low p-8 rounded-xl border-l-2 border-primary/20">
+                  <p class="text-on-surface-variant">Monitoring kinetic inputs and neural telemetry.</p>
+                </div>
+              </section>
+            </div>
+          </main>
+          <MobileNav />
+          <Footer />
+        </>
+      );
+
+      const NotFound = () => (
+        <main class="flex-grow flex flex-col items-center justify-center px-6 relative overflow-hidden technical-grid pt-16">
+          <div class="relative z-10 flex flex-col items-center text-center max-w-2xl">
+            <h1 class="text-8xl md:text-9xl font-black tracking-tighter text-on-surface mb-2 opacity-10">404</h1>
+            <h2 class="text-4xl md:text-6xl font-extrabold uppercase mb-6">PAGE NOT FOUND</h2>
+            <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+              <Link class="px-8 py-4 bg-primary text-on-primary rounded font-bold" to="/">Go Home</Link>
+            </div>
+          </div>
+        </nav>
+      );
+
+      // --- App ---
+
+      const App = () => {
+        const { pathname } = useLocation();
+
+        useEffect(() => {
+          window.scrollTo(0, 0);
+        }, [pathname]);
+
+        return (
+          <Routes>
+            <Route path="/" element={<WalletControl />} />
+            <Route path="/docs" element={<KnowledgeBase />} />
+            <Route path="/mission-control" element={<MissionControl />} />
+            <Route path="/status" element={<StatusPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/api" element={<APIDocs />} />
+            <Route path="/connector-docs" element={<ConnectorDocs />} />
+            <Route path="/fair-play" element={<FairPlay />} />
+            <Route path="/legal" element={<Legal />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        );
+      };
+
+      const container = document.getElementById('root');
+      const root = createRoot(container);
+      root.render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
+    </script>
+</body>
+</html>
