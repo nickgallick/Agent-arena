@@ -1,13 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select'
 
 interface ChallengeFiltersProps {
   onStatusChange?: (status: string) => void
@@ -16,13 +9,55 @@ interface ChallengeFiltersProps {
   onFormatChange?: (format: string) => void
 }
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+const statuses = [
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Live' },
+  { value: 'upcoming', label: 'Upcoming' },
+  { value: 'judging', label: 'Judging' },
+  { value: 'complete', label: 'Complete' },
+]
+
+const categories = [
+  { value: 'all', label: 'All' },
+  { value: 'algorithm', label: 'Algorithm' },
+  { value: 'speed-build', label: 'Speed Build' },
+  { value: 'debug', label: 'Debug' },
+  { value: 'design', label: 'Design' },
+  { value: 'optimization', label: 'Optimize' },
+  { value: 'testing', label: 'Testing' },
+]
+
+function PillGroup({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string
+  options: { value: string; label: string }[]
+  value: string
+  onChange: (v: string) => void
+}) {
   return (
-    <div className="space-y-1.5">
-      <label className="font-mono text-[11px] font-medium text-[#8c909f] uppercase tracking-wider">
+    <div>
+      <span className="font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-widest text-[#8c909f] block mb-2">
         {label}
-      </label>
-      {children}
+      </span>
+      <div className="flex flex-wrap bg-[#1c1b1b] p-1 rounded-lg gap-0.5">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className={`px-3 py-1.5 rounded-md font-[family-name:var(--font-mono)] text-[11px] font-bold uppercase tracking-wider transition-all duration-150 ${
+              value === opt.value
+                ? 'bg-[#353534] text-[#adc6ff]'
+                : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -30,102 +65,24 @@ function FilterGroup({ label, children }: { label: string; children: React.React
 export function ChallengeFilters({
   onStatusChange,
   onCategoryChange,
-  onWeightClassChange,
-  onFormatChange,
 }: ChallengeFiltersProps) {
   const [status, setStatus] = useState('all')
   const [category, setCategory] = useState('all')
-  const [weightClass, setWeightClass] = useState('all')
-  const [format, setFormat] = useState('all')
-
-  const handleStatusChange = (value: string | null) => {
-    if (!value) return
-    setStatus(value)
-    onStatusChange?.(value)
-  }
-
-  const handleCategoryChange = (value: string | null) => {
-    if (!value) return
-    setCategory(value)
-    onCategoryChange?.(value)
-  }
-
-  const handleWeightClassChange = (value: string | null) => {
-    if (!value) return
-    setWeightClass(value)
-    onWeightClassChange?.(value)
-  }
-
-  const handleFormatChange = (value: string | null) => {
-    if (!value) return
-    setFormat(value)
-    onFormatChange?.(value)
-  }
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
-      <FilterGroup label="Status">
-        <Select value={status} onValueChange={handleStatusChange}>
-          <SelectTrigger aria-label="Filter by status" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
-            <SelectValue placeholder="All Statuses" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="upcoming">Upcoming</SelectItem>
-            <SelectItem value="judging">Judging</SelectItem>
-            <SelectItem value="complete">Complete</SelectItem>
-          </SelectContent>
-        </Select>
-      </FilterGroup>
-
-      <FilterGroup label="Category">
-        <Select value={category} onValueChange={handleCategoryChange}>
-          <SelectTrigger aria-label="Filter by category" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[180px] hover:border-[#3B82F6]/30 transition-colors">
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
-            <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="speed_build">Speed Build</SelectItem>
-            <SelectItem value="research">Research</SelectItem>
-            <SelectItem value="problem_solving">Problem Solving</SelectItem>
-            <SelectItem value="code_golf">Code Golf</SelectItem>
-            <SelectItem value="debug">Debug</SelectItem>
-          </SelectContent>
-        </Select>
-      </FilterGroup>
-
-      <FilterGroup label="Weight Class">
-        <Select value={weightClass} onValueChange={handleWeightClassChange}>
-          <SelectTrigger aria-label="Filter by weight class" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
-            <SelectValue placeholder="All Classes" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
-            <SelectItem value="all">All Classes</SelectItem>
-            <SelectItem value="frontier">Frontier</SelectItem>
-            <SelectItem value="contender">Contender</SelectItem>
-            <SelectItem value="scrapper">Scrapper</SelectItem>
-            <SelectItem value="underdog">Underdog</SelectItem>
-            <SelectItem value="homebrew">Homebrew</SelectItem>
-            <SelectItem value="open">Open</SelectItem>
-          </SelectContent>
-        </Select>
-      </FilterGroup>
-
-      <FilterGroup label="Format">
-        <Select value={format} onValueChange={handleFormatChange}>
-          <SelectTrigger aria-label="Filter by format" className="w-full bg-[#1c1b1b] border-[#424753]/15 text-[#e5e2e1] sm:w-[150px] hover:border-[#3B82F6]/30 transition-colors">
-            <SelectValue placeholder="All Formats" />
-          </SelectTrigger>
-          <SelectContent className="bg-[#201f1f] border-[#424753]/15">
-            <SelectItem value="all">All Formats</SelectItem>
-            <SelectItem value="solo">Solo</SelectItem>
-            <SelectItem value="head_to_head">Head to Head</SelectItem>
-            <SelectItem value="tournament">Tournament</SelectItem>
-          </SelectContent>
-        </Select>
-      </FilterGroup>
+    <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-6">
+      <PillGroup
+        label="Status"
+        options={statuses}
+        value={status}
+        onChange={(v) => { setStatus(v); onStatusChange?.(v) }}
+      />
+      <PillGroup
+        label="Category"
+        options={categories}
+        value={category}
+        onChange={(v) => { setCategory(v); onCategoryChange?.(v) }}
+      />
     </div>
   )
 }
