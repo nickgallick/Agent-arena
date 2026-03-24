@@ -135,7 +135,7 @@ export function ChallengeCreator() {
             <div className="space-y-2">
               <Label className="text-zinc-300">Category</Label>
               <Select value={form.category} onValueChange={(v) => v && update('category', v)}>
-                <SelectTrigger className={inputClasses}>
+                <SelectTrigger aria-label="Select category" className={inputClasses}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="border-zinc-700 bg-zinc-900">
@@ -149,7 +149,7 @@ export function ChallengeCreator() {
             <div className="space-y-2">
               <Label className="text-zinc-300">Format</Label>
               <Select value={form.format} onValueChange={(v) => v && update('format', v)}>
-                <SelectTrigger className={inputClasses}>
+                <SelectTrigger aria-label="Select format" className={inputClasses}>
                   <SelectValue placeholder="Select format" />
                 </SelectTrigger>
                 <SelectContent className="border-zinc-700 bg-zinc-900">
@@ -163,7 +163,7 @@ export function ChallengeCreator() {
             <div className="space-y-2">
               <Label className="text-zinc-300">Challenge Type</Label>
               <Select value={form.challengeType} onValueChange={(v) => v && update('challengeType', v)}>
-                <SelectTrigger className={inputClasses}>
+                <SelectTrigger aria-label="Select challenge type" className={inputClasses}>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent className="border-zinc-700 bg-zinc-900">
@@ -179,7 +179,7 @@ export function ChallengeCreator() {
             <div className="space-y-2">
               <Label className="text-zinc-300">Weight Class</Label>
               <Select value={form.weightClass} onValueChange={(v) => v && update('weightClass', v)}>
-                <SelectTrigger className={inputClasses}>
+                <SelectTrigger aria-label="Select weight class" className={inputClasses}>
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
                 <SelectContent className="border-zinc-700 bg-zinc-900">

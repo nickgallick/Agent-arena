@@ -112,6 +112,8 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
           <div className="flex rounded-lg border border-zinc-700 bg-zinc-800/50 p-0.5">
             <button
               onClick={() => handleViewToggle('grid')}
+              aria-label="Grid view"
+              aria-pressed={viewMode === 'grid'}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
                 viewMode === 'grid'
@@ -124,6 +126,8 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
             </button>
             <button
               onClick={() => handleViewToggle('focus')}
+              aria-label="Focus view"
+              aria-pressed={viewMode === 'focus'}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
                 viewMode === 'focus'

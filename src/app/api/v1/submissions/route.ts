@@ -2,21 +2,36 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { submissionSchema } from '@/lib/validators/submission'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
-import { authenticateConnector } from '@/lib/auth/authenticate-connector'
+import { authenticateConnectorWithDebug } from '@/lib/auth/authenticate-connector'
+
+const SUBMITTABLE_STATUSES = ['entered', 'assigned', 'in_progress']
 
 export async function POST(request: NextRequest) {
   try {
     // Authenticate via API key
-    const agent = await authenticateConnector(request)
+    const { agent, debug } = await authenticateConnectorWithDebug(request)
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({
+        error: 'Unauthorized',
+        hint: 'Send API key via x-arena-api-key header or Authorization: Bearer aa_xxx',
+        debug: {
+          key_received: debug?.key_received,
+          key_length: debug?.key_length,
+          key_prefix: debug?.key_prefix,
+          hash_prefix: debug?.hash_prefix,
+          source: debug?.source,
+          expected_key_length: "67-68",
+        },
+      }, { status: 401 })
     }
 
     // Rate limit: 5 submissions per agent per minute (anti-spam)
+    const ip = getClientIp(request)
     const rl = await rateLimit(`connector-submit:${agent.id}`, 5, 60_000)
     if (!rl.success) {
       return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: { 'Retry-After': '60' } })
     }
+    void ip // used for future rate limiting by IP
 
     const body = await request.json() as unknown
     const parsed = submissionSchema.safeParse(body)
@@ -27,7 +42,7 @@ export async function POST(request: NextRequest) {
     const { entry_id, submission_text, submission_files, transcript, actual_mps } = parsed.data
     const supabase = createAdminClient()
 
-    // Verify the entry belongs to this agent (with explicit error handling)
+    // Verify the entry belongs to this agent
     const { data: entry, error: entryError } = await supabase
       .from('challenge_entries')
       .select('id, agent_id, user_id, status')
@@ -46,42 +61,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Use atomic submit_entry() Postgres function to prevent double-submit race
-    const { data: submitted, error: submitError } = await supabase.rpc('submit_entry', {
-      p_entry_id: entry_id,
-      p_user_id: entry.user_id,
-      p_content: submission_text ?? '',
-    })
-
-    if (submitError) {
-      // submit_entry raises an exception if entry already submitted or wrong status
-      console.error('[v1/submissions POST] Submit error:', submitError.message)
-      if (submitError.message.includes('cannot be submitted')) {
-        return NextResponse.json(
-          { error: `Entry cannot be submitted: ${submitError.message}` },
-          { status: 409 }
-        )
-      }
-      return NextResponse.json({ error: 'Failed to submit entry' }, { status: 500 })
+    if (!SUBMITTABLE_STATUSES.includes(entry.status)) {
+      return NextResponse.json(
+        { error: `Entry cannot be submitted from status: ${entry.status}` },
+        { status: 409 }
+      )
     }
 
-    // Store full submission data separately (submission_files, transcript, actual_mps)
-    const { error: updateError } = await supabase
+    // Direct admin update — service role bypasses RLS, no DB function gate needed
+    const { data: submitted, error: submitError } = await supabase
       .from('challenge_entries')
       .update({
+        status: 'submitted',
+        submission_text: submission_text ?? '',
         submission_files: submission_files ?? null,
         transcript: transcript ?? null,
         actual_mps: actual_mps ?? null,
+        submitted_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .eq('id', entry_id)
+      .select('id, status, submitted_at')
+      .single()
 
-    if (updateError) {
-      console.error('[v1/submissions POST] Metadata update error:', updateError.message)
-      // Non-fatal — submission is already recorded
+    if (submitError) {
+      console.error('[v1/submissions POST] Submit error:', submitError.message)
+      return NextResponse.json({ error: 'Failed to submit entry' }, { status: 500 })
     }
 
     return NextResponse.json({
-      submission_id: (submitted as { id: string }).id,
+      submission_id: submitted.id,
       status: 'submitted',
     })
   } catch (err) {

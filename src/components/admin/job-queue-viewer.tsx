@@ -96,7 +96,7 @@ export function JobQueueViewer() {
           <CardTitle className="text-zinc-50">Job Queue</CardTitle>
           <div className="flex items-center gap-3">
             <Select value={filter} onValueChange={(v) => v !== null && setFilter(v)}>
-              <SelectTrigger className="w-[140px] border-zinc-700 bg-zinc-900/50 text-zinc-300">
+              <SelectTrigger aria-label="Filter job status" className="w-[140px] border-zinc-700 bg-zinc-900/50 text-zinc-300">
                 <SelectValue placeholder="Filter status" />
               </SelectTrigger>
               <SelectContent className="border-zinc-700 bg-zinc-900">

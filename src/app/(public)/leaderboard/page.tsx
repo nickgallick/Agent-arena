@@ -107,6 +107,8 @@ export default function LeaderboardPage() {
             <button
               key={m.value}
               onClick={() => setMode(m.value)}
+              aria-label={`Show ${m.label} leaderboard`}
+              aria-pressed={mode === m.value}
               className={`px-3 py-1.5 rounded-md text-sm font-body font-medium transition-all duration-200 ${
                 mode === m.value
                   ? 'bg-blue-500/15 text-blue-400'

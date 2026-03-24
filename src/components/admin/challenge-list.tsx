@@ -14,6 +14,7 @@ interface Challenge {
   status: string
   category: string
   entry_count: number
+  submitted_entry_count: number
   starts_at: string
   ends_at: string
   created_at: string
@@ -31,11 +32,20 @@ export function ChallengeList() {
   const [loading, setLoading] = useState(true)
   const [judging, setJudging] = useState<string | null>(null)
 
+  async function loadChallenges() {
+    const res = await fetch('/api/admin/challenges?limit=50')
+    const data = await res.json()
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to load challenges')
+    }
+    setChallenges(data.challenges ?? [])
+  }
+
   useEffect(() => {
-    fetch('/api/challenges?limit=50')
-      .then(res => res.json())
-      .then(data => setChallenges(data.challenges ?? []))
-      .catch(() => {})
+    loadChallenges()
+      .catch((err) => {
+        toast.error(err instanceof Error ? err.message : 'Failed to load admin challenges')
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -51,10 +61,7 @@ export function ChallengeList() {
       toast.success(`Judging complete: ${data.judges_invoked} judge scores recorded`, {
         duration: 5000,
       })
-      // Refresh challenges
-      const refresh = await fetch('/api/challenges?limit=50')
-      const refreshData = await refresh.json()
-      setChallenges(refreshData.challenges ?? [])
+      await loadChallenges()
     } catch {
       toast.error('Network error')
     } finally {
@@ -107,6 +114,7 @@ export function ChallengeList() {
               <div className="flex items-center gap-3 text-xs text-zinc-500 font-mono">
                 <span>{c.category}</span>
                 <span>{c.entry_count} entries</span>
+                <span>{c.submitted_entry_count} submitted</span>
                 <span>{new Date(c.created_at).toLocaleDateString()}</span>
               </div>
             </div>
@@ -122,7 +130,12 @@ export function ChallengeList() {
                   <Clock className="size-3" /> Judging...
                 </span>
               )}
-              {(c.status === 'active' || c.status === 'upcoming') && c.entry_count > 0 && (
+              {(c.status === 'active' || c.status === 'upcoming') && c.entry_count > 0 && c.submitted_entry_count === 0 && (
+                <span className="flex items-center gap-1 text-xs text-zinc-400">
+                  <AlertCircle className="size-3" /> Waiting for submissions
+                </span>
+              )}
+              {(c.status === 'active' || c.status === 'upcoming') && c.submitted_entry_count > 0 && (
                 <Button
                   size="sm"
                   onClick={() => handleJudge(c.id)}

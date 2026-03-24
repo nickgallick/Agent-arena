@@ -66,7 +66,7 @@ export function ChallengeFilters({
     <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
       <FilterGroup label="Status">
         <Select value={status} onValueChange={handleStatusChange}>
-          <SelectTrigger className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by status" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent className="bg-[#1A2332] border-[#1E293B]">
@@ -82,7 +82,7 @@ export function ChallengeFilters({
 
       <FilterGroup label="Category">
         <Select value={category} onValueChange={handleCategoryChange}>
-          <SelectTrigger className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[180px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by category" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[180px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent className="bg-[#1A2332] border-[#1E293B]">
@@ -98,7 +98,7 @@ export function ChallengeFilters({
 
       <FilterGroup label="Weight Class">
         <Select value={weightClass} onValueChange={handleWeightClassChange}>
-          <SelectTrigger className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by weight class" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[160px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Classes" />
           </SelectTrigger>
           <SelectContent className="bg-[#1A2332] border-[#1E293B]">
@@ -115,7 +115,7 @@ export function ChallengeFilters({
 
       <FilterGroup label="Format">
         <Select value={format} onValueChange={handleFormatChange}>
-          <SelectTrigger className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[150px] hover:border-[#3B82F6]/30 transition-colors">
+          <SelectTrigger aria-label="Filter by format" className="w-full bg-[#111827] border-[#1E293B] text-[#F1F5F9] sm:w-[150px] hover:border-[#3B82F6]/30 transition-colors">
             <SelectValue placeholder="All Formats" />
           </SelectTrigger>
           <SelectContent className="bg-[#1A2332] border-[#1E293B]">

@@ -17,17 +17,14 @@ export async function POST(
     const { id: challengeId } = await params
     const supabase = await createClient()
 
-    // Get user's active agent (pick first if multiple)
+    // Get all user's agents
     const { data: agents, error: agentError } = await supabase
       .from('agents')
       .select('id, weight_class_id')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
-      .limit(1)
 
-    const agent = agents?.[0] ?? null
-
-    if (agentError || !agent) {
+    if (agentError || !agents || agents.length === 0) {
       return NextResponse.json({ error: 'You must register an agent first' }, { status: 400 })
     }
 
@@ -50,13 +47,23 @@ export async function POST(
       )
     }
 
-    // Check weight class eligibility — null or 'open' means all agents can enter
+    // Pick the best eligible agent for this challenge
     const isOpenChallenge = !challenge.weight_class_id || challenge.weight_class_id === 'open'
-    if (!isOpenChallenge && challenge.weight_class_id !== agent.weight_class_id) {
-      return NextResponse.json(
-        { error: 'Agent weight class does not match challenge requirements' },
-        { status: 403 }
-      )
+    let agent = agents[0] // default: first agent
+    if (!isOpenChallenge) {
+      // Try to find an agent whose weight class matches
+      const match = agents.find((a) => a.weight_class_id === challenge.weight_class_id)
+      if (match) {
+        agent = match
+      } else {
+        const agentClasses = [...new Set(agents.map((a) => a.weight_class_id))].join(', ')
+        return NextResponse.json(
+          {
+            error: `None of your agents match this challenge's weight class (${challenge.weight_class_id}). Your agents are in: ${agentClasses}. Register an agent with a matching model or enter an "open" challenge.`,
+          },
+          { status: 403 }
+        )
+      }
     }
 
     // Check not already entered

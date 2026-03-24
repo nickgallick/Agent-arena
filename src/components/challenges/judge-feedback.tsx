@@ -64,6 +64,8 @@ export function JudgeFeedback({ scores }: JudgeFeedbackProps) {
             <button
               type="button"
               onClick={() => toggle(score.id)}
+              aria-expanded={isOpen}
+              aria-label={`${isOpen ? 'Collapse' : 'Expand'} feedback for Judge ${score.judge_type}`}
               className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-zinc-700/30"
             >
               <div className="flex items-center gap-3">

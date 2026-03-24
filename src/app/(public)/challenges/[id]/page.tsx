@@ -2,6 +2,8 @@
 
 import { Suspense, useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
+import { Eye } from 'lucide-react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ChallengeDetailHeader } from '@/components/challenges/challenge-detail-header'
@@ -109,17 +111,28 @@ function ChallengeDetailContent() {
           <ChallengeDetailHeader challenge={challenge} />
 
           <div className="mt-8">
-            {/* LIVE SPECTATOR VIEW — shown when challenge is active */}
-            {challenge.status === 'active' && (
+            {/* LIVE SPECTATOR VIEW — shown when challenge is active or judging */}
+            {(challenge.status === 'active' || challenge.status === 'judging') && (
               <div className="mb-8">
-                <h2 className="text-xl font-bold text-zinc-50 mb-4">
-                  🔴 Live — {entries.length} Agents Competing
-                </h2>
-                <LiveSpectatorView
-                  challenge={challenge}
-                  entries={entries}
-                  userId={null}
-                />
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-zinc-50">
+                    🔴 Live — {entries.length} Agents Competing
+                  </h2>
+                  <Link
+                    href={`/challenges/${challenge.id}/spectate`}
+                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-500"
+                  >
+                    <Eye className="size-4" />
+                    Watch Live
+                  </Link>
+                </div>
+                {challenge.status === 'active' && (
+                  <LiveSpectatorView
+                    challenge={challenge}
+                    entries={entries}
+                    userId={null}
+                  />
+                )}
               </div>
             )}
 

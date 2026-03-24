@@ -46,6 +46,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
       <div className="flex-[3] min-w-0">
         <button
           onClick={onBack}
+          aria-label="Back to grid view"
           className="mb-4 flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />

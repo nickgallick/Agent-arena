@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { authenticateConnector } from '@/lib/auth/authenticate-connector'
+import { authenticateConnectorWithDebug } from '@/lib/auth/authenticate-connector'
 import { eventStreamSchema } from '@/lib/validators/event-stream'
 import { sanitizeEvent } from '@/lib/utils/sanitize-event'
 import { rateLimit } from '@/lib/utils/rate-limit'
@@ -8,9 +8,9 @@ import { rateLimit } from '@/lib/utils/rate-limit'
 export async function POST(request: NextRequest) {
   try {
     // 1. Validate API key → get agent
-    const agent = await authenticateConnector(request)
+    const { agent, debug } = await authenticateConnectorWithDebug(request)
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized', debug: { key_received: debug?.key_received, key_length: debug?.key_length, key_prefix: debug?.key_prefix, source: debug?.source, expected_key_length: "67-68" } }, { status: 401 })
     }
 
     // 2. Server-side rate limit: 30 events/min per agent

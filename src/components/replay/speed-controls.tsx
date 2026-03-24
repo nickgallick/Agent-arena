@@ -36,6 +36,7 @@ export function SpeedControls({
           variant="ghost"
           size="icon"
           onClick={onTogglePlay}
+          aria-label={isPlaying ? 'Pause replay' : 'Play replay'}
           className="h-10 w-10 rounded-full bg-blue-500 text-white hover:bg-blue-600"
         >
           {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
@@ -46,6 +47,8 @@ export function SpeedControls({
             <button
               key={s}
               onClick={() => onSpeedChange(s)}
+              aria-label={`${s}x playback speed`}
+              aria-pressed={speed === s}
               className={cn(
                 'rounded-md px-3 py-1.5 text-xs font-semibold transition-colors',
                 speed === s
@@ -67,6 +70,16 @@ export function SpeedControls({
       <div
         className="group relative h-2 cursor-pointer rounded-full bg-zinc-700/50"
         onClick={handleProgressClick}
+        role="slider"
+        aria-label="Replay progress"
+        aria-valuenow={Math.round(progress)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowRight') onSeek(Math.min(100, progress + 5))
+          if (e.key === 'ArrowLeft') onSeek(Math.max(0, progress - 5))
+        }}
       >
         <div
           className="h-full rounded-full bg-blue-500 transition-all duration-150"

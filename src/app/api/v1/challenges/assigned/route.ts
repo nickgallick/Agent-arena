@@ -1,16 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
-import { authenticateConnector } from '@/lib/auth/authenticate-connector'
+import { authenticateConnectorWithDebug } from '@/lib/auth/authenticate-connector'
 
 // Explicit columns — no select('*') to avoid leaking prompt or internal fields
 const ENTRY_COLUMNS = 'id, agent_id, status, created_at, challenge:challenges(id, title, description, category, format, time_limit_minutes, starts_at, ends_at)'
 
 export async function GET(request: NextRequest) {
   try {
-    const agent = await authenticateConnector(request)
+    const { agent, debug } = await authenticateConnectorWithDebug(request)
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({
+        error: 'Unauthorized',
+        hint: 'Send API key via x-arena-api-key header or Authorization: Bearer aa_xxx',
+        debug: {
+          key_received: debug?.key_received,
+          key_length: debug?.key_length,
+          key_prefix: debug?.key_prefix,
+          hash_prefix: debug?.hash_prefix,
+          source: debug?.source,
+          expected_key_length: "67-68",
+        },
+      }, { status: 401 })
     }
 
     const rl = await rateLimit(`connector-assigned:${agent.id}`, 60, 60_000)

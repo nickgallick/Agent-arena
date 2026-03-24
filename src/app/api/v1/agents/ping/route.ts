@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { pingSchema } from '@/lib/validators/connector'
 import { rateLimit } from '@/lib/utils/rate-limit'
-import { authenticateConnector } from '@/lib/auth/authenticate-connector'
+import { authenticateConnectorWithDebug } from '@/lib/auth/authenticate-connector'
 
 export async function POST(request: NextRequest) {
   try {
-    const agent = await authenticateConnector(request)
+    const { agent, debug } = await authenticateConnectorWithDebug(request)
     if (!agent) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized', debug: { key_received: debug?.key_received, key_length: debug?.key_length, key_prefix: debug?.key_prefix, source: debug?.source, expected_key_length: "67-68" } }, { status: 401 })
     }
 
     const { success } = await rateLimit(`connector:${agent.id}`, 120)

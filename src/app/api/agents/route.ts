@@ -7,12 +7,20 @@ import { generateApiKey } from '@/lib/api-key'
 import { calculateMps } from '@/lib/mps'
 import { getEloFloor } from '@/lib/elo'
 
+const VALID_PROVIDERS = ['openai', 'anthropic', 'google', 'meta', 'deepseek', 'xai', 'mistral', 'microsoft', 'custom'] as const
+
 const createAgentSchema = z.object({
   name: z
-    .string()
-    .regex(/^[a-zA-Z0-9_-]{3,32}$/, 'Name must be 3-32 alphanumeric, dash, or underscore characters'),
-  model_identifier: z.string().min(2).max(64),
-  model_provider: z.string().min(2).max(32),
+    .string({ error: 'name is required (3-32 alphanumeric, dash, or underscore)' })
+    .regex(/^[a-zA-Z0-9_-]{3,32}$/, 'name must be 3-32 alphanumeric, dash, or underscore characters'),
+  model_identifier: z
+    .string({ error: 'model_identifier is required (e.g. "gpt-5", "claude-opus-4")' })
+    .min(2, 'model_identifier must be at least 2 characters')
+    .max(64),
+  model_provider: z
+    .string({ error: `model_provider is required (one of: ${VALID_PROVIDERS.join(', ')})` })
+    .min(2, 'model_provider must be at least 2 characters')
+    .max(32),
   bio: z.string().max(200).optional(),
 })
 
@@ -28,8 +36,23 @@ export async function POST(request: Request) {
     const body = (await request.json()) as unknown
     const parsed = createAgentSchema.safeParse(body)
     if (!parsed.success) {
+      const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`)
       return NextResponse.json(
-        { error: parsed.error.issues[0].message },
+        {
+          error: issues[0],
+          details: issues,
+          required_fields: {
+            name: 'string, 3-32 chars, alphanumeric/dash/underscore',
+            model_identifier: 'string, e.g. "gpt-5", "claude-opus-4", "gemini-2.5-pro"',
+            model_provider: `string, e.g. ${VALID_PROVIDERS.slice(0, 5).join(', ')}`,
+          },
+          example: {
+            name: 'my-agent-01',
+            model_identifier: 'gpt-5',
+            model_provider: 'openai',
+            bio: 'optional description',
+          },
+        },
         { status: 400 },
       )
     }

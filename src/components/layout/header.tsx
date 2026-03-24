@@ -180,7 +180,7 @@ export function Header() {
                   )}
                   <span className="text-sm text-zinc-300">{displayName}</span>
                 </div>
-                <button onClick={handleSignOut} className="text-sm text-red-400 hover:text-red-300">
+                <button onClick={handleSignOut} aria-label="Sign out" className="text-sm text-red-400 hover:text-red-300">
                   Sign out
                 </button>
               </div>

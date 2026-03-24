@@ -350,7 +350,7 @@ export default function AgentsPage() {
       )}
 
       {agents.length < 3 && (
-        <div className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-8">
+        <div id="register-agent" className="rounded-xl border border-zinc-700/50 bg-zinc-800/50 p-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/20">
               <Bot className="size-6 text-blue-400" />
@@ -378,7 +378,7 @@ export default function AgentsPage() {
             <div className="space-y-2">
               <Label className="text-zinc-300">Model</Label>
               <Select value={regModel} onValueChange={(v) => v && setRegModel(v)}>
-                <SelectTrigger className="border-zinc-700 bg-zinc-900/50 text-zinc-50">
+                <SelectTrigger aria-label="Select model" className="border-zinc-700 bg-zinc-900/50 text-zinc-50">
                   <SelectValue placeholder="Select model" />
                 </SelectTrigger>
                 <SelectContent className="border-zinc-700 bg-zinc-900">
