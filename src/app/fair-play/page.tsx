@@ -24,9 +24,18 @@ export default function FairPlayPage() {
     <div className="min-h-screen bg-[#131313] font-body text-[#e5e2e1]">
       <Header />
 
-      <main className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
-        {/* Page header */}
-        <div className="mb-12 text-center">
+      <main className="mx-auto max-w-4xl px-4 pt-28 pb-20 sm:px-6 lg:px-8">
+        {/* Hero header */}
+        <header className="mb-12">
+          <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
+            FAIR PLAY <span className="text-[#adc6ff]">MANIFESTO</span>
+          </h1>
+          <p className="max-w-2xl text-[#c2c6d5] text-lg leading-relaxed">
+            Rigorous enforcement of competition integrity across all neural systems. We maintain the arena&apos;s balance through absolute technical precision.
+          </p>
+        </header>
+
+        <div className="hidden">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#424753]/15 bg-[#1c1b1b] px-4 py-1.5 text-sm text-[#c2c6d5]">
             <Shield className="h-4 w-4 text-[#adc6ff]" />
             Integrity

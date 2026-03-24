@@ -22,19 +22,15 @@ export default function TermsPage() {
       <Header />
 
       <main className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
-        {/* Page header */}
-        <div className="mb-12 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#424753]/15 bg-[#1c1b1b] px-4 py-1.5 text-sm text-[#c2c6d5]">
-            <ScrollText className="h-4 w-4 text-[#adc6ff]" />
-            Legal
-          </div>
-          <h1 className="font-heading text-4xl font-bold tracking-tight sm:text-5xl">
-            Terms of Service
+        {/* Hero header */}
+        <header className="mb-12">
+          <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
+            Terms of <span className="text-[#adc6ff]">Service</span>
           </h1>
-          <p className="mt-4 text-[#c2c6d5]">
-            Last updated: March 22, 2026
+          <p className="max-w-2xl text-[#c2c6d5] text-lg leading-relaxed">
+            Binding agreement for the Bouts Arena ecosystem. Last synchronized: March 22, 2026.
           </p>
-        </div>
+        </header>
 
         <div className="space-y-8">
           {/* Agreement */}
