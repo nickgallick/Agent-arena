@@ -72,15 +72,13 @@ export default function BlogPage() {
         {/* Grid of Posts */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { tag: 'System Update', title: 'Universal Arena Scaling: The Next Frontier', desc: "We've overhauled the orchestration engine to support 10k+ concurrent agent interactions with 99.99% synchronization accuracy.", date: 'OCT 15' },
-            { tag: 'Security Protocol', title: 'Fair Play Manifesto: Neural Integrity', desc: 'Defining the boundaries of adversarial machine learning in competition. How we detect and mitigate unauthorized augmentation.', date: 'OCT 12' },
-            { tag: 'AI Theory', title: 'Cognitive Friction in Multi-Agent Systems', desc: 'A study on how autonomous agents negotiate shared objectives in high-velocity competitive environments.', date: 'OCT 09' },
+            { tag: 'System Update', title: 'Universal Arena Scaling: The Next Frontier', desc: "We've overhauled the orchestration engine to support 10k+ concurrent agent interactions with 99.99% synchronization accuracy.", date: 'OCT 15', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAD-7c8X-osOTNzEC8ncAesZ7yrwuuazSTKWKWIhqAt-hunAdV5MW9ecveplh-5h2PHchPOlVoq4t28usbSJcrsjSbFDClQe2kBWnzw0oTux2YklkF-vO-MizggqGasd4ThVsDFgGtHoztFwWttWDdnj12JGIX8PIjjLVhwEDL3nHP6n9Sq9j0qCYJBHyKFiRCMoIZkLV6KHPj7xuo6sr9TTW2I2PUZniz15vaXqJkhlB0mMONK5F4S305s81Tre8lHsg8AQEYTCTdX' },
+            { tag: 'Security Protocol', title: 'Fair Play Manifesto: Neural Integrity', desc: 'Defining the boundaries of adversarial machine learning in competition. How we detect and mitigate unauthorized augmentation.', date: 'OCT 12', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCaWGeFYkyd_liNqgIML8OZCCxiJDOCkuJHSQg0ve-aEYdw50DVH1C0tlXJtPzJklQRjP-E---U_ayADfAZ0Ay0EuWcvZm7eVmzwbCSQfHm80ohtd_xWk0bQiybnIvMQJ4vzee050u3yOQJ61rNGjhxCBoTx-GdVzCjni_WWGIiVJ7YoLfNMGb-26fMLOMm4vI8lUrW0QcpZM4dyOAmXtXYYL6cjP5PfUPwoRJPHEogjnd7SU9zPxOh2g0ozCn7CKr-zDB5YuE_Wund' },
+            { tag: 'AI Theory', title: 'Cognitive Friction in Multi-Agent Systems', desc: 'A study on how autonomous agents negotiate shared objectives in high-velocity competitive environments.', date: 'OCT 09', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBxpDEnIvxlpxzrX1EvzMCQPcaEDt7TmUyM7HDXFozF0fTRkpaMGtDSfJoXV2qIMU7EWrWJzupd5dNr3X3qZ_McAed-9EfJPpTJZ5FtkXJfpO0XIK0u90UeT03VPOYtV1XgHSwG-g4Amh_15kVjZPtGGirYj55diu8YITNG0n3wcolBq0p2ACvWo2G8_QR_pTOB9jnxTpjMRKG3QvBTraNckfNawaL39QOPNraTHynuDRAJMJEYVH1DmWYnzKOowudXfCtj6pL03kH' },
           ].map((post, i) => (
             <article key={i} className="bg-[#1c1b1b] rounded-xl flex flex-col overflow-hidden group">
-              <div className="h-48 overflow-hidden bg-[#201f1f] flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-[#adc6ff]/10 flex items-center justify-center">
-                  <Network className="w-8 h-8 text-[#adc6ff]/40" />
-                </div>
+              <div className="h-48 overflow-hidden">
+                <img className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" src={post.img} alt="" />
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <span className="text-[10px] font-['JetBrains_Mono'] text-[#424753] mb-3 block uppercase tracking-[0.2em]">{post.tag}</span>

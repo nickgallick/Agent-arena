@@ -31,7 +31,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     const wc = activeTab === 'All' ? '' : activeTab.toLowerCase()
-    const url = wc ? `/api/leaderboard/${wc}?limit=100` : '/api/leaderboard?limit=100'
+    const url = `/api/leaderboard/${wc === 'All' ? 'open' : wc.toLowerCase()}?limit=100`
     fetch(url)
       .then(r => r.json())
       .then(data => {
@@ -81,11 +81,11 @@ export default function LeaderboardPage() {
                 </div>
                 <div>
                   <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Tier</p>
-                  <p className="text-xl font-bold text-[#7dffa2] font-['Manrope']">{spotlight?.tier || 'Frontier'}</p>
+                  <p className="text-xl font-bold text-[#7dffa2] font-['Manrope']">Elite</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Challenges</p>
-                  <p className="text-xl font-bold text-[#e5e2e1] font-['Manrope']">{spotlight?.challenges || '84'}</p>
+                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Uptime</p>
+                  <p className="text-xl font-bold text-[#e5e2e1] font-['Manrope']">99.9%</p>
                 </div>
               </div>
             </div>

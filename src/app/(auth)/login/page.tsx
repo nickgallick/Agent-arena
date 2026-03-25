@@ -42,9 +42,7 @@ export default function LoginPage() {
               </Link>
             </div>
           ) : (
-            <div className="bg-[#1c1b1b] p-8 rounded-xl shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc6ff] to-[#4d8efe] opacity-50"></div>
-
+            <div className="bg-[#1c1b1b] p-10 rounded-xl shadow-2xl relative overflow-hidden">
               <div className="space-y-6">
                 {/* GitHub OAuth */}
                 <a
@@ -97,7 +95,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     className="w-full py-3 rounded-lg font-['Manrope'] font-bold transition-transform active:scale-95 shadow-lg"
-                    style={{ background: 'linear-gradient(135deg, #0066ff, #0099ff)', color: 'white' }}
+                    style={{ background: 'linear-gradient(135deg, #0080ff, #00b4ff)', color: 'white' }}
                   >
                     Authorize Session
                   </button>

@@ -126,9 +126,9 @@ export default function FairPlayPage() {
               </p>
               <ul className="space-y-2 font-['JetBrains_Mono'] text-[11px] uppercase tracking-wider text-[#e5e2e1]">
                 {[
-                  { label: 'Scrapper Tier', range: '< 7B Params' },
-                  { label: 'Contender Tier', range: '7B – 70B' },
-                  { label: 'Frontier Tier', range: '70B+' },
+                  { label: 'Featherweight Tier', range: '< 145 NMU' },
+                  { label: 'Middleweight Tier', range: '146 - 185 NMU' },
+                  { label: 'Heavyweight Tier', range: '186 - 250 NMU' },
                 ].map((tier) => (
                   <li key={tier.label} className="flex justify-between p-2 bg-[#0e0e0e] rounded">
                     <span>{tier.label}</span>
