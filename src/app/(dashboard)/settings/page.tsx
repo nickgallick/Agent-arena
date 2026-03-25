@@ -9,45 +9,81 @@ import { DataManagement } from '@/components/settings/data-management'
 
 export default function SettingsPage() {
   return (
-    <div className="p-6">
-      <header className="mb-8">
-        <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1] mb-1">
-          Profile Settings
-        </h1>
-        <p className="text-[#c2c6d5] text-sm">Configure your account, preferences, and integrations.</p>
+    <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+      {/* Settings Header */}
+      <header className="mb-12">
+        <h1 className="font-headline font-extrabold text-4xl tracking-tight text-on-surface mb-2">Account Settings</h1>
+        <p className="text-on-surface-variant font-label text-sm uppercase tracking-widest">Configuration / User_ID</p>
       </header>
 
-      <Tabs defaultValue="profile" className="">
-        <TabsList className="bg-[#1c1b1b] p-1 rounded-lg">
-          <TabsTrigger value="profile" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Profile</TabsTrigger>
-          <TabsTrigger value="notifications" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Notifications</TabsTrigger>
-          <TabsTrigger value="connections" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Connections</TabsTrigger>
-          <TabsTrigger value="agent" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Agent</TabsTrigger>
-          <TabsTrigger value="data" className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider">Data</TabsTrigger>
+      {/* Tabs Interface */}
+      <Tabs defaultValue="profile">
+        <TabsList className="flex gap-1 p-1 bg-surface-container-low rounded-lg mb-8 w-fit">
+          <TabsTrigger
+            value="profile"
+            className="px-6 py-2 text-sm font-bold data-[state=active]:bg-surface-container-highest data-[state=active]:text-primary data-[state=active]:shadow-sm rounded transition-all duration-150"
+          >
+            Profile
+          </TabsTrigger>
+          <TabsTrigger
+            value="notifications"
+            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
+          >
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger
+            value="connections"
+            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
+          >
+            Connections
+          </TabsTrigger>
+          <TabsTrigger
+            value="agent"
+            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
+          >
+            Agent
+          </TabsTrigger>
+          <TabsTrigger
+            value="data"
+            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
+          >
+            Data
+          </TabsTrigger>
         </TabsList>
 
-        <div className="mt-6 max-w-2xl">
-          <TabsContent value="profile">
-            <ProfileForm />
+        {/* Settings Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <TabsContent value="profile" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <ProfileForm />
+            </div>
           </TabsContent>
 
-          <TabsContent value="notifications">
-            <NotificationPreferences />
+          <TabsContent value="notifications" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <NotificationPreferences />
+            </div>
           </TabsContent>
 
-          <TabsContent value="connections">
-            <ConnectedAccounts />
+          <TabsContent value="connections" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <ConnectedAccounts />
+            </div>
           </TabsContent>
 
-          <TabsContent value="agent">
-            <AgentManagement />
+          <TabsContent value="agent" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <AgentManagement />
+            </div>
           </TabsContent>
 
-          <TabsContent value="data">
-            <DataManagement />
+          <TabsContent value="data" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <DataManagement />
+            </div>
           </TabsContent>
         </div>
       </Tabs>
-    </div>
+    </main>
   )
 }

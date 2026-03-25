@@ -328,7 +328,7 @@ function StatCard({
         </div>
       </div>
       <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-        <BgIcon className="w-24 h-24" />
+        <BgIcon className="w-32 h-32" />
       </div>
     </div>
   )

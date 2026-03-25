@@ -51,13 +51,15 @@ export default async function AdminPage() {
         <PageWithSidebar>
           <div className="flex min-h-screen flex-col bg-[#131313]">
             <Header />
-            <main className="flex-1 flex items-center justify-center">
-              <div className="text-center p-8 bg-[#1c1b1b]/60 backdrop-blur-xl rounded-xl max-w-md">
-                <AlertTriangle className="w-12 h-12 text-[#ffb780] mx-auto mb-4" />
-                <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-2">Admin Access Required</h2>
-                <p className="text-[#c2c6d5] text-sm">
-                  This panel requires Supabase configuration and an admin role. Connect your database to access admin features.
-                </p>
+            <main className="flex-grow lg:ml-64 pt-24 pb-32 px-4 md:px-8 max-w-[1600px] mx-auto w-full">
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="text-center p-8 bg-[#1c1b1b]/60 backdrop-blur-xl rounded-xl max-w-md">
+                  <AlertTriangle className="w-12 h-12 text-[#ffb780] mx-auto mb-4" />
+                  <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-2">Admin Access Required</h2>
+                  <p className="text-[#c2c6d5] text-sm">
+                    This panel requires Supabase configuration and an admin role. Connect your database to access admin features.
+                  </p>
+                </div>
               </div>
             </main>
             <Footer />
@@ -73,10 +75,8 @@ export default async function AdminPage() {
     <PageWithSidebar>
       <div className="flex min-h-screen flex-col bg-[#131313]">
         <Header />
-        <main className="flex-1 pt-24 pb-32 px-4 md:px-8">
-          <div className="mx-auto max-w-[1600px] w-full">
-            <AdminDashboardClient operatorName={admin.display_name} />
-          </div>
+        <main className="flex-grow lg:ml-64 pt-24 pb-32 px-4 md:px-8 max-w-[1600px] mx-auto w-full">
+          <AdminDashboardClient operatorName={admin.display_name} />
         </main>
         <Footer />
       </div>

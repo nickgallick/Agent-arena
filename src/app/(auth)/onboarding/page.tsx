@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight, CheckCircle, Rocket, Shield, CheckCircle2, Globe, Info, ScanBarcode } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ArrowRight, CheckCircle, Globe } from 'lucide-react'
 import { OnboardingProgress } from '@/components/onboarding/onboarding-progress'
 import { StepConnector } from '@/components/onboarding/step-connector'
 import { StepRegister } from '@/components/onboarding/step-register'
@@ -44,83 +43,149 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#131313] relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#adc6ff]/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="w-full max-w-2xl z-10">
-        <div className="mb-12 text-center">
-          <h1 className="font-[family-name:var(--font-heading)] font-black tracking-tighter text-2xl text-[#e5e2e1] mb-2">BOUTS</h1>
-          <p className="font-[family-name:var(--font-mono)] text-[#8c909f] text-xs uppercase tracking-[0.2em]">Neural Integration Terminal v1.0</p>
-        </div>
-        {/* Progress indicator */}
-        <OnboardingProgress currentStep={currentStep} completedSteps={completedSteps} />
+    <>
+      <main className="bg-surface text-on-surface font-body selection:bg-primary selection:text-on-primary-container min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        {/* Ambient Background Aesthetic */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 blur-[120px] rounded-full" />
 
-        {/* Step content */}
-        <div className="mt-12 flex-1">
-          <AnimatePresence mode="wait">
-            {currentStep === 0 && (
-              <motion.div
-                key="step-0"
-                variants={stepVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
+        {/* Onboarding Shell */}
+        <div className="w-full max-w-2xl z-10">
+          {/* Branding Header */}
+          <div className="mb-12 text-center">
+            <h1 className="font-headline font-black tracking-tighter text-2xl text-on-surface mb-2">BOUTS</h1>
+            <p className="font-label text-on-surface-variant text-xs uppercase tracking-[0.2em]">Neural Integration Terminal v4.0.2</p>
+          </div>
+
+          {/* Progress Indicator */}
+          <OnboardingProgress currentStep={currentStep} completedSteps={completedSteps} />
+
+          {/* Step content */}
+          <div className="mt-12 flex-1">
+            <AnimatePresence mode="wait">
+              {currentStep === 0 && (
+                <motion.div
+                  key="step-0"
+                  variants={stepVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.25 }}
+                >
+                  <StepConnector />
+                </motion.div>
+              )}
+              {currentStep === 1 && (
+                <motion.div
+                  key="step-1"
+                  variants={stepVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.25 }}
+                >
+                  <StepRegister />
+                </motion.div>
+              )}
+              {currentStep === 2 && (
+                <motion.div
+                  key="step-2"
+                  variants={stepVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.25 }}
+                >
+                  <StepFirstChallenge />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* CTA Actions */}
+          <div className="flex flex-col md:flex-row gap-4 pt-4 mt-8">
+            <button
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              className="flex-1 py-4 rounded-lg bg-surface-container-high text-on-surface font-headline font-bold text-sm hover:bg-surface-container-highest transition-colors order-2 md:order-1"
+            >
+              Previous Step
+            </button>
+            {currentStep < 2 ? (
+              <button
+                onClick={handleNext}
+                className="flex-[2] py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all order-1 md:order-2 flex items-center justify-center gap-2"
               >
-                <StepConnector />
-              </motion.div>
-            )}
-            {currentStep === 1 && (
-              <motion.div
-                key="step-1"
-                variants={stepVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
+                Initialize Protocol
+                <ArrowRight className="h-[18px] w-[18px]" />
+              </button>
+            ) : (
+              <button
+                onClick={handleComplete}
+                className="flex-[2] py-4 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-extrabold text-sm uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all order-1 md:order-2 flex items-center justify-center gap-2"
               >
-                <StepRegister />
-              </motion.div>
+                Complete
+                <CheckCircle className="mr-2 h-4 w-4" />
+              </button>
             )}
-            {currentStep === 2 && (
-              <motion.div
-                key="step-2"
-                variants={stepVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
-              >
-                <StepFirstChallenge />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          </div>
+
+          {/* Metadata / Logs Footer */}
+          <div className="mt-12 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+                <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Uplink Stable</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Globe className="h-3.5 w-3.5 text-on-surface-variant" />
+                <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">Region: US-EAST-1</span>
+              </div>
+            </div>
+            <div className="bg-surface-container-highest px-3 py-1 rounded">
+              <span className="font-label text-[10px] text-secondary font-bold tracking-tighter">ENCRYPTION: AES-256-GCM ACTIVE</span>
+            </div>
+          </div>
         </div>
 
-        {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between border-t border-[#424753]/15 pt-6">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            disabled={currentStep === 0}
-            className="text-[#8c909f]"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-
-          {currentStep < 2 ? (
-            <Button onClick={handleNext} className="bg-[#4d8efe] text-white hover:bg-[#adc6ff]">
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button onClick={handleComplete} className="bg-green-600 text-white hover:bg-green-700">
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Complete
-            </Button>
-          )}
+        {/* Decorative Elements */}
+        <div className="hidden xl:block absolute left-12 top-1/2 -translate-y-1/2 space-y-8 opacity-20">
+          <div className="w-px h-32 bg-gradient-to-b from-transparent via-on-surface-variant to-transparent mx-auto" />
+          <div className="rotate-90 font-label text-[10px] tracking-[1em] text-on-surface-variant whitespace-nowrap">ORCHESTRATION_LAYER</div>
+          <div className="w-px h-32 bg-gradient-to-b from-transparent via-on-surface-variant to-transparent mx-auto" />
         </div>
-      </div>
-    </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-zinc-950 block w-full py-12 px-8 border-t border-zinc-800/50">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto">
+          <div className="col-span-2 md:col-span-1">
+            <div className="text-blue-400 font-bold mb-4">BOUTS AI</div>
+            <p className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500">&copy; 2024 BOUTS AI. ALL RIGHTS RESERVED.</p>
+          </div>
+          <div>
+            <h4 className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">Product</h4>
+            <ul className="space-y-3">
+              <li><a className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Features</a></li>
+              <li><a className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Arena</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">Developers</h4>
+            <ul className="space-y-3">
+              <li><a className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">API Docs</a></li>
+              <li><a className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Integrations</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-400 mb-6">Legal</h4>
+            <ul className="space-y-3">
+              <li><a className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Privacy</a></li>
+              <li><a className="font-jetbrains-mono text-xs uppercase tracking-widest text-zinc-500 hover:text-zinc-200 hover:underline decoration-blue-500/50 transition-opacity opacity-80 hover:opacity-100" href="#">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+      </footer>
+    </>
   )
 }

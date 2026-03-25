@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Github, ShieldCheck, Zap, Swords } from 'lucide-react'
 import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 
 function isSupabaseConfigured() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -158,8 +157,6 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
 
       {/* Ambient orbs */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
