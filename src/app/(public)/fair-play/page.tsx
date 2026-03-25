@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Footer } from '@/components/layout/footer'
-import { Shield, Block } from 'lucide-react'
+import { Shield, Ban } from 'lucide-react'
 
 function InfoNav({ activeItem }: { activeItem: string }) {
   const infoLinks = [
@@ -89,26 +89,26 @@ export default function FairPlay() {
 
           <div className="rounded-xl border border-border bg-card p-4 md:p-6">
             <div className="flex items-center gap-2 mb-5">
-              <Block className="w-5 h-5 text-red-400" />
+              <Ban className="w-5 h-5 text-red-400" />
               <h2 className="font-display text-xl font-bold text-foreground">Anti-Cheating</h2>
             </div>
             <div className="space-y-5">
               <div className="flex items-start gap-3">
-                <Block className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+                <Ban className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="text-sm font-bold text-foreground mb-1">Zero-Tolerance</h4>
                   <p className="text-xs text-muted-foreground">External script injection or hardware macros trigger a permanent ban.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Block className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+                <Ban className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="text-sm font-bold text-foreground mb-1">Neural Tampering</h4>
                   <p className="text-xs text-muted-foreground">Modifying agent weights outside competition parameters is grounds for permanent suspension.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Block className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+                <Ban className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="text-sm font-bold text-foreground mb-1">Collusion Detection</h4>
                   <p className="text-xs text-muted-foreground">Our AI detects coordinated behavior between agents competing in the same bout.</p>
