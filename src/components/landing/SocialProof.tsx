@@ -67,14 +67,21 @@ export function SocialProof() {
         <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-20">
           {displayStats.map((stat) => {
             const Icon = stat.icon
+            const isZero = !stat.static && stat.value === 0
             return (
               <StaggerItem key={stat.label}>
-                <div className="arena-glass p-6 text-center">
-                  <Icon className="size-6 text-[#adc6ff] mx-auto mb-3" />
-                  <div className="font-mono text-3xl font-bold text-[#e5e2e1]">
-                    {stat.static ? stat.value : <CountUp end={stat.value} />}
+                <div className="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 text-center">
+                  <Icon className="size-6 text-blue-600 mx-auto mb-3" />
+                  <div className="font-mono text-3xl font-bold text-slate-900">
+                    {isZero ? (
+                      <span className="text-lg font-semibold text-slate-400">New</span>
+                    ) : stat.static ? (
+                      stat.value
+                    ) : (
+                      <CountUp end={stat.value} />
+                    )}
                   </div>
-                  <div className="font-mono text-xs font-medium text-[#8c909f] uppercase tracking-wider mt-2">
+                  <div className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
                     {stat.label}
                   </div>
                 </div>
@@ -83,12 +90,12 @@ export function SocialProof() {
           })}
         </StaggerContainer>
 
-        {/* Platform Highlights (replacing fake testimonials) */}
+        {/* Platform Highlights */}
         <SectionReveal>
-          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-[#e5e2e1] text-center mb-4 tracking-[-0.015em]">
+          <h2 className="font-heading font-black text-3xl sm:text-4xl text-slate-900 text-center mb-4 tracking-tighter">
             Built for Serious Competition
           </h2>
-          <p className="text-center text-[#c2c6d5] font-body max-w-2xl mx-auto mb-12">
+          <p className="text-center text-slate-500 font-body font-medium max-w-2xl mx-auto mb-12">
             Bouts is designed from the ground up to be the definitive benchmark for AI coding agents — fair, transparent, and evolving.
           </p>
         </SectionReveal>
@@ -98,10 +105,10 @@ export function SocialProof() {
             const Icon = f.icon
             return (
               <StaggerItem key={f.title}>
-                <div className="arena-glass p-6">
-                  <Icon className="size-6 text-[#adc6ff] mb-4" />
-                  <h3 className="font-heading font-semibold text-[#e5e2e1] mb-2">{f.title}</h3>
-                  <p className="text-[#c2c6d5] font-body text-sm leading-relaxed">
+                <div className="rounded-3xl border border-slate-200 bg-white shadow-sm hover:shadow-lg p-6 transition-all duration-200">
+                  <Icon className="size-6 text-blue-600 mb-4" />
+                  <h3 className="font-heading font-semibold text-slate-900 mb-2">{f.title}</h3>
+                  <p className="text-slate-500 font-body font-medium text-sm leading-relaxed">
                     {f.description}
                   </p>
                 </div>

@@ -211,41 +211,41 @@
 }
 
 /* ==============================================
-   Bouts Glass Card — Tonal Layering (no borders)
+   Bouts Glass Card — Light Theme
    ============================================== */
 .arena-glass,
 .bouts-card {
-  background: rgba(28, 27, 27, 0.6);
-  backdrop-filter: blur(12px);
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-  transition: background 150ms linear;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: all 150ms linear;
 }
 .arena-glass:hover,
 .bouts-card:hover {
-  background: rgba(32, 31, 31, 0.7);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 .arena-glass-strong,
 .bouts-card-elevated {
-  background: rgba(32, 31, 31, 0.85);
-  backdrop-filter: blur(20px);
+  background: #f8fafc;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* ==============================================
    Hero Gradient
    ============================================== */
 .hero-gradient {
-  background: radial-gradient(circle at 50% 50%, rgba(77, 142, 254, 0.15) 0%, rgba(13, 13, 13, 0) 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
 }
 
 /* ==============================================
    Technical Grid Background
    ============================================== */
 .technical-grid {
-  background-image: radial-gradient(circle at 2px 2px, rgba(173, 198, 255, 0.05) 1px, transparent 0);
+  background-image: radial-gradient(circle at 2px 2px, rgba(148, 163, 184, 0.15) 1px, transparent 0);
   background-size: 24px 24px;
 }
 
@@ -260,7 +260,7 @@
    Primary Gradient Button
    ============================================== */
 .primary-gradient-btn {
-  background: linear-gradient(135deg, #adc6ff 0%, #4d8efe 100%);
+  background: #2563eb;
 }
 
 /* ==============================================
@@ -300,13 +300,13 @@
    ============================================== */
 .arena-code-block,
 .bouts-code-block {
-  background: #0e0e0e;
+  background: #0f172a;
   border-radius: 8px;
   padding: 16px;
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.6;
-  color: #c2c6d5;
+  color: #cbd5e1;
   overflow-x: auto;
 }
 
@@ -314,28 +314,29 @@
    Primary Button Gradient
    ============================================== */
 .bouts-btn-primary {
-  background: linear-gradient(135deg, #adc6ff, #4d8efe);
-  color: #002e69;
-  font-weight: 600;
-  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
   padding: 0.625rem 1.5rem;
   transition: all 150ms linear;
 }
 .bouts-btn-primary:hover {
-  filter: brightness(1.1);
+  background: #1d4ed8;
   transform: translateY(-1px);
 }
 
 .bouts-btn-secondary {
-  background: #2a2a2a;
-  color: #adc6ff;
-  font-weight: 500;
-  border-radius: 8px;
+  background: #f1f5f9;
+  color: #2563eb;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
   padding: 0.625rem 1.5rem;
   transition: all 150ms linear;
 }
 .bouts-btn-secondary:hover {
-  background: #353534;
+  background: #e2e8f0;
 }
 
 /* ==============================================
