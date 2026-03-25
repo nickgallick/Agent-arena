@@ -1,11 +1,25 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import Link from 'next/link'
 import { PublicHeader } from '@/components/layout/public-header'
+import { Sidebar } from '@/components/layout/sidebar'
 import { Footer } from '@/components/layout/footer'
-import LeaderboardTable from '@/components/shared/leaderboard-table'
-import type { LeaderboardEntry } from '@/components/shared/leaderboard-table'
-import { Search, Trophy } from 'lucide-react'
+import {
+  Search,
+  Trophy,
+  ArrowRight,
+  CheckCircle,
+  Clock,
+  PauseCircle,
+  ChevronLeft,
+  ChevronRight,
+  CircleDot,
+  GitBranch,
+  Braces,
+  Cpu,
+  Hexagon,
+} from 'lucide-react'
 
 interface LeaderboardAgent {
   id: string
@@ -31,16 +45,19 @@ const WEIGHT_CLASSES = [
   { value: 'lightweight', label: 'Lightweight' },
 ]
 
-function capitalizeWeightClass(wc: string): LeaderboardEntry['weightClass'] {
-  const map: Record<string, LeaderboardEntry['weightClass']> = {
-    frontier: 'Frontier',
+const AGENT_ICONS = [CircleDot, GitBranch, Braces, Cpu, Hexagon]
+
+function getWeightClassLabel(wc: string): string {
+  const map: Record<string, string> = {
+    frontier: 'Frontier Tier',
     contender: 'Contender',
-    scrapper: 'Scrapper',
-    underdog: 'Underdog',
-    homebrew: 'Homebrew',
-    lightweight: 'Open',
+    lightweight: 'Lightweight',
   }
-  return map[wc.toLowerCase()] ?? 'Open'
+  return map[wc.toLowerCase()] ?? 'Contender'
+}
+
+function isFrontierTier(wc: string): boolean {
+  return wc.toLowerCase() === 'frontier'
 }
 
 export default function LeaderboardPage() {
@@ -97,86 +114,191 @@ export default function LeaderboardPage() {
     return result.map((a, i) => ({ ...a, rank: i + 1 }))
   }, [agents, search])
 
-  const tableData: LeaderboardEntry[] = useMemo(() => {
-    return filteredAgents.map((a) => ({
-      rank: a.rank,
-      id: a.id,
-      name: a.name,
-      owner: a.name.toLowerCase().replace(/\s+/g, '-'),
-      weightClass: capitalizeWeightClass(a.weight_class),
-      elo: Number(a.elo),
-      glicko: Number(a.elo),
-      rd: Math.round(50 + Math.random() * 30),
-      avatarUrl: a.avatar_url ?? undefined,
-    }))
-  }, [filteredAgents])
+  const topAgent = filteredAgents.length > 0 ? filteredAgents[0] : null
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#131313] font-manrope selection:bg-[#adc6ff]/15">
+    <div className="flex min-h-screen flex-col bg-[#131313] font-['Manrope'] selection:bg-[#adc6ff]/15">
       <PublicHeader />
+      <Sidebar />
 
-      <main className="flex-1 pt-28 pb-16 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          {/* Page Title */}
-          <h1 className="text-5xl font-black tracking-tighter text-[#e5e2e1] mb-10">
-            Global Rankings
-          </h1>
+      <main className="lg:ml-64 pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+        {/* Spotlight: Model of the Month */}
+        <section className="mb-12">
+          <div className="relative overflow-hidden rounded-xl bg-[#1c1b1b] min-h-[320px] flex flex-col md:flex-row items-center p-8 gap-8">
+            {/* Background Decorative Element */}
+            <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-l from-[#adc6ff]/40 to-transparent"></div>
+              <img
+                className="w-full h-full object-cover mix-blend-overlay"
+                alt="abstract futuristic humanoid robotic face with neon blue circuit patterns and high technical detail in cinematic lighting"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvLt9Ajjte2EPpDFqZlyuVuVqjlM-PwEueVl2kiHUmjWMyX6I9auIvQl_QYmfWXa-R_SUoqxBG_IDE12Phq4FLu6_Vzgt_XMnE9VvIgtc76h1hkmyR0Q1nPIf7xsAabb1xxITb5g2oImGE9ahVj5QyBllDHDMPNP2aWCIV_IgCaLyzTYxG_8Ib0AL-AzLa1WFK_RdeW0-xIhuS7uocE1W8PWpt3OjQa7KsM7jO7XvhrcW_5SWk4gJ6JaYGrrAs5jd4YLs05e4NpjWV"
+              />
+            </div>
+            <div className="relative z-10 flex-1 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/20">
+                <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse"></span>
+                <span className="text-[10px] font-['JetBrains_Mono'] font-bold text-[#7dffa2] uppercase tracking-widest">Model of the Month</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1]">
+                {topAgent?.name ?? 'Aether-09'}
+              </h1>
+              <p className="text-[#c2c6d5] max-w-md text-sm leading-relaxed">
+                Dominating the Frontier tier with unprecedented neural efficiency. {topAgent?.name ?? 'Aether-09'} has maintained a {topAgent ? Math.round((topAgent.wins / Math.max(topAgent.wins + topAgent.losses, 1)) * 100) : 98}% win rate over the last {topAgent ? topAgent.wins + topAgent.losses : 400} bouts.
+              </p>
+              <div className="grid grid-cols-3 gap-4 pt-4">
+                <div>
+                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">ELO Rating</p>
+                  <p className="text-xl font-bold text-[#adc6ff] font-['Manrope']">{topAgent ? Number(topAgent.elo).toLocaleString() : '3,102'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Tier</p>
+                  <p className="text-xl font-bold text-[#7dffa2] font-['Manrope']">Elite</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Uptime</p>
+                  <p className="text-xl font-bold text-[#e5e2e1] font-['Manrope']">99.9%</p>
+                </div>
+              </div>
+            </div>
+            <div className="relative z-10 w-full md:w-auto">
+              <button className="w-full md:w-auto px-8 py-4 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm tracking-tight flex items-center justify-center gap-3 text-[#e5e2e1]">
+                View Technical Specs
+                <ArrowRight className="size-5" />
+              </button>
+            </div>
+          </div>
+        </section>
 
-          {/* Controls Row */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-            {/* Weight Class Pill Tabs */}
-            <div className="flex bg-[#201f1f] p-1 rounded-lg w-fit border border-white/5">
+        {/* Leaderboard Controls */}
+        <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 mb-8">
+          <div className="w-full md:w-auto">
+            <h2 className="text-2xl font-bold font-['Manrope'] mb-4 text-[#e5e2e1]">Global Rankings</h2>
+            <div className="flex bg-[#1c1b1b] p-1 rounded-lg w-fit">
               {WEIGHT_CLASSES.map((wc) => (
                 <button
                   key={wc.value}
                   onClick={() => setWeightClass(wc.value)}
-                  className={`px-6 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${
+                  className={`px-6 py-2 rounded-md text-xs font-['JetBrains_Mono'] font-bold uppercase tracking-widest transition-all ${
                     weightClass === wc.value
-                      ? 'bg-[#131313] text-[#adc6ff] shadow-lg shadow-black/20 border border-white/5'
-                      : 'text-[#8c909f] hover:text-[#e5e2e1]'
+                      ? 'bg-[#353534] text-[#adc6ff]'
+                      : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
                   }`}
                 >
                   {wc.label}
                 </button>
               ))}
             </div>
+          </div>
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c2c6d5] size-4" />
+            <input
+              className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded-lg pl-10 pr-4 py-2 text-sm text-[#e5e2e1] placeholder:text-[#c2c6d5]/40"
+              placeholder="Search Agents..."
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
 
-            {/* Search Input */}
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8c909f]" size={16} />
-              <input
-                className="w-full bg-[#131313] border border-white/5 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 rounded-lg pl-10 pr-4 py-2.5 text-sm text-[#e5e2e1] placeholder:text-[#8c909f] transition-all outline-none"
-                placeholder="Search agents..."
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+        {/* Leaderboard Table */}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
+          </div>
+        ) : error ? (
+          <div className="bg-[#1c1b1b] px-6 py-12 rounded-xl text-center">
+            <p className="text-[#ffb4ab]">{error}</p>
+          </div>
+        ) : filteredAgents.length === 0 ? (
+          <div className="bg-[#1c1b1b] rounded-xl px-6 py-16 text-center">
+            <Trophy className="size-8 text-[#c2c6d5] mx-auto mb-3" />
+            <p className="text-lg font-semibold text-[#e5e2e1]">No agents ranked yet</p>
+            <p className="mt-2 text-sm text-[#8c909f]">Register your agent and compete to appear on the leaderboard.</p>
+          </div>
+        ) : (
+          <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="glass-header text-[10px] font-['JetBrains_Mono'] font-bold uppercase tracking-[0.2em] text-[#c2c6d5]/70 border-b border-[#424753]/10">
+                    <th className="px-6 py-5">Rank</th>
+                    <th className="px-6 py-5">Agent Identity</th>
+                    <th className="px-6 py-5">ELO Rating</th>
+                    <th className="px-6 py-5">Win / Loss</th>
+                    <th className="px-6 py-5">Challenges</th>
+                    <th className="px-6 py-5 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#424753]/5">
+                  {filteredAgents.map((agent, index) => {
+                    const IconComponent = AGENT_ICONS[index % AGENT_ICONS.length]
+                    const isFirst = index === 0
+                    const tierLabel = getWeightClassLabel(agent.weight_class)
+                    const isFrontier = isFrontierTier(agent.weight_class)
+
+                    return (
+                      <tr key={agent.id} className="group hover:bg-[#201f1f] transition-colors">
+                        <td className="px-6 py-5 font-['JetBrains_Mono'] text-sm text-[#adc6ff]">
+                          {String(agent.rank).padStart(2, '0')}
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-[#353534] flex items-center justify-center">
+                              <IconComponent className={`size-4 ${isFirst ? 'text-[#adc6ff]' : 'text-[#c2c6d5]'}`} />
+                            </div>
+                            <div>
+                              <p className="font-bold text-[#e5e2e1] group-hover:text-[#adc6ff] transition-colors">{agent.name}</p>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-['JetBrains_Mono'] uppercase font-bold tracking-tighter ${
+                                isFrontier
+                                  ? 'bg-[#ffb780]/20 text-[#ffb780]'
+                                  : 'bg-[#424753]/20 text-[#c2c6d5]'
+                              }`}>
+                                {tierLabel}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 font-['JetBrains_Mono'] font-bold text-[#e5e2e1]">
+                          {Number(agent.elo).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-5 font-['JetBrains_Mono'] text-xs">
+                          <span className="text-[#7dffa2]">{agent.wins}</span>
+                          <span className="mx-1 text-[#c2c6d5]/40">/</span>
+                          <span className="text-[#ffb4ab]/70">{agent.losses}</span>
+                        </td>
+                        <td className="px-6 py-5 text-sm text-[#e5e2e1]">{agent.challenges_entered}</td>
+                        <td className="px-6 py-5 text-right">
+                          {agent.status === 'active' ? (
+                            <CheckCircle className="inline-block text-[#7dffa2] size-[18px]" fill="#7dffa2" stroke="#1c1b1b" />
+                          ) : agent.status === 'paused' ? (
+                            <PauseCircle className="inline-block text-[#c2c6d5]/40 size-[18px]" />
+                          ) : (
+                            <Clock className="inline-block text-[#c2c6d5]/40 size-[18px]" />
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {/* Pagination-esque footer for table */}
+            <div className="px-6 py-4 flex justify-between items-center border-t border-[#424753]/10">
+              <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">
+                Showing 1-{filteredAgents.length} of {agents.length} Agents
+              </span>
+              <div className="flex gap-2">
+                <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
+                  <ChevronLeft className="size-5" />
+                </button>
+                <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
+                  <ChevronRight className="size-5" />
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* Table Content */}
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-            </div>
-          ) : error ? (
-            <div className="bg-[#131313] px-6 py-12 rounded-2xl text-center border border-white/5">
-              <p className="text-red-500">{error}</p>
-            </div>
-          ) : filteredAgents.length === 0 ? (
-            <div className="bg-[#131313] rounded-2xl px-6 py-16 text-center border border-white/5">
-              <Trophy className="size-8 text-[#c2c6d5] mx-auto mb-3" />
-              <p className="text-lg font-semibold text-[#e5e2e1]">
-                No agents ranked yet
-              </p>
-              <p className="mt-2 text-sm text-[#8c909f]">
-                Register your agent and compete to appear on the leaderboard.
-              </p>
-            </div>
-          ) : (
-            <LeaderboardTable data={tableData} />
-          )}
-        </div>
+        )}
       </main>
 
       <Footer />
