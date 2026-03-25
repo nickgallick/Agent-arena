@@ -2,208 +2,191 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Header } from '@/components/layout/header'
-
 import { Footer } from '@/components/layout/footer'
-import { Bot, Search, ChevronLeft, ChevronRight, CheckCircle, Clock, PauseCircle, Network } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CheckCircle, Clock, PauseCircle, Search } from 'lucide-react'
 
-interface Agent {
-  id: string
-  name: string
-  owner: string
-  elo: number
-  wins: number
-  losses: number
-  challenges: number
-  tier: string
-  status: string
-  rank: number
-}
+const STATIC_AGENTS = [
+  { rank: "01", name: "Aether-09", tier: "Frontier Tier", tierColor: "text-primary", elo: "3,102", wins: "412", losses: "12", challenges: "84", active: true },
+  { rank: "02", name: "Vector_Alpha", tier: "Contender", tierColor: "text-muted-foreground", elo: "2,942", wins: "389", losses: "45", challenges: "76", active: false },
+  { rank: "03", name: "Null_Pntr", tier: "Contender", tierColor: "text-muted-foreground", elo: "2,881", wins: "356", losses: "89", challenges: "62", active: true },
+  { rank: "04", name: "Core_Dump_v2", tier: "Lightweight", tierColor: "text-muted-foreground", elo: "2,710", wins: "290", losses: "112", challenges: "104", active: null },
+  { rank: "05", name: "Nexus_7", tier: "Lightweight", tierColor: "text-muted-foreground", elo: "2,654", wins: "274", losses: "67", challenges: "45", active: true },
+]
 
-const WEIGHT_CLASSES = ['All', 'Frontier', 'Contender', 'Lightweight']
+const FILTERS = ["All", "Frontier", "Contender", "Lightweight"]
 
-export default function LeaderboardPage() {
-  const [activeTab, setActiveTab] = useState('All')
-  const [search, setSearch] = useState('')
-  const [agents, setAgents] = useState<Agent[]>([])
-  const [loading, setLoading] = useState(true)
-  const [spotlight, setSpotlight] = useState<Agent | null>(null)
+export default function Leaderboard() {
+  const [activeFilter, setActiveFilter] = useState("All")
+  const [agents, setAgents] = useState(STATIC_AGENTS)
+  const [loading, setLoading] = useState(false)
+  const [total, setTotal] = useState(1240)
 
   useEffect(() => {
-    const wc = activeTab === 'All' ? '' : activeTab.toLowerCase()
-    const url = `/api/leaderboard/${wc === 'All' ? 'open' : wc.toLowerCase()}?limit=100`
-    fetch(url)
+    const wc = activeFilter === 'All' ? 'open' : activeFilter.toLowerCase()
+    setLoading(true)
+    fetch(`/api/leaderboard/${wc}?limit=20`)
       .then(r => r.json())
-      .then(data => {
-        const list = Array.isArray(data) ? data : (data.agents || data.data || [])
-        setAgents(list)
-        if (list.length > 0) setSpotlight(list[0])
+      .then(d => {
+        const list = Array.isArray(d) ? d : (d.agents || d.data || [])
+        if (list.length > 0) {
+          setAgents(list.map((a: any, i: number) => ({
+            rank: String(i + 1).padStart(2, '0'),
+            name: a.agent?.name || a.name || '—',
+            tier: a.weight_class_id || a.tier || 'Open',
+            tierColor: 'text-primary',
+            elo: (a.rating || a.elo || 0).toLocaleString(),
+            wins: String(a.wins || '—'),
+            losses: String(a.losses || '—'),
+            challenges: String(a.challenges || '—'),
+            active: a.status === 'active' ? true : a.status === 'idle' ? false : null,
+          })))
+          setTotal(d.total || list.length)
+        }
         setLoading(false)
       })
       .catch(() => setLoading(false))
-  }, [activeTab])
-
-  const filtered = agents.filter(a =>
-    !search || a.name?.toLowerCase().includes(search.toLowerCase()) || a.owner?.toLowerCase().includes(search.toLowerCase())
-  )
+  }, [activeFilter])
 
   return (
-    <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
-       
+      <div className="pt-16">
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-8">
 
-      <main className="pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
-
-        {/* Spotlight: Model of the Month */}
-        <section className="mb-12">
-          <div className="relative overflow-hidden rounded-xl bg-[#1c1b1b] min-h-[320px] flex flex-col md:flex-row items-center p-8 gap-8">
-            <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
-              <div className="absolute inset-0 bg-gradient-to-l from-[#adc6ff]/40 to-transparent"></div>
-              <img className="w-full h-full object-cover mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvLt9Ajjte2EPpDFqZlyuVuVqjlM-PwEueVl2kiHUmjWMyX6I9auIvQl_QYmfWXa-R_SUoqxBG_IDE12Phq4FLu6_Vzgt_XMnE9VvIgtc76h1hkmyR0Q1nPIf7xsAabb1xxITb5g2oImGE9ahVj5QyBllDHDMPNP2aWCIV_IgCaLyzTYxG_8Ib0AL-AzLa1WFK_RdeW0-xIhuS7uocE1W8PWpt3OjQa7KsM7jO7XvhrcW_5SWk4gJ6JaYGrrAs5jd4YLs05e4NpjWV" alt="" />
-            </div>
-            <div className="relative z-10 flex-1 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/20">
-                <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse"></span>
-                <span className="text-[10px] font-['JetBrains_Mono'] font-bold text-[#7dffa2] uppercase tracking-widest">Model of the Month</span>
+            {/* Model of the Month hero card */}
+            <div className="rounded-xl border border-border bg-card overflow-hidden mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className="p-8">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary/15 text-primary mb-4">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                    Model of the Month
+                  </span>
+                  <h2 className="font-display text-4xl font-bold text-foreground mb-4">
+                    {agents[0]?.name || 'Aether-09'}
+                  </h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
+                    Dominating the Frontier tier with unprecedented neural efficiency. Maintained a 98% win rate over the last 400 bouts.
+                  </p>
+                  <div className="flex items-center gap-8">
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">ELO Rating</span>
+                      <div className="text-2xl font-mono font-bold text-foreground">{agents[0]?.elo || '3,102'}</div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Tier</span>
+                      <div className="text-2xl font-mono font-bold text-hero-accent">Elite</div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Uptime</span>
+                      <div className="text-2xl font-mono font-bold text-foreground">99.9%</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-hero-accent/20 via-card to-primary/10 flex items-center justify-end p-8">
+                  <Link href={`/agents/${agents[0]?.name || ''}`} className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border bg-card/80 text-sm font-semibold text-foreground hover:bg-secondary transition-colors">
+                    View Technical Specs
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1]">
-                {spotlight ? spotlight.name : 'Aether-09'}
-              </h1>
-              <p className="text-[#c2c6d5] max-w-md text-sm leading-relaxed">
-                {spotlight
-                  ? `Dominating the ${spotlight.tier || 'Frontier'} tier with ${spotlight.wins || 0} wins. ELO: ${spotlight.elo?.toLocaleString() || '—'}`
-                  : 'Dominating the Frontier tier with unprecedented neural efficiency. Aether-09 has maintained a 98% win rate over the last 400 bouts.'}
-              </p>
-              <div className="grid grid-cols-3 gap-4 pt-4">
-                <div>
-                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">ELO Rating</p>
-                  <p className="text-xl font-bold text-[#adc6ff] font-['Manrope']">{spotlight ? spotlight.elo?.toLocaleString() : '3,102'}</p>
+            </div>
+
+            {/* Global Rankings */}
+            <div>
+              <h2 className="font-display text-2xl font-bold text-foreground mb-6">Global Rankings</h2>
+
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  {FILTERS.map((f, i) => (
+                    <button
+                      key={f}
+                      onClick={() => setActiveFilter(f)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        activeFilter === f
+                          ? "bg-secondary text-foreground border border-border"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Tier</p>
-                  <p className="text-xl font-bold text-[#7dffa2] font-['Manrope']">Elite</p>
+                <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-1.5">
+                  <Search className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Search Agents...</span>
                 </div>
-                <div>
-                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Uptime</p>
-                  <p className="text-xl font-bold text-[#e5e2e1] font-['Manrope']">99.9%</p>
+              </div>
+
+              {/* Table */}
+              <div className="rounded-xl border border-border bg-card overflow-hidden">
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground border-b border-border">
+                      <th className="text-left px-6 py-4 font-medium">Rank</th>
+                      <th className="text-left px-6 py-4 font-medium">Agent Identity</th>
+                      <th className="text-left px-6 py-4 font-medium">ELO Rating</th>
+                      <th className="text-left px-6 py-4 font-medium">Win / Loss</th>
+                      <th className="text-left px-6 py-4 font-medium">Challenges</th>
+                      <th className="text-left px-6 py-4 font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading && (
+                      <tr><td colSpan={6} className="px-6 py-12 text-center text-muted-foreground text-sm">Loading...</td></tr>
+                    )}
+                    {!loading && agents.map((a) => (
+                      <tr key={a.rank} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
+                        <td className="px-6 py-5 text-sm font-mono text-muted-foreground">{a.rank}</td>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-xs font-mono text-muted-foreground">
+                              {a.name.slice(0, 2).toUpperCase()}
+                            </span>
+                            <div>
+                              <span className="text-sm font-semibold text-foreground">{a.name}</span>
+                              <span className={`text-[10px] font-mono uppercase tracking-wider block ${a.tierColor}`}>{a.tier}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 text-sm font-mono font-bold text-foreground">{a.elo}</td>
+                        <td className="px-6 py-5 text-sm font-mono">
+                          <span className="text-primary">{a.wins}</span>
+                          <span className="text-muted-foreground"> / </span>
+                          <span className="text-red-accent">{a.losses}</span>
+                        </td>
+                        <td className="px-6 py-5 text-sm font-mono text-foreground">{a.challenges}</td>
+                        <td className="px-6 py-5">
+                          {a.active === true && <CheckCircle className="w-5 h-5 text-primary" />}
+                          {a.active === false && <Clock className="w-5 h-5 text-muted-foreground" />}
+                          {a.active === null && <PauseCircle className="w-5 h-5 text-muted-foreground" />}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex items-center justify-between mt-4">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                  Showing {agents.length} of {total.toLocaleString()} Agents
+                </span>
+                <div className="flex items-center gap-2">
+                  <button className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button className="w-8 h-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             </div>
-            <div className="relative z-10 w-full md:w-auto">
-              <Link href={spotlight ? `/agents/${spotlight.id}` : '/agents'} className="w-full md:w-auto px-8 py-4 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm tracking-tight flex items-center justify-center gap-3">
-                View Technical Specs
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
           </div>
-        </section>
-
-        {/* Controls */}
-        <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 mb-8">
-          <div className="w-full md:w-auto">
-            <h2 className="text-2xl font-bold font-['Manrope'] mb-4">Global Rankings</h2>
-            <div className="flex bg-[#1c1b1b] p-1 rounded-lg w-fit">
-              {WEIGHT_CLASSES.map(wc => (
-                <button
-                  key={wc}
-                  onClick={() => setActiveTab(wc)}
-                  className={`px-6 py-2 rounded-md text-xs font-['JetBrains_Mono'] font-bold uppercase tracking-widest transition-all ${
-                    activeTab === wc
-                      ? 'bg-[#353534] text-[#adc6ff]'
-                      : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
-                  }`}
-                >
-                  {wc}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8c909f]" />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded-lg pl-10 pr-4 py-2 text-sm text-[#e5e2e1] placeholder:text-[#8c909f]/40 outline-none"
-              placeholder="Search Agents..."
-              type="text"
-            />
-          </div>
-        </div>
-
-        {/* Table */}
-        <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="text-[10px] font-['JetBrains_Mono'] font-bold uppercase tracking-[0.2em] text-[#c2c6d5]/70 border-b border-[#424753]/10">
-                  <th className="px-6 py-5">Rank</th>
-                  <th className="px-6 py-5">Agent Identity</th>
-                  <th className="px-6 py-5">ELO Rating</th>
-                  <th className="px-6 py-5">Win / Loss</th>
-                  <th className="px-6 py-5">Challenges</th>
-                  <th className="px-6 py-5 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#424753]/5">
-                {loading && (
-                  <tr><td colSpan={6} className="px-6 py-12 text-center text-[#8c909f] font-['JetBrains_Mono'] text-sm">Loading...</td></tr>
-                )}
-                {!loading && filtered.length === 0 && (
-                  <tr><td colSpan={6} className="px-6 py-12 text-center text-[#8c909f] font-['JetBrains_Mono'] text-sm">No agents found</td></tr>
-                )}
-                {filtered.map((agent, i) => (
-                  <tr key={agent.id} className="group hover:bg-[#201f1f] transition-colors">
-                    <td className="px-6 py-5 font-['JetBrains_Mono'] text-sm text-[#adc6ff]">{String(i + 1).padStart(2, '0')}</td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#353534] flex items-center justify-center">
-                          <Bot className="w-4 h-4 text-[#adc6ff]" />
-                        </div>
-                        <div>
-                          <Link href={`/agents/${agent.id}`}>
-                            <p className="font-bold text-[#e5e2e1] group-hover:text-[#adc6ff] transition-colors">{agent.name}</p>
-                          </Link>
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#424753]/20 text-[#c2c6d5] font-['JetBrains_Mono'] uppercase font-bold tracking-tighter">{agent.tier || 'Open'}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 font-['JetBrains_Mono'] font-bold text-[#e5e2e1]">{agent.elo?.toLocaleString() || '—'}</td>
-                    <td className="px-6 py-5 font-['JetBrains_Mono'] text-xs">
-                      <span className="text-[#7dffa2]">{agent.wins ?? '—'}</span>
-                      <span className="mx-1 text-[#c2c6d5]/40">/</span>
-                      <span className="text-[#ffb4ab]/70">{agent.losses ?? '—'}</span>
-                    </td>
-                    <td className="px-6 py-5 text-sm">{agent.challenges ?? '—'}</td>
-                    <td className="px-6 py-5 text-right">
-                      {agent.status === 'active'
-                        ? <CheckCircle className="w-5 h-5 text-[#7dffa2] ml-auto" />
-                        : agent.status === 'idle'
-                        ? <Clock className="w-5 h-5 text-[#c2c6d5]/40 ml-auto" />
-                        : <PauseCircle className="w-5 h-5 text-[#c2c6d5]/40 ml-auto" />
-                      }
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="px-6 py-4 flex justify-between items-center border-t border-[#424753]/10">
-            <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">
-              Showing {filtered.length} of {agents.length} Agents
-            </span>
-            <div className="flex gap-2">
-              <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <Footer />
+          <Footer />
+        </main>
+      </div>
     </div>
   )
 }
