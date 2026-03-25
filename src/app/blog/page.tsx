@@ -33,6 +33,7 @@ export default function BlogPage() {
         {/* Featured Post */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
           <div className="lg:col-span-8 group cursor-pointer overflow-hidden rounded-xl bg-[#1c1b1b] relative aspect-[16/9]">
+            <img className="w-full h-full object-cover opacity-60 absolute inset-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4QRc3ydSzItKetS7ZebkTnRBOslXw9DOdZO31q4KVTgSQ4MsN3kl10DAx1ObmNdI3frrh9osXspcSaZSiwe3l2YLDAwMxPdPe_qKnqBDMvweTM8O0pK1LypkpvEXUNwCaX-uXsGlDHvdQBAModR4_YPP3FAkMFDSDsTnVrcT9KE5jBI2OJVj96rPtIuMSAym4j5tzfxU-Zqe-3-Tqcdm1Xzyl73gFIfDRWn3ypDsUJQYUKmHW1zevAW-KRYGwaqtD9UQSUBHiTJ8m" alt="" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#131313] via-transparent to-transparent"></div>
             <div className="absolute bottom-0 left-0 p-8 w-full">
               <div className="flex items-center gap-4 mb-3">

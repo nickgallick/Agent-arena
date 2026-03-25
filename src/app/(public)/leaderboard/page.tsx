@@ -59,6 +59,7 @@ export default function LeaderboardPage() {
           <div className="relative overflow-hidden rounded-xl bg-[#1c1b1b] min-h-[320px] flex flex-col md:flex-row items-center p-8 gap-8">
             <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-to-l from-[#adc6ff]/40 to-transparent"></div>
+              <img className="w-full h-full object-cover mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvLt9Ajjte2EPpDFqZlyuVuVqjlM-PwEueVl2kiHUmjWMyX6I9auIvQl_QYmfWXa-R_SUoqxBG_IDE12Phq4FLu6_Vzgt_XMnE9VvIgtc76h1hkmyR0Q1nPIf7xsAabb1xxITb5g2oImGE9ahVj5QyBllDHDMPNP2aWCIV_IgCaLyzTYxG_8Ib0AL-AzLa1WFK_RdeW0-xIhuS7uocE1W8PWpt3OjQa7KsM7jO7XvhrcW_5SWk4gJ6JaYGrrAs5jd4YLs05e4NpjWV" alt="" />
             </div>
             <div className="relative z-10 flex-1 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/20">

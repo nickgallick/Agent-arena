@@ -18,37 +18,38 @@ export default function LoginPage() {
 
       <main className="flex-grow flex items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-md">
+          {/* Icon + heading */}
           <div className="flex flex-col items-center mb-10">
-            <div className="w-12 h-12 bg-primary-container rounded-lg flex items-center justify-center shadow-lg shadow-primary/10 mb-6 group transition-transform hover:scale-105 duration-300">
-              <Swords className="text-on-primary-container text-3xl w-7 h-7" />
+            <div className="w-12 h-12 bg-[#4d8efe]/20 rounded-lg flex items-center justify-center shadow-lg shadow-[#adc6ff]/10 mb-6 transition-transform hover:scale-105 duration-300">
+              <Swords className="w-7 h-7 text-[#4d8efe]" />
             </div>
-            <h1 className="font-headline font-extrabold text-3xl tracking-tighter text-on-surface mb-2">
+            <h1 className="font-['Manrope'] font-extrabold text-3xl tracking-tighter text-[#e5e2e1] mb-2">
               Sign in to Bouts
             </h1>
-            <p className="font-label text-on-surface-variant text-sm tracking-wide uppercase opacity-70">
+            <p className="font-['JetBrains_Mono'] text-[#c2c6d5] text-sm tracking-wide uppercase opacity-70">
               Precision Tier Authentication
             </p>
           </div>
 
           {!configured ? (
-            <div className="bg-surface-container-low p-8 rounded-xl shadow-2xl relative overflow-hidden text-center">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-right from-primary to-primary-container opacity-50"></div>
-              <p className="text-on-surface-variant text-sm mb-4">
+            <div className="bg-[#1c1b1b] p-8 rounded-xl shadow-2xl relative overflow-hidden text-center">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc6ff] to-[#4d8efe] opacity-50"></div>
+              <p className="text-[#c2c6d5] text-sm mb-4">
                 Authentication is not configured for this environment.
               </p>
-              <Link href="/" className="text-primary text-sm hover:underline">
+              <Link href="/" className="text-[#adc6ff] text-sm hover:underline">
                 ← Back to home
               </Link>
             </div>
           ) : (
-            <div className="bg-surface-container-low p-8 rounded-xl shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-right from-primary to-primary-container opacity-50"></div>
+            <div className="bg-[#1c1b1b] p-8 rounded-xl shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc6ff] to-[#4d8efe] opacity-50"></div>
 
               <div className="space-y-6">
                 {/* GitHub OAuth */}
                 <a
                   href="/api/auth/github"
-                  className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-surface-container-highest hover:bg-surface-bright text-on-surface font-headline font-semibold rounded-lg transition-all duration-150 active:scale-[0.98] group"
+                  className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-[#353534] hover:bg-[#424753] text-[#e5e2e1] font-['Manrope'] font-semibold rounded-lg transition-all duration-150 active:scale-[0.98]"
                 >
                   <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
@@ -59,19 +60,19 @@ export default function LoginPage() {
                 {/* Divider */}
                 <div className="relative py-4">
                   <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-outline-variant/15"></div>
+                    <div className="w-full border-t border-[#424753]/15"></div>
                   </div>
-                  <div className="relative flex justify-center text-xs uppercase tracking-widest font-label">
-                    <span className="bg-surface-container-low px-4 text-on-surface-variant">System Gateway</span>
+                  <div className="relative flex justify-center text-xs uppercase tracking-widest font-['JetBrains_Mono']">
+                    <span className="bg-[#1c1b1b] px-4 text-[#c2c6d5]">System Gateway</span>
                   </div>
                 </div>
 
-                {/* Email/Password form */}
+                {/* Email/Password */}
                 <form action="/api/auth/qa-login" method="POST" className="space-y-4">
                   <div>
-                    <label className="block font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 ml-1" htmlFor="email">User Identifier</label>
+                    <label className="block font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1" htmlFor="email">User Identifier</label>
                     <input
-                      className="w-full bg-surface-container-lowest border-none focus:ring-0 focus:border-b-2 focus:border-primary text-on-surface placeholder:text-outline-variant/50 rounded-lg p-3 text-sm transition-all font-body"
+                      className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded focus:border-[#adc6ff] focus:ring-0 text-[#e5e2e1] placeholder:text-[#424753] p-3 text-sm transition-all outline-none"
                       id="email"
                       name="email"
                       type="email"
@@ -81,9 +82,9 @@ export default function LoginPage() {
                     />
                   </div>
                   <div>
-                    <label className="block font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 ml-1" htmlFor="password">Encrypted Token</label>
+                    <label className="block font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1" htmlFor="password">Encrypted Token</label>
                     <input
-                      className="w-full bg-surface-container-lowest border-none focus:ring-0 focus:border-b-2 focus:border-primary text-on-surface placeholder:text-outline-variant/50 rounded-lg p-3 text-sm transition-all font-body"
+                      className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded focus:border-[#adc6ff] focus:ring-0 text-[#e5e2e1] placeholder:text-[#424753] p-3 text-sm transition-all outline-none"
                       id="password"
                       name="password"
                       type="password"
@@ -95,49 +96,55 @@ export default function LoginPage() {
                   <input type="hidden" name="redirect" value="/agents" />
                   <button
                     type="submit"
-                    className="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary-fixed font-headline font-bold rounded-lg transition-transform active:scale-95 shadow-lg shadow-primary/10"
+                    className="w-full py-3 rounded-lg font-['Manrope'] font-bold transition-transform active:scale-95 shadow-lg"
+                    style={{ background: 'linear-gradient(135deg, #0066ff, #0099ff)', color: 'white' }}
                   >
                     Authorize Session
                   </button>
                 </form>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-outline-variant/15 flex flex-col items-center gap-2">
-                <p className="text-xs text-on-surface-variant font-body">New to the Arena?</p>
-                <Link className="text-sm font-headline font-semibold text-primary hover:text-primary-fixed transition-colors" href="/login">Request Access Protocol</Link>
+              {/* New to Arena */}
+              <div className="mt-8 pt-6 border-t border-[#424753]/15 flex flex-col items-center gap-2">
+                <p className="text-xs text-[#c2c6d5] font-['Manrope']">New to the Arena?</p>
+                <Link className="text-sm font-['Manrope'] font-semibold text-[#adc6ff] hover:text-[#e5e2e1] transition-colors" href="/onboarding">
+                  Request Access Protocol
+                </Link>
               </div>
             </div>
           )}
 
+          {/* Trust badges */}
           <div className="mt-8 grid grid-cols-2 gap-4">
-            <div className="bg-surface-container-low/40 p-3 rounded-lg flex items-center gap-3">
-              <ShieldCheck className="text-secondary w-4 h-4" />
-              <span className="font-label text-[10px] uppercase tracking-tighter text-on-surface-variant">End-to-End Secure</span>
+            <div className="bg-[#1c1b1b]/40 p-3 rounded-lg flex items-center gap-3">
+              <ShieldCheck className="text-[#7dffa2] w-4 h-4" />
+              <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">End-to-End Secure</span>
             </div>
-            <div className="bg-surface-container-low/40 p-3 rounded-lg flex items-center gap-3">
-              <Zap className="text-secondary w-4 h-4" />
-              <span className="font-label text-[10px] uppercase tracking-tighter text-on-surface-variant">Low Latency Auth</span>
+            <div className="bg-[#1c1b1b]/40 p-3 rounded-lg flex items-center gap-3">
+              <Zap className="text-[#7dffa2] w-4 h-4" />
+              <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">Low Latency Auth</span>
             </div>
           </div>
         </div>
       </main>
 
-      <footer className="w-full py-8 relative z-10 border-t border-outline-variant/15">
+      <footer className="w-full py-8 relative z-10 border-t border-[#424753]/15">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest opacity-60">
-            © 2026 Bouts
+          <p className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest opacity-60">
+            © 2026 Bouts. Perlantir AI Studio.
           </p>
           <div className="flex gap-8">
-            <Link className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors" href="/terms">Terms of Service</Link>
-            <Link className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors" href="/privacy">Privacy Policy</Link>
-            <Link className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors" href="/status">Support</Link>
+            <Link className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors" href="/terms">Terms of Service</Link>
+            <Link className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors" href="/privacy">Privacy Policy</Link>
+            <Link className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors" href="/status">Support</Link>
           </div>
         </div>
       </footer>
 
+      {/* Ambient glows */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-[10%] right-[15%] w-64 h-64 bg-primary/5 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[20%] left-[10%] w-96 h-96 bg-secondary/5 rounded-full blur-[150px]"></div>
+        <div className="absolute top-[10%] right-[15%] w-64 h-64 bg-[#adc6ff]/5 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[20%] left-[10%] w-96 h-96 bg-[#7dffa2]/5 rounded-full blur-[150px]"></div>
       </div>
     </div>
   )
