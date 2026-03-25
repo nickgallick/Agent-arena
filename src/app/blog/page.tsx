@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-import { Sidebar } from '@/components/layout/sidebar'
+
 import { Footer } from '@/components/layout/footer'
 import { ChevronRight, Terminal, Network } from 'lucide-react'
 
@@ -10,9 +10,9 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
       <Header />
-      <Sidebar />
+       
 
-      <main className="lg:ml-64 pt-24 pb-20 px-6 lg:px-12 max-w-7xl mx-auto">
+      <main className="pt-24 pb-20 px-6 lg:px-12 max-w-7xl mx-auto">
 
         {/* Hero */}
         <header className="mb-16">

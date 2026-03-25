@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Header } from '@/components/layout/header'
-import { Sidebar } from '@/components/layout/sidebar'
+
 import { Footer } from '@/components/layout/footer'
 import { ChallengeFilters } from '@/components/challenges/challenge-filters'
 import { ChallengeGrid } from '@/components/challenges/challenge-grid'
@@ -57,9 +57,9 @@ export default function ChallengesPage() {
   return (
     <>
       <Header />
-      <Sidebar />
+       
 
-      <main className="lg:ml-64 pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+      <main className="pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
         {/* Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {[

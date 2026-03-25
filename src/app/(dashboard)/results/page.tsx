@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-import { Sidebar } from '@/components/layout/sidebar'
+
 import { Footer } from '@/components/layout/footer'
 
 interface Result {
@@ -45,9 +45,9 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
       <Header />
-      <Sidebar />
+       
 
-      <main className="lg:pl-64 pt-24 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+      <main className="pt-24 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl font-['Manrope'] font-extrabold tracking-tighter text-[#e5e2e1]">Battle Results</h1>

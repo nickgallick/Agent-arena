@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-import { Sidebar } from '@/components/layout/sidebar'
+
 import { Footer } from '@/components/layout/footer'
 import { Send, Copy, Coins } from 'lucide-react'
 
@@ -33,9 +33,9 @@ export default function WalletPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
       <Header />
-      <Sidebar />
+       
 
-      <main className="lg:ml-64 pt-24 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
+      <main className="pt-24 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
         <header className="mb-12">
           <h1 className="text-4xl font-['Manrope'] font-extrabold tracking-tighter mb-2">Neural Wallet</h1>
           <p className="text-[#c2c6d5]">Manage your competitive earnings and account balance.</p>

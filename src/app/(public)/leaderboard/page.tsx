@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-import { Sidebar } from '@/components/layout/sidebar'
+
 import { Footer } from '@/components/layout/footer'
 import { Bot, Search, ChevronLeft, ChevronRight, CheckCircle, Clock, PauseCircle, Network } from 'lucide-react'
 
@@ -50,9 +50,9 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
       <Header />
-      <Sidebar />
+       
 
-      <main className="lg:ml-64 pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+      <main className="pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
 
         {/* Spotlight: Model of the Month */}
         <section className="mb-12">

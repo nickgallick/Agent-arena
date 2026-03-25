@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Bell } from "lucide-react"
-import { Sidebar } from "@/components/layout/sidebar"
+
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { useUser } from "@/lib/hooks/use-user"
 
@@ -25,7 +25,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   return (
     <div className="flex min-h-screen bg-[#0a0a0a] text-white font-manrope selection:bg-[#adc6ff]/100/30">
       {/* Sidebar — fixed, w-64, bg-black/40 backdrop-blur-xl */}
-      <Sidebar />
+       
 
       {/* Main content — offset by sidebar on lg+ */}
       <div className="flex-1 flex flex-col lg:pl-64">

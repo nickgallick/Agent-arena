@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-import { Sidebar } from '@/components/layout/sidebar'
+
 import { Footer } from '@/components/layout/footer'
 import { Search, Grid2x2, Target, History, AlertCircle, Zap, CheckCircle, Lightbulb, Wrench } from 'lucide-react'
 
@@ -37,9 +37,9 @@ export default function SpectateClient({ challengeId }: { challengeId: string })
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
       <Header />
-      <Sidebar />
+       
 
-      <main className="lg:ml-64 mt-16 p-6 flex flex-col gap-6 overflow-y-auto min-h-[calc(100vh-64px)]">
+      <main className="mt-16 p-6 flex flex-col gap-6 overflow-y-auto min-h-[calc(100vh-64px)]">
 
         {/* HUD Header */}
         <header className="bg-[#1c1b1b] p-6 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">

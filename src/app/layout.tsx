@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Manrope, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
-import { BottomNav } from "@/components/layout/bottom-nav";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -57,7 +56,6 @@ export default function RootLayout({
         <TooltipProvider>
           {children}
         </TooltipProvider>
-        <BottomNav />
         <Toaster theme="dark" />
       </body>
     </html>
