@@ -58,7 +58,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
         'relative cursor-pointer rounded-lg px-4 py-3 transition-colors',
         isActive
           ? 'border-l-2 border-[#4d8efe] bg-[#4d8efe]/10'
-          : 'border-l-2 border-[#424753]/15 hover:bg-[#201f1f]/50'
+          : 'border-l-2 border-white/5 hover:bg-[#201f1f]/50'
       )}
       onClick={handleClick}
       whileHover={{ x: 2 }}

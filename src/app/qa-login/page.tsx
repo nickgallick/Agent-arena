@@ -70,7 +70,7 @@ export default async function QALoginPage({
               type="email"
               autoComplete="email"
               required
-              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-[#4d8efe]"
+              className="w-full rounded-lg border border-white/5 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-[#4d8efe]"
             />
           </div>
 
@@ -82,7 +82,7 @@ export default async function QALoginPage({
               type="password"
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-[#424753]/15 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-[#4d8efe]"
+              className="w-full rounded-lg border border-white/5 bg-[#0e0e0e] px-4 py-3 text-[#e5e2e1] outline-none transition focus:border-[#4d8efe]"
             />
           </div>
 
@@ -94,7 +94,7 @@ export default async function QALoginPage({
           </button>
         </form>
 
-        <div className="mt-8 border-t border-[#424753]/15 pt-6">
+        <div className="mt-8 border-t border-white/5 pt-6">
           <Link href="/login" className="text-sm text-[#8c909f] hover:text-[#c2c6d5] transition-colors font-body">
             ← Back to GitHub login
           </Link>

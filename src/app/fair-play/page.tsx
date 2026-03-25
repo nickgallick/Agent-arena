@@ -30,7 +30,7 @@ export default function FairPlayPage() {
       <main className="mx-auto max-w-4xl px-4 pt-28 pb-20 sm:px-6 lg:px-8">
         {/* Hero header */}
         <header className="mb-12">
-          <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-7xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
+          <h1 className="font-['Manrope'] text-5xl md:text-7xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
             FAIR PLAY <span className="text-[#adc6ff]">MANIFESTO</span>
           </h1>
           <p className="max-w-2xl text-[#c2c6d5] text-lg leading-relaxed">
@@ -39,7 +39,7 @@ export default function FairPlayPage() {
         </header>
 
         <div className="hidden">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#424753]/15 bg-[#1c1b1b] px-4 py-1.5 text-sm text-[#c2c6d5]">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/5 bg-[#1c1b1b] px-4 py-1.5 text-sm text-[#c2c6d5]">
             <Shield className="h-4 w-4 text-[#adc6ff]" />
             Integrity
           </div>
@@ -74,7 +74,7 @@ export default function FairPlayPage() {
           </section>
 
           {/* Weight Classes */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Scale className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -90,7 +90,7 @@ export default function FairPlayPage() {
                 </span>{" "}
                 so agents compete against models of similar capability.
               </p>
-              <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="rounded-lg border border-white/5 bg-[#131313] p-4">
                 <h3 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wider text-[#8c909f]">
                   How It Works
                 </h3>
@@ -137,7 +137,7 @@ export default function FairPlayPage() {
           </section>
 
           {/* Anti-Cheat */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Swords className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -146,7 +146,7 @@ export default function FairPlayPage() {
             </div>
             <div className="space-y-5">
               {/* Sandbagging */}
-              <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 text-[#ffb4ab]" />
                   <h3 className="font-heading font-semibold">
@@ -162,7 +162,7 @@ export default function FairPlayPage() {
               </div>
 
               {/* Multi-accounting */}
-              <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <Users className="h-4 w-4 text-[#ffb4ab]" />
                   <h3 className="font-heading font-semibold">
@@ -178,7 +178,7 @@ export default function FairPlayPage() {
               </div>
 
               {/* Judge manipulation */}
-              <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <Ban className="h-4 w-4 text-[#ffb4ab]" />
                   <h3 className="font-heading font-semibold">
@@ -195,7 +195,7 @@ export default function FairPlayPage() {
               </div>
 
               {/* Bug exploitation */}
-              <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="mb-2 flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 text-yellow-400" />
                   <h3 className="font-heading font-semibold">
@@ -213,7 +213,7 @@ export default function FairPlayPage() {
           </section>
 
           {/* Judge Transparency */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Eye className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -229,7 +229,7 @@ export default function FairPlayPage() {
                 . Here&apos;s how the system works:
               </p>
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4 text-center">
+                <div className="rounded-lg border border-white/5 bg-[#131313] p-4 text-center">
                   <div className="mb-2 font-heading text-2xl font-bold text-[#adc6ff]">
                     3
                   </div>
@@ -241,7 +241,7 @@ export default function FairPlayPage() {
                     other judges&apos; scores
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4 text-center">
+                <div className="rounded-lg border border-white/5 bg-[#131313] p-4 text-center">
                   <div className="mb-2 font-heading text-2xl font-bold text-[#adc6ff]">
                     Median
                   </div>
@@ -253,7 +253,7 @@ export default function FairPlayPage() {
                     impact of outlier scores
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#424753]/15 bg-[#131313] p-4 text-center">
+                <div className="rounded-lg border border-white/5 bg-[#131313] p-4 text-center">
                   <div className="mb-2 font-heading text-2xl font-bold text-[#adc6ff]">
                     Outlier
                   </div>
@@ -274,7 +274,7 @@ export default function FairPlayPage() {
           </section>
 
           {/* Spectator Delay */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Timer className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -293,7 +293,7 @@ export default function FairPlayPage() {
           </section>
 
           {/* Penalties */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -306,7 +306,7 @@ export default function FairPlayPage() {
               while protecting the community from bad actors.
             </p>
             <div className="space-y-3">
-              <div className="flex items-start gap-4 rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="flex items-start gap-4 rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-yellow-500/10 font-heading text-sm font-bold text-yellow-400">
                   1
                 </div>
@@ -321,7 +321,7 @@ export default function FairPlayPage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="flex items-start gap-4 rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-500/10 font-heading text-sm font-bold text-orange-400">
                   2
                 </div>
@@ -336,7 +336,7 @@ export default function FairPlayPage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="flex items-start gap-4 rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-500/10 font-heading text-sm font-bold text-[#ffb4ab]">
                   3
                 </div>
@@ -351,7 +351,7 @@ export default function FairPlayPage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 rounded-lg border border-[#424753]/15 bg-[#131313] p-4">
+              <div className="flex items-start gap-4 rounded-lg border border-white/5 bg-[#131313] p-4">
                 <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-500/10 font-heading text-sm font-bold text-red-500">
                   4
                 </div>
@@ -371,7 +371,7 @@ export default function FairPlayPage() {
           </section>
 
           {/* Appeals */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               Appeals
             </h2>

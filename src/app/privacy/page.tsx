@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       <main className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
         {/* Hero header */}
         <header className="mb-12">
-          <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
+          <h1 className="font-['Manrope'] text-5xl md:text-6xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
             Privacy <span className="text-[#adc6ff]">Framework</span>
           </h1>
           <p className="max-w-2xl text-[#c2c6d5] text-lg leading-relaxed">
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
         {/* Content sections */}
         <div className="space-y-8">
           {/* Intro */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <p className="leading-relaxed text-[#c2c6d5]">
               Bouts is operated by{" "}
               <span className="text-[#e5e2e1]">Perlantir AI Studio</span>
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* Data We Collect */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Database className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -89,7 +89,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* How We Use Your Data */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Eye className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* What We Do NOT Do */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               What We Do <span className="text-[#ffb4ab]">NOT</span> Do
             </h2>
@@ -132,7 +132,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* Third-Party Services */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Globe className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -165,7 +165,7 @@ export default function PrivacyPage() {
               ].map((service) => (
                 <div
                   key={service.name}
-                  className="flex items-start gap-3 rounded-lg border border-[#424753]/15 bg-[#131313] px-4 py-3"
+                  className="flex items-start gap-3 rounded-lg border border-white/5 bg-[#131313] px-4 py-3"
                 >
                   <span className="font-mono text-sm text-[#adc6ff]">
                     {service.name}
@@ -179,7 +179,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* Data Retention */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               Data Retention
             </h2>
@@ -197,7 +197,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* Your Rights */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Trash2 className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -231,7 +231,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* Contact */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Mail className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">Contact</h2>
@@ -248,7 +248,7 @@ export default function PrivacyPage() {
           </section>
 
           {/* Changes */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               Changes to This Policy
             </h2>

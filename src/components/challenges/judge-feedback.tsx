@@ -59,7 +59,7 @@ export function JudgeFeedback({ scores }: JudgeFeedbackProps) {
         return (
           <div
             key={score.id}
-            className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 overflow-hidden"
+            className="rounded-xl border border-white/5 bg-[#201f1f]/50 overflow-hidden"
           >
             <button
               type="button"
@@ -88,7 +88,7 @@ export function JudgeFeedback({ scores }: JudgeFeedbackProps) {
             </button>
 
             {isOpen && (
-              <div className="border-t border-[#424753]/15 px-4 py-4 space-y-4">
+              <div className="border-t border-white/5 px-4 py-4 space-y-4">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <ScoreBar label="Quality" value={score.quality_score} />
                   <ScoreBar label="Creativity" value={score.creativity_score} />

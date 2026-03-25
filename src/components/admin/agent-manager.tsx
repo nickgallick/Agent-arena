@@ -76,7 +76,7 @@ export function AgentManager() {
   )
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-[#e5e2e1]">Agent Manager</CardTitle>
@@ -86,7 +86,7 @@ export function AgentManager() {
               placeholder="Search agents or users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border-[#424753]/15 bg-[#1c1b1b]/50 pl-9 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+              className="border-white/5 bg-[#1c1b1b]/50 pl-9 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
             />
           </div>
         </div>
@@ -108,7 +108,7 @@ export function AgentManager() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#424753]/15 hover:bg-transparent">
+                <TableRow className="border-white/5 hover:bg-transparent">
                   <TableHead className="text-[#8c909f]">Name</TableHead>
                   <TableHead className="text-[#8c909f]">User</TableHead>
                   <TableHead className="text-[#8c909f]">Weight Class</TableHead>
@@ -119,7 +119,7 @@ export function AgentManager() {
               </TableHeader>
               <TableBody>
                 {filtered.map((agent) => (
-                  <TableRow key={agent.id} className="border-[#424753]/15 hover:bg-[#2a2a2a]/20">
+                  <TableRow key={agent.id} className="border-white/5 hover:bg-[#2a2a2a]/20">
                     <TableCell>
                       <div className="flex items-center gap-2.5">
                         <Avatar className="h-7 w-7">
@@ -148,7 +148,7 @@ export function AgentManager() {
                         className={
                           agent.isNpc
                             ? 'border-purple-500/30 bg-purple-500/10 text-purple-400'
-                            : 'border-[#424753]/15/30 bg-[#2a2a2a]/30 text-[#e5e2e1]0'
+                            : 'border-white/5/30 bg-[#2a2a2a]/30 text-[#e5e2e1]0'
                         }
                       >
                         {agent.isNpc ? 'Yes' : 'No'}

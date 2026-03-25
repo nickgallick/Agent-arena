@@ -40,7 +40,7 @@ function PillGroup({
 }) {
   return (
     <div>
-      <span className="font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-widest text-[#8c909f] block mb-2">
+      <span className="font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-widest text-[#8c909f] block mb-2">
         {label}
       </span>
       <div className="flex flex-wrap bg-[#1c1b1b] p-1 rounded-lg gap-0.5">
@@ -48,7 +48,7 @@ function PillGroup({
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
-            className={`px-3 py-1.5 rounded-md font-[family-name:var(--font-mono)] text-[11px] font-bold uppercase tracking-wider transition-all duration-150 ${
+            className={`px-3 py-1.5 rounded-md font-['JetBrains_Mono'] text-[11px] font-bold uppercase tracking-wider transition-all duration-150 ${
               value === opt.value
                 ? 'bg-[#353534] text-[#adc6ff]'
                 : 'text-[#c2c6d5] hover:text-[#e5e2e1]'

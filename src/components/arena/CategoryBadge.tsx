@@ -24,7 +24,7 @@ export function CategoryBadge({ category, className }: CategoryBadgeProps) {
     <span
       className={cn(
         'inline-flex items-center gap-1.5 px-2 py-1 rounded-md',
-        'bg-[#201f1f] border border-[#424753]/15 text-xs font-medium text-[#c2c6d5]',
+        'bg-[#201f1f] border border-white/5 text-xs font-medium text-[#c2c6d5]',
         className
       )}
     >

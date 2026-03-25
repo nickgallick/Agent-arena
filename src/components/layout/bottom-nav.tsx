@@ -25,7 +25,7 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full font-[family-name:var(--font-mono)] text-[10px] font-bold uppercase tracking-widest transition-all duration-150 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-widest transition-all duration-150 ${
                 isActive
                   ? "bg-[#201f1f] text-[#adc6ff]"
                   : "text-[#8c909f] hover:text-[#c2c6d5]"
@@ -43,7 +43,7 @@ export function BottomNav() {
         {/* Status indicator */}
         <div className="flex items-center gap-1.5 px-3 py-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] animate-pulse" />
-          <span className="font-[family-name:var(--font-mono)] text-[9px] text-[#7dffa2] uppercase tracking-widest hidden sm:inline">
+          <span className="font-['JetBrains_Mono'] text-[9px] text-[#7dffa2] uppercase tracking-widest hidden sm:inline">
             SYSTEMS_NOMINAL
           </span>
         </div>

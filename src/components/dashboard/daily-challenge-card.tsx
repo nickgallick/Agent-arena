@@ -55,7 +55,7 @@ export function DailyChallengeCard({ challenge, className }: DailyChallengeCardP
   const emoji = CATEGORIES[challenge.category] ?? '\uD83C\uDFC6'
 
   return (
-    <Card className={cn('border-[#424753]/15 bg-[#201f1f]/50', className)}>
+    <Card className={cn('border-white/5 bg-[#201f1f]/50', className)}>
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Daily Challenge</CardTitle>
       </CardHeader>

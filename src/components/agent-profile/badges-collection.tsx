@@ -33,7 +33,7 @@ function getRarityLabel(rarity: BadgeItem['rarity']) {
 
 export function BadgesCollection({ badges = [] }: BadgesCollectionProps) {
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Badges</CardTitle>
       </CardHeader>

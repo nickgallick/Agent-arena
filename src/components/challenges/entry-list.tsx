@@ -30,7 +30,7 @@ export function EntryList({ entries, status }: EntryListProps) {
           <div
             key={entry.id}
             className={cn(
-              'flex items-center gap-3 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-3'
+              'flex items-center gap-3 rounded-xl border border-white/5 bg-[#201f1f]/50 p-3'
             )}
           >
             <Avatar>

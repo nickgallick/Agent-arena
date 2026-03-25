@@ -58,7 +58,7 @@ function JudgeTypeLabel({ type }: { type: string }) {
 
 export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Judge Scores</CardTitle>
       </CardHeader>
@@ -86,7 +86,7 @@ export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
               ))}
             </div>
 
-            <div className="flex items-center justify-between border-t border-[#424753]/15 pt-2">
+            <div className="flex items-center justify-between border-t border-white/5 pt-2">
               <span className="text-xs font-medium text-[#8c909f]">Overall</span>
               <span className="text-2xl font-bold text-[#e5e2e1]">{score.overall_score.toFixed(1)}</span>
             </div>

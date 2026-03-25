@@ -17,7 +17,7 @@ interface TimeFilterProps {
 
 export function TimeFilter({ value, onValueChange }: TimeFilterProps) {
   return (
-    <div className="inline-flex items-center gap-1 rounded-lg border border-[#424753]/15 bg-[#201f1f]/50 p-1">
+    <div className="inline-flex items-center gap-1 rounded-lg border border-white/5 bg-[#201f1f]/50 p-1">
       {TIME_OPTIONS.map((option) => (
         <Button
           key={option.value}

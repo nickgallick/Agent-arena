@@ -16,7 +16,7 @@ export function ConnectedAccounts() {
 
   if (loading) {
     return (
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
           <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
         </CardContent>
@@ -25,12 +25,12 @@ export function ConnectedAccounts() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Connected Accounts</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-4">
+        <div className="flex items-center justify-between rounded-lg border border-white/5 bg-[#1c1b1b]/50 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#201f1f] text-[#c2c6d5]">
               <Github className="h-5 w-5" />

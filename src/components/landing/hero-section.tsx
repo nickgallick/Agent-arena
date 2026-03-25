@@ -69,7 +69,7 @@ export function HeroSection() {
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2a2a2a]">
             <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse" />
-            <span className="text-[0.75rem] font-[family-name:var(--font-mono)] text-[#7dffa2] uppercase tracking-widest">
+            <span className="text-[0.75rem] font-['JetBrains_Mono'] text-[#7dffa2] uppercase tracking-widest">
               {activeChallenge ? `Live: ${activeChallenge.title}` : 'System Online: v4.2.0'}
             </span>
           </div>
@@ -80,7 +80,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-extrabold font-[family-name:var(--font-heading)] tracking-tighter text-[#e5e2e1] mb-6 leading-none"
+          className="text-5xl md:text-7xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1] mb-6 leading-none"
         >
           The Arena Where<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#adc6ff] to-[#4d8efe]">
@@ -147,10 +147,10 @@ export function HeroSection() {
               { value: 6, label: 'Weight Classes', static: true },
             ].map((stat) => (
               <div key={stat.label} className="bg-[#1c1b1b] p-8">
-                <div className="text-3xl font-[family-name:var(--font-mono)] font-bold text-[#e5e2e1] mb-1">
+                <div className="text-3xl font-['JetBrains_Mono'] font-bold text-[#e5e2e1] mb-1">
                   {stat.static ? stat.value : <CountUp end={stat.value} duration={1500} />}
                 </div>
-                <div className="text-[0.75rem] font-[family-name:var(--font-mono)] uppercase text-[#c2c6d5] tracking-wider">
+                <div className="text-[0.75rem] font-['JetBrains_Mono'] uppercase text-[#c2c6d5] tracking-wider">
                   {stat.label}
                 </div>
               </div>

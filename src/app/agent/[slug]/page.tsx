@@ -129,7 +129,7 @@ export default function AgentProfilePage() {
       <div className="min-h-screen bg-[#131313]">
         <Header />
         <main className="flex-1 pt-20 flex items-center justify-center py-20">
-          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
+          <div className="rounded-xl border border-white/5 bg-[#1c1b1b]/50 px-8 py-12 text-center">
             <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Agent not found'}</p>
             <a href="/leaderboard" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]">
               ← Back to leaderboard
@@ -181,7 +181,7 @@ export default function AgentProfilePage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <span className="font-[family-name:var(--font-heading)] text-4xl font-bold text-[#e5e2e1]">
+                    <span className="font-['Manrope'] text-4xl font-bold text-[#e5e2e1]">
                       {agent.name.slice(0, 2).toUpperCase()}
                     </span>
                   </div>
@@ -200,7 +200,7 @@ export default function AgentProfilePage() {
                   <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#e5e2e1]">
                     {agent.name}
                   </h1>
-                  <span className="bg-[#353534] px-3 py-1 rounded text-[#adc6ff] font-[family-name:var(--font-mono)] text-xs self-center">
+                  <span className="bg-[#353534] px-3 py-1 rounded text-[#adc6ff] font-['JetBrains_Mono'] text-xs self-center">
                     ID: {agent.slug}
                   </span>
                 </div>
@@ -210,20 +210,20 @@ export default function AgentProfilePage() {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-[#201f1f] p-4 rounded border-b-2 border-[#adc6ff]">
-                  <p className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest mb-1">ELO Rating</p>
-                  <p className="text-2xl font-bold font-[family-name:var(--font-heading)] text-[#adc6ff]">{eloFormatted}</p>
+                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">ELO Rating</p>
+                  <p className="text-2xl font-bold font-['Manrope'] text-[#adc6ff]">{eloFormatted}</p>
                 </div>
                 <div className="bg-[#201f1f] p-4 rounded">
-                  <p className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest mb-1">Streak</p>
-                  <p className="text-2xl font-bold font-[family-name:var(--font-heading)]">{agent.current_streak}</p>
+                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">Streak</p>
+                  <p className="text-2xl font-bold font-['Manrope']">{agent.current_streak}</p>
                 </div>
                 <div className="bg-[#201f1f] p-4 rounded">
-                  <p className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest mb-1">Win Rate</p>
-                  <p className="text-2xl font-bold font-[family-name:var(--font-heading)]">{winRate}%</p>
+                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">Win Rate</p>
+                  <p className="text-2xl font-bold font-['Manrope']">{winRate}%</p>
                 </div>
                 <div className="bg-[#201f1f] p-4 rounded">
-                  <p className="text-[10px] text-[#c2c6d5] font-[family-name:var(--font-mono)] uppercase tracking-widest mb-1">Integrity</p>
-                  <p className="text-2xl font-bold font-[family-name:var(--font-heading)] text-[#7dffa2]">99%</p>
+                  <p className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest mb-1">Integrity</p>
+                  <p className="text-2xl font-bold font-['Manrope'] text-[#7dffa2]">99%</p>
                 </div>
               </div>
             </div>
@@ -246,19 +246,19 @@ export default function AgentProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Challenge History (Wide) */}
           <section className="lg:col-span-2 bg-[#1c1b1b] rounded-xl overflow-hidden flex flex-col">
-            <div className="p-6 flex items-center justify-between border-b border-[#424753]/10">
+            <div className="p-6 flex items-center justify-between border-b border-white/5">
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <History className="w-5 h-5 text-[#adc6ff]" />
                 Challenge History
               </h2>
               <div className="flex gap-2">
-                <span className="px-2 py-1 bg-[#353534] text-[10px] font-[family-name:var(--font-mono)] rounded">
+                <span className="px-2 py-1 bg-[#353534] text-[10px] font-['JetBrains_Mono'] rounded">
                   LATEST {results.length || 100}
                 </span>
               </div>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left font-[family-name:var(--font-mono)] text-xs">
+              <table className="w-full text-left font-['JetBrains_Mono'] text-xs">
                 <thead>
                   <tr className="text-[#c2c6d5] bg-[#353534]/50">
                     <th className="px-6 py-4 font-medium uppercase tracking-widest">Opponent</th>
@@ -268,7 +268,7 @@ export default function AgentProfilePage() {
                     <th className="px-6 py-4 font-medium uppercase tracking-widest text-right">ELO Δ</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#424753]/5">
+                <tbody className="divide-y divide-white/5">
                   {results.length > 0 ? (
                     results.map((result) => (
                       <tr key={result.id} className="hover:bg-[#adc6ff]/5 transition-colors">
@@ -347,7 +347,7 @@ export default function AgentProfilePage() {
               </table>
             </div>
             <div className="p-4 bg-[#201f1f] mt-auto">
-              <button className="w-full py-2 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+              <button className="w-full py-2 text-xs font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
                 Expand Full Log Matrix
               </button>
             </div>
@@ -363,7 +363,7 @@ export default function AgentProfilePage() {
               </h2>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-[family-name:var(--font-mono)] uppercase">
+                  <div className="flex justify-between text-[10px] font-['JetBrains_Mono'] uppercase">
                     <span>Reaction Velocity</span>
                     <span className="text-[#adc6ff]">{reactionVelocity}%</span>
                   </div>
@@ -372,7 +372,7 @@ export default function AgentProfilePage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-[family-name:var(--font-mono)] uppercase">
+                  <div className="flex justify-between text-[10px] font-['JetBrains_Mono'] uppercase">
                     <span>Counter-Encryption</span>
                     <span className="text-[#adc6ff]">{counterEncryption}%</span>
                   </div>
@@ -381,7 +381,7 @@ export default function AgentProfilePage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-[family-name:var(--font-mono)] uppercase">
+                  <div className="flex justify-between text-[10px] font-['JetBrains_Mono'] uppercase">
                     <span>Energy Efficiency</span>
                     <span className="text-[#adc6ff]">{energyEfficiency}%</span>
                   </div>
@@ -402,7 +402,7 @@ export default function AgentProfilePage() {
                 </h2>
                 <div className="space-y-1">
                   <p className="text-lg font-bold">Tokyo-01 Server Hub</p>
-                  <p className="text-xs text-[#c2c6d5] font-[family-name:var(--font-mono)]">LAT: 35.6895 / LONG: 139.6917</p>
+                  <p className="text-xs text-[#c2c6d5] font-['JetBrains_Mono']">LAT: 35.6895 / LONG: 139.6917</p>
                 </div>
               </div>
             </section>
@@ -415,21 +415,21 @@ export default function AgentProfilePage() {
                   <div className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] mt-1.5 shrink-0" />
                   <div className="space-y-1">
                     <p className="text-xs font-medium">Core optimization complete</p>
-                    <p className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5]">02:14:45 UTC</p>
+                    <p className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5]">02:14:45 UTC</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#adc6ff] mt-1.5 shrink-0" />
                   <div className="space-y-1">
                     <p className="text-xs font-medium">Equipped &apos;Obsidian Spike&apos; mod</p>
-                    <p className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5]">Yesterday</p>
+                    <p className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5]">Yesterday</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#353534] mt-1.5 shrink-0" />
                   <div className="space-y-1">
                     <p className="text-xs font-medium">Entered Top 20 Global Rank</p>
-                    <p className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5]">3 days ago</p>
+                    <p className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5]">3 days ago</p>
                   </div>
                 </div>
               </div>

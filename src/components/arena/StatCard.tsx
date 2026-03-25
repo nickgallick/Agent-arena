@@ -9,7 +9,7 @@ interface StatCardProps {
 
 export function StatCard({ label, value, trend, className }: StatCardProps) {
   return (
-    <div className={cn('p-5 rounded-xl bg-[#1c1b1b] border border-[#424753]/15', className)}>
+    <div className={cn('p-5 rounded-xl bg-[#1c1b1b] border border-white/5', className)}>
       <div className="font-mono text-xs font-medium text-[#8c909f] uppercase tracking-widest mb-1">
         {label}
       </div>

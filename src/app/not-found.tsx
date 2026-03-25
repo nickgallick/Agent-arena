@@ -63,7 +63,7 @@ export default function NotFound() {
           </div>
 
           {/* Terminal block */}
-          <div className="mt-16 w-full max-w-md bg-[#1c1b1b] p-4 rounded-lg border border-[#424753]/10 text-left">
+          <div className="mt-16 w-full max-w-md bg-[#1c1b1b] p-4 rounded-lg border border-white/5 text-left">
             <div className="flex gap-2 mb-3">
               <div className="w-2 h-2 rounded-full bg-[#3a3939]" />
               <div className="w-2 h-2 rounded-full bg-[#3a3939]" />

@@ -122,7 +122,7 @@ export function AdminDashboardClient({ operatorName }: { operatorName: string })
           </div>
           <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             <div>
-              <label className="block text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase mb-1">Challenge Identifier</label>
+              <label className="block text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase mb-1">Challenge Identifier</label>
               <input
                 className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded p-3 text-sm text-[#e5e2e1]"
                 placeholder="e.g. CYBER_STRIKE_01"
@@ -131,7 +131,7 @@ export function AdminDashboardClient({ operatorName }: { operatorName: string })
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase mb-1">Compute Tier</label>
+                <label className="block text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase mb-1">Compute Tier</label>
                 <select className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded p-3 text-sm text-[#e5e2e1]">
                   <option>Ultra-Dense</option>
                   <option>Standard</option>
@@ -139,7 +139,7 @@ export function AdminDashboardClient({ operatorName }: { operatorName: string })
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase mb-1">Reward Pool</label>
+                <label className="block text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase mb-1">Reward Pool</label>
                 <input
                   className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded p-3 text-sm text-[#e5e2e1]"
                   placeholder="5,000"
@@ -148,8 +148,8 @@ export function AdminDashboardClient({ operatorName }: { operatorName: string })
               </div>
             </div>
             <div>
-              <label className="block text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase mb-1">Deployment Payload</label>
-              <div className="bg-[#0e0e0e] rounded p-4 h-32 border border-dashed border-[#424753]/30 flex flex-col items-center justify-center cursor-pointer hover:bg-[#1c1b1b] transition-colors">
+              <label className="block text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase mb-1">Deployment Payload</label>
+              <div className="bg-[#0e0e0e] rounded p-4 h-32 border border-dashed border-white/5 flex flex-col items-center justify-center cursor-pointer hover:bg-[#1c1b1b] transition-colors">
                 <Upload className="w-5 h-5 text-[#c2c6d5] mb-2" />
                 <span className="text-xs text-[#c2c6d5]">Drag or upload agent logic (.wasm, .py)</span>
               </div>
@@ -165,8 +165,8 @@ export function AdminDashboardClient({ operatorName }: { operatorName: string })
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-[#e5e2e1]">Active Jobs Queue</h2>
             <div className="flex gap-2">
-              <span className="px-2 py-1 bg-[#353534] text-[10px] font-[family-name:var(--font-mono)] text-[#7dffa2] rounded">PROCESSED: 12.4k</span>
-              <span className="px-2 py-1 bg-[#353534] text-[10px] font-[family-name:var(--font-mono)] text-[#ffb4ab] rounded">FAILED: 02</span>
+              <span className="px-2 py-1 bg-[#353534] text-[10px] font-['JetBrains_Mono'] text-[#7dffa2] rounded">PROCESSED: 12.4k</span>
+              <span className="px-2 py-1 bg-[#353534] text-[10px] font-['JetBrains_Mono'] text-[#ffb4ab] rounded">FAILED: 02</span>
             </div>
           </div>
           <div className="space-y-3 overflow-y-auto max-h-[400px] pr-2">
@@ -179,11 +179,11 @@ export function AdminDashboardClient({ operatorName }: { operatorName: string })
                   <div className={`w-2 h-2 rounded-full ${job.dotColor}`} />
                   <div>
                     <div className="text-xs font-bold text-[#e5e2e1]">JOB_ID: {job.id}</div>
-                    <div className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5]">{job.phase} • {job.time}</div>
+                    <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5]">{job.phase} • {job.time}</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-[10px] font-[family-name:var(--font-mono)] ${job.statusColor}`}>{job.status}</div>
+                  <div className={`text-[10px] font-['JetBrains_Mono'] ${job.statusColor}`}>{job.status}</div>
                   <div className="text-[9px] text-[#c2c6d5] uppercase">{job.node}</div>
                 </div>
               </div>
@@ -243,14 +243,14 @@ export function AdminDashboardClient({ operatorName }: { operatorName: string })
               ))}
             </div>
           </div>
-          <div className="mt-8 pt-4 border-t border-[#424753]/20">
+          <div className="mt-8 pt-4 border-t border-white/5">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-[#7dffa2]/10 rounded">
                 <Shield className="w-4 h-4 text-[#7dffa2]" />
               </div>
               <div>
                 <div className="text-xs font-bold text-[#e5e2e1]">Mission Status: NOMINAL</div>
-                <div className="text-[9px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase">All systems within threshold</div>
+                <div className="text-[9px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase">All systems within threshold</div>
               </div>
             </div>
           </div>
@@ -288,8 +288,8 @@ function AdminSidebar({ activeTab, setActiveTab }: { activeTab: TabId; setActive
       {/* Uptime Mini-Card */}
       <div className="bg-[#1c1b1b] p-4 rounded-xl border-l-2 border-[#7dffa2]/30">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase tracking-widest">Uptime</span>
-          <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#7dffa2]">99.98%</span>
+          <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">Uptime</span>
+          <span className="text-[10px] font-['JetBrains_Mono'] text-[#7dffa2]">99.98%</span>
         </div>
         <div className="h-1 w-full bg-[#353534] overflow-hidden rounded-full">
           <div className="h-full bg-[#7dffa2] w-[90%]" />
@@ -320,7 +320,7 @@ function StatCard({
   return (
     <div className="col-span-12 md:col-span-4 bg-[#1c1b1b] p-6 rounded-xl relative overflow-hidden group">
       <div className="relative z-10">
-        <span className="text-xs font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase tracking-widest">{label}</span>
+        <span className="text-xs font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">{label}</span>
         <div className="text-4xl font-black text-[#e5e2e1] mt-2">{value}</div>
         <div className={`flex items-center gap-2 mt-4 text-xs ${deltaColor}`}>
           <DeltaIcon className="w-4 h-4" />

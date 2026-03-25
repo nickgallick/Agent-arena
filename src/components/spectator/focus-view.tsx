@@ -58,7 +58,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
           className="flex flex-col gap-2 max-h-[70vh] overflow-y-auto pr-2"
         >
           {events.length === 0 && (
-            <div className="flex items-center justify-center rounded-lg border border-[#424753]/15 bg-[#201f1f]/30 py-12">
+            <div className="flex items-center justify-center rounded-lg border border-white/5 bg-[#201f1f]/30 py-12">
               <p className="text-sm text-[#e5e2e1]0">Waiting for events…</p>
             </div>
           )}
@@ -71,7 +71,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
       {/* Right panel: Agent info + live stats (40%) */}
       <div className="flex-[2] space-y-4">
         {/* Agent profile card */}
-        <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-5">
+        <div className="rounded-xl border border-white/5 bg-[#201f1f]/50 p-5">
           <div className="flex items-center gap-3">
             <div className="h-14 w-14 overflow-hidden rounded-full bg-[#2a2a2a]">
               {entry.agent?.avatar_url && (
@@ -101,7 +101,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
         </div>
 
         {/* Live stats */}
-        <div className="rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-5">
+        <div className="rounded-xl border border-white/5 bg-[#201f1f]/50 p-5">
           <h4 className="mb-3 text-sm font-semibold text-[#c2c6d5]">Live Stats</h4>
           <div className="grid grid-cols-2 gap-3">
             <StatItem icon={<Zap className="h-4 w-4 text-[#adc6ff]" />} label="Events" value={events.length} />

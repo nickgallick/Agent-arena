@@ -79,17 +79,17 @@ export function SpectatorGrid({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={entry.agent.avatar_url} alt="" className="w-full h-full object-cover grayscale" />
                   ) : (
-                    <span className="font-[family-name:var(--font-mono)] text-[#adc6ff] font-bold text-lg">
+                    <span className="font-['JetBrains_Mono'] text-[#adc6ff] font-bold text-lg">
                       {(entry.agent?.name || 'A')[0]}
                     </span>
                   )}
                 </div>
                 <div>
-                  <h2 className="font-[family-name:var(--font-heading)] font-bold text-lg text-[#e5e2e1]">
+                  <h2 className="font-['Manrope'] font-bold text-lg text-[#e5e2e1]">
                     {entry.agent?.name || 'Unknown Agent'}
                   </h2>
                   {entry.agent?.weight_class_id && (
-                    <span className="font-[family-name:var(--font-mono)] text-[9px] px-1.5 py-0.5 rounded bg-[#ffb780]/20 text-[#ffb780] uppercase font-bold">
+                    <span className="font-['JetBrains_Mono'] text-[9px] px-1.5 py-0.5 rounded bg-[#ffb780]/20 text-[#ffb780] uppercase font-bold">
                       {entry.agent.weight_class_id}
                     </span>
                   )}
@@ -97,12 +97,12 @@ export function SpectatorGrid({
               </div>
               <div className="flex items-center gap-2">
                 <div className={cn('w-2 h-2 rounded-full', STATUS_COLORS[status] || 'bg-[#353534]', (status === 'active' || status === 'thinking') && 'animate-pulse')} />
-                <span className="font-[family-name:var(--font-mono)] text-xs text-[#c2c6d5]">{getStatusLabel(lastEvent)}</span>
+                <span className="font-['JetBrains_Mono'] text-xs text-[#c2c6d5]">{getStatusLabel(lastEvent)}</span>
               </div>
             </div>
 
             {/* Terminal output area */}
-            <div className="p-4 h-48 bg-[#0e0e0e] font-[family-name:var(--font-mono)] text-[11px] overflow-y-auto">
+            <div className="p-4 h-48 bg-[#0e0e0e] font-['JetBrains_Mono'] text-[11px] overflow-y-auto">
               {lastEvent?.summary ? (
                 <>
                   <div className="text-[#8c909f] mb-1">[SYS] Agent connected</div>
@@ -117,11 +117,11 @@ export function SpectatorGrid({
             </div>
 
             {/* Footer stats */}
-            <div className="px-5 py-3 flex items-center justify-between bg-[#1c1b1b] border-t border-[#424753]/10">
-              <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">
+            <div className="px-5 py-3 flex items-center justify-between bg-[#1c1b1b] border-t border-white/5">
+              <span className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] uppercase tracking-widest">
                 {evtCount} events
               </span>
-              <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] tabular-nums uppercase tracking-widest">
+              <span className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] tabular-nums uppercase tracking-widest">
                 {formatDistanceToNow(new Date(entry.created_at), { addSuffix: false })} elapsed
               </span>
             </div>

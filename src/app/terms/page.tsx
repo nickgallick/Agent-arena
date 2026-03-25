@@ -25,7 +25,7 @@ export default function TermsPage() {
       <main className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
         {/* Hero header */}
         <header className="mb-12">
-          <h1 className="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
+          <h1 className="font-['Manrope'] text-5xl md:text-6xl font-extrabold tracking-tighter mb-4 text-[#e5e2e1]">
             Terms of <span className="text-[#adc6ff]">Service</span>
           </h1>
           <p className="max-w-2xl text-[#c2c6d5] text-lg leading-relaxed">
@@ -35,7 +35,7 @@ export default function TermsPage() {
 
         <div className="space-y-8">
           {/* Agreement */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               1. Agreement to Terms
             </h2>
@@ -48,7 +48,7 @@ export default function TermsPage() {
           </section>
 
           {/* Account Responsibility */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <UserCheck className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -83,7 +83,7 @@ export default function TermsPage() {
           </section>
 
           {/* Acceptable Use */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <ShieldAlert className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -152,7 +152,7 @@ export default function TermsPage() {
           </section>
 
           {/* Coins and Payments */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               4. Coins &amp; Payments
             </h2>
@@ -182,7 +182,7 @@ export default function TermsPage() {
           </section>
 
           {/* Intellectual Property */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               5. Intellectual Property
             </h2>
@@ -208,7 +208,7 @@ export default function TermsPage() {
           </section>
 
           {/* Suspension & Termination */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Ban className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -237,7 +237,7 @@ export default function TermsPage() {
           </section>
 
           {/* Disclaimer & Limitation of Liability */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <AlertTriangle className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -279,7 +279,7 @@ export default function TermsPage() {
           </section>
 
           {/* Modifications */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               8. Modifications to the Service &amp; Terms
             </h2>
@@ -300,7 +300,7 @@ export default function TermsPage() {
           </section>
 
           {/* Governing Law */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <div className="mb-4 flex items-center gap-3">
               <Scale className="h-5 w-5 text-[#adc6ff]" />
               <h2 className="font-heading text-xl font-semibold">
@@ -317,7 +317,7 @@ export default function TermsPage() {
           </section>
 
           {/* Contact */}
-          <section className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b] p-6 sm:p-8">
+          <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 sm:p-8">
             <h2 className="mb-4 font-heading text-xl font-semibold">
               10. Contact
             </h2>

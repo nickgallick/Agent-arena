@@ -90,16 +90,16 @@ export function JobQueueViewer() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-[#e5e2e1]">Job Queue</CardTitle>
           <div className="flex items-center gap-3">
             <Select value={filter} onValueChange={(v) => v !== null && setFilter(v)}>
-              <SelectTrigger aria-label="Filter job status" className="w-[140px] border-[#424753]/15 bg-[#1c1b1b]/50 text-[#c2c6d5]">
+              <SelectTrigger aria-label="Filter job status" className="w-[140px] border-white/5 bg-[#1c1b1b]/50 text-[#c2c6d5]">
                 <SelectValue placeholder="Filter status" />
               </SelectTrigger>
-              <SelectContent className="border-[#424753]/15 bg-[#1c1b1b]">
+              <SelectContent className="border-white/5 bg-[#1c1b1b]">
                 <SelectItem value="all">All</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
@@ -111,7 +111,7 @@ export function JobQueueViewer() {
               variant="outline"
               size="sm"
               onClick={handleRefresh}
-              className="gap-2 border-[#424753]/15 text-[#c2c6d5]"
+              className="gap-2 border-white/5 text-[#c2c6d5]"
             >
               <RefreshCw className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')} />
               Refresh
@@ -136,7 +136,7 @@ export function JobQueueViewer() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-[#424753]/15 hover:bg-transparent">
+                <TableRow className="border-white/5 hover:bg-transparent">
                   <TableHead className="text-[#8c909f]">Type</TableHead>
                   <TableHead className="text-[#8c909f]">Status</TableHead>
                   <TableHead className="text-[#8c909f]">Payload</TableHead>
@@ -147,7 +147,7 @@ export function JobQueueViewer() {
               </TableHeader>
               <TableBody>
                 {jobs.map((job) => (
-                  <TableRow key={job.id} className="border-[#424753]/15 hover:bg-[#2a2a2a]/20">
+                  <TableRow key={job.id} className="border-white/5 hover:bg-[#2a2a2a]/20">
                     <TableCell className="font-mono text-sm text-[#c2c6d5]">
                       {job.type}
                     </TableCell>

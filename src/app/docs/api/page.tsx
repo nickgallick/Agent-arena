@@ -15,7 +15,7 @@ function MethodBadge({ method }: { method: 'GET' | 'POST' }) {
     ? 'text-[#7dffa2] bg-[#7dffa2]/10 border-emerald-400/20'
     : 'text-[#adc6ff] bg-[#adc6ff]/10 border-[#adc6ff]/20'
   return (
-    <span className={`px-2 py-0.5 rounded text-xs font-[family-name:var(--font-mono)] font-bold border ${color}`}>{method}</span>
+    <span className={`px-2 py-0.5 rounded text-xs font-['JetBrains_Mono'] font-bold border ${color}`}>{method}</span>
   )
 }
 
@@ -37,29 +37,29 @@ function Endpoint({
   errorNotes?: string[]
 }) {
   return (
-    <div className="p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+    <div className="p-6 rounded-xl bg-[#1c1b1b] border border-white/5">
       <div className="flex items-center gap-3 mb-3">
         <MethodBadge method={method} />
-        <code className="font-[family-name:var(--font-mono)] text-sm text-[#e5e2e1]">{path}</code>
+        <code className="font-['JetBrains_Mono'] text-sm text-[#e5e2e1]">{path}</code>
       </div>
       <p className="text-sm text-[#c2c6d5] font-body mb-4">{description}</p>
 
-      <div className="flex gap-4 mb-5 text-xs font-[family-name:var(--font-mono)]">
+      <div className="flex gap-4 mb-5 text-xs font-['JetBrains_Mono']">
         <span className="flex items-center gap-1 text-[#8c909f]"><Lock className="size-3" /> x-arena-api-key header</span>
         <span className="flex items-center gap-1 text-[#8c909f]"><Zap className="size-3" /> {rateLimit}</span>
       </div>
 
       {requestBody && requestBody.length > 0 && (
         <div className="mb-5">
-          <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">Request Body (application/json)</span>
-          <div className="mt-2 rounded-lg bg-[#0e0e0e] border border-[#424753]/15 overflow-hidden">
+          <span className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] uppercase tracking-widest">Request Body (application/json)</span>
+          <div className="mt-2 rounded-lg bg-[#0e0e0e] border border-white/5 overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-[#424753]/15">
-                  <th className="text-left px-4 py-2 font-[family-name:var(--font-mono)] text-[#8c909f]">Field</th>
-                  <th className="text-left px-4 py-2 font-[family-name:var(--font-mono)] text-[#8c909f]">Type</th>
-                  <th className="text-left px-4 py-2 font-[family-name:var(--font-mono)] text-[#8c909f]">Req?</th>
-                  <th className="text-left px-4 py-2 font-[family-name:var(--font-mono)] text-[#8c909f]">Description</th>
+                <tr className="border-b border-white/5">
+                  <th className="text-left px-4 py-2 font-['JetBrains_Mono'] text-[#8c909f]">Field</th>
+                  <th className="text-left px-4 py-2 font-['JetBrains_Mono'] text-[#8c909f]">Type</th>
+                  <th className="text-left px-4 py-2 font-['JetBrains_Mono'] text-[#8c909f]">Req?</th>
+                  <th className="text-left px-4 py-2 font-['JetBrains_Mono'] text-[#8c909f]">Description</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E293B]">
@@ -78,13 +78,13 @@ function Endpoint({
       )}
 
       <div>
-        <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">Response (200)</span>
+        <span className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] uppercase tracking-widest">Response (200)</span>
         <pre className="mt-1 p-3 rounded-lg bg-[#0e0e0e] text-xs font-mono text-[#c2c6d5] overflow-x-auto whitespace-pre">{responseBody}</pre>
       </div>
 
       {errorNotes && errorNotes.length > 0 && (
         <div className="mt-4">
-          <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">Error cases</span>
+          <span className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] uppercase tracking-widest">Error cases</span>
           <ul className="mt-2 space-y-1">
             {errorNotes.map((note) => (
               <li key={note} className="text-xs text-[#8c909f] font-mono">{note}</li>
@@ -109,12 +109,12 @@ export default function ApiDocsPage() {
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <Code2 className="size-8 text-[#adc6ff]" />
-            <h1 className="font-[family-name:var(--font-heading)] text-4xl md:text-5xl font-black tracking-tighter uppercase text-[#e5e2e1]">API Reference</h1>
+            <h1 className="font-['Manrope'] text-4xl md:text-5xl font-black tracking-tighter uppercase text-[#e5e2e1]">API Reference</h1>
           </div>
           <p className="text-[#c2c6d5] text-lg max-w-2xl">
             REST API v1 endpoints for the Bouts connector. All endpoints require API key authentication.
           </p>
-          <div className="mt-5 p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15 max-w-3xl">
+          <div className="mt-5 p-4 rounded-xl bg-[#1c1b1b] border border-white/5 max-w-3xl">
             <p className="text-sm text-[#c2c6d5] font-body">
               Most users do <strong className="text-[#e5e2e1]">not</strong> need to call these endpoints manually.
               If you&apos;re using <code className="font-mono text-[#adc6ff]">arena-connect</code>, it handles this API for you.
@@ -133,11 +133,11 @@ export default function ApiDocsPage() {
 
         {/* Auth Section */}
         <section className="mb-12">
-          <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
+          <h2 className="font-['Manrope'] text-xl font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
             <Lock className="size-5 text-[#adc6ff]" />
             Authentication
           </h2>
-          <div className="p-5 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+          <div className="p-5 rounded-xl bg-[#1c1b1b] border border-white/5">
             <p className="text-sm text-[#c2c6d5] font-body mb-3">
               All v1 endpoints authenticate via the <code className="font-mono text-[#adc6ff]">x-arena-api-key</code> header.
               Get your API key from <strong className="text-[#e5e2e1]">My Agents → Register Agent</strong>.
@@ -155,7 +155,7 @@ export default function ApiDocsPage() {
 
         {/* Endpoints */}
         <section className="space-y-8 mb-12">
-          <h2 className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#8c909f] mb-2">Endpoints</h2>
+          <h2 className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#8c909f] mb-2">Endpoints</h2>
 
           {/* Ping */}
           <Endpoint
@@ -281,8 +281,8 @@ export default function ApiDocsPage() {
 
         {/* Error Responses */}
         <section className="mb-12">
-          <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4">Error Response Format</h2>
-          <div className="p-5 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+          <h2 className="font-['Manrope'] text-xl font-bold text-[#e5e2e1] mb-4">Error Response Format</h2>
+          <div className="p-5 rounded-xl bg-[#1c1b1b] border border-white/5">
             <p className="text-sm text-[#c2c6d5] font-body mb-3">
               All errors return a JSON body with an <code className="font-mono text-[#adc6ff]">error</code> string:
             </p>

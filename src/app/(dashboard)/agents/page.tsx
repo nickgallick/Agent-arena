@@ -242,7 +242,7 @@ export default function AgentsPage() {
       {/* Header */}
       <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="font-[family-name:var(--font-heading)] font-extrabold text-4xl tracking-tight mb-2 text-[#e5e2e1]">
+          <h1 className="font-['Manrope'] font-extrabold text-4xl tracking-tight mb-2 text-[#e5e2e1]">
             Agent Command
           </h1>
           <p className="text-[#c2c6d5] font-medium">
@@ -251,14 +251,14 @@ export default function AgentsPage() {
         </div>
         <div className="flex gap-4">
           <div className="bg-[#1c1b1b] px-4 py-3 rounded-lg flex flex-col">
-            <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5]">Fleet Status</span>
-            <span className="font-[family-name:var(--font-mono)] text-[#7dffa2] text-lg font-bold uppercase">
+            <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5]">Fleet Status</span>
+            <span className="font-['JetBrains_Mono'] text-[#7dffa2] text-lg font-bold uppercase">
               {activeCount} Active / {idleCount} Idle
             </span>
           </div>
           <div className="bg-[#1c1b1b] px-4 py-3 rounded-lg flex flex-col">
-            <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5]">Avg Elo</span>
-            <span className="font-[family-name:var(--font-mono)] text-[#adc6ff] text-lg font-bold">
+            <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5]">Avg Elo</span>
+            <span className="font-['JetBrains_Mono'] text-[#adc6ff] text-lg font-bold">
               {agents.length > 0 ? formatElo(avgElo) : '—'}
             </span>
           </div>
@@ -274,12 +274,12 @@ export default function AgentsPage() {
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-6">
                 <PlusCircle className="size-6 text-[#adc6ff]" />
-                <h2 className="font-[family-name:var(--font-heading)] font-bold text-xl text-[#e5e2e1]">Register New Agent</h2>
+                <h2 className="font-['Manrope'] font-bold text-xl text-[#e5e2e1]">Register New Agent</h2>
               </div>
 
               <form onSubmit={handleRegister} className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="agent-name" className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
+                  <label htmlFor="agent-name" className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
                     Agent Identifier
                   </label>
                   <Input
@@ -294,7 +294,7 @@ export default function AgentsPage() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
+                  <label className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
                     Model
                   </label>
                   <Select value={regModel} onValueChange={(v) => v && setRegModel(v)}>
@@ -331,7 +331,7 @@ export default function AgentsPage() {
 
                 {/* Bio field */}
                 <div className="flex flex-col gap-1.5 md:col-span-2">
-                  <label htmlFor="agent-bio" className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
+                  <label htmlFor="agent-bio" className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5] ml-1">
                     Bio <span className="text-[#8c909f]">(optional)</span>
                   </label>
                   <Textarea
@@ -351,8 +351,8 @@ export default function AgentsPage() {
                 )}
               </form>
 
-              <p className="mt-4 font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] text-center md:text-left">
-                <span className="font-[family-name:var(--font-mono)]">{agents.length}/3</span> agent slots used. Deploy to claim your arena position.
+              <p className="mt-4 font-['JetBrains_Mono'] text-[10px] text-[#8c909f] text-center md:text-left">
+                <span className="font-['JetBrains_Mono']">{agents.length}/3</span> agent slots used. Deploy to claim your arena position.
               </p>
             </div>
           </div>
@@ -394,13 +394,13 @@ export default function AgentsPage() {
                       </Avatar>
                     </div>
                     <div>
-                      <h3 className="font-[family-name:var(--font-heading)] font-bold text-lg text-[#e5e2e1]">{agent.name}</h3>
+                      <h3 className="font-['Manrope'] font-bold text-lg text-[#e5e2e1]">{agent.name}</h3>
                       <div className="flex items-center gap-2">
                         <span
                           className={`w-2 h-2 rounded-full ${agent.is_active ? 'bg-[#7dffa2]' : 'bg-[#424753]'}`}
                         />
                         <span
-                          className={`font-[family-name:var(--font-mono)] text-[10px] uppercase font-bold ${
+                          className={`font-['JetBrains_Mono'] text-[10px] uppercase font-bold ${
                             agent.is_active ? 'text-[#7dffa2]' : 'text-[#424753]'
                           }`}
                         >
@@ -410,7 +410,7 @@ export default function AgentsPage() {
                     </div>
                   </div>
                   {agent.model_name && (
-                    <span className="bg-[#353534] px-3 py-1 rounded text-[10px] font-[family-name:var(--font-mono)] font-bold text-[#adc6ff] uppercase tracking-tighter shrink-0">
+                    <span className="bg-[#353534] px-3 py-1 rounded text-[10px] font-['JetBrains_Mono'] font-bold text-[#adc6ff] uppercase tracking-tighter shrink-0">
                       {agent.model_name}
                     </span>
                   )}
@@ -420,7 +420,7 @@ export default function AgentsPage() {
                   {/* API Key */}
                   <div className="bg-[#0e0e0e] p-3 rounded-md">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase text-[#c2c6d5]">API Key</span>
+                      <span className="font-['JetBrains_Mono'] text-[10px] uppercase text-[#c2c6d5]">API Key</span>
                       <div className="flex gap-2">
                         <button
                           className="text-[#8c909f] hover:text-[#adc6ff] transition-colors"
@@ -448,7 +448,7 @@ export default function AgentsPage() {
                         </button>
                       </div>
                     </div>
-                    <code className="font-[family-name:var(--font-mono)] text-xs text-[#adc6ff] truncate block">
+                    <code className="font-['JetBrains_Mono'] text-xs text-[#adc6ff] truncate block">
                       {agent.api_key_prefix ?? 'aa_****'}...
                     </code>
                   </div>
@@ -456,18 +456,18 @@ export default function AgentsPage() {
                   {/* Stats Row: ELO + Win Rate */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[#1c1b1b] p-3 rounded-md">
-                      <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase text-[#c2c6d5] block mb-1">ELO Rating</span>
-                      <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#7dffa2]">{formatElo(currentRating)}</span>
+                      <span className="font-['JetBrains_Mono'] text-[10px] uppercase text-[#c2c6d5] block mb-1">ELO Rating</span>
+                      <span className="font-['JetBrains_Mono'] text-xl font-bold text-[#7dffa2]">{formatElo(currentRating)}</span>
                     </div>
                     <div className="bg-[#1c1b1b] p-3 rounded-md">
-                      <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase text-[#c2c6d5] block mb-1">Win Rate</span>
-                      <span className="font-[family-name:var(--font-mono)] text-xl font-bold text-[#e5e2e1]">{winRate}</span>
+                      <span className="font-['JetBrains_Mono'] text-[10px] uppercase text-[#c2c6d5] block mb-1">Win Rate</span>
+                      <span className="font-['JetBrains_Mono'] text-xl font-bold text-[#e5e2e1]">{winRate}</span>
                     </div>
                   </div>
 
                   {/* Footer: Created + Action Buttons */}
                   <div className="flex justify-between items-center pt-2">
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase">
+                    <span className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] uppercase">
                       Created: {formatDate(agent.created_at, 'yyyy.MM.dd')}
                     </span>
                     <div className="flex gap-2">
@@ -490,7 +490,7 @@ export default function AgentsPage() {
       <Dialog open={!!apiKey} onOpenChange={(open) => { if (!open) handleDismissKeyDialog() }}>
         <DialogContent className="border-none bg-[#1c1b1b] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#e5e2e1] font-[family-name:var(--font-heading)]">
+            <DialogTitle className="text-[#e5e2e1] font-['Manrope']">
               {apiKeyDialogMode === 'rotated' ? 'Your New API Key' : 'Your API Key'}
             </DialogTitle>
             <DialogDescription className="text-[#8c909f]">
@@ -508,7 +508,7 @@ export default function AgentsPage() {
               </p>
             </div>
             <div className="space-y-2">
-              <code className="block w-full overflow-x-auto break-all rounded-md bg-[#0e0e0e] px-3 py-2 font-[family-name:var(--font-mono)] text-xs text-[#7dffa2]">
+              <code className="block w-full overflow-x-auto break-all rounded-md bg-[#0e0e0e] px-3 py-2 font-['JetBrains_Mono'] text-xs text-[#7dffa2]">
                 {apiKey}
               </code>
               <Button

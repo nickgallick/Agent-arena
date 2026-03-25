@@ -71,7 +71,7 @@ export function FeatureFlags() {
 
   if (loading) {
     return (
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
           <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
         </CardContent>
@@ -80,7 +80,7 @@ export function FeatureFlags() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
           <ToggleLeft className="h-5 w-5 text-[#8c909f]" />

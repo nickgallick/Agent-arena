@@ -178,7 +178,7 @@ export default function DashboardPage() {
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4d8efe]/20">
           <Bot className="size-8 text-[#adc6ff]" />
         </div>
-        <h2 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl tracking-tight text-[#e5e2e1]">Command Center</h2>
+        <h2 className="font-['Manrope'] font-extrabold text-3xl tracking-tight text-[#e5e2e1]">Command Center</h2>
         <p className="max-w-md text-[#8c909f]">
           Register your AI agent to start competing in challenges, earning ELO, and climbing the leaderboard.
         </p>
@@ -278,7 +278,7 @@ export default function DashboardPage() {
           {dailyChallenge ? (
             <DailyChallengeCard challenge={dailyChallenge} className="h-full" />
           ) : (
-            <div className="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15 text-center p-8">
+            <div className="flex h-full min-h-[200px] flex-col items-center justify-center rounded-xl bg-[#1c1b1b] border border-white/5 text-center p-8">
               <Swords className="mx-auto mb-3 size-6 text-[#8c909f]" />
               <p className="text-sm text-[#c2c6d5]">No daily challenge right now</p>
               <p className="mt-1 text-xs text-[#8c909f]">Check back soon for new protocols</p>
@@ -297,7 +297,7 @@ export default function DashboardPage() {
           {eloData.length > 0 ? (
             <EloTrendChart data={eloData} className="h-full" />
           ) : (
-            <div className="flex h-full min-h-[280px] items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <div className="flex h-full min-h-[280px] items-center justify-center rounded-xl bg-[#1c1b1b] border border-white/5">
               <div className="text-center">
                 <p className="text-sm text-[#c2c6d5]">Performance telemetry will appear after your first challenge</p>
               </div>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
           {recentResults.length > 0 ? (
             <RecentResults results={recentResults} className="h-full" />
           ) : (
-            <div className="flex h-full min-h-[280px] items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <div className="flex h-full min-h-[280px] items-center justify-center rounded-xl bg-[#1c1b1b] border border-white/5">
               <div className="text-center">
                 <p className="text-sm text-[#c2c6d5]">No combat logs yet</p>
                 <p className="mt-1 text-xs text-[#8c909f]">Enter a challenge to generate your first results</p>
@@ -327,7 +327,7 @@ export default function DashboardPage() {
           {activeChallengesList.length > 0 ? (
             <ActiveChallengesSidebar challenges={activeChallengesList} className="h-full" />
           ) : (
-            <div className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-xl bg-[#1c1b1b] border border-[#424753]/15 p-6">
+            <div className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-xl bg-[#1c1b1b] border border-white/5 p-6">
               <Trophy className="mx-auto mb-3 size-6 text-[#8c909f]" />
               <p className="text-sm text-[#c2c6d5]">No active challenges</p>
               <p className="mt-1 text-xs text-[#8c909f]">Awaiting new arena events</p>

@@ -53,29 +53,29 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
       <SectionReveal>
         <GlassCard className="p-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4d8efe]/20 to-[#A855F7]/20 border border-[#424753]/15 flex items-center justify-center shrink-0">
-              <span className="font-[family-name:var(--font-heading)] text-2xl font-bold text-[#e5e2e1]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#4d8efe]/20 to-[#A855F7]/20 border border-white/5 flex items-center justify-center shrink-0">
+              <span className="font-['Manrope'] text-2xl font-bold text-[#e5e2e1]">
                 {agent.name.slice(0, 2).toUpperCase()}
               </span>
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-3 mb-2">
-                <h1 className="font-[family-name:var(--font-heading)] text-4xl font-extrabold tracking-tight text-[#e5e2e1]">{agent.name}</h1>
+                <h1 className="font-['Manrope'] text-4xl font-extrabold tracking-tight text-[#e5e2e1]">{agent.name}</h1>
                 <WeightClassBadge weightClass={agent.weight_class as WeightClass} />
                 <TierBadge tier={agent.tier as Tier} />
               </div>
               {agent.bio && (
                 <p className="text-[#c2c6d5] text-sm mb-2">{agent.bio}</p>
               )}
-              <div className="flex flex-wrap items-center gap-4 text-xs text-[#8c909f] font-[family-name:var(--font-mono)]">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-[#8c909f] font-['JetBrains_Mono']">
                 <span>{agent.model_provider}/{agent.model_identifier}</span>
                 <span>Level {agent.level}</span>
               </div>
             </div>
             <div className="text-right shrink-0">
-              <div className="font-[family-name:var(--font-mono)] text-3xl font-bold text-[#adc6ff]">{new Intl.NumberFormat("en-US").format(agent.elo_rating)}</div>
-              <div className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest">ELO Rating</div>
-              <div className="font-[family-name:var(--font-mono)] text-xs text-[#8c909f] mt-1">Peak: {new Intl.NumberFormat("en-US").format(agent.elo_peak)}</div>
+              <div className="font-['JetBrains_Mono'] text-3xl font-bold text-[#adc6ff]">{new Intl.NumberFormat("en-US").format(agent.elo_rating)}</div>
+              <div className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] uppercase tracking-widest">ELO Rating</div>
+              <div className="font-['JetBrains_Mono'] text-xs text-[#8c909f] mt-1">Peak: {new Intl.NumberFormat("en-US").format(agent.elo_peak)}</div>
             </div>
           </div>
         </GlassCard>
@@ -90,9 +90,9 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
           { label: 'Win Rate', value: `${winRate}%`, color: 'text-[#e5e2e1]' },
           { label: 'Streak', value: agent.current_streak, color: 'text-[#adc6ff]' },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-xl bg-[#1c1b1b] border border-[#424753]/15 p-4">
-            <div className="font-[family-name:var(--font-mono)] text-[10px] text-[#8c909f] uppercase tracking-widest mb-2">{stat.label}</div>
-            <div className={`font-[family-name:var(--font-mono)] text-2xl font-bold ${stat.color}`}>{stat.value}</div>
+          <div key={stat.label} className="rounded-xl bg-[#1c1b1b] border border-white/5 p-4">
+            <div className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] uppercase tracking-widest mb-2">{stat.label}</div>
+            <div className={`font-['JetBrains_Mono'] text-2xl font-bold ${stat.color}`}>{stat.value}</div>
           </div>
         ))}
       </div>
@@ -100,7 +100,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
       {/* Badges */}
       <SectionReveal>
         <GlassCard>
-          <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4">Badges</h2>
+          <h2 className="font-['Manrope'] text-xl font-bold text-[#e5e2e1] mb-4">Badges</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {badges.map((badge) => {
               const rarity = rarityColors[badge.rarity] || rarityColors.common
@@ -118,7 +118,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
               const rarity = rarityColors[badge.rarity] || rarityColors.common
               const progress = Math.min(100, Math.round((badge.progress / badge.target) * 100))
               return (
-                <div key={badge.id} className="p-3 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 opacity-60">
+                <div key={badge.id} className="p-3 rounded-lg border border-white/5 bg-[#1c1b1b]/50 opacity-60">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-[#8c909f]">{iconMap[badge.icon] || <Star className="size-5" />}</span>
                     <span className="font-body font-medium text-sm text-[#8c909f]">{badge.name}</span>
@@ -137,7 +137,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
       {/* Recent Results */}
       <SectionReveal>
         <GlassCard>
-          <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4">Recent Results</h2>
+          <h2 className="font-['Manrope'] text-xl font-bold text-[#e5e2e1] mb-4">Recent Results</h2>
           <div className="space-y-2">
             {results.map((result) => (
               <div key={result.id} className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-[#201f1f]/50 transition-colors">
@@ -164,7 +164,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
       {rivals.length > 0 && (
         <SectionReveal>
           <GlassCard>
-            <h2 className="font-[family-name:var(--font-heading)] text-xl font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
+            <h2 className="font-['Manrope'] text-xl font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
               <Users className="size-5 text-[#adc6ff]" />
               Rivals
             </h2>
@@ -172,9 +172,9 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
               {rivals.map((rival) => {
                 const winRate = rival.total_matchups > 0 ? Math.round((rival.agent_wins / rival.total_matchups) * 100) : 0
                 return (
-                  <div key={rival.rival_slug} className="flex items-center justify-between py-3 px-4 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/30">
+                  <div key={rival.rival_slug} className="flex items-center justify-between py-3 px-4 rounded-lg border border-white/5 bg-[#1c1b1b]/30">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#201f1f] border border-[#424753]/15 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#201f1f] border border-white/5 flex items-center justify-center">
                         <span className="font-mono text-xs text-[#c2c6d5]">{rival.rival_name.slice(0, 2).toUpperCase()}</span>
                       </div>
                       <div>

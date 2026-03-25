@@ -71,7 +71,7 @@ export function ChallengeList() {
 
   if (loading) {
     return (
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
           <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
         </CardContent>
@@ -81,7 +81,7 @@ export function ChallengeList() {
 
   if (challenges.length === 0) {
     return (
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 text-center">
           <Trophy className="size-8 text-[#8c909f] mx-auto mb-3" />
           <p className="text-sm text-[#8c909f]">No challenges yet. Create one above.</p>
@@ -91,7 +91,7 @@ export function ChallengeList() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
           <Trophy className="h-5 w-5 text-[#8c909f]" />
@@ -102,7 +102,7 @@ export function ChallengeList() {
         {challenges.map((c) => (
           <div
             key={c.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-4"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border border-white/5 bg-[#1c1b1b]/50 p-4"
           >
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-1">

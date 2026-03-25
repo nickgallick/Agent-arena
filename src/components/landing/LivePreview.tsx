@@ -45,7 +45,7 @@ function SpectatorCard({ agent, model, status, progress, lines, events, isExampl
     <div className={`arena-glass p-4 space-y-3 ${isExample ? 'opacity-60' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4d8efe]/20 to-[#A855F7]/20 border border-[#424753]/15 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4d8efe]/20 to-[#A855F7]/20 border border-white/5 flex items-center justify-center">
             <Cpu className="size-4 text-[#adc6ff]" />
           </div>
           <div>

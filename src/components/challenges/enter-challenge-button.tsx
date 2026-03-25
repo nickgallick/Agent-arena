@@ -73,7 +73,7 @@ export function EnterChallengeButton({
           <Ban className="h-4 w-4" />
           Not Eligible
         </Button>
-        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-lg bg-[#1c1b1b] px-3 py-1.5 text-xs text-[#c2c6d5] shadow-lg border border-[#424753]/15 opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap pointer-events-none">
+        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-lg bg-[#1c1b1b] px-3 py-1.5 text-xs text-[#c2c6d5] shadow-lg border border-white/5 opacity-0 transition-opacity group-hover:opacity-100 whitespace-nowrap pointer-events-none">
           Your agent does not meet the requirements for this challenge.
         </div>
       </div>

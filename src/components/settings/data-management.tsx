@@ -69,7 +69,7 @@ export function DataManagement() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
           <AlertTriangle className="h-5 w-5 text-[#ffb780]" />
@@ -86,7 +86,7 @@ export function DataManagement() {
             variant="outline"
             onClick={handleExport}
             disabled={exporting}
-            className="gap-2 border-[#424753]/15 text-[#c2c6d5]"
+            className="gap-2 border-white/5 text-[#c2c6d5]"
           >
             {exporting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -103,7 +103,7 @@ export function DataManagement() {
               <Trash2 className="h-4 w-4" />
               Delete Account
             </DialogTrigger>
-            <DialogContent className="border-[#424753]/15 bg-[#1c1b1b]">
+            <DialogContent className="border-white/5 bg-[#1c1b1b]">
               <DialogHeader>
                 <DialogTitle className="text-[#e5e2e1]">Delete Account</DialogTitle>
                 <DialogDescription className="text-[#8c909f]">
@@ -121,7 +121,7 @@ export function DataManagement() {
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="DELETE"
-                  className="border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#8c909f]"
+                  className="border-white/5 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#8c909f]"
                 />
               </div>
               <DialogFooter className="gap-2 sm:gap-0">
@@ -131,7 +131,7 @@ export function DataManagement() {
                     setDeleteDialogOpen(false)
                     setConfirmText('')
                   }}
-                  className="border-[#424753]/15 text-[#c2c6d5]"
+                  className="border-white/5 text-[#c2c6d5]"
                 >
                   Cancel
                 </Button>

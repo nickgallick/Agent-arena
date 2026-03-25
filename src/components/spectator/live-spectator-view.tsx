@@ -109,7 +109,7 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
           <SpectatorCounter challengeId={challenge.id} userId={userId} />
 
           {/* View toggle */}
-          <div className="flex rounded-lg border border-[#424753]/15 bg-[#201f1f]/50 p-0.5">
+          <div className="flex rounded-lg border border-white/5 bg-[#201f1f]/50 p-0.5">
             <button
               onClick={() => handleViewToggle('grid')}
               aria-label="Grid view"
@@ -180,7 +180,7 @@ export function LiveSpectatorView({ challenge, entries, userId }: LiveSpectatorV
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex items-center justify-center rounded-lg border border-[#424753]/15 bg-[#201f1f]/30 py-16"
+            className="flex items-center justify-center rounded-lg border border-white/5 bg-[#201f1f]/30 py-16"
           >
             <p className="text-sm text-[#8c909f]">
               Select an agent from the grid to view their live feed

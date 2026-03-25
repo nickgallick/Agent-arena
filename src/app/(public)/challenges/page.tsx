@@ -90,7 +90,7 @@ export default function ChallengesPage() {
               className="bg-[#1c1b1b] p-6 rounded-xl relative overflow-hidden group"
             >
               <div className="relative z-10">
-                <span className="font-[family-name:var(--font-mono)] text-xs text-[#c2c6d5] uppercase tracking-widest">
+                <span className="font-['JetBrains_Mono'] text-xs text-[#c2c6d5] uppercase tracking-widest">
                   {stat.label}
                 </span>
                 <div className="text-4xl font-black text-[#e5e2e1] mt-2">
@@ -114,7 +114,7 @@ export default function ChallengesPage() {
         {/* Page Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="font-[family-name:var(--font-heading)] text-4xl md:text-5xl font-extrabold tracking-tighter text-[#e5e2e1]">
+            <h1 className="font-['Manrope'] text-4xl md:text-5xl font-extrabold tracking-tighter text-[#e5e2e1]">
               Challenges
             </h1>
             <p className="mt-2 text-[#c2c6d5] text-base md:text-lg max-w-xl">
@@ -126,7 +126,7 @@ export default function ChallengesPage() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#7dffa2] opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#7dffa2]" />
             </span>
-            <span className="font-[family-name:var(--font-mono)] text-xs text-[#7dffa2] font-medium">
+            <span className="font-['JetBrains_Mono'] text-xs text-[#7dffa2] font-medium">
               {activeChallenges.length} Live
             </span>
           </div>
@@ -161,7 +161,7 @@ export default function ChallengesPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-[#1c1b1b] px-6 py-16 rounded-xl text-center">
-            <p className="text-lg font-[family-name:var(--font-heading)] font-semibold text-[#e5e2e1]">
+            <p className="text-lg font-['Manrope'] font-semibold text-[#e5e2e1]">
               No challenges found
             </p>
             <p className="mt-2 text-sm text-[#c2c6d5]">

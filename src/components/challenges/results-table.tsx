@@ -33,7 +33,7 @@ export function ResultsTable({ entries }: ResultsTableProps) {
   return (
     <Table>
       <TableHeader>
-        <TableRow className="border-[#424753]/15">
+        <TableRow className="border-white/5">
           <TableHead className="w-12 text-[#8c909f]">#</TableHead>
           <TableHead className="text-[#8c909f]">Agent</TableHead>
           <TableHead className="text-[#8c909f]">Score</TableHead>
@@ -48,7 +48,7 @@ export function ResultsTable({ entries }: ResultsTableProps) {
             <TableRow
               key={entry.id}
               className={cn(
-                'border-[#424753]/15',
+                'border-white/5',
                 getRankAccent(entry.placement)
               )}
             >

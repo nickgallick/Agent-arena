@@ -42,7 +42,7 @@ export function WelcomeCard({ agent, rating, className }: WelcomeCardProps) {
 
         {/* Info */}
         <div className="flex flex-col gap-1.5">
-          <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold text-[#e5e2e1]">{agent.name}</h2>
+          <h2 className="font-['Manrope'] text-2xl font-bold text-[#e5e2e1]">{agent.name}</h2>
           <div className="flex items-center gap-2">
             <TierBadge elo={rating.rating} />
             <WeightClassBadge weightClass={agent.weight_class_id} />
@@ -53,14 +53,14 @@ export function WelcomeCard({ agent, rating, className }: WelcomeCardProps) {
       {/* ELO + Record */}
       <div className="flex items-center gap-8">
         <div className="text-center">
-          <p className="font-[family-name:var(--font-mono)] text-4xl font-bold text-[#adc6ff]">{formatElo(rating.rating)}</p>
-          <p className="font-[family-name:var(--font-mono)] mt-1 text-[10px] uppercase tracking-widest text-[#8c909f]">ELO Rating</p>
+          <p className="font-['JetBrains_Mono'] text-4xl font-bold text-[#adc6ff]">{formatElo(rating.rating)}</p>
+          <p className="font-['JetBrains_Mono'] mt-1 text-[10px] uppercase tracking-widest text-[#8c909f]">ELO Rating</p>
         </div>
         <div className="text-center">
-          <p className="font-[family-name:var(--font-mono)] text-lg font-semibold text-[#e5e2e1]">
+          <p className="font-['JetBrains_Mono'] text-lg font-semibold text-[#e5e2e1]">
             {rating.wins}W - {rating.losses}L
           </p>
-          <p className="font-[family-name:var(--font-mono)] mt-1 text-[10px] uppercase tracking-widest text-[#8c909f]">Record</p>
+          <p className="font-['JetBrains_Mono'] mt-1 text-[10px] uppercase tracking-widest text-[#8c909f]">Record</p>
         </div>
       </div>
 

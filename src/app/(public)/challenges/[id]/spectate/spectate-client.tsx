@@ -41,7 +41,7 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
       <header className="bg-[#1c1b1b] p-6 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <span className="bg-[#7dffa2]/10 text-[#7dffa2] px-2 py-1 rounded text-[10px] font-[family-name:var(--font-mono)] uppercase font-bold tracking-wider flex items-center gap-1.5">
+            <span className="bg-[#7dffa2]/10 text-[#7dffa2] px-2 py-1 rounded text-[10px] font-['JetBrains_Mono'] uppercase font-bold tracking-wider flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] animate-pulse" />
               Live
             </span>
@@ -66,8 +66,8 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
         </div>
         <div className="flex items-center gap-6">
           <div className="flex flex-col items-end">
-            <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase tracking-widest">Time Remaining</span>
-            <span className="text-2xl font-[family-name:var(--font-mono)] font-bold text-[#adc6ff]">
+            <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">Time Remaining</span>
+            <span className="text-2xl font-['JetBrains_Mono'] font-bold text-[#adc6ff]">
               <CountdownTimer endsAt={challenge.ends_at} />
             </span>
           </div>
@@ -109,11 +109,11 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
                 </div>
                 <div>
                   <h2 className="font-bold text-lg leading-tight">{entry.agent?.name ?? 'Unknown Agent'}</h2>
-                  <p className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5]">ID: {entry.agent_id.slice(0, 5)}...{entry.agent_id.slice(-3)}</p>
+                  <p className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5]">ID: {entry.agent_id.slice(0, 5)}...{entry.agent_id.slice(-3)}</p>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase block">Confidence</span>
+                <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase block">Confidence</span>
                 <span className={`text-xl font-bold ${index % 2 === 0 ? 'text-[#adc6ff]' : 'text-[#7dffa2]'}`}>
                   {entry.final_score != null ? `${entry.final_score}%` : '--'}
                 </span>
@@ -121,8 +121,8 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
             </div>
             {/* Live Stream Content Replacement (Events Feed) */}
             <div className="p-4 flex flex-col gap-4">
-              <div className="bg-[#0e0e0e] rounded-lg p-4 h-64 overflow-y-auto font-[family-name:var(--font-mono)] text-[11px] leading-relaxed flex flex-col gap-3">
-                <div className="flex justify-between items-center text-[#c2c6d5] border-b border-[#424753]/10 pb-2">
+              <div className="bg-[#0e0e0e] rounded-lg p-4 h-64 overflow-y-auto font-['JetBrains_Mono'] text-[11px] leading-relaxed flex flex-col gap-3">
+                <div className="flex justify-between items-center text-[#c2c6d5] border-b border-white/5 pb-2">
                   <span className="flex items-center gap-1.5">
                     <Clock className="w-3 h-3" />
                     LIVE EVENTS FEED
@@ -182,7 +182,7 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
             <h3 className="font-bold text-sm tracking-tight">Performance Index Delta</h3>
             <p className="text-xs text-[#c2c6d5]">Real-time competitive divergence analysis</p>
           </div>
-          <div className="flex items-center gap-4 text-[10px] font-[family-name:var(--font-mono)] uppercase">
+          <div className="flex items-center gap-4 text-[10px] font-['JetBrains_Mono'] uppercase">
             {entries.slice(0, 2).map((entry, index) => (
               <div key={entry.id} className="flex items-center gap-2">
                 <span className={`w-3 h-0.5 ${index === 0 ? 'bg-[#adc6ff]' : 'bg-[#7dffa2]'}`} />
@@ -192,7 +192,7 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
           </div>
         </div>
         {/* Mock SVG Chart */}
-        <div className="h-48 w-full relative bg-[#0e0e0e] rounded-lg border border-[#424753]/5 overflow-hidden">
+        <div className="h-48 w-full relative bg-[#0e0e0e] rounded-lg border border-white/5 overflow-hidden">
           <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
             {/* Grid lines */}
             <line stroke="#424753" strokeDasharray="1,1" strokeWidth="0.1" x1="0" x2="100" y1="20" y2="20" />
@@ -219,7 +219,7 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
           </svg>
           {/* Tooltip Placeholder */}
           <div className="absolute top-10 right-20 bg-[#353534] border border-[#adc6ff]/20 p-2 rounded shadow-xl backdrop-blur-md pointer-events-none">
-            <div className="text-[9px] font-[family-name:var(--font-mono)] text-[#c2c6d5]">
+            <div className="text-[9px] font-['JetBrains_Mono'] text-[#c2c6d5]">
               T+ <CountdownTimer endsAt={challenge.ends_at} />
             </div>
             <div className="text-xs font-bold text-[#7dffa2]">Delta: --</div>

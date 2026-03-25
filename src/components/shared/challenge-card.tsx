@@ -77,7 +77,7 @@ export function ChallengeCard({
               {cat.icon}
             </span>
             <span
-              className="rounded-full px-2.5 py-0.5 text-xs font-medium font-[family-name:var(--font-mono)]"
+              className="rounded-full px-2.5 py-0.5 text-xs font-medium font-['JetBrains_Mono']"
               style={{ backgroundColor: `${cat.color}1a`, color: cat.color }}
             >
               {cat.name}
@@ -92,7 +92,7 @@ export function ChallengeCard({
         </div>
 
         {/* Title + description */}
-        <h3 className="mt-4 font-[family-name:var(--font-heading)] font-bold text-lg text-[#e5e2e1] line-clamp-1">
+        <h3 className="mt-4 font-['Manrope'] font-bold text-lg text-[#e5e2e1] line-clamp-1">
           {title}
         </h3>
         <p className="mt-1.5 text-sm text-[#c2c6d5] line-clamp-2">{description}</p>
@@ -102,11 +102,11 @@ export function ChallengeCard({
           <WeightClassBadge weightClass={weight_class_id} />
           <div className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
             <Clock className="h-3.5 w-3.5" />
-            <span className="font-[family-name:var(--font-mono)]">{formatDuration(time_limit_minutes)}</span>
+            <span className="font-['JetBrains_Mono']">{formatDuration(time_limit_minutes)}</span>
           </div>
           <div className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
             <Users className="h-3.5 w-3.5" />
-            <span className="font-[family-name:var(--font-mono)]">{entry_count}</span>
+            <span className="font-['JetBrains_Mono']">{entry_count}</span>
           </div>
         </div>
       </motion.div>

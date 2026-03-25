@@ -28,7 +28,7 @@ function PlacementBadge({ placement }: { placement: number }) {
     3: 'bg-amber-600/20 text-amber-500 border-amber-600/40',
   }
 
-  const colorClass = colors[placement] ?? 'bg-[#2a2a2a]/30 text-[#8c909f] border-[#424753]/15/40'
+  const colorClass = colors[placement] ?? 'bg-[#2a2a2a]/30 text-[#8c909f] border-white/5/40'
 
   return (
     <span
@@ -44,12 +44,12 @@ function PlacementBadge({ placement }: { placement: number }) {
 
 export function RecentResults({ results, className }: RecentResultsProps) {
   return (
-    <Card className={cn('border-[#424753]/15 bg-[#201f1f]/50', className)}>
+    <Card className={cn('border-white/5 bg-[#201f1f]/50', className)}>
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Recent Results</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="divide-y divide-[#424753]/15">
+        <div className="divide-y divide-white/5">
           {results.map((result) => (
             <div
               key={result.id}

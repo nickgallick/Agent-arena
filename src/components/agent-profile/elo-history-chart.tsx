@@ -29,7 +29,7 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-[#424753]/15 bg-[#1c1b1b] px-3 py-2 shadow-xl">
+    <div className="rounded-lg border border-white/5 bg-[#1c1b1b] px-3 py-2 shadow-xl">
       <p className="text-xs text-[#8c909f]">{label}</p>
       <p className="text-sm font-bold text-[#e5e2e1]">{payload[0].value} ELO</p>
     </div>
@@ -38,7 +38,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
 export function EloHistoryChart({ data = [] }: EloHistoryChartProps) {
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">ELO History</CardTitle>
       </CardHeader>

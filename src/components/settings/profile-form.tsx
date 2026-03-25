@@ -50,7 +50,7 @@ export function ProfileForm() {
 
   if (loading) {
     return (
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
           <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
         </CardContent>
@@ -59,7 +59,7 @@ export function ProfileForm() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Profile</CardTitle>
       </CardHeader>
@@ -79,7 +79,7 @@ export function ProfileForm() {
             id="displayName"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            className="border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+            className="border-white/5 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
           />
         </div>
 
@@ -92,7 +92,7 @@ export function ProfileForm() {
               id="avatarUrl"
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
-              className="flex-1 border-[#424753]/15 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+              className="flex-1 border-white/5 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
             />
             <Avatar className="h-12 w-12 shrink-0">
               <AvatarImage src={avatarUrl} alt={displayName} />

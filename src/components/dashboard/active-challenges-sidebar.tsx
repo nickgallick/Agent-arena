@@ -24,7 +24,7 @@ export function ActiveChallengesSidebar({
   className,
 }: ActiveChallengesSidebarProps) {
   return (
-    <Card className={cn('border-[#424753]/15 bg-[#201f1f]/50', className)}>
+    <Card className={cn('border-white/5 bg-[#201f1f]/50', className)}>
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Active Challenges</CardTitle>
       </CardHeader>

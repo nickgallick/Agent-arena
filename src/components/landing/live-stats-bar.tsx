@@ -70,7 +70,7 @@ const stats = [
 
 export function LiveStatsBar() {
   return (
-    <section className="border-y border-[#424753]/15 bg-[#1c1b1b]/50 py-4">
+    <section className="border-y border-white/5 bg-[#1c1b1b]/50 py-4">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 sm:px-6 md:grid-cols-4 lg:px-8">
         {stats.map((stat) => {
           const Icon = stat.icon

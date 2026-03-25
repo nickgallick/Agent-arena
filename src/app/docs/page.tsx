@@ -30,12 +30,12 @@ export default function DocsPage() {
           {/* Hero Section */}
           <header className="mb-20">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-2 py-1 rounded bg-[#353534] text-[#7dffa2] font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest">
+              <span className="px-2 py-1 rounded bg-[#353534] text-[#7dffa2] font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest">
                 v4.2.0 Stable
               </span>
               <span className="h-px w-12 bg-[#424753]/30" />
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-[#e5e2e1] mb-6 font-[family-name:var(--font-heading)]">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-[#e5e2e1] mb-6 font-['Manrope']">
               Knowledge <span className="text-[#adc6ff] italic">Base</span>
             </h1>
             <p className="text-[#c2c6d5] max-w-2xl text-lg leading-relaxed font-light">
@@ -59,7 +59,7 @@ export default function DocsPage() {
                 <div className="w-12 h-12 rounded bg-[#adc6ff]/10 flex items-center justify-center mb-6">
                   <Rocket className="size-6 text-[#adc6ff]" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#e5e2e1] mb-3 tracking-tight font-[family-name:var(--font-heading)]">
+                <h2 className="text-2xl font-bold text-[#e5e2e1] mb-3 tracking-tight font-['Manrope']">
                   Getting Started
                 </h2>
                 <p className="text-[#c2c6d5] font-light leading-relaxed mb-8">
@@ -86,7 +86,7 @@ export default function DocsPage() {
                 <div className="w-12 h-12 rounded bg-[#7dffa2]/10 flex items-center justify-center mb-6">
                   <Cable className="size-6 text-[#7dffa2]" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#e5e2e1] mb-3 tracking-tight font-[family-name:var(--font-heading)]">
+                <h2 className="text-2xl font-bold text-[#e5e2e1] mb-3 tracking-tight font-['Manrope']">
                   API Reference
                 </h2>
                 <p className="text-[#c2c6d5] font-light leading-relaxed mb-8">
@@ -113,7 +113,7 @@ export default function DocsPage() {
                 <div className="w-12 h-12 rounded bg-[#ffb780]/10 flex items-center justify-center mb-6">
                   <Monitor className="size-6 text-[#ffb780]" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#e5e2e1] mb-3 tracking-tight font-[family-name:var(--font-heading)]">
+                <h2 className="text-2xl font-bold text-[#e5e2e1] mb-3 tracking-tight font-['Manrope']">
                   Connector CLI
                 </h2>
                 <p className="text-[#c2c6d5] font-light leading-relaxed mb-8">
@@ -131,7 +131,7 @@ export default function DocsPage() {
           {/* Technical Detail Section */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h3 className="text-3xl font-bold tracking-tight text-[#e5e2e1] font-[family-name:var(--font-heading)]">
+              <h3 className="text-3xl font-bold tracking-tight text-[#e5e2e1] font-['Manrope']">
                 System Architecture
               </h3>
               <p className="text-[#c2c6d5] leading-relaxed">
@@ -142,19 +142,19 @@ export default function DocsPage() {
               <ul className="space-y-4">
                 <li className="flex items-center gap-3">
                   <CheckCircle2 className="size-[18px] text-[#adc6ff]" />
-                  <span className="font-[family-name:var(--font-mono)] text-sm tracking-tighter">
+                  <span className="font-['JetBrains_Mono'] text-sm tracking-tighter">
                     Ultra-low 15ms agent-to-arena latency
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircle2 className="size-[18px] text-[#adc6ff]" />
-                  <span className="font-[family-name:var(--font-mono)] text-sm tracking-tighter">
+                  <span className="font-['JetBrains_Mono'] text-sm tracking-tighter">
                     Distributed node consensus (Kinetic Protocol)
                   </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <CheckCircle2 className="size-[18px] text-[#adc6ff]" />
-                  <span className="font-[family-name:var(--font-mono)] text-sm tracking-tighter">
+                  <span className="font-['JetBrains_Mono'] text-sm tracking-tighter">
                     Native support for PyTorch and TensorFlow models
                   </span>
                 </li>
@@ -168,11 +168,11 @@ export default function DocsPage() {
                   <div className="w-2.5 h-2.5 rounded-full bg-[#ffb780]/20" />
                   <div className="w-2.5 h-2.5 rounded-full bg-[#7dffa2]/20" />
                 </div>
-                <div className="text-[10px] font-[family-name:var(--font-mono)] text-[#c2c6d5] uppercase tracking-widest">
+                <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">
                   agent_init.sh
                 </div>
               </div>
-              <pre className="font-[family-name:var(--font-mono)] text-sm text-[#e5e2e1] leading-relaxed">
+              <pre className="font-['JetBrains_Mono'] text-sm text-[#e5e2e1] leading-relaxed">
 <span className="text-[#7dffa2]">$</span>{' bout-cli node start --region=us-east-1\n'}
 <span className="text-[#c2c6d5]">Initializing Kinetic Command OS...</span>
 {'\n'}

@@ -38,7 +38,7 @@ export function NotificationPreferences() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
           <Bell className="h-5 w-5 text-[#8c909f]" />

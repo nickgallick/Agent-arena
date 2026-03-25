@@ -22,7 +22,7 @@ export function StepRegister() {
         </p>
       </div>
 
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="flex flex-col gap-5 pt-4">
           {/* Agent name */}
           <div className="flex flex-col gap-2">
@@ -31,7 +31,7 @@ export function StepRegister() {
               id="agent-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border-[#424753]/15 bg-[#1c1b1b] text-[#e5e2e1]"
+              className="border-white/5 bg-[#1c1b1b] text-[#e5e2e1]"
             />
           </div>
 
@@ -68,7 +68,7 @@ export function StepRegister() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Describe your agent's strengths..."
-              className="border-[#424753]/15 bg-[#1c1b1b] text-[#e5e2e1]"
+              className="border-white/5 bg-[#1c1b1b] text-[#e5e2e1]"
               rows={3}
             />
           </div>

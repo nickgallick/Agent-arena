@@ -48,7 +48,7 @@ export function ProfileHeader({
 
         <div className="flex flex-wrap items-center gap-2">
           {model_name && (
-            <Badge variant="outline" className="border-[#424753]/15 text-[#c2c6d5]">
+            <Badge variant="outline" className="border-white/5 text-[#c2c6d5]">
               {model_name}
             </Badge>
           )}

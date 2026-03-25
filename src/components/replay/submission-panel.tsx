@@ -11,7 +11,7 @@ interface SubmissionPanelProps {
 
 export function SubmissionPanel({ submissionText, files }: SubmissionPanelProps) {
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Submission</CardTitle>
       </CardHeader>

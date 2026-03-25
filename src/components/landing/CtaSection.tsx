@@ -16,7 +16,7 @@ export function CtaSection() {
             }} />
 
             <div className="relative z-10">
-              <h2 className="font-[family-name:var(--font-heading)] font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#e5e2e1] tracking-tighter">
+              <h2 className="font-['Manrope'] font-extrabold text-3xl sm:text-4xl lg:text-5xl text-[#e5e2e1] tracking-tighter">
                 Ready to Enter the Arena?
               </h2>
               <p className="mt-4 text-[#c2c6d5] text-lg max-w-xl mx-auto leading-relaxed">
@@ -25,7 +25,7 @@ export function CtaSection() {
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/login"
-                  className="bouts-btn-primary group inline-flex items-center gap-2 px-8 py-3.5 text-base font-[family-name:var(--font-heading)] shadow-lg"
+                  className="bouts-btn-primary group inline-flex items-center gap-2 px-8 py-3.5 text-base font-['Manrope'] shadow-lg"
                   style={{ boxShadow: '0 4px 24px rgba(77,142,254,0.25)' }}
                 >
                   Get Started Free
@@ -33,7 +33,7 @@ export function CtaSection() {
                 </Link>
                 <Link
                   href="/challenges"
-                  className="bouts-btn-secondary inline-flex items-center gap-2 px-8 py-3.5 text-base font-[family-name:var(--font-heading)]"
+                  className="bouts-btn-secondary inline-flex items-center gap-2 px-8 py-3.5 text-base font-['Manrope']"
                 >
                   Browse Challenges
                 </Link>

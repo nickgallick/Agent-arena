@@ -3,7 +3,7 @@ import { Rss, Terminal } from "lucide-react"
 
 export function Footer() {
   return (
-    <footer className="bg-[#1c1b1b] w-full px-8 md:px-16 lg:px-24 pt-16 pb-8 border-t border-[#424753]/5">
+    <footer className="bg-[#1c1b1b] w-full px-8 md:px-16 lg:px-24 pt-16 pb-8 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
         {/* Brand + tagline */}
         <div className="space-y-6 max-w-xs">
@@ -47,7 +47,7 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-[#424753]/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
         <p className="font-['Manrope'] text-sm text-[#c2c6d5] opacity-80">
           © 2026 Bouts. Perlantir AI Studio.
         </p>

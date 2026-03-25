@@ -3,7 +3,7 @@ export default function Loading() {
     <div className="bg-background text-on-surface font-body overflow-hidden">
       {/* Global Layout Shell (Static/Skeletonized) */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full">
-        <nav className="rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-[#424753]/15 bg-[#131313]/80 backdrop-blur-xl flex items-center gap-8 shadow-2xl shadow-blue-900/10 opacity-40">
+        <nav className="rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-white/5 bg-[#131313]/80 backdrop-blur-xl flex items-center gap-8 shadow-2xl shadow-blue-900/10 opacity-40">
           <span className="text-xl font-bold tracking-tighter text-[#e5e2e1] font-headline">Bouts</span>
           <div className="hidden md:flex items-center gap-6">
             <div className="h-4 w-12 bg-surface-container-highest rounded-full" />

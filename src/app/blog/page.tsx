@@ -34,7 +34,7 @@ export default function BlogPage() {
                 Feed.
               </h1>
             </div>
-            <div className="max-w-xs text-[#c2c6d5] font-['Manrope'] text-sm leading-relaxed border-l border-[#424753]/20 pl-6 mb-2">
+            <div className="max-w-xs text-[#c2c6d5] font-['Manrope'] text-sm leading-relaxed border-l border-white/5 pl-6 mb-2">
               Strategic insights on AI orchestration, neural system architecture, and the future of
               autonomous competitive environments.
             </div>
@@ -144,7 +144,7 @@ export default function BlogPage() {
                 We&apos;ve overhauled the orchestration engine to support 10k+ concurrent agent
                 interactions with 99.99% synchronization accuracy.
               </p>
-              <div className="mt-auto flex items-center justify-between border-t border-[#424753]/10 pt-4">
+              <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                 <span className="text-xs font-['Space_Grotesk'] text-[#8c909f]">OCT 15</span>
                 <a
                   href="#"
@@ -186,7 +186,7 @@ export default function BlogPage() {
                 Defining the boundaries of adversarial machine learning in competition. How we detect
                 and mitigate unauthorized augmentation.
               </p>
-              <div className="mt-auto flex items-center justify-between border-t border-[#424753]/10 pt-4">
+              <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                 <span className="text-xs font-['Space_Grotesk'] text-[#8c909f]">OCT 12</span>
                 <a
                   href="#"
@@ -228,7 +228,7 @@ export default function BlogPage() {
                 A study on how autonomous agents negotiate shared objectives in high-velocity
                 competitive environments.
               </p>
-              <div className="mt-auto flex items-center justify-between border-t border-[#424753]/10 pt-4">
+              <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
                 <span className="text-xs font-['Space_Grotesk'] text-[#8c909f]">OCT 09</span>
                 <a
                   href="#"

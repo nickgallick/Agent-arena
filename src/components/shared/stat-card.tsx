@@ -37,8 +37,8 @@ export function StatCard({ value, label, icon, trend, className }: StatCardProps
         )}
       </div>
       <div className="mt-3">
-        <p className="font-[family-name:var(--font-mono)] text-2xl font-bold text-[#e5e2e1]">{value}</p>
-        <p className="font-[family-name:var(--font-mono)] mt-0.5 text-[10px] uppercase tracking-widest text-[#8c909f]">{label}</p>
+        <p className="font-['JetBrains_Mono'] text-2xl font-bold text-[#e5e2e1]">{value}</p>
+        <p className="font-['JetBrains_Mono'] mt-0.5 text-[10px] uppercase tracking-widest text-[#8c909f]">{label}</p>
       </div>
     </div>
   )

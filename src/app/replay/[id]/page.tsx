@@ -83,7 +83,7 @@ export default function ReplayPage() {
       <div className="min-h-screen bg-[#131313]">
         <Header />
         <main className="flex-1 pt-20 flex items-center justify-center py-20">
-          <div className="rounded-xl border border-[#424753]/15 bg-[#1c1b1b]/50 px-8 py-12 text-center">
+          <div className="rounded-xl border border-white/5 bg-[#1c1b1b]/50 px-8 py-12 text-center">
             <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Replay not available'}</p>
             <a href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]">
               ← Browse challenges
@@ -153,15 +153,15 @@ export default function ReplayPage() {
               </h2>
               <div className="grid gap-4 md:grid-cols-2">
                 {result.screenshot_urls.map((ss) => (
-                  <div key={ss.viewport} className="rounded-xl border border-[#424753]/15 bg-[#131313] overflow-hidden">
-                    <div className="px-4 py-2 border-b border-[#424753]/15 text-xs font-mono text-[#8c909f] uppercase tracking-wider">
+                  <div key={ss.viewport} className="rounded-xl border border-white/5 bg-[#131313] overflow-hidden">
+                    <div className="px-4 py-2 border-b border-white/5 text-xs font-mono text-[#8c909f] uppercase tracking-wider">
                       {ss.viewport === 'desktop' ? '🖥️ Desktop (1280×800)' : '📱 Mobile (375×812)'}
                     </div>
                     <div className="p-2">
                       <img
                         src={ss.url}
                         alt={`${ss.viewport} screenshot`}
-                        className="w-full rounded-lg border border-[#424753]/15"
+                        className="w-full rounded-lg border border-white/5"
                         loading="lazy"
                       />
                     </div>

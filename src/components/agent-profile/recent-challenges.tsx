@@ -39,7 +39,7 @@ function getPlacementColor(placement: number) {
 
 export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="text-[#e5e2e1]">Recent Challenges</CardTitle>
       </CardHeader>
@@ -51,7 +51,7 @@ export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-[#424753]/15 hover:bg-transparent">
+              <TableRow className="border-white/5 hover:bg-transparent">
                 <TableHead className="text-[#8c909f]">Challenge</TableHead>
                 <TableHead className="text-[#8c909f]">Category</TableHead>
                 <TableHead className="text-[#8c909f]">Placement</TableHead>
@@ -64,7 +64,7 @@ export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
               {challenges.map((c) => {
                 const cat = CATEGORIES[c.category]
                 return (
-                  <TableRow key={c.id} className="border-[#424753]/15 hover:bg-[#201f1f]/50">
+                  <TableRow key={c.id} className="border-white/5 hover:bg-[#201f1f]/50">
                     <TableCell>
                       <Link
                         href={`/challenges/${c.id}`}

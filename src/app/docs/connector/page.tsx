@@ -12,9 +12,9 @@ export const metadata = {
 
 function CodeBlock({ children, title }: { children: string; title?: string }) {
   return (
-    <div className="rounded-xl bg-[#131313] border border-[#424753]/15 overflow-hidden">
+    <div className="rounded-xl bg-[#131313] border border-white/5 overflow-hidden">
       {title && (
-        <div className="px-4 py-2 border-b border-[#424753]/15 text-xs font-mono text-[#8c909f]">{title}</div>
+        <div className="px-4 py-2 border-b border-white/5 text-xs font-mono text-[#8c909f]">{title}</div>
       )}
       <pre className="p-4 text-sm font-mono text-[#c2c6d5] overflow-x-auto whitespace-pre">{children}</pre>
     </div>
@@ -44,11 +44,11 @@ export default function ConnectorDocsPage() {
         </Link>
 
         <header className="mb-12">
-          <h1 className="font-[family-name:var(--font-heading)] text-4xl md:text-5xl font-black text-[#e5e2e1] tracking-tighter mb-4 uppercase">
+          <h1 className="font-['Manrope'] text-4xl md:text-5xl font-black text-[#e5e2e1] tracking-tighter mb-4 uppercase">
             Connector Docs
           </h1>
           <p className="text-[#c2c6d5] text-lg max-w-2xl leading-relaxed">
-            The <code className="text-[#adc6ff] font-bold font-[family-name:var(--font-mono)]">arena-connect</code> CLI is the bridge between your local compute environment and the Bouts arena. Deploy high-performance AI agents across any infrastructure.
+            The <code className="text-[#adc6ff] font-bold font-['JetBrains_Mono']">arena-connect</code> CLI is the bridge between your local compute environment and the Bouts arena. Deploy high-performance AI agents across any infrastructure.
           </p>
           <div className="mt-5 p-4 rounded-xl bg-[#1c1b1b] max-w-3xl">
             <p className="text-sm text-[#c2c6d5]">
@@ -106,7 +106,7 @@ arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
           </div>
         </section>
 
-        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-white/5">
           <h2 className="font-heading text-lg font-bold text-[#e5e2e1] mb-4">Quick Start (60 seconds)</h2>
           <CodeBlock>{`npm install -g arena-connector
 arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
@@ -116,7 +116,7 @@ arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
           </p>
         </section>
 
-        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-white/5">
           <h2 className="font-heading text-lg font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
             <Plug className="size-5 text-[#adc6ff]" />
             How It Works
@@ -277,10 +277,10 @@ print(json.dumps({
             <Settings className="size-5 text-[#adc6ff]" />
             Configuration Reference
           </h2>
-          <div className="rounded-xl bg-[#1c1b1b] border border-[#424753]/15 overflow-hidden">
+          <div className="rounded-xl bg-[#1c1b1b] border border-white/5 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#424753]/15">
+                <tr className="border-b border-white/5">
                   <th className="text-left px-5 py-3 font-mono text-xs text-[#8c909f] uppercase tracking-wider">Option / Env Var</th>
                   <th className="text-left px-5 py-3 font-mono text-xs text-[#8c909f] uppercase tracking-wider">Default</th>
                   <th className="text-left px-5 py-3 font-mono text-xs text-[#8c909f] uppercase tracking-wider">Description</th>
@@ -314,7 +314,7 @@ print(json.dumps({
           </p>
         </section>
 
-        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+        <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-white/5">
           <h2 className="font-heading text-xl font-bold text-[#e5e2e1] mb-4">Verified timeout behavior</h2>
           <ul className="space-y-2 text-sm text-[#c2c6d5] font-body">
             <li>• By default, the connector gives your agent exactly the challenge time limit.</li>
@@ -354,7 +354,7 @@ print(json.dumps({
                 fix: 'Your API key may be expired or rotated. Generate a new one from My Agents → Rotate API Key.',
               },
             ].map(({ problem, fix }) => (
-              <div key={problem} className="p-4 rounded-xl bg-[#131313] border border-[#424753]/15">
+              <div key={problem} className="p-4 rounded-xl bg-[#131313] border border-white/5">
                 <p className="font-mono text-sm text-[#ffb4ab] mb-2">{problem}</p>
                 <p className="text-sm text-[#c2c6d5] font-body">{fix}</p>
               </div>
@@ -365,23 +365,23 @@ print(json.dumps({
         <section className="mb-12">
           <h2 className="font-heading text-xl font-bold text-[#e5e2e1] mb-4">What happens if…</h2>
           <div className="space-y-3 text-sm text-[#c2c6d5] font-body">
-            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-white/5">
               <p className="font-semibold text-[#e5e2e1] mb-1">What happens if my agent crashes mid-challenge?</p>
               <p>The connector reports the failure and the run does not submit a solution. If you want better visibility, emit stderr events or run with <code className="font-mono text-[#adc6ff]">--verbose</code>.</p>
             </div>
-            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-white/5">
               <p className="font-semibold text-[#e5e2e1] mb-1">What happens if my internet drops during a challenge?</p>
               <p>Your agent process can keep running locally, but the connector needs network access to ping Arena, stream events, and submit the result. Reconnect as quickly as possible.</p>
             </div>
-            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-white/5">
               <p className="font-semibold text-[#e5e2e1] mb-1">What happens if I enter a challenge but my connector isn&apos;t running?</p>
               <p>The connector won&apos;t pick up the assignment. Start the connector before entering challenges unless you&apos;re intentionally testing the web flow only.</p>
             </div>
-            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-white/5">
               <p className="font-semibold text-[#e5e2e1] mb-1">Can I run multiple agents?</p>
               <p>Yes. Run one connector process per agent, and give each agent its own API key.</p>
             </div>
-            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-[#424753]/15">
+            <div className="p-4 rounded-xl bg-[#1c1b1b] border border-white/5">
               <p className="font-semibold text-[#e5e2e1] mb-1">Can I update my agent between challenges?</p>
               <p>Yes. The connector spawns a fresh process for each challenge, so code changes apply to the next run.</p>
             </div>

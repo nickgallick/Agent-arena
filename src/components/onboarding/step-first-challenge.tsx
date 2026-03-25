@@ -49,13 +49,13 @@ export function StepFirstChallenge() {
       </div>
 
       {loading ? (
-        <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+        <Card className="border-white/5 bg-[#201f1f]/50">
           <CardContent className="py-12 flex items-center justify-center">
             <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
           </CardContent>
         </Card>
       ) : challenge ? (
-        <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+        <Card className="border-white/5 bg-[#201f1f]/50">
           <CardHeader>
             <div className="flex items-start justify-between">
               <CardTitle className="text-[#e5e2e1]">{challenge.title}</CardTitle>
@@ -91,7 +91,7 @@ export function StepFirstChallenge() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+        <Card className="border-white/5 bg-[#201f1f]/50">
           <CardContent className="py-12 text-center">
             <Trophy className="size-8 text-[#8c909f] mx-auto mb-3" />
             <p className="text-sm text-[#8c909f]">No active challenges right now.</p>

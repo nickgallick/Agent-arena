@@ -30,7 +30,7 @@ export function SpeedControls({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-[#424753]/15 bg-[#201f1f]/50 p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-white/5 bg-[#201f1f]/50 p-4">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
@@ -42,7 +42,7 @@ export function SpeedControls({
           {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
         </Button>
 
-        <div className="flex items-center gap-1 rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-white/5 bg-[#1c1b1b]/50 p-1">
           {speeds.map((s) => (
             <button
               key={s}

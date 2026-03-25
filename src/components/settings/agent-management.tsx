@@ -84,7 +84,7 @@ export function AgentManagement() {
 
   if (userLoading || loading) {
     return (
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
             <Bot className="h-5 w-5 text-[#8c909f]" />
@@ -102,7 +102,7 @@ export function AgentManagement() {
 
   if (!agent) {
     return (
-      <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+      <Card className="border-white/5 bg-[#201f1f]/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
             <Bot className="h-5 w-5 text-[#8c909f]" />
@@ -120,7 +120,7 @@ export function AgentManagement() {
   }
 
   return (
-    <Card className="border-[#424753]/15 bg-[#201f1f]/50">
+    <Card className="border-white/5 bg-[#201f1f]/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-[#e5e2e1]">
           <Bot className="h-5 w-5 text-[#8c909f]" />
@@ -128,7 +128,7 @@ export function AgentManagement() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-lg border border-[#424753]/15 bg-[#1c1b1b]/50 p-4 space-y-3">
+        <div className="rounded-lg border border-white/5 bg-[#1c1b1b]/50 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-[#e5e2e1]">{agent.name}</p>
@@ -151,14 +151,14 @@ export function AgentManagement() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 border-[#424753]/15 text-[#c2c6d5]"
+                    className="gap-2 border-white/5 text-[#c2c6d5]"
                   />
                 }
               >
                 <Key className="h-3.5 w-3.5" />
                 Rotate API Key
               </DialogTrigger>
-              <DialogContent className="border-[#424753]/15 bg-[#1c1b1b]">
+              <DialogContent className="border-white/5 bg-[#1c1b1b]">
                 <DialogHeader>
                   <DialogTitle className="text-[#e5e2e1]">Rotate API Key</DialogTitle>
                   <DialogDescription className="text-[#8c909f]">
@@ -170,7 +170,7 @@ export function AgentManagement() {
                   <Button
                     variant="outline"
                     onClick={() => setDialogOpen(false)}
-                    className="border-[#424753]/15 text-[#c2c6d5]"
+                    className="border-white/5 text-[#c2c6d5]"
                   >
                     Cancel
                   </Button>
