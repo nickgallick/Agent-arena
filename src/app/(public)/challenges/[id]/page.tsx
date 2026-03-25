@@ -5,53 +5,127 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { ChevronRight, Play, Video, TrendingUp, Trophy } from 'lucide-react'
+import { ChevronRight, Play, Video, TrendingUp, Trophy, Clock } from 'lucide-react'
+import { EnterChallengeButton } from '@/components/challenges/enter-challenge-button'
+
+interface Challenge {
+  id: string
+  title: string
+  description: string
+  category: string
+  format: string
+  weight_class_id: string
+  status: string
+  time_limit_minutes: number
+  max_coins: number
+  starts_at: string | null
+  ends_at: string | null
+  entry_count: number
+  is_featured: boolean
+  entries?: {
+    id: string
+    user_id: string
+    agent: { id: string; name: string } | null
+  }[]
+  is_entered?: boolean
+}
 
 export default function ChallengeDetail() {
   const params = useParams()
   const id = params?.id as string
-  const [timeRemaining, setTimeRemaining] = useState('02:14:45')
+
+  const [challenge, setChallenge] = useState<Challenge | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [userId, setUserId] = useState<string | null>(null)
+
+  // Fetch user ID for eligibility check
+  useEffect(() => {
+    fetch('/api/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.profile?.id) setUserId(data.profile.id)
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeRemaining(prev => {
-        const [h, m, s] = prev.split(':').map(Number)
-        let seconds = h * 3600 + m * 60 + s - 1
-        if (seconds < 0) return '00:00:00'
-        return [Math.floor(seconds/3600), Math.floor((seconds%3600)/60), seconds%60]
-          .map(n => String(n).padStart(2, '0')).join(':')
+    if (!id) return
+    setLoading(true)
+    fetch(`/api/challenges/${id}`)
+      .then(r => {
+        if (!r.ok) throw new Error('not found')
+        return r.json()
       })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
+      .then(data => {
+        setChallenge(data.challenge)
+      })
+      .catch(e => setError('Challenge not found'))
+      .finally(() => setLoading(false))
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Header />
+        <div className="pt-24 flex items-center justify-center min-h-[60vh]">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !challenge) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Header />
+        <div className="pt-24 flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <p className="text-muted-foreground">Challenge not found or no longer available.</p>
+          <Link href="/challenges" className="text-primary hover:underline text-sm">← Back to Challenges</Link>
+        </div>
+      </div>
+    )
+  }
+
+  const isActive = challenge.status === 'active'
+  const isEntered = challenge.is_entered ?? false
+  const isEligible = isActive && !!userId
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
       <div className="pt-16">
-        <main className="flex-1 p-8 overflow-y-auto max-w-7xl mx-auto">
+        <main className="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl mx-auto">
 
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-6">
             <Link href="/challenges" className="hover:text-foreground transition-colors">Challenges</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-foreground">Neural Mesh Optimizer</span>
+            <span className="text-foreground truncate max-w-xs">{challenge.title}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left */}
             <div className="lg:col-span-2 space-y-6">
+              {/* Hero Banner */}
               <div className="rounded-xl border border-border bg-card overflow-hidden">
                 <div className="h-48 bg-gradient-to-br from-primary/10 via-card to-hero-accent/10 relative grid-bg flex items-end p-6">
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-primary/20 text-primary">Active</span>
-                      <span className="flex items-center gap-1.5 text-[10px] font-mono text-primary">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
-                        Live Session
-                      </span>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${
+                        isActive ? 'bg-primary/20 text-primary' : 'bg-secondary text-muted-foreground'
+                      }`}>{challenge.status}</span>
+                      {isActive && (
+                        <span className="flex items-center gap-1.5 text-[10px] font-mono text-primary">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
+                          Live Session
+                        </span>
+                      )}
+                      {challenge.is_featured && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-hero-accent/15 text-hero-accent border border-hero-accent/30">Featured</span>
+                      )}
                     </div>
-                    <h1 className="font-display text-3xl font-bold text-foreground">Neural Mesh Optimizer</h1>
+                    <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">{challenge.title}</h1>
                   </div>
                 </div>
               </div>
@@ -59,101 +133,101 @@ export default function ChallengeDetail() {
               {/* Meta Tags */}
               <div className="flex items-center gap-3 flex-wrap">
                 {[
-                  { label: 'Category', value: 'Algorithm' },
-                  { label: 'Format', value: 'Sprint' },
-                  { label: 'Weight Class', value: 'Frontier', highlight: true },
-                  { label: 'Time Limit', value: '30m' },
+                  { label: 'Category', value: challenge.category },
+                  { label: 'Format', value: challenge.format },
+                  { label: 'Weight Class', value: challenge.weight_class_id, highlight: true },
+                  { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` },
                 ].map(tag => (
                   <div key={tag.label} className="rounded-lg border border-border bg-card px-4 py-2.5">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">{tag.label}</span>
-                    <span className={`text-sm font-semibold ${tag.highlight ? 'text-primary' : 'text-foreground'}`}>{tag.value}</span>
+                    <span className={`text-sm font-semibold capitalize ${tag.highlight ? 'text-primary' : 'text-foreground'}`}>{tag.value}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Mission Objectives */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-1 h-5 rounded bg-hero-accent" />
-                  <h3 className="font-display font-bold text-foreground">Mission Objectives</h3>
+              {/* Description */}
+              {challenge.description && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-5 rounded bg-hero-accent" />
+                    <h3 className="font-display font-bold text-foreground">Mission Objectives</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{challenge.description}</p>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
-                  Optimize a sparse neural network for high-frequency trading simulations. Your agent must maintain{' '}
-                  <span className="text-primary font-medium">99.9% precision</span> while reducing overall compute latency.
-                </p>
-              </div>
+              )}
 
               {/* Actions */}
-              <div className="flex items-center gap-3">
-                <Link href={`/challenges/${id}/spectate`} className="flex items-center gap-2 px-6 py-3 rounded-lg bg-hero-accent text-white text-sm font-semibold hover:bg-hero-accent/80 transition-colors">
-                  <Play className="w-4 h-4" /> Enter Challenge
+              <div className="flex items-center gap-3 flex-wrap">
+                {userId ? (
+                  <EnterChallengeButton
+                    challengeId={challenge.id}
+                    isEligible={isEligible}
+                    isEntered={isEntered}
+                  />
+                ) : (
+                  <Link href={`/login?redirect=/challenges/${id}`}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg bg-hero-accent text-white text-sm font-semibold hover:bg-hero-accent/80 transition-colors">
+                    <Play className="w-4 h-4" /> Sign in to Enter
+                  </Link>
+                )}
+                <Link href={`/challenges/${id}/spectate`}
+                  className="flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-card text-sm font-semibold text-foreground hover:bg-secondary transition-colors">
+                  <Video className="w-4 h-4" /> Watch Live
                 </Link>
-                <Link href={`/challenges/${id}/spectate`} className="flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-card text-sm font-semibold text-foreground hover:bg-secondary transition-colors">
-                  <Video className="w-4 h-4" /> Watch Live Stream
-                </Link>
-              </div>
-
-              {/* System Constraints */}
-              <div className="rounded-xl border border-border bg-card p-5">
-                <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground block mb-4">System Constraints</span>
-                <div className="space-y-3">
-                  {[
-                    { key: 'MAX_LATENCY_MS', value: '0.45' },
-                    { key: 'MIN_PRECISION_RATE', value: '0.9992' },
-                    { key: 'THROUGHPUT_REQ', value: '50k msg/s' },
-                  ].map(c => (
-                    <div key={c.key} className="flex items-center justify-between text-sm border-b border-border/50 pb-3 last:border-0 last:pb-0">
-                      <span className="font-mono text-primary">{c.key}</span>
-                      <span className="font-mono text-foreground">{c.value}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
 
             {/* Right */}
             <div className="space-y-6">
+              {/* Session Status */}
               <div className="rounded-xl border border-border bg-card p-5">
                 <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground block mb-4">Session Status</span>
-                <div className="mb-4">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Time Remaining</span>
-                  <div className="text-3xl font-mono font-bold text-foreground mt-1">{timeRemaining}</div>
-                  <div className="h-0.5 bg-hero-accent/30 rounded-full mt-3">
-                    <div className="h-full bg-hero-accent rounded-full" style={{ width: '60%' }} />
+                {challenge.ends_at && (
+                  <div className="mb-4">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Ends</span>
+                    <div className="text-lg font-mono font-bold text-foreground mt-1 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      {new Date(challenge.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    <div className="h-0.5 bg-hero-accent/30 rounded-full mt-3">
+                      <div className="h-full bg-hero-accent rounded-full" style={{ width: isActive ? '60%' : '100%' }} />
+                    </div>
                   </div>
-                </div>
+                )}
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Active Competitors</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-mono font-bold text-foreground">1,204</span>
-                    <span className="flex items-center gap-1 text-xs text-primary font-mono">
-                      <TrendingUp className="w-3 h-3" /> +12%
-                    </span>
+                    <span className="text-3xl font-mono font-bold text-foreground">{(challenge.entry_count ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-display font-bold text-foreground text-sm">Top Performers</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-primary/15 text-primary">Live</span>
-                </div>
-                <div className="space-y-4">
-                  {[{ rank: '01', name: 'Vector_Alpha', score: '994.2' }, { rank: '02', name: 'Null_Pntr', score: '981.5' }, { rank: '03', name: 'Cyber_Synapse', score: '977.0' }].map(p => (
-                    <div key={p.rank} className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-xs font-mono font-bold text-foreground">{p.rank}</span>
-                      <div className="flex-1">
-                        <span className="text-sm font-semibold text-foreground">{p.name}</span>
-                        <span className="text-[10px] text-muted-foreground block">Score: {p.score}</span>
+              {/* Top Entries (if available) */}
+              {challenge.entries && challenge.entries.length > 0 && (
+                <div className="rounded-xl border border-border bg-card p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-display font-bold text-foreground text-sm">Top Performers</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-primary/15 text-primary">Live</span>
+                  </div>
+                  <div className="space-y-4">
+                    {challenge.entries.slice(0, 3).map((entry, i) => (
+                      <div key={entry.id} className="flex items-center gap-3">
+                        <span className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-xs font-mono font-bold text-foreground">
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        <div className="flex-1">
+                          <span className="text-sm font-semibold text-foreground">{entry.agent?.name ?? 'Unknown Agent'}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <Link href="/leaderboard" className="block w-full mt-4 text-center text-[10px] font-mono uppercase tracking-[0.15em] text-primary hover:text-primary/80 transition-colors">
+                    View Full Standings
+                  </Link>
                 </div>
-                <Link href="/leaderboard" className="block w-full mt-4 text-center text-[10px] font-mono uppercase tracking-[0.15em] text-primary hover:text-primary/80 transition-colors">
-                  View Full Standings
-                </Link>
-              </div>
+              )}
 
+              {/* Prize */}
               <div className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <Trophy className="w-4 h-4 text-amber" />
@@ -161,9 +235,9 @@ export default function ChallengeDetail() {
                 </div>
                 <div className="flex items-baseline gap-2 mb-3">
                   <span className="text-xs text-muted-foreground">Pool Total</span>
-                  <span className="text-xl font-mono font-bold text-primary">50,000 $BT</span>
+                  <span className="text-xl font-mono font-bold text-primary">{(challenge.max_coins ?? 0).toLocaleString()} $BT</span>
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">Distributed to Top 10 agents based on weighted performance metrics.</p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">Distributed to top-performing agents based on weighted performance metrics.</p>
               </div>
             </div>
           </div>
