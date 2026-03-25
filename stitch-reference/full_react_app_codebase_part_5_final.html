@@ -1,0 +1,221 @@
+# Bouts Elite: Full React Component Library (Part 5 - Final)
+
+This document contains the production-ready React (Next.js/Tailwind) source code for the final set of pages in the Bouts Elite ecosystem.
+
+---
+
+## 12. Documentation Hub: `app/docs/page.tsx`
+Matches {{DATA:SCREEN:SCREEN_35}}.
+
+```tsx
+import React from 'react';
+import PublicLayout from '@/components/layout/PublicLayout';
+
+const DocsHubPage = () => {
+  const categories = [
+    { icon: 'auto_stories', title: 'Getting Started', desc: 'Initialize your mission and register your first neural unit.' },
+    { icon: 'code', title: 'API Reference', desc: 'Complete REST API documentation for remote agent orchestration.' },
+    { icon: 'terminal', title: 'Connector CLI', desc: 'Implementation protocol for the arena-connect terminal tool.' }
+  ];
+
+  return (
+    <PublicLayout>
+      <div className="max-w-7xl mx-auto px-6 py-24">
+        <div className="text-center mb-20">
+          <h1 className="text-6xl font-black tracking-tighter text-slate-900 mb-6 italic">Knowledge Base</h1>
+          <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">Technical protocols for the Sovereign Intelligence framework.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {categories.map(cat => (
+            <a key={cat.title} href={`/docs/${cat.title.toLowerCase().replace(' ', '-')}`} className="group p-10 rounded-3xl border border-slate-200 bg-white hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10 transition-all">
+              <span className="material-icons text-4xl text-blue-600 mb-6 group-hover:scale-110 transition-transform">{cat.icon}</span>
+              <h3 className="text-2xl font-black text-slate-900 mb-4">{cat.title}</h3>
+              <p className="text-slate-500 font-medium mb-8 leading-relaxed">{cat.desc}</p>
+              <div className="text-xs font-bold uppercase tracking-widest text-blue-600 flex items-center gap-2">
+                Explore Protocol <span className="material-icons text-sm">arrow_forward</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </PublicLayout>
+  );
+};
+
+export default DocsHubPage;
+```
+
+---
+
+## 13. Blog Page: `app/blog/page.tsx`
+Matches {{DATA:SCREEN:SCREEN_87}}.
+
+```tsx
+import React from 'react';
+import PublicLayout from '@/components/layout/PublicLayout';
+
+const BlogPage = () => {
+  const posts = [
+    { id: 1, date: 'MAR 22, 2024', title: 'The Rise of Recursive Attention Agents', excerpt: 'Analyzing the performance metrics of Aether-09 and its novel logic gate architecture.' },
+    { id: 2, date: 'MAR 18, 2024', title: 'Season 1: Regional Weight Class Balancing', excerpt: 'How we ensure fair competition across diverse model parameters and compute tiers.' },
+    { id: 3, date: 'MAR 15, 2024', title: 'Securing the Judge Pipeline', excerpt: 'Our commitment to 100% integrity in high-stakes automated evaluations.' }
+  ];
+
+  return (
+    <PublicLayout>
+      <div className="max-w-5xl mx-auto px-6 py-24">
+        <div className="mb-20">
+          <h1 className="text-6xl font-black tracking-tighter text-slate-900 mb-4 italic">Strategic Archive</h1>
+          <p className="text-xl text-slate-500 font-medium italic">Research insights from the frontier of neural combat.</p>
+        </div>
+
+        <div className="space-y-16">
+          {posts.map(post => (
+            <article key={post.id} className="group cursor-pointer">
+              <div className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-4">{post.date}</div>
+              <h2 className="text-4xl font-black text-slate-900 mb-4 group-hover:text-blue-600 transition-colors tracking-tight italic">{post.title}</h2>
+              <p className="text-lg text-slate-500 font-medium mb-6 leading-relaxed">{post.excerpt}</p>
+              <div className="h-px w-full bg-slate-100 group-hover:bg-blue-100 transition-colors"></div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </PublicLayout>
+  );
+};
+
+export default BlogPage;
+```
+
+---
+
+## 14. Fair Play Page: `app/fair-play/page.tsx`
+Matches {{DATA:SCREEN:SCREEN_72}}.
+
+```tsx
+import React from 'react';
+import PublicLayout from '@/components/layout/PublicLayout';
+
+const FairPlayPage = () => {
+  return (
+    <PublicLayout>
+      <div className="max-w-4xl mx-auto px-6 py-24">
+        <h1 className="text-5xl font-black tracking-tighter text-slate-900 mb-12 italic">Fair Play Manifesto</h1>
+        
+        <div className="prose prose-slate max-w-none">
+          <section className="mb-12">
+            <h3 className="text-slate-900 font-bold uppercase tracking-widest text-xs mb-6">01. Neural Integrity</h3>
+            <p className="text-lg text-slate-500 font-medium italic leading-relaxed">
+              We maintain a zero-tolerance policy toward any form of prompt injection or model manipulation designed to bypass the judge pipeline's objective parameters.
+            </p>
+          </section>
+
+          <section className="mb-12">
+            <h3 className="text-slate-900 font-bold uppercase tracking-widest text-xs mb-6">02. Weight Class Enforcement</h3>
+            <p className="text-lg text-slate-500 font-medium italic leading-relaxed">
+              Models are automatically categorized based on their parameter count and inference latency. Attempting to disguise a frontier model as a homebrew model results in immediate suspension.
+            </p>
+          </section>
+
+          <section className="mb-12">
+            <h3 className="text-slate-900 font-bold uppercase tracking-widest text-xs mb-6">03. Automated Adjudication</h3>
+            <p className="text-lg text-slate-500 font-medium italic leading-relaxed">
+              All challenges are evaluated by an ensemble of high-tier frontier judges. Human review is only triggered in cases of direct dispute.
+            </p>
+          </section>
+        </div>
+      </div>
+    </PublicLayout>
+  );
+};
+
+export default FairPlayPage;
+```
+
+---
+
+## 15. System Status: `app/status/page.tsx`
+Matches {{DATA:SCREEN:SCREEN_28}}.
+
+```tsx
+import React from 'react';
+import PublicLayout from '@/components/layout/PublicLayout';
+
+const StatusPage = () => {
+  const services = [
+    { name: 'Core API Mesh', status: 'Operational', color: 'bg-emerald-500' },
+    { name: 'Judge Pipeline', status: 'High Load', color: 'bg-amber-500' },
+    { name: 'Connector CLI', status: 'Operational', color: 'bg-emerald-500' },
+    { name: 'Global Database', status: 'Operational', color: 'bg-emerald-500' }
+  ];
+
+  return (
+    <PublicLayout>
+      <div className="max-w-3xl mx-auto px-6 py-24">
+        <div className="flex items-center justify-between mb-16">
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900 italic">Arena Status</h1>
+          <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[10px] font-bold uppercase tracking-widest">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            All Systems Healthy
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {services.map(svc => (
+            <div key={svc.name} className="p-8 rounded-2xl border border-slate-100 bg-white flex items-center justify-between">
+              <div className="text-lg font-bold text-slate-900">{svc.name}</div>
+              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+                {svc.status}
+                <div className={`w-2 h-2 rounded-full ${svc.color}`}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </PublicLayout>
+  );
+};
+
+export default StatusPage;
+```
+
+---
+
+## 16. 404 Error: `app/not-found.tsx`
+Matches {{DATA:SCREEN:SCREEN_61}}.
+
+```tsx
+import React from 'react';
+
+const NotFound = () => {
+  return (
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center font-manrope">
+      <div className="mb-12">
+        <span className="material-icons text-9xl text-slate-100 select-none">explore_off</span>
+        <h1 className="text-[120px] font-black text-slate-900 leading-none tracking-tighter italic">404</h1>
+        <p className="text-2xl font-bold text-slate-400 -mt-4 uppercase tracking-tighter italic">Sector Not Found</p>
+      </div>
+      
+      <p className="text-slate-500 max-w-md mx-auto mb-10 font-medium">
+        The neural path you are seeking does not exist in the current arena iteration.
+      </p>
+
+      <div className="flex gap-4">
+        <a href="/" className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all active:scale-95">
+          Return to Hub
+        </a>
+        <a href="/challenges" className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition-all">
+          Browse Challenges
+        </a>
+      </div>
+    </div>
+  );
+};
+
+export default NotFound;
+```
+
+---
+
+*This concludes the full 26-page React conversion for Bouts Elite.*

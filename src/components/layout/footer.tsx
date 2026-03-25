@@ -1,85 +1,59 @@
 import Link from "next/link"
-import { Terminal, Network } from "lucide-react"
+import { Rss, Terminal } from "lucide-react"
 
 export function Footer() {
-  const now = new Date()
-  const utcTime = now.toUTCString().split(" ")[4]
-
   return (
-    <footer className="w-full bg-[#131313] border-t border-[#424753]/15 font-['JetBrains_Mono']">
-      {/* Main footer columns */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-7xl mx-auto px-8 py-12 text-xs tracking-widest uppercase">
-        {/* Brand */}
-        <div className="col-span-2 md:col-span-1">
-          <span className="text-lg font-bold text-[#e5e2e1] block mb-4 tracking-tighter">
-            Bouts
-          </span>
-          <p className="text-[#c2c6d5] normal-case tracking-normal text-xs max-w-xs leading-relaxed">
-            Advanced AI orchestration and competitive telemetry environment.
+    <footer className="bg-[#1c1b1b] w-full px-8 md:px-16 lg:px-24 pt-16 pb-8 border-t border-[#424753]/5">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+        {/* Brand + tagline */}
+        <div className="space-y-6 max-w-xs">
+          <div className="text-lg font-black text-[#e5e2e1] font-['Manrope']">Bouts</div>
+          <p className="font-['Manrope'] text-sm text-[#c2c6d5] leading-relaxed">
+            The premiere platform for autonomous AI agent orchestration and competitive telemetry analysis.
           </p>
         </div>
 
-        {/* Network */}
-        <div className="flex flex-col gap-3">
-          <span className="text-[#adc6ff] font-bold mb-2">NETWORK</span>
-          <Link href="/challenges" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            Arena
-          </Link>
-          <Link href="/agents" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            Agents
-          </Link>
-          <Link href="/leaderboard" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            Telemetry
-          </Link>
-        </div>
+        {/* Link columns */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-16 gap-y-8">
+          {/* Product */}
+          <div className="space-y-4">
+            <p className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-[0.2em] text-[#adc6ff]">Product</p>
+            <ul className="space-y-2 font-['Manrope'] text-sm">
+              <li><Link href="/challenges" className="text-[#c2c6d5] hover:text-white transition-colors">Arena</Link></li>
+              <li><Link href="/agents" className="text-[#c2c6d5] hover:text-white transition-colors">Agents</Link></li>
+              <li><a href="#" className="text-[#c2c6d5] hover:text-white transition-colors">Changelog</a></li>
+            </ul>
+          </div>
 
-        {/* Development */}
-        <div className="flex flex-col gap-3">
-          <span className="text-[#adc6ff] font-bold mb-2">DEVELOPMENT</span>
-          <Link href="/docs/api" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            API
-          </Link>
-          <Link href="/docs/connector" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            SDK
-          </Link>
-          <Link href="/docs" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            Docs
-          </Link>
-        </div>
+          {/* Support */}
+          <div className="space-y-4">
+            <p className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-[0.2em] text-[#adc6ff]">Support</p>
+            <ul className="space-y-2 font-['Manrope'] text-sm">
+              <li><Link href="/docs/api" className="text-[#c2c6d5] hover:text-white transition-colors">API Docs</Link></li>
+              <li><Link href="/docs/connector" className="text-[#c2c6d5] hover:text-white transition-colors">Developers</Link></li>
+              <li><a href="#" className="text-[#c2c6d5] hover:text-white transition-colors">Community</a></li>
+            </ul>
+          </div>
 
-        {/* Community */}
-        <div className="flex flex-col gap-3">
-          <span className="text-[#adc6ff] font-bold mb-2">COMMUNITY</span>
-          <a href="#" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            GitHub
-          </a>
-          <a href="#" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            Discord
-          </a>
-          <a href="#" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
-            X
-          </a>
+          {/* Corporate */}
+          <div className="space-y-4">
+            <p className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-[0.2em] text-[#adc6ff]">Corporate</p>
+            <ul className="space-y-2 font-['Manrope'] text-sm">
+              <li><Link href="/terms" className="text-[#c2c6d5] hover:text-white transition-colors">Legal</Link></li>
+              <li><Link href="/fair-play" className="text-[#c2c6d5] hover:text-white transition-colors">Security</Link></li>
+            </ul>
+          </div>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div className="max-w-7xl mx-auto px-8 py-6 border-t border-[#201f1f] flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-[#c2c6d5] tracking-widest uppercase">
-        <span>© 2026 Bouts. ALL RIGHTS RESERVED.</span>
-        <div className="flex gap-6 items-center">
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2]"></span>
-            SYSTEMS_NOMINAL
-          </span>
-          <span>UTC: {utcTime}</span>
-        </div>
-        {/* Icon links */}
-        <div className="flex gap-3">
-          <div className="w-8 h-8 rounded border border-[#424753]/30 flex items-center justify-center hover:bg-[#201f1f] transition-all cursor-pointer">
-            <Terminal className="size-3.5 text-[#adc6ff]" />
-          </div>
-          <div className="w-8 h-8 rounded border border-[#424753]/30 flex items-center justify-center hover:bg-[#201f1f] transition-all cursor-pointer">
-            <Network className="size-3.5 text-[#adc6ff]" />
-          </div>
+      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-[#424753]/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p className="font-['Manrope'] text-sm text-[#c2c6d5] opacity-80">
+          © 2026 Bouts. Perlantir AI Studio.
+        </p>
+        <div className="flex gap-6">
+          <Rss className="size-5 text-[#adc6ff] opacity-80 hover:opacity-100 transition-opacity cursor-pointer" />
+          <Terminal className="size-5 text-[#adc6ff] opacity-80 hover:opacity-100 transition-opacity cursor-pointer" />
         </div>
       </div>
     </footer>

@@ -1,0 +1,65 @@
+# Bouts Elite: Full React Implementation Strategy
+
+## 1. Tech Stack Recommendation
+*   **Framework:** Next.js (App Router) for SEO-friendly landing pages and optimized dashboard performance.
+*   **Styling:** Tailwind CSS (already integrated in the HTML designs).
+*   **Icons:** Lucide-React or Heroicons.
+*   **State Management:** TanStack Query (React Query) for server state (leaderboards, agent status) and Zustand for light client-side state (UI toggles).
+*   **Animation:** Framer Motion for the "AI kinetic" transitions.
+
+## 2. Component Architecture
+
+### Shared Components (`/components/shared`)
+*   `Navigation.tsx`: The floating pill nav for public pages and the sidebar for authenticated views.
+*   `Footer.tsx`: The multi-column technical footer.
+*   `StatCard.tsx`: The high-density cards used across the dashboard and home.
+*   `WeightClassBadge.tsx`: Reusable badges for Lightweight, Contender, etc.
+
+### Core Layouts (`/app/layouts`)
+*   `PublicLayout.tsx`: Includes the floating pill nav and main footer.
+*   `DashboardLayout.tsx`: Includes the sidebar, user header, and minimized footer.
+
+## 3. Page Mapping (Next.js App Router)
+*   `/(public)/page.tsx`: Landing Page ({{DATA:SCREEN:SCREEN_82}})
+*   `/(public)/challenges/page.tsx`: Challenges List ({{DATA:SCREEN:SCREEN_64}})
+*   `/(public)/leaderboard/page.tsx`: Leaderboard ({{DATA:SCREEN:SCREEN_85}})
+*   `/dashboard/page.tsx`: User Home ({{DATA:SCREEN:SCREEN_74}})
+*   `/agents/page.tsx`: My Agents ({{DATA:SCREEN:SCREEN_12}})
+*   `/admin/page.tsx`: Admin Dashboard ({{DATA:SCREEN:SCREEN_86}})
+*   `/docs/[[...slug]]/page.tsx`: Documentation Hub ({{DATA:SCREEN:SCREEN_86}}, {{DATA:SCREEN:SCREEN_31}}, {{DATA:SCREEN:SCREEN_46}})
+
+## 4. Implementation Steps
+1.  **Initialize Next.js:** `npx create-next-app@latest bouts-elite --tailwind --typescript`
+2.  **Global Styles:** Copy the Tailwind configuration from the HTML code into `tailwind.config.js`.
+3.  **Component Extraction:** For each screen, click **</> View Code**, copy the inner HTML, and wrap it in a functional React component.
+4.  **Dynamic Logic:** Replace static text with props and API data (e.g., mapping through an `agents` array).
+
+## 5. Sample Component (Page Shell)
+```tsx
+import React from 'react';
+
+const DashboardShell = ({ children }) => {
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-manrope">
+      {/* Sidebar - Based on {{DATA:SCREEN:SCREEN_74}} */}
+      <aside className="fixed left-0 top-0 w-64 h-full border-r border-white/5 bg-black/20 backdrop-blur-xl">
+        {/* Nav Links */}
+      </aside>
+      
+      <main className="pl-64">
+        {/* Header */}
+        <header className="h-16 border-b border-white/5 px-8 flex items-center justify-between">
+          <h1 className="text-xl font-bold tracking-tighter">BOUTS ELITE</h1>
+          {/* User Profile */}
+        </header>
+        
+        <div className="p-8">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default DashboardShell;
+```

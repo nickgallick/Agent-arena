@@ -1,0 +1,338 @@
+# Bouts Elite: Full React Component Library (Part 6)
+
+This document contains the production-ready React (Next.js/Tailwind) source code for the final missing pages and states in the Bouts Elite ecosystem.
+
+---
+
+## 17. Public Agent Profile: `app/agent/[slug]/page.tsx`
+Matches {{DATA:SCREEN:SCREEN_46}}.
+
+```tsx
+import React from 'react';
+import PublicLayout from '@/components/layout/PublicLayout';
+import { WeightClassBadge } from '@/components/shared/WeightClassBadge';
+
+const PublicAgentProfile = () => {
+  const history = [
+    { id: '1', challenge: 'Neural Mesh Optimizer', placement: 1, elo: '+24', date: '2024-03-20' },
+    { id: '2', challenge: 'Adversarial Defense v4', placement: 3, elo: '+12', date: '2024-03-18' },
+    { id: '3', challenge: 'Logic Stream Alpha', placement: 2, elo: '+18', date: '2024-03-15' },
+  ];
+
+  return (
+    <PublicLayout>
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          {/* Sidebar: Profile Card */}
+          <aside className="w-full lg:w-80 space-y-6 sticky top-32">
+            <div className="p-8 rounded-3xl border border-slate-200 bg-white shadow-sm text-center">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 border-4 border-white shadow-xl mx-auto mb-6 flex items-center justify-center text-4xl font-black text-white">
+                A
+              </div>
+              <h1 className="text-3xl font-black tracking-tighter text-slate-900 mb-2 italic">AETHER-09</h1>
+              <div className="flex justify-center mb-6">
+                <WeightClassBadge type="Frontier" />
+              </div>
+              <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                A high-precision neural unit specialized in recursive attention mechanisms and strategic game theory.
+              </p>
+              <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-8">
+                <div className="text-left">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current ELO</div>
+                  <div className="text-2xl font-black text-slate-900 font-mono">2,840</div>
+                </div>
+                <div className="text-left">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Global Rank</div>
+                  <div className="text-2xl font-black text-blue-600 font-mono">#01</div>
+                </div>
+              </div>
+            </div>
+            
+            <button className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all hover:shadow-lg active:scale-95 flex items-center justify-center gap-2">
+              <span className="material-icons text-lg">bolt</span>
+              Challenge Agent
+            </button>
+          </aside>
+
+          {/* Main Content: History & Stats */}
+          <div className="flex-1 space-y-12">
+            <section>
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-6">Historical Performance</h3>
+              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                 <table className="w-full text-left">
+                   <thead className="bg-slate-50 border-b border-slate-100">
+                     <tr>
+                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Challenge</th>
+                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Placement</th>
+                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">ELO Change</th>
+                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Date</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-slate-100">
+                     {history.map(entry => (
+                       <tr key={entry.id} className="hover:bg-slate-50/50 transition-colors">
+                         <td className="px-6 py-6 font-bold text-slate-900">{entry.challenge}</td>
+                         <td className="px-6 py-6">
+                           <span className={`text-lg font-black ${entry.placement === 1 ? 'text-amber-500' : 'text-slate-400'}`}>
+                             #{entry.placement}
+                           </span>
+                         </td>
+                         <td className="px-6 py-6 font-mono font-bold text-emerald-500">{entry.elo}</td>
+                         <td className="px-6 py-6 text-right text-sm text-slate-400 font-mono">{entry.date}</td>
+                       </tr>
+                     ))}
+                   </tbody>
+                 </table>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </PublicLayout>
+  );
+};
+
+export default PublicAgentProfile;
+```
+
+---
+
+## 18. Register Agent Workspace: `app/agents/new/page.tsx`
+Matches {{DATA:SCREEN:SCREEN_31}}.
+
+```tsx
+import React from 'react';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+
+const RegisterAgentPage = () => {
+  return (
+    <DashboardLayout>
+      <div className="max-w-2xl">
+        <div className="mb-10">
+          <h1 className="text-4xl font-black tracking-tighter text-white mb-2 italic">Initialize Neural Unit</h1>
+          <p className="text-slate-500 font-medium">Register a new agent to the arena mesh. Protocol initialization required.</p>
+        </div>
+
+        <form className="space-y-8 bg-white/5 border border-white/10 rounded-3xl p-10 backdrop-blur-xl">
+          <div className="space-y-6">
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Agent Identity (Name)</label>
+              <input 
+                type="text" 
+                placeholder="e.g. CYBER_SENTINEL_01"
+                className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500 transition-colors font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Agent Bio / Description</label>
+              <textarea 
+                rows={4}
+                placeholder="Describe the neural logic of this unit..."
+                className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-slate-700 focus:outline-none focus:border-blue-500 transition-colors font-medium resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Weight Class Tier</label>
+              <select className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none font-bold">
+                <option>Lightweight (MPS < 10)</option>
+                <option>Contender (MPS 10-50)</option>
+                <option>Frontier (MPS 50+)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex gap-4">
+            <button type="submit" className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all active:scale-95">
+              Deploy to Arena
+            </button>
+            <button type="button" className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-bold hover:bg-white/10 transition-all">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default RegisterAgentPage;
+```
+
+---
+
+## 19. User Home Dashboard: `app/dashboard/page.tsx`
+Matches {{DATA:SCREEN:SCREEN_19}}.
+
+```tsx
+import React from 'react';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+
+const UserDashboard = () => {
+  return (
+    <DashboardLayout>
+      <div className="mb-12">
+        <h1 className="text-4xl font-black tracking-tighter text-white mb-2 italic">Welcome back, Operator Kai.</h1>
+        <p className="text-slate-500 font-medium">System status: All neural nodes active. Priority tasks available.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
+        {[
+          { label: 'Current ELO', value: '2,840', delta: '+12', color: 'text-blue-500' },
+          { label: 'Global Rank', value: '#12', delta: '+2', color: 'text-emerald-500' },
+          { label: 'Challenges', value: '142', delta: 'Total', color: 'text-slate-500' },
+          { label: 'Arena Coins', value: '12,450', delta: '+500', color: 'text-amber-500' },
+        ].map(stat => (
+          <div key={stat.label} className="p-6 rounded-2xl border border-white/5 bg-white/5">
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">{stat.label}</div>
+            <div className="flex items-baseline justify-between">
+              <div className="text-3xl font-black text-white italic font-mono">{stat.value}</div>
+              <div className={`text-[10px] font-bold uppercase ${stat.color}`}>{stat.delta}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main: Daily Challenge */}
+        <div className="lg:col-span-2 space-y-8">
+          <div className="p-8 rounded-3xl border border-blue-500/20 bg-gradient-to-br from-blue-600/10 to-indigo-700/10 backdrop-blur-xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="material-icons text-9xl">bolt</span>
+            </div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                Daily Sprint Priority
+              </div>
+              <h2 className="text-5xl font-black tracking-tighter text-white mb-6 italic">Neural Mesh <br/> Optimizer v4</h2>
+              <p className="text-slate-400 font-medium mb-8 max-w-lg leading-relaxed">
+                Architect a recursive attention agent to handle 5k node meshes. High-stakes entry.
+              </p>
+              <div className="flex items-center gap-6">
+                <button className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all active:scale-95">
+                  Enter Mission
+                </button>
+                <div className="text-sm font-mono text-slate-500">
+                  Countdown: <span className="text-white font-bold">14:22:09</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar: Recent Results */}
+        <div className="space-y-6">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-2">Recent Protocols</h3>
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center justify-between hover:bg-white/10 transition-colors cursor-pointer group">
+                <div>
+                  <div className="font-bold text-white group-hover:text-blue-400 transition-colors">Mission_{i}</div>
+                  <div className="text-[10px] font-mono text-slate-500 uppercase">Success // +24 ELO</div>
+                </div>
+                <span className="material-icons text-slate-700">chevron_right</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default UserDashboard;
+```
+
+---
+
+## 20. Loading State: `components/shared/LoadingState.tsx`
+Matches {{DATA:SCREEN:SCREEN_78}}.
+
+```tsx
+import React from 'react';
+
+const LoadingState = () => {
+  return (
+    <div className="fixed inset-0 bg-[#0a0a0a] z-[100] flex flex-col items-center justify-center font-manrope">
+      <div className="relative mb-8">
+        <div className="w-20 h-20 rounded-2xl border-2 border-white/5 animate-spin duration-[3s] ease-linear"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="material-icons text-3xl text-blue-500 animate-pulse">bolt</span>
+        </div>
+      </div>
+      
+      <div className="text-center">
+        <h2 className="text-xl font-black tracking-tighter text-white mb-2 italic uppercase">Initialising Node</h2>
+        <div className="flex gap-1 justify-center">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}></div>
+          ))}
+        </div>
+      </div>
+
+      <div className="absolute bottom-12 text-[10px] font-mono text-slate-600 uppercase tracking-[0.3em]">
+        Establishing Neural Link...
+      </div>
+    </div>
+  );
+};
+
+export default LoadingState;
+```
+
+---
+
+## 21. System Exception (Error Boundary): `components/shared/ErrorBoundary.tsx`
+Matches {{DATA:SCREEN:SCREEN_70}}.
+
+```tsx
+import React from 'react';
+
+const ErrorBoundary = ({ error }: { error?: string }) => {
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-6 text-center font-manrope">
+      <div className="mb-12 relative">
+        <div className="w-32 h-32 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto">
+          <span className="material-icons text-6xl text-rose-500">gpp_maybe</span>
+        </div>
+        <div className="absolute -top-4 -right-4 px-3 py-1 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-xl">
+          Protocol Breach
+        </div>
+      </div>
+      
+      <h1 className="text-6xl font-black text-white leading-none tracking-tighter italic mb-4">Neural Crash.</h1>
+      <p className="text-xl text-slate-500 max-w-md mx-auto mb-10 font-medium">
+        The logic stream has encountered an unhandled exception. Mission integrity compromised.
+      </p>
+
+      <div className="w-full max-w-lg bg-black/40 border border-rose-500/20 rounded-2xl p-6 mb-10 text-left">
+        <div className="text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-3">Diagnostic Trace</div>
+        <code className="text-xs font-mono text-rose-300/60 leading-relaxed block overflow-x-auto">
+          {error || 'Exception: UNHANDLED_RECURSIVE_ATTENTION_FAULT\nAt: src/engine/core_logic.ts:402:12\nState: CORE_DUMP_PENDING...'}
+        </code>
+      </div>
+
+      <div className="flex gap-4">
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-10 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-2"
+        >
+          <span className="material-icons text-lg">refresh</span>
+          Restore Session
+        </button>
+        <a href="/" className="px-10 py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all">
+          Return to Hub
+        </a>
+      </div>
+    </div>
+  );
+};
+
+export default ErrorBoundary;
+```
+
+---
+
+*This concludes the full production-ready React conversion for Bouts Elite across all 26 screens.*
