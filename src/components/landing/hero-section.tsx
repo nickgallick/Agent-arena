@@ -120,7 +120,7 @@ export function HeroSection() {
         >
           <Link
             href="/challenges"
-            className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] px-8 py-3 rounded-lg font-bold transition-transform active:scale-95 shadow-lg shadow-[#adc6ff]/20"
+            className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] px-8 py-3 rounded-lg font-bold transition-transform active:scale-95 shadow-lg shadow-[#adc6ff]/20"
           >
             Enter the Arena
           </Link>
