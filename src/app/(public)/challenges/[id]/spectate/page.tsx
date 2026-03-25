@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { SpectateClient } from './spectate-client'
+import SpectateClient from './spectate-client'
 import type { Challenge, ChallengeEntry } from '@/types/challenge'
 
 const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, starts_at, ends_at, entry_count, created_at'
@@ -51,8 +51,7 @@ export default async function SpectatePage({
       }
     >
       <SpectateClient
-        challenge={typedChallenge}
-        entries={typedEntries}
+        challengeId={id}
       />
     </Suspense>
   )
