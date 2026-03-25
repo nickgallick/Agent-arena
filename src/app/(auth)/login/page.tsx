@@ -1,149 +1,113 @@
 import Link from 'next/link'
-import { Swords, ShieldCheck, Zap } from 'lucide-react'
+import { Footer } from '@/components/layout/footer'
+import { ShieldCheck, Zap } from 'lucide-react'
 
 function isSupabaseConfigured() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   return !!(url && !url.includes('placeholder') && url.startsWith('https://'))
 }
 
-export const metadata = { title: 'Sign In — Bouts' }
+export const metadata = { title: 'Sign In — Bouts Elite' }
 
 export default function LoginPage() {
   const configured = isSupabaseConfigured()
 
   return (
-    <div className="min-h-screen bg-[#131313] flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 neural-grid pointer-events-none"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full glow-radial pointer-events-none"></div>
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-20">
 
-      <main className="flex-grow flex items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-md">
-          {/* Icon + heading */}
-          <div className="flex flex-col items-center mb-10">
-            <div className="w-12 h-12 bg-[#4d8efe]/20 rounded-lg flex items-center justify-center shadow-lg shadow-[#adc6ff]/10 mb-6 transition-transform hover:scale-105 duration-300">
-              <Swords className="w-7 h-7 text-[#4d8efe]" />
-            </div>
-            <h1 className="font-['Manrope'] font-extrabold text-3xl tracking-tighter text-[#e5e2e1] mb-2">
-              Sign in to Bouts
-            </h1>
-            <p className="font-['JetBrains_Mono'] text-[#c2c6d5] text-sm tracking-wide uppercase opacity-70">
-              Precision Tier Authentication
-            </p>
+        {/* Logo */}
+        <div className="w-14 h-14 rounded-xl bg-hero-accent flex items-center justify-center mb-6">
+          <span className="text-white text-2xl">⚔️</span>
+        </div>
+
+        <h1 className="font-display text-3xl font-bold text-foreground mb-2">Sign in to Bouts</h1>
+        <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-10">
+          Precision Tier Authentication
+        </p>
+
+        {!configured ? (
+          <div className="w-full max-w-md text-center text-muted-foreground text-sm">
+            Authentication not configured.{' '}
+            <Link href="/" className="text-hero-accent hover:underline">Back to home</Link>
           </div>
+        ) : (
+          <>
+            {/* GitHub */}
+            <a
+              href="/api/auth/github"
+              className="w-full max-w-md py-4 rounded-lg bg-secondary border border-border text-sm font-semibold text-foreground flex items-center justify-center gap-3 hover:bg-secondary/80 transition-colors mb-8"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              Sign in with GitHub
+            </a>
 
-          {!configured ? (
-            <div className="bg-[#1c1b1b] p-8 rounded-xl shadow-2xl relative overflow-hidden text-center">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#adc6ff] to-[#4d8efe] opacity-50"></div>
-              <p className="text-[#c2c6d5] text-sm mb-4">
-                Authentication is not configured for this environment.
-              </p>
-              <Link href="/" className="text-[#adc6ff] text-sm hover:underline">
-                ← Back to home
+            {/* Divider */}
+            <div className="w-full max-w-md flex items-center gap-4 mb-8">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground">System Gateway</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+
+            {/* Form */}
+            <form action="/api/auth/qa-login" method="POST" className="w-full max-w-md space-y-5">
+              <div>
+                <label className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground block mb-2">User Identifier</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="agent@kinetic.command"
+                  autoComplete="email"
+                  required
+                  className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-hero-accent transition-colors"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground block mb-2">Encrypted Token</label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  required
+                  className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-hero-accent transition-colors"
+                />
+              </div>
+              <input type="hidden" name="redirect" value="/agents" />
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-lg bg-hero-accent text-white text-sm font-semibold hover:bg-hero-accent/80 transition-colors"
+              >
+                Authorize Session
+              </button>
+            </form>
+
+            {/* Bottom Links */}
+            <div className="mt-8 text-center">
+              <span className="text-xs text-muted-foreground">New to the Arena?</span>
+              <Link href="/onboarding" className="block text-sm font-semibold text-foreground hover:text-hero-accent transition-colors mt-1">
+                Request Access Protocol
               </Link>
             </div>
-          ) : (
-            <div className="bg-[#1c1b1b] p-10 rounded-xl shadow-2xl relative overflow-hidden">
-              <div className="space-y-6">
-                {/* GitHub OAuth */}
-                <a
-                  href="/api/auth/github"
-                  className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-[#353534] hover:bg-[#424753] text-[#e5e2e1] font-['Manrope'] font-semibold rounded-lg transition-all duration-150 active:scale-[0.98]"
-                >
-                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                  </svg>
-                  <span className="text-lg">Sign in with GitHub</span>
-                </a>
 
-                {/* Divider */}
-                <div className="relative py-4">
-                  <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#424753]/15"></div>
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase tracking-widest font-['JetBrains_Mono']">
-                    <span className="bg-[#1c1b1b] px-4 text-[#c2c6d5]">System Gateway</span>
-                  </div>
-                </div>
-
-                {/* Email/Password */}
-                <form action="/api/auth/qa-login" method="POST" className="space-y-4">
-                  <div>
-                    <label className="block font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1" htmlFor="email">User Identifier</label>
-                    <input
-                      className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded focus:border-[#adc6ff] focus:ring-0 text-[#e5e2e1] placeholder:text-[#424753] p-3 text-sm transition-all outline-none"
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      placeholder="agent@kinetic.command"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#c2c6d5] mb-1 ml-1" htmlFor="password">Encrypted Token</label>
-                    <input
-                      className="w-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded focus:border-[#adc6ff] focus:ring-0 text-[#e5e2e1] placeholder:text-[#424753] p-3 text-sm transition-all outline-none"
-                      id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      required
-                      placeholder="••••••••"
-                    />
-                  </div>
-                  <input type="hidden" name="redirect" value="/agents" />
-                  <button
-                    type="submit"
-                    className="w-full py-3 rounded-lg font-['Manrope'] font-bold transition-transform active:scale-95 shadow-lg"
-                    style={{ background: 'linear-gradient(135deg, #0080ff, #00b4ff)', color: 'white' }}
-                  >
-                    Authorize Session
-                  </button>
-                </form>
-              </div>
-
-              {/* New to Arena */}
-              <div className="mt-8 pt-6 border-t border-[#424753]/15 flex flex-col items-center gap-2">
-                <p className="text-xs text-[#c2c6d5] font-['Manrope']">New to the Arena?</p>
-                <Link className="text-sm font-['Manrope'] font-semibold text-[#adc6ff] hover:text-[#e5e2e1] transition-colors" href="/onboarding">
-                  Request Access Protocol
-                </Link>
-              </div>
+            {/* Security badges */}
+            <div className="flex items-center gap-8 mt-12">
+              <span className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                <ShieldCheck className="w-4 h-4 text-primary" />
+                End-to-End Secure
+              </span>
+              <span className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                <Zap className="w-4 h-4 text-amber" />
+                Low Latency Auth
+              </span>
             </div>
-          )}
-
-          {/* Trust badges */}
-          <div className="mt-8 grid grid-cols-2 gap-4">
-            <div className="bg-[#1c1b1b]/40 p-3 rounded-lg flex items-center gap-3">
-              <ShieldCheck className="text-[#7dffa2] w-4 h-4" />
-              <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">End-to-End Secure</span>
-            </div>
-            <div className="bg-[#1c1b1b]/40 p-3 rounded-lg flex items-center gap-3">
-              <Zap className="text-[#7dffa2] w-4 h-4" />
-              <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-tighter text-[#c2c6d5]">Low Latency Auth</span>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <footer className="w-full py-8 relative z-10 border-t border-[#424753]/15">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest opacity-60">
-            © 2026 Bouts. Perlantir AI Studio.
-          </p>
-          <div className="flex gap-8">
-            <Link className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors" href="/terms">Terms of Service</Link>
-            <Link className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors" href="/privacy">Privacy Policy</Link>
-            <Link className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest hover:text-[#adc6ff] transition-colors" href="/status">Support</Link>
-          </div>
-        </div>
-      </footer>
-
-      {/* Ambient glows */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-[10%] right-[15%] w-64 h-64 bg-[#adc6ff]/5 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[20%] left-[10%] w-96 h-96 bg-[#7dffa2]/5 rounded-full blur-[150px]"></div>
+          </>
+        )}
       </div>
+
+      <Footer />
     </div>
   )
 }

@@ -1,28 +1,55 @@
 import Link from 'next/link'
-import { Terminal, Network } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-[#424753]/15 bg-[#131313] font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest">
-      <div className="flex flex-col md:flex-row justify-between items-center px-8 py-12 w-full gap-6">
-        <div className="flex flex-col gap-2 items-center md:items-start">
-          <div className="text-lg font-black text-[#e5e2e1] mb-2 tracking-tighter">BOUTS ELITE</div>
-          <div className="text-[#c2c6d5] opacity-80">© 2026 BOUTS ELITE. KINETIC COMMAND NEURAL SYSTEMS.</div>
+    <footer className="border-t border-border py-8 md:py-10">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 mb-8">
+        <div className="col-span-2 md:col-span-1">
+          <Link href="/" className="font-display text-sm font-bold text-foreground uppercase tracking-wider">BOUTS ELITE</Link>
+          <p className="text-[10px] font-mono text-muted-foreground mt-2 leading-relaxed">
+            Advanced AI orchestration and competitive telemetry environment.
+          </p>
         </div>
-        <div className="flex flex-wrap justify-center gap-8">
-          <Link className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors opacity-80 hover:opacity-100" href="/privacy">Privacy Policy</Link>
-          <Link className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors opacity-80 hover:opacity-100" href="/terms">Terms of Service</Link>
-          <Link className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors opacity-80 hover:opacity-100" href="/fair-play">Fair Play Manifesto</Link>
-          <Link className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors opacity-80 hover:opacity-100" href="/status">System Status</Link>
-          <Link className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors opacity-80 hover:opacity-100" href="/docs/api">API Docs</Link>
+        <div>
+          <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Arena</h5>
+          <div className="space-y-2">
+            <Link href="/challenges" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Challenges</Link>
+            <Link href="/leaderboard" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Leaderboard</Link>
+            <Link href="/agents" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Agents</Link>
+            <Link href="/status" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Arena Status</Link>
+          </div>
         </div>
-        <div className="flex gap-4">
-          <div className="w-8 h-8 rounded border border-[#424753]/30 flex items-center justify-center hover:bg-[#201f1f] transition-all cursor-pointer">
-            <Terminal className="w-4 h-4 text-[#adc6ff]" />
+        <div>
+          <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Documentation</h5>
+          <div className="space-y-2">
+            <Link href="/docs" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Knowledge Base</Link>
+            <Link href="/docs/api" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">API Reference</Link>
+            <Link href="/docs/connector" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Connector CLI</Link>
           </div>
-          <div className="w-8 h-8 rounded border border-[#424753]/30 flex items-center justify-center hover:bg-[#201f1f] transition-all cursor-pointer">
-            <Network className="w-4 h-4 text-[#adc6ff]" />
+        </div>
+        <div>
+          <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Community</h5>
+          <div className="space-y-2">
+            <Link href="/blog" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+            <a href="#" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Discord</a>
+            <a href="#" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
+            <a href="#" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">X / Twitter</a>
           </div>
+        </div>
+        <div>
+          <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Legal</h5>
+          <div className="space-y-2">
+            <Link href="/terms" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link>
+            <Link href="/fair-play" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Fair Play Manifesto</Link>
+            <Link href="/privacy" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link>
+          </div>
+        </div>
+      </div>
+      <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-border pt-6">
+        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">© 2026 BOUTS ELITE. ALL RIGHTS RESERVED.</span>
+        <div className="flex items-center gap-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">SYSTEMS NOMINAL</span>
         </div>
       </div>
     </footer>
