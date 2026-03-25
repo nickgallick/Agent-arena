@@ -8,19 +8,11 @@ import { Menu, X, LogOut, Settings, Bot, Bell, User } from "lucide-react"
 import { useUser } from "@/lib/hooks/use-user"
 import { createClient } from "@/lib/supabase/client"
 
-const navLinks = [
-  { href: "/challenges", label: "Arena" },
-  { href: "/agents", label: "Agents" },
-  { href: "/leaderboard", label: "Bouts" },
-  { href: "/leaderboard", label: "Telemetry" },
-]
-
-// Deduplicated nav links (Bouts + Telemetry both point to leaderboard; show distinct labels)
 const NAV = [
   { href: "/challenges", label: "Arena" },
   { href: "/agents", label: "Agents" },
-  { href: "/leaderboard", label: "Bouts" },
-  { href: "/docs", label: "Telemetry" },
+  { href: "/", label: "Bouts" },
+  { href: "/leaderboard", label: "Telemetry" },
 ]
 
 export function Header() {
@@ -43,10 +35,15 @@ export function Header() {
 
   const avatarUrl = user?.user_metadata?.avatar_url
 
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/"
+    return pathname === href || pathname.startsWith(href + "/")
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
       {/* Floating pill nav */}
-      <nav className="pointer-events-auto bg-[#131313]/80 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-white/5 shadow-2xl shadow-blue-900/10 flex items-center gap-8 font-['Manrope'] tracking-tight">
+      <nav className="pointer-events-auto bg-[#131313]/80 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-[#424753]/15 shadow-2xl shadow-blue-900/10 flex items-center gap-8 font-['Manrope'] tracking-tight">
         {/* Brand */}
         <Link
           href="/"
@@ -57,26 +54,23 @@ export function Header() {
 
         {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-6">
-          {NAV.map((link) => {
-            const isActive = pathname === link.href || pathname.startsWith(link.href + "/")
-            return (
-              <Link
-                key={link.href + link.label}
-                href={link.href}
-                className={
-                  isActive
-                    ? "text-[#adc6ff] font-semibold transition-colors duration-150"
-                    : "text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150"
-                }
-              >
-                {link.label}
-              </Link>
-            )
-          })}
+          {NAV.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className={
+                isActive(link.href)
+                  ? "text-[#adc6ff] font-semibold transition-colors duration-150"
+                  : "text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150"
+              }
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-4 border-l border-white/5 pl-6">
+        <div className="flex items-center gap-4 border-l border-[#424753]/20 pl-6">
           {loading ? (
             <div className="h-8 w-28 animate-pulse rounded-full bg-[#201f1f]" />
           ) : user ? (
@@ -108,8 +102,8 @@ export function Header() {
                 {dropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                    <div className="absolute right-0 top-full mt-3 z-50 w-48 rounded-xl bg-[#201f1f] border border-white/5 shadow-2xl shadow-black/50 py-1">
-                      <div className="px-4 py-2.5 border-b border-white/5">
+                    <div className="absolute right-0 top-full mt-3 z-50 w-48 rounded-xl bg-[#201f1f] border border-[#424753]/15 shadow-2xl shadow-black/50 py-1">
+                      <div className="px-4 py-2.5 border-b border-[#424753]/15">
                         <div className="text-sm font-medium text-[#e5e2e1]">{displayName}</div>
                         <div className="text-xs text-[#8c909f] truncate">{user.email}</div>
                       </div>
@@ -127,7 +121,7 @@ export function Header() {
                       >
                         <Settings className="size-4" /> Settings
                       </Link>
-                      <div className="my-1 border-t border-white/5" />
+                      <div className="my-1 border-t border-[#424753]/15" />
                       <button
                         onClick={handleSignOut}
                         className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-[#ffb4ab] hover:bg-[#2a2a2a] transition-colors"
@@ -142,7 +136,7 @@ export function Header() {
               {/* Launch Agent CTA */}
               <Link
                 href="/agents/new"
-                className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] px-4 py-1.5 rounded text-sm font-bold scale-95 active:scale-90 transition-transform whitespace-nowrap"
+                className="primary-gradient-btn text-[#001a41] px-4 py-1.5 rounded text-sm font-bold scale-95 active:scale-90 transition-transform whitespace-nowrap"
               >
                 Launch Agent
               </Link>
@@ -150,7 +144,7 @@ export function Header() {
           ) : (
             <Link
               href="/login"
-              className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] px-4 py-1.5 rounded text-sm font-bold scale-95 active:scale-90 transition-transform"
+              className="primary-gradient-btn text-[#001a41] px-4 py-1.5 rounded text-sm font-bold scale-95 active:scale-90 transition-transform"
             >
               Launch Agent
             </Link>
@@ -170,27 +164,24 @@ export function Header() {
 
       {/* Mobile dropdown */}
       {mobileOpen && (
-        <div className="pointer-events-auto absolute inset-x-4 top-16 z-40 mt-2 rounded-2xl bg-[#131313]/95 backdrop-blur-xl border border-white/5 shadow-2xl shadow-black/50 md:hidden">
+        <div className="pointer-events-auto absolute inset-x-4 top-16 z-40 mt-2 rounded-2xl bg-[#131313]/95 backdrop-blur-xl border border-[#424753]/15 shadow-2xl shadow-black/50 md:hidden">
           <nav className="flex flex-col gap-1 px-4 py-3">
-            {NAV.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(link.href + "/")
-              return (
-                <Link
-                  key={link.href + link.label}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={
-                    isActive
-                      ? "rounded px-3 py-2.5 text-sm font-semibold text-[#adc6ff] bg-[#201f1f]"
-                      : "rounded px-3 py-2.5 text-sm text-[#c2c6d5] hover:bg-[#201f1f] hover:text-[#e5e2e1]"
-                  }
-                >
-                  {link.label}
-                </Link>
-              )
-            })}
+            {NAV.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={
+                  isActive(link.href)
+                    ? "rounded px-3 py-2.5 text-sm font-semibold text-[#adc6ff] bg-[#201f1f]"
+                    : "rounded px-3 py-2.5 text-sm text-[#c2c6d5] hover:bg-[#201f1f] hover:text-[#e5e2e1]"
+                }
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
-          <div className="border-t border-white/5 px-4 py-3">
+          <div className="border-t border-[#424753]/15 px-4 py-3">
             {user ? (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -211,7 +202,7 @@ export function Header() {
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="block w-full text-center bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold px-6 py-2.5 rounded text-sm"
+                className="block w-full text-center primary-gradient-btn text-[#001a41] font-bold px-6 py-2.5 rounded text-sm"
               >
                 Launch Agent
               </Link>

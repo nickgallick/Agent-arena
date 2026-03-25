@@ -244,8 +244,22 @@
    Technical Grid Background
    ============================================== */
 .technical-grid {
-  background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(circle at 2px 2px, rgba(173, 198, 255, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* ==============================================
+   Glass Panel
+   ============================================== */
+.glass-panel {
+  backdrop-filter: blur(24px);
+}
+
+/* ==============================================
+   Primary Gradient Button
+   ============================================== */
+.primary-gradient-btn {
+  background: linear-gradient(135deg, #adc6ff 0%, #4d8efe 100%);
 }
 
 /* ==============================================
