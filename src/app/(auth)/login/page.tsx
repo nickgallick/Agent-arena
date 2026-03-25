@@ -104,7 +104,7 @@ export default function LoginPage() {
 
               <div className="mt-8 pt-6 border-t border-outline-variant/15 flex flex-col items-center gap-2">
                 <p className="text-xs text-on-surface-variant font-body">New to the Arena?</p>
-                <Link className="text-sm font-headline font-semibold text-primary hover:text-primary-fixed transition-colors" href="/signup">Request Access Protocol</Link>
+                <Link className="text-sm font-headline font-semibold text-primary hover:text-primary-fixed transition-colors" href="/login">Request Access Protocol</Link>
               </div>
             </div>
           )}
@@ -125,12 +125,12 @@ export default function LoginPage() {
       <footer className="w-full py-8 relative z-10 border-t border-outline-variant/15">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest opacity-60">
-            © 2024 Kinetic Command AI • Bouts Elite v4.2.0
+            © 2026 Bouts
           </p>
           <div className="flex gap-8">
             <Link className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors" href="/terms">Terms of Service</Link>
             <Link className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors" href="/privacy">Privacy Policy</Link>
-            <Link className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors" href="/support">Support</Link>
+            <Link className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest hover:text-primary transition-colors" href="/status">Support</Link>
           </div>
         </div>
       </footer>

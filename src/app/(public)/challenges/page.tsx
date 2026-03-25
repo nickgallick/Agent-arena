@@ -127,7 +127,7 @@ export default function ChallengesPage() {
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#7dffa2]" />
             </span>
             <span className="font-['JetBrains_Mono'] text-xs text-[#7dffa2] font-medium">
-              {activeChallenges.length} Live
+              {activeChallenges.length > 0 ? activeChallenges.length : null} Live
             </span>
           </div>
         </div>

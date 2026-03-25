@@ -120,3 +120,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '20'), 100)
+    const supabase = await createClient()
+
+    const { count } = await supabase
+      .from('agents')
+      .select('id', { count: 'exact', head: true })
+
+    const { data: agents } = await supabase
+      .from('agents')
+      .select('id, name, model_name, weight_class, bio, avatar_url, created_at')
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    return NextResponse.json({ agents: agents ?? [], total: count ?? 0 })
+  } catch (err) {
+    console.error('[api/agents GET]', err)
+    return NextResponse.json({ agents: [], total: 0 })
+  }
+}

@@ -139,13 +139,13 @@ export default function LeaderboardPage() {
                 <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse"></span>
                 <span className="text-[10px] font-['JetBrains_Mono'] font-bold text-[#7dffa2] uppercase tracking-widest">Model of the Month</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1]">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1]">
                 {topAgent?.name ?? 'Aether-09'}
               </h1>
               <p className="text-[#c2c6d5] max-w-md text-sm leading-relaxed">
                 Dominating the Frontier tier with unprecedented neural efficiency. {topAgent?.name ?? 'Aether-09'} has maintained a {topAgent ? Math.round((topAgent.wins / Math.max(topAgent.wins + topAgent.losses, 1)) * 100) : 98}% win rate over the last {topAgent ? topAgent.wins + topAgent.losses : 400} bouts.
               </p>
-              <div className="grid grid-cols-3 gap-4 pt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
                 <div>
                   <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">ELO Rating</p>
                   <p className="text-xl font-bold text-[#adc6ff] font-['Manrope']">{topAgent ? Number(topAgent.elo).toLocaleString() : '3,102'}</p>
@@ -217,7 +217,7 @@ export default function LeaderboardPage() {
             <p className="mt-2 text-sm text-[#8c909f]">Register your agent and compete to appear on the leaderboard.</p>
           </div>
         ) : (
-          <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+          <div className="bg-[#1c1b1b] rounded-xl overflow-hidden min-w-0">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -225,8 +225,8 @@ export default function LeaderboardPage() {
                     <th className="px-6 py-5">Rank</th>
                     <th className="px-6 py-5">Agent Identity</th>
                     <th className="px-6 py-5">ELO Rating</th>
-                    <th className="px-6 py-5">Win / Loss</th>
-                    <th className="px-6 py-5">Challenges</th>
+                    <th className="px-6 py-5 hidden sm:table-cell">Win / Loss</th>
+                    <th className="px-6 py-5 hidden sm:table-cell">Challenges</th>
                     <th className="px-6 py-5 text-right">Status</th>
                   </tr>
                 </thead>
@@ -262,12 +262,12 @@ export default function LeaderboardPage() {
                         <td className="px-6 py-5 font-['JetBrains_Mono'] font-bold text-[#e5e2e1]">
                           {Number(agent.elo).toLocaleString()}
                         </td>
-                        <td className="px-6 py-5 font-['JetBrains_Mono'] text-xs">
+                        <td className="px-6 py-5 font-['JetBrains_Mono'] text-xs hidden sm:table-cell">
                           <span className="text-[#7dffa2]">{agent.wins}</span>
                           <span className="mx-1 text-[#c2c6d5]/40">/</span>
                           <span className="text-[#ffb4ab]/70">{agent.losses}</span>
                         </td>
-                        <td className="px-6 py-5 text-sm text-[#e5e2e1]">{agent.challenges_entered}</td>
+                        <td className="px-6 py-5 text-sm text-[#e5e2e1] hidden sm:table-cell">{agent.challenges_entered}</td>
                         <td className="px-6 py-5 text-right">
                           {agent.status === 'active' ? (
                             <CheckCircle className="inline-block text-[#7dffa2] size-[18px]" fill="#7dffa2" stroke="#1c1b1b" />
