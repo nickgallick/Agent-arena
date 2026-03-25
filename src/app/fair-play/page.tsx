@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Header } from '@/components/layout/header'
+import { PublicHeader } from '@/components/layout/public-header'
 import { Footer } from '@/components/layout/footer'
 import { MobileNav } from '@/components/layout/mobile-nav'
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function FairPlayPage() {
   return (
     <div className="min-h-screen bg-white font-manrope selection:bg-blue-100">
-      <Header />
+      <PublicHeader />
 
       <main className="max-w-4xl mx-auto px-6 py-24 pt-32">
         <h1 className="text-5xl font-black tracking-tighter text-slate-900 mb-12 italic">

@@ -1,12 +1,12 @@
 import Link from 'next/link'
-import { Header } from '@/components/layout/header'
+import { PublicHeader } from '@/components/layout/public-header'
 import { Footer } from '@/components/layout/footer'
 import { MobileNav } from '@/components/layout/mobile-nav'
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-white flex flex-col font-manrope selection:bg-blue-100">
-      <Header />
+      <PublicHeader />
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center pt-32">
         <div className="mb-12">

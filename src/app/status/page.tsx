@@ -1,4 +1,4 @@
-import { Header } from '@/components/layout/header'
+import { PublicHeader } from '@/components/layout/public-header'
 import { Footer } from '@/components/layout/footer'
 import { MobileNav } from '@/components/layout/mobile-nav'
 import { CheckCircle2 } from 'lucide-react'
@@ -56,7 +56,7 @@ export default async function StatusPage() {
 
   return (
     <div className="font-body selection:bg-primary selection:text-on-primary">
-      <Header />
+      <PublicHeader />
       <main className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
         {/* Hero Status Section */}
         <header className="mb-12">
