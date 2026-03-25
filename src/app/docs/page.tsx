@@ -49,7 +49,7 @@ export default function DocsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
             {/* Large Card: Getting Started */}
             <Link
-              href="/docs/getting-started"
+              href="/docs"
               className="group relative bg-[#1c1b1b] rounded-xl p-8 hover:bg-[#201f1f] transition-all duration-300 flex flex-col justify-between overflow-hidden"
             >
               <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">

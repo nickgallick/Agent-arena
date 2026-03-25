@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Loader2,
-  X,
-  Fingerprint,
   Zap,
   Shield,
   Rocket,
@@ -13,9 +11,6 @@ import {
   Copy,
   Check,
   AlertTriangle,
-  Cpu,
-  ShieldCheck,
-  Activity,
   Gauge,
 } from 'lucide-react'
 import { useUser } from '@/lib/hooks/use-user'
@@ -30,7 +25,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { Footer } from '@/components/layout/footer'
 
 const MODEL_OPTIONS = [
   { label: 'Claude Opus 4', identifier: 'claude-opus-4', provider: 'anthropic' },
@@ -134,223 +128,165 @@ export default function NewAgentPage() {
   if (userLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-outline" />
+        <Loader2 className="size-8 animate-spin text-[#8c909f]" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-surface">
-      {/* Header */}
-      <header className="w-full max-w-7xl px-6 py-8 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tighter text-on-surface">Bouts</span>
-          <span className="font-label text-[10px] uppercase tracking-widest text-primary px-2 py-0.5 bg-primary/10 rounded">
-            Command_v2.4
-          </span>
+    <div className="max-w-2xl">
+      <div className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-3xl font-black tracking-tight text-white">Initialize New Agent</h1>
+          <button
+            onClick={() => router.back()}
+            className="text-sm font-medium text-[#8c909f] hover:text-white transition-colors"
+          >
+            Cancel
+          </button>
         </div>
-        <a
-          href="/agents"
-          className="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors group"
-        >
-          <X className="size-3.5" />
-          <span className="font-medium text-sm">Cancel Registration</span>
-        </a>
-      </header>
+        <p className="text-[#8c909f] font-medium">
+          Provision a new autonomous combat unit for the Kinetic Arena.
+        </p>
+      </div>
 
-      {/* Main Content */}
-      <main className="w-full max-w-2xl px-6 py-12 flex-grow">
-        {/* Page Title */}
-        <div className="mb-12">
-          <h1 className="font-headline text-3xl font-extrabold tracking-tight mb-4 text-on-surface">
-            Initialize New Agent
-          </h1>
-          <p className="text-on-surface-variant max-w-lg">
-            Provision a new autonomous combat unit for the Kinetic Arena. Ensure all parameters align with deployment protocols.
-          </p>
-        </div>
+      <form onSubmit={handleRegister}>
+        <div className="rounded-2xl border border-white/5 bg-white/5 p-8 space-y-8">
+          {/* Agent Name */}
+          <div>
+            <label className="block text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-3">
+              Agent Name
+            </label>
+            <input
+              type="text"
+              value={regName}
+              onChange={(e) => setRegName(e.target.value)}
+              placeholder="e.g. VECTOR-9"
+              maxLength={32}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-mono"
+            />
+          </div>
 
-        {/* Form Section */}
-        <form onSubmit={handleRegister}>
-          <section className="bg-surface-container-low rounded-xl p-8 space-y-10">
-            {/* Agent Name */}
-            <div className="space-y-2">
-              <label className="font-label text-[10px] uppercase tracking-wider text-primary ml-1">
-                Agent Name
-              </label>
-              <div className="relative group">
-                <input
-                  type="text"
-                  value={regName}
-                  onChange={(e) => setRegName(e.target.value)}
-                  placeholder="e.g. VECTOR-9"
-                  maxLength={32}
-                  className="w-full bg-surface-container-lowest border-none text-on-surface placeholder:text-on-surface-variant/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-primary"
-                />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition-opacity">
-                  <Fingerprint className="size-5 text-primary" />
-                </div>
-              </div>
-              <p className="font-label text-[10px] text-on-surface-variant/60 italic">
-                Unique identifier required for registry sync.
-              </p>
+          {/* Bio */}
+          <div>
+            <label className="block text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-3">
+              Mission Directives
+            </label>
+            <textarea
+              value={regBio}
+              onChange={(e) => setRegBio(e.target.value)}
+              placeholder="Define core logic and combat philosophy..."
+              maxLength={200}
+              rows={3}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-medium resize-none"
+            />
+          </div>
+
+          {/* Model Selection */}
+          <div>
+            <label className="block text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-3">
+              Neural Core (Model)
+            </label>
+            <select
+              value={regModel}
+              onChange={(e) => setRegModel(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#adc6ff] transition-colors font-mono appearance-none"
+            >
+              <option value="" className="bg-[#131313]">Select a model...</option>
+              {MODEL_OPTIONS.map((m) => (
+                <option key={m.identifier} value={m.identifier} className="bg-[#131313]">
+                  {m.label} ({m.provider})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Weight Class */}
+          <div>
+            <label className="block text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-3">
+              Weight Class
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {WEIGHT_CLASSES.map((wc) => {
+                const Icon = wc.icon
+                const isSelected = weightClass === wc.id
+                return (
+                  <label key={wc.id} className="cursor-pointer">
+                    <input
+                      type="radio"
+                      name="weight-class"
+                      value={wc.id}
+                      checked={isSelected}
+                      onChange={() => setWeightClass(wc.id)}
+                      className="hidden"
+                    />
+                    <div
+                      className={`h-full p-4 rounded-xl border transition-all flex flex-col items-center justify-center text-center gap-2 ${
+                        isSelected
+                          ? 'bg-[#4d8efe]/10 border-[#4d8efe]'
+                          : 'bg-white/5 border-white/5 hover:border-white/10'
+                      }`}
+                    >
+                      <Icon className={`size-5 ${isSelected ? 'text-[#adc6ff]' : 'text-[#8c909f]'}`} />
+                      <span className="font-bold text-xs text-white">{wc.label}</span>
+                      <span className="text-[9px] text-[#8c909f]">{wc.sub}</span>
+                    </div>
+                  </label>
+                )
+              })}
             </div>
+          </div>
 
-            {/* Mission Directives & Description */}
-            <div className="space-y-2">
-              <label className="font-label text-[10px] uppercase tracking-wider text-primary ml-1">
-                Mission Directives &amp; Description
-              </label>
-              <textarea
-                value={regBio}
-                onChange={(e) => setRegBio(e.target.value)}
-                placeholder="Define core logic and combat philosophy..."
-                maxLength={200}
-                rows={3}
-                className="w-full bg-surface-container-lowest border-none text-on-surface placeholder:text-on-surface-variant/30 px-4 py-4 focus:ring-0 transition-all border-b-2 border-transparent focus:border-primary resize-none"
-              />
-            </div>
+          {/* Error */}
+          {formError && (
+            <p className="text-sm text-[#ffb4ab]">{formError}</p>
+          )}
 
-            {/* Weight Class Selection */}
-            <div className="space-y-4">
-              <label className="font-label text-[10px] uppercase tracking-wider text-primary ml-1">
-                Weight Class selection
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {WEIGHT_CLASSES.map((wc) => {
-                  const Icon = wc.icon
-                  const isSelected = weightClass === wc.id
-                  return (
-                    <label key={wc.id} className="cursor-pointer group">
-                      <input
-                        type="radio"
-                        name="weight-class"
-                        value={wc.id}
-                        checked={isSelected}
-                        onChange={() => setWeightClass(wc.id)}
-                        className="hidden peer"
-                      />
-                      <div
-                        className={`h-full p-4 rounded-lg border transition-all flex flex-col items-center justify-center text-center gap-2 ${
-                          isSelected
-                            ? 'bg-primary/10 border-primary'
-                            : 'bg-surface-container border-outline-variant/15'
-                        }`}
-                      >
-                        <Icon
-                          className={`size-5 ${
-                            isSelected ? 'text-primary' : 'text-on-surface-variant'
-                          }`}
-                        />
-                        <span className="font-bold text-xs">{wc.label}</span>
-                        <span className="font-label text-[9px] text-on-surface-variant/60">
-                          {wc.sub}
-                        </span>
-                      </div>
-                    </label>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Form Error */}
-            {formError && (
-              <p className="text-sm text-error">{formError}</p>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full px-10 py-4 bg-[#4d8efe] text-white rounded-xl font-bold hover:brightness-110 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-60"
+          >
+            {submitting ? (
+              <Loader2 className="size-5 animate-spin" />
+            ) : (
+              <Zap className="size-5" fill="currentColor" />
             )}
-
-            {/* Action Area */}
-            <div className="pt-6 border-t border-outline-variant/10 flex flex-col items-center gap-6">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="bg-gradient-to-br from-primary to-primary-container w-full py-4 rounded-lg text-on-primary-fixed font-bold tracking-tight text-lg shadow-xl shadow-primary/10 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-60"
-              >
-                {submitting ? (
-                  <Loader2 className="size-5 animate-spin" />
-                ) : (
-                  <Zap className="size-5" fill="currentColor" />
-                )}
-                Initialize Agent
-              </button>
-              <div className="flex items-center gap-4 text-on-surface-variant/40">
-                <div className="h-[1px] w-12 bg-current" />
-                <span className="font-label text-[10px] uppercase tracking-[0.2em]">
-                  Verification Pending
-                </span>
-                <div className="h-[1px] w-12 bg-current" />
-              </div>
-            </div>
-          </section>
-        </form>
-
-        {/* Visual Anchor / Side HUD Style */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-surface-container/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-secondary-fixed-dim/10 flex items-center justify-center text-secondary-fixed-dim">
-              <Cpu className="size-5" />
-            </div>
-            <div>
-              <p className="font-bold text-xs text-on-surface">Neural Sync</p>
-              <p className="font-label text-[9px] text-on-surface-variant">Ready for uplink</p>
-            </div>
-          </div>
-
-          <div className="bg-surface-container/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-              <ShieldCheck className="size-5" />
-            </div>
-            <div>
-              <p className="font-bold text-xs text-on-surface">Encrypted</p>
-              <p className="font-label text-[9px] text-on-surface-variant">AES-256 standard</p>
-            </div>
-          </div>
-
-          <div className="bg-surface-container/40 backdrop-blur-md p-4 rounded-lg flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
-              <Activity className="size-5" />
-            </div>
-            <div>
-              <p className="font-bold text-xs text-on-surface">Telemetry</p>
-              <p className="font-label text-[9px] text-on-surface-variant">Real-time tracking</p>
-            </div>
-          </div>
+            Initialize Agent
+          </button>
         </div>
-      </main>
-
-      {/* Footer */}
-      <Footer />
+      </form>
 
       {/* API Key Dialog */}
       <Dialog open={!!apiKey} onOpenChange={(open) => { if (!open) handleDismissKeyDialog() }}>
-        <DialogContent className="border-none bg-surface-container-low sm:max-w-md">
+        <DialogContent className="border-none bg-[#1c1b1b] sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-on-surface">
-              Your API Key
-            </DialogTitle>
-            <DialogDescription className="text-outline">
+            <DialogTitle className="text-white">Your API Key</DialogTitle>
+            <DialogDescription className="text-[#8c909f]">
               Copy this key now. It will not be shown again.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2 rounded-lg bg-tertiary/10 p-3">
-              <AlertTriangle className="size-4 shrink-0 text-tertiary" />
-              <p className="text-sm font-medium text-tertiary">
+            <div className="flex items-center gap-2 rounded-lg bg-[#ffb780]/10 p-3">
+              <AlertTriangle className="size-4 shrink-0 text-[#ffb780]" />
+              <p className="text-sm font-medium text-[#ffb780]">
                 This key is shown once — save it now
               </p>
             </div>
             <div className="space-y-2">
-              <code className="block w-full overflow-x-auto break-all rounded-md bg-surface-container-lowest px-3 py-2 font-label text-xs text-secondary">
+              <code className="block w-full overflow-x-auto break-all rounded-md bg-black/40 px-3 py-2 font-mono text-xs text-[#7dffa2]">
                 {apiKey}
               </code>
               <Button
                 variant="outline"
                 onClick={handleCopyApiKey}
-                className="w-full gap-2 border-none bg-surface-variant hover:bg-surface-container-high text-on-surface"
+                className="w-full gap-2 border-white/10 bg-white/5 hover:bg-white/10 text-white"
               >
                 {keyCopied ? (
                   <>
-                    <Check className="size-4 text-secondary" />
+                    <Check className="size-4 text-[#7dffa2]" />
                     Copied!
                   </>
                 ) : (
@@ -367,7 +303,7 @@ export default function NewAgentPage() {
             <DialogClose>
               <Button
                 variant="outline"
-                className="border-none bg-surface-variant hover:bg-surface-container-high text-on-surface"
+                className="border-white/10 bg-white/5 hover:bg-white/10 text-white"
                 onClick={handleDismissKeyDialog}
               >
                 I&apos;ve saved my key

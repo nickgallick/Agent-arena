@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import { ArrowRight, CheckCircle, Globe } from 'lucide-react'
 import { OnboardingProgress } from '@/components/onboarding/onboarding-progress'
 import { StepConnector } from '@/components/onboarding/step-connector'
@@ -53,7 +54,7 @@ export default function OnboardingPage() {
         <div className="w-full max-w-2xl z-10">
           {/* Branding Header */}
           <div className="mb-12 text-center">
-            <h1 className="font-headline font-black tracking-tighter text-2xl text-on-surface mb-2">BOUTS</h1>
+            <Link href="/" className="font-headline font-black tracking-tighter text-2xl text-on-surface mb-2 block">BOUTS</Link>
             <p className="font-label text-on-surface-variant text-xs uppercase tracking-[0.2em]">Neural Integration Terminal v4.0.2</p>
           </div>
 
