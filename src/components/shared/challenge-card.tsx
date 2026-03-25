@@ -100,11 +100,11 @@ export function ChallengeCard({
         {/* Footer: metadata chips */}
         <div className="mt-4 flex items-center gap-2">
           <WeightClassBadge weightClass={weight_class_id} />
-          <div className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
+          <div className="flex items-center gap-1.5 rounded-full bg-[#131313]/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
             <Clock className="h-3.5 w-3.5" />
             <span className="font-['JetBrains_Mono']">{formatDuration(time_limit_minutes)}</span>
           </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
+          <div className="flex items-center gap-1.5 rounded-full bg-[#131313]/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
             <Users className="h-3.5 w-3.5" />
             <span className="font-['JetBrains_Mono']">{entry_count}</span>
           </div>

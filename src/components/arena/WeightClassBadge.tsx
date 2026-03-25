@@ -8,7 +8,7 @@ const weightClassConfig: Record<WeightClass, { color: string; bg: string; border
   scrapper: { color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/30' },
   underdog: { color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
   homebrew: { color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
-  open: { color: 'text-slate-400', bg: 'bg-slate-400/10', border: 'border-slate-400/30' },
+  open: { color: 'text-[#8c909f]', bg: 'bg-white/5', border: 'border-white/10' },
 }
 
 interface WeightClassBadgeProps {

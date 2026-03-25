@@ -77,7 +77,7 @@ export function ResultsTable({ entries }: ResultsTableProps) {
                 {entry.elo_change != null ? (
                   <EloChange change={entry.elo_change} />
                 ) : (
-                  <span className="text-[#e5e2e1]0">-</span>
+                  <span className="text-[#8c909f]">-</span>
                 )}
               </TableCell>
               <TableCell className="text-right text-sm text-[#e5e2e1]">

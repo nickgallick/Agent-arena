@@ -69,10 +69,10 @@ function ChallengeDetailContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[#131313]">
         <PublicHeader />
         <div className="max-w-7xl mx-auto px-6 py-12 flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="size-8 animate-spin text-slate-400" />
+          <Loader2 className="size-8 animate-spin text-[#8c909f]" />
         </div>
       </div>
     )
@@ -80,12 +80,12 @@ function ChallengeDetailContent() {
 
   if (error || !challenge) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[#131313]">
         <PublicHeader />
         <div className="max-w-7xl mx-auto px-6 py-12 pt-24 flex items-center justify-center min-h-[60vh]">
-          <div className="rounded-xl bg-white border border-slate-200 px-8 py-12 text-center">
-            <p className="text-lg font-medium text-slate-500">{error ?? 'Challenge not found'}</p>
-            <Link href="/challenges" className="mt-4 inline-block text-sm text-blue-600 hover:text-blue-600/80">
+          <div className="rounded-xl bg-[#131313] border border-white/5 px-8 py-12 text-center">
+            <p className="text-lg font-medium text-[#8c909f]">{error ?? 'Challenge not found'}</p>
+            <Link href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]/80">
               &larr; Back to challenges
             </Link>
           </div>
@@ -99,24 +99,24 @@ function ChallengeDetailContent() {
     : `Sprint (${challenge.time_limit_minutes}m)`
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#131313]">
       <PublicHeader />
       <div className="max-w-7xl mx-auto px-6 py-12 pt-24">
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 mb-8 text-xs font-bold uppercase tracking-widest text-slate-400">
-          <Link href="/challenges" className="hover:text-blue-600 transition-colors">Challenges</Link>
+        <nav className="flex items-center gap-2 mb-8 text-xs font-bold uppercase tracking-widest text-[#8c909f]">
+          <Link href="/challenges" className="hover:text-[#adc6ff] transition-colors">Challenges</Link>
           <ChevronRight className="size-3" />
-          <span className="text-slate-900">{challenge.title}</span>
+          <span className="text-[#e5e2e1]">{challenge.title}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content */}
           <div className="lg:col-span-2">
             <div className="flex flex-wrap items-center gap-4 mb-6">
-              <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest border border-blue-100">
+              <span className="px-3 py-1 rounded-full bg-[#adc6ff]/10 text-[#adc6ff] text-[10px] font-bold uppercase tracking-widest border border-[#adc6ff]/20">
                 {challenge.category}
               </span>
-              <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-widest">
+              <span className="px-3 py-1 rounded-full bg-[#201f1f] text-[#c2c6d5] text-[10px] font-bold uppercase tracking-widest">
                 {formatStr}
               </span>
               {challenge.weight_class_id && (
@@ -124,20 +124,20 @@ function ChallengeDetailContent() {
               )}
             </div>
 
-            <h1 className="text-5xl font-black tracking-tighter text-slate-900 mb-6">
+            <h1 className="text-5xl font-black tracking-tighter text-[#e5e2e1] mb-6">
               {challenge.title}
             </h1>
 
-            <div className="prose prose-slate max-w-none">
-              <h3 className="text-slate-900 font-bold">Challenge Brief</h3>
-              <p className="text-slate-500 leading-relaxed font-medium">
+            <div className="prose  max-w-none">
+              <h3 className="text-[#e5e2e1] font-bold">Challenge Brief</h3>
+              <p className="text-[#8c909f] leading-relaxed font-medium">
                 {challenge.description}
               </p>
 
               {challenge.prompt && (
                 <>
-                  <h4 className="text-slate-900 font-bold mt-8">Technical Constraints</h4>
-                  <div className="text-slate-500 font-medium space-y-2 whitespace-pre-line">
+                  <h4 className="text-[#e5e2e1] font-bold mt-8">Technical Constraints</h4>
+                  <div className="text-[#8c909f] font-medium space-y-2 whitespace-pre-line">
                     {challenge.prompt}
                   </div>
                 </>
@@ -147,17 +147,17 @@ function ChallengeDetailContent() {
 
           {/* Sidebar / Actions */}
           <div className="space-y-6">
-            <div className="p-8 rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <div className="p-8 rounded-3xl border border-white/5 bg-[#131313] shadow-lg shadow-black/20">
               <div className="mb-8">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Time Remaining</div>
-                <div className="text-4xl font-black text-slate-900 font-mono tracking-tighter">
+                <div className="text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-1">Time Remaining</div>
+                <div className="text-4xl font-black text-[#e5e2e1] font-mono tracking-tighter">
                   {challenge.status === 'active' ? '--:--:--' : challenge.status === 'complete' ? '00:00:00' : '--:--:--'}
                 </div>
               </div>
 
               <div className="mb-8">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Entry Pool</div>
-                <div className="text-2xl font-black text-slate-900 tracking-tight">{challenge.max_coins.toLocaleString()} COINS</div>
+                <div className="text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-1">Entry Pool</div>
+                <div className="text-2xl font-black text-[#e5e2e1] tracking-tight">{challenge.max_coins.toLocaleString()} COINS</div>
               </div>
 
               <div className="space-y-3">
@@ -169,7 +169,7 @@ function ChallengeDetailContent() {
                 {(challenge.status === 'active' || challenge.status === 'judging') && (
                   <Link
                     href={`/challenges/${challenge.id}/spectate`}
-                    className="w-full py-4 bg-white text-slate-900 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-[#131313] text-[#e5e2e1] border border-white/5 rounded-xl font-bold hover:bg-white/5 transition-all flex items-center justify-center gap-2"
                   >
                     <Radio className="size-4" />
                     Watch Live Stream
@@ -178,27 +178,27 @@ function ChallengeDetailContent() {
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50">
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">
+            <div className="p-6 rounded-2xl border border-white/5 bg-[#1c1b1b]/50">
+              <h4 className="text-xs font-bold text-[#e5e2e1] uppercase tracking-widest mb-4">
                 Competitors ({entries.length > 0 ? entries.length : challenge.entry_count})
               </h4>
               <div className="space-y-4">
                 {entries.length > 0 ? (
                   entries.slice(0, 5).map((entry) => (
                     <div key={entry.id} className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-slate-200 border border-white flex items-center justify-center text-xs font-bold text-slate-500">
+                      <div className="w-8 h-8 rounded-full bg-[#2a2a2a] border border-white flex items-center justify-center text-xs font-bold text-[#8c909f]">
                         {(entry.agent?.name ?? 'A').charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-sm font-bold text-slate-900">{entry.agent?.name ?? 'Unknown Agent'}</div>
-                        <div className="text-[10px] font-mono text-slate-400">
+                        <div className="text-sm font-bold text-[#e5e2e1]">{entry.agent?.name ?? 'Unknown Agent'}</div>
+                        <div className="text-[10px] font-mono text-[#8c909f]">
                           {entry.agent?.weight_class_id ? `Tier: ${entry.agent.weight_class_id}` : `ID: ${entry.agent_id.slice(0, 8)}`}
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-slate-400">No competitors yet</p>
+                  <p className="text-sm text-[#8c909f]">No competitors yet</p>
                 )}
               </div>
             </div>

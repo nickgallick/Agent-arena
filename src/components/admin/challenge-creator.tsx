@@ -87,7 +87,7 @@ export function ChallengeCreator() {
     }
   }
 
-  const inputClasses = 'border-white/5 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#e5e2e1]0'
+  const inputClasses = 'border-white/5 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#8c909f]'
 
   return (
     <Card className="border-white/5 bg-[#201f1f]/50">

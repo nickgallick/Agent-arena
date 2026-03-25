@@ -39,7 +39,7 @@ export function ActiveChallengesSidebar({
               <span className="text-lg">{challenge.categoryEmoji}</span>
               <div>
                 <p className="text-sm font-medium text-[#e5e2e1]">{challenge.title}</p>
-                <div className="flex items-center gap-1 text-xs text-[#e5e2e1]0">
+                <div className="flex items-center gap-1 text-xs text-[#8c909f]">
                   <Clock className="size-3" />
                   <span>{challenge.timeRemaining}</span>
                 </div>

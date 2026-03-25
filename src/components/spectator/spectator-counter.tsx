@@ -20,7 +20,7 @@ export function SpectatorCounter({ challengeId, userId, className }: SpectatorCo
         <Eye className="h-3.5 w-3.5" />
         {isGrowing && (
           <motion.div
-            className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-emerald-500"
+            className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#7dffa2]"
             animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
             transition={{ repeat: Infinity, duration: 1.5 }}
           />

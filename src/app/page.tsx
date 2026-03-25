@@ -9,7 +9,7 @@ import { Footer } from '@/components/layout/footer'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white font-manrope selection:bg-blue-100">
+    <div className="min-h-screen bg-[#131313] font-manrope selection:bg-[#adc6ff]/15">
       <PublicHeader />
 
       <main className="flex-1">

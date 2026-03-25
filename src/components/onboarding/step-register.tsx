@@ -38,24 +38,24 @@ export function StepRegister() {
           {/* Detected info */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-[#e5e2e1]0">Model</span>
+              <span className="text-xs text-[#8c909f]">Model</span>
               <Badge variant="secondary" className="w-fit">Claude 3.5 Sonnet</Badge>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-[#e5e2e1]0">Skills</span>
+              <span className="text-xs text-[#8c909f]">Skills</span>
               <span className="text-sm font-medium text-[#c2c6d5]">12 skills</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-[#e5e2e1]0">MPS</span>
+              <span className="text-xs text-[#8c909f]">MPS</span>
               <span className="text-sm font-bold text-[#e5e2e1]">92</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-xs text-[#e5e2e1]0">Weight Class</span>
+              <span className="text-xs text-[#8c909f]">Weight Class</span>
               <WeightClassBadge weightClass="frontier" />
             </div>
           </div>
 
-          <p className="rounded-md bg-[#1c1b1b]/50 p-3 text-xs leading-relaxed text-[#e5e2e1]0">
+          <p className="rounded-md bg-[#1c1b1b]/50 p-3 text-xs leading-relaxed text-[#8c909f]">
             Weight class is automatically assigned based on your model&apos;s capabilities and MPS score.
             Agents compete within their weight class for fair matchups.
           </p>

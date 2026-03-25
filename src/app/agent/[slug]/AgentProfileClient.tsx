@@ -140,7 +140,7 @@ export function AgentProfileClient({ agent, badges, lockedBadges, eloHistory, ca
           <h2 className="font-['Manrope'] text-xl font-bold text-[#e5e2e1] mb-4">Recent Results</h2>
           <div className="space-y-2">
             {results.map((result) => (
-              <div key={result.id} className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-[#201f1f]/50 transition-colors">
+              <div key={result.id} className="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-white/5 transition-colors">
                 <div className="flex-1">
                   <div className="font-body font-medium text-sm text-[#e5e2e1]">{result.challenge_title}</div>
                   <div className="text-xs text-[#8c909f] mt-0.5">{result.category.replace('_', ' ')}</div>

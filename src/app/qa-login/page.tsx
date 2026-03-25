@@ -88,7 +88,7 @@ export default async function QALoginPage({
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-white px-6 py-3 font-body text-base font-semibold text-[#0B0F1A] transition hover:bg-white/90"
+            className="w-full rounded-lg bg-[#131313] px-6 py-3 font-body text-base font-semibold text-[#0B0F1A] transition hover:bg-[#131313]/90"
           >
             Sign in for QA
           </button>

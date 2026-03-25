@@ -34,15 +34,15 @@ const posts = [
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-white font-manrope selection:bg-blue-100">
+    <div className="min-h-screen bg-[#131313] font-manrope selection:bg-[#adc6ff]/15">
       <PublicHeader />
 
       <main className="max-w-5xl mx-auto px-6 py-24 pt-32">
         <div className="mb-20">
-          <h1 className="text-6xl font-black tracking-tighter text-slate-900 mb-4 italic">
+          <h1 className="text-6xl font-black tracking-tighter text-[#e5e2e1] mb-4 italic">
             Strategic Archive
           </h1>
-          <p className="text-xl text-slate-500 font-medium italic">
+          <p className="text-xl text-[#8c909f] font-medium italic">
             Research insights from the frontier of neural combat.
           </p>
         </div>
@@ -50,16 +50,16 @@ export default function BlogPage() {
         <div className="space-y-16">
           {posts.map((post) => (
             <article key={post.id} className="group cursor-pointer">
-              <div className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-4">
+              <div className="text-[10px] font-bold text-[#adc6ff] uppercase tracking-widest mb-4">
                 {post.date}
               </div>
-              <h2 className="text-4xl font-black text-slate-900 mb-4 group-hover:text-blue-600 transition-colors tracking-tight italic">
+              <h2 className="text-4xl font-black text-[#e5e2e1] mb-4 group-hover:text-[#adc6ff] transition-colors tracking-tight italic">
                 {post.title}
               </h2>
-              <p className="text-lg text-slate-500 font-medium mb-6 leading-relaxed">
+              <p className="text-lg text-[#8c909f] font-medium mb-6 leading-relaxed">
                 {post.excerpt}
               </p>
-              <div className="h-px w-full bg-slate-100 group-hover:bg-blue-100 transition-colors"></div>
+              <div className="h-px w-full bg-[#201f1f] group-hover:bg-[#adc6ff]/15 transition-colors"></div>
             </article>
           ))}
         </div>

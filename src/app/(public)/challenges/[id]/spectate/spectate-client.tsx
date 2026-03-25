@@ -31,8 +31,8 @@ function CountdownTimer({ endsAt }: { endsAt: string }) {
 }
 
 const agentColors = [
-  { bg: 'bg-blue-600/20', border: 'border-blue-500/30', text: 'text-blue-500', stream: 'text-blue-300/60', selection: 'selection:bg-blue-500/20', tier: 'text-blue-400' },
-  { bg: 'bg-emerald-600/20', border: 'border-emerald-500/30', text: 'text-emerald-500', stream: 'text-emerald-300/60', selection: 'selection:bg-emerald-500/20', tier: 'text-emerald-400' },
+  { bg: 'bg-[#adc6ff]/20', border: 'border-[#adc6ff]/20', text: 'text-[#4d8efe]', stream: 'text-blue-300/60', selection: 'selection:bg-[#adc6ff]/100/20', tier: 'text-[#adc6ff]' },
+  { bg: 'bg-emerald-600/20', border: 'border-[#7dffa2]/20', text: 'text-[#7dffa2]', stream: 'text-emerald-300/60', selection: 'selection:bg-[#7dffa2]/20', tier: 'text-[#7dffa2]' },
 ]
 
 export function SpectateClient({ challenge, entries }: SpectateClientProps) {
@@ -45,26 +45,26 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
       {/* HUD Header */}
       <header className="h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl px-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-rose-500">
+          <div className="flex items-center gap-2 text-[#ffb4ab]">
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Live Battle</span>
           </div>
-          <div className="h-4 w-px bg-white/10"></div>
-          <h1 className="text-sm font-bold tracking-tight text-slate-200">
-            {challenge.title} <span className="text-slate-500 font-medium ml-2">#{challenge.id.slice(0, 6)}</span>
+          <div className="h-4 w-px bg-[#131313]/10"></div>
+          <h1 className="text-sm font-bold tracking-tight text-[#c2c6d5]">
+            {challenge.title} <span className="text-[#8c909f] font-medium ml-2">#{challenge.id.slice(0, 6)}</span>
           </h1>
         </div>
 
         <div className="flex items-center gap-8">
           <div className="text-right">
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Time Remaining</div>
+            <div className="text-[10px] font-bold text-[#8c909f] uppercase tracking-widest">Time Remaining</div>
             <div className="text-sm font-bold font-mono">
               <CountdownTimer endsAt={challenge.ends_at} />
             </div>
           </div>
           <Link
             href={`/challenges/${challenge.id}`}
-            className="px-4 py-2 bg-blue-600 rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-[#4d8efe] rounded-lg text-xs font-bold hover:bg-[#3a7aee] transition-colors"
           >
             Challenge Details
           </Link>
@@ -72,7 +72,7 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
       </header>
 
       {/* Main Arena View */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/5 overflow-hidden">
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-px bg-[#131313]/5 overflow-hidden">
         {displayEntries.map((entry, index) => {
           const colors = agentColors[index % agentColors.length]
           const initial = (entry.agent?.name ?? 'A').charAt(0).toUpperCase()
@@ -92,7 +92,7 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase">Current ELO</div>
+                  <div className="text-[10px] font-bold text-[#8c909f] uppercase">Current ELO</div>
                   <div className="text-xl font-black font-mono">
                     {entry.final_score != null ? entry.final_score.toLocaleString() : '--'}
                   </div>
@@ -101,12 +101,12 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
 
               {/* Logic Stream */}
               <div className={`flex-1 bg-[#050505] rounded-xl border border-white/5 p-4 overflow-y-auto text-xs font-mono ${colors.stream} ${colors.selection}`}>
-                <div className="mb-2"><span className="text-slate-600">[--:--:--]</span> Initializing agent kernel...</div>
-                <div className="mb-2"><span className="text-slate-600">[--:--:--]</span> {'>'} file_created: src/index.ts</div>
-                <div className="mb-2"><span className="text-slate-600">[--:--:--]</span> {'>'} tool_call: npm install</div>
-                <div className="mb-2"><span className="text-slate-600">[--:--:--]</span> <span className="text-emerald-400 italic">{'>'} code_write: processing...</span></div>
-                <div className="mb-2"><span className="text-slate-600">[--:--:--]</span> Sub-node validation...</div>
-                <div className="mb-2 animate-pulse"><span className="text-slate-600">[--:--:--]</span> Executing neural path...</div>
+                <div className="mb-2"><span className="text-[#c2c6d5]">[--:--:--]</span> Initializing agent kernel...</div>
+                <div className="mb-2"><span className="text-[#c2c6d5]">[--:--:--]</span> {'>'} file_created: src/index.ts</div>
+                <div className="mb-2"><span className="text-[#c2c6d5]">[--:--:--]</span> {'>'} tool_call: npm install</div>
+                <div className="mb-2"><span className="text-[#c2c6d5]">[--:--:--]</span> <span className="text-[#7dffa2] italic">{'>'} code_write: processing...</span></div>
+                <div className="mb-2"><span className="text-[#c2c6d5]">[--:--:--]</span> Sub-node validation...</div>
+                <div className="mb-2 animate-pulse"><span className="text-[#c2c6d5]">[--:--:--]</span> Executing neural path...</div>
               </div>
             </section>
           )
@@ -114,9 +114,9 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
 
         {/* Fill empty slots if fewer than 2 entries */}
         {displayEntries.length < 2 && (
-          <section className="bg-black p-6 flex flex-col items-center justify-center text-slate-500">
+          <section className="bg-black p-6 flex flex-col items-center justify-center text-[#8c909f]">
             <div className="text-lg font-bold">Waiting for opponent...</div>
-            <p className="text-sm text-slate-600 mt-2">An agent will appear here once they join</p>
+            <p className="text-sm text-[#c2c6d5] mt-2">An agent will appear here once they join</p>
           </section>
         )}
       </main>
@@ -127,11 +127,11 @@ export function SpectateClient({ challenge, entries }: SpectateClientProps) {
           {[
             { label: 'Compute Cost', value: '$0.42 / hr' },
             { label: 'Cycle Count', value: `${entries.length > 0 ? (entries.length * 604).toLocaleString() : '0'} Iter` },
-            { label: 'Network Load', value: '892 MB/s', color: 'text-rose-500' },
-            { label: 'Coherence', value: '99.4%', color: 'text-emerald-500' },
+            { label: 'Network Load', value: '892 MB/s', color: 'text-[#ffb4ab]' },
+            { label: 'Coherence', value: '99.4%', color: 'text-[#7dffa2]' },
           ].map(stat => (
             <div key={stat.label}>
-              <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1">{stat.label}</div>
+              <div className="text-[10px] font-bold text-[#c2c6d5] uppercase tracking-widest mb-1">{stat.label}</div>
               <div className={`text-lg font-black ${stat.color || 'text-white'}`}>{stat.value}</div>
             </div>
           ))}

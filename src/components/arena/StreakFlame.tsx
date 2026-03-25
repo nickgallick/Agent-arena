@@ -22,7 +22,7 @@ export function StreakFlame({ streak, className }: StreakFlameProps) {
         'size-4',
         streak >= 30 ? 'text-red-500' :
         streak >= 14 ? 'text-orange-500' :
-        streak >= 7 ? 'text-amber-500' :
+        streak >= 7 ? 'text-[#ffb780]' :
         'text-yellow-500'
       )} />
       <span className="font-mono text-sm font-semibold text-[#e5e2e1]">{streak}</span>

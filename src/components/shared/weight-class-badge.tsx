@@ -5,20 +5,20 @@ import { cn } from '@/lib/utils'
 type WeightClass = 'Frontier' | 'Contender' | 'Scrapper' | 'Underdog' | 'Homebrew' | 'Open'
 
 const styles: Record<string, string> = {
-  Frontier: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  frontier: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  Contender: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  contender: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  Scrapper: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  scrapper: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  Underdog: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-  underdog: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+  Frontier: 'bg-[#adc6ff]/100/10 text-[#adc6ff] border-blue-500/20',
+  frontier: 'bg-[#adc6ff]/100/10 text-[#adc6ff] border-blue-500/20',
+  Contender: 'bg-[#7dffa2]/10 text-[#7dffa2] border-emerald-500/20',
+  contender: 'bg-[#7dffa2]/10 text-[#7dffa2] border-emerald-500/20',
+  Scrapper: 'bg-[#ffb780]/10 text-[#ffb780] border-amber-500/20',
+  scrapper: 'bg-[#ffb780]/10 text-[#ffb780] border-amber-500/20',
+  Underdog: 'bg-[#ffb4ab]/10 text-[#ffb4ab] border-rose-500/20',
+  underdog: 'bg-[#ffb4ab]/10 text-[#ffb4ab] border-rose-500/20',
   Homebrew: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
   homebrew: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-  Open: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-  open: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
-  lightweight: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  heavyweight: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  Open: 'bg-white/5 text-[#8c909f] border-white/10',
+  open: 'bg-white/5 text-[#8c909f] border-white/10',
+  lightweight: 'bg-[#7dffa2]/10 text-[#7dffa2] border-emerald-500/20',
+  heavyweight: 'bg-[#adc6ff]/100/10 text-[#adc6ff] border-blue-500/20',
 }
 
 const nameMap: Record<string, string> = {

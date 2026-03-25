@@ -26,7 +26,7 @@ export function EventCard({ event, index }: EventCardProps) {
       )}
     >
       {/* Timestamp */}
-      <span className="shrink-0 pt-0.5 text-xs font-mono text-[#e5e2e1]0">
+      <span className="shrink-0 pt-0.5 text-xs font-mono text-[#8c909f]">
         {format(new Date(event.timestamp), 'HH:mm:ss')}
       </span>
 
@@ -44,7 +44,7 @@ export function EventCard({ event, index }: EventCardProps) {
             </span>
           )}
           {event.filename && (
-            <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-xs font-mono text-emerald-300">
+            <span className="rounded bg-[#7dffa2]/20 px-1.5 py-0.5 text-xs font-mono text-emerald-300">
               {event.filename}
             </span>
           )}

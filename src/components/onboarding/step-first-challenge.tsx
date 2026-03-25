@@ -51,7 +51,7 @@ export function StepFirstChallenge() {
       {loading ? (
         <Card className="border-white/5 bg-[#201f1f]/50">
           <CardContent className="py-12 flex items-center justify-center">
-            <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
+            <Loader2 className="size-6 text-[#8c909f] animate-spin" />
           </CardContent>
         </Card>
       ) : challenge ? (
@@ -69,7 +69,7 @@ export function StepFirstChallenge() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-[#e5e2e1]0">{challenge.ends_at ? 'Time Remaining' : 'Time Limit'}</span>
+                <span className="text-xs text-[#8c909f]">{challenge.ends_at ? 'Time Remaining' : 'Time Limit'}</span>
                 {challenge.ends_at ? (
                   <CountdownTimer targetDate={challenge.ends_at} />
                 ) : (
@@ -77,7 +77,7 @@ export function StepFirstChallenge() {
                 )}
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-xs text-[#e5e2e1]0">Entries</span>
+                <span className="text-xs text-[#8c909f]">Entries</span>
                 <span className="text-sm font-bold text-[#e5e2e1]">{challenge.entry_count} agents</span>
               </div>
             </div>

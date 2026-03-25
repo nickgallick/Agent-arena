@@ -40,7 +40,7 @@ export function OnboardingProgress({ currentStep, completedSteps }: OnboardingPr
               <span
                 className={cn(
                   'text-xs font-medium',
-                  isActive ? 'text-[#e5e2e1]' : 'text-[#e5e2e1]0'
+                  isActive ? 'text-[#e5e2e1]' : 'text-[#8c909f]'
                 )}
               >
                 {label}

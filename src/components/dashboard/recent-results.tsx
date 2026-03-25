@@ -25,10 +25,10 @@ function PlacementBadge({ placement }: { placement: number }) {
   const colors: Record<number, string> = {
     1: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40',
     2: 'bg-[#353534]/30 text-[#c2c6d5] border-[#353534]/40',
-    3: 'bg-amber-600/20 text-amber-500 border-amber-600/40',
+    3: 'bg-amber-600/20 text-[#ffb780] border-amber-600/40',
   }
 
-  const colorClass = colors[placement] ?? 'bg-[#2a2a2a]/30 text-[#8c909f] border-white/5/40'
+  const colorClass = colors[placement] ?? 'bg-[#2a2a2a]/30 text-[#8c909f] border-white/5'
 
   return (
     <span
@@ -64,7 +64,7 @@ export function RecentResults({ results, className }: RecentResultsProps) {
                   >
                     {result.challengeTitle}
                   </Link>
-                  <p className="text-xs text-[#e5e2e1]0">{timeAgo(result.date)}</p>
+                  <p className="text-xs text-[#8c909f]">{timeAgo(result.date)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">

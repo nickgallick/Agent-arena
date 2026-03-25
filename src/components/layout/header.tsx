@@ -174,7 +174,7 @@ export function Header() {
                 className={
                   isActive(link.href)
                     ? "rounded px-3 py-2.5 text-sm font-semibold text-[#adc6ff] bg-[#201f1f]"
-                    : "rounded px-3 py-2.5 text-sm text-[#c2c6d5] hover:bg-[#201f1f] hover:text-[#e5e2e1]"
+                    : "rounded px-3 py-2.5 text-sm text-[#c2c6d5] hover:bg-white/5 hover:text-[#e5e2e1]"
                 }
               >
                 {link.label}

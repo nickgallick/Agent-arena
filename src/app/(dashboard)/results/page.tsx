@@ -71,7 +71,7 @@ export default function ResultsPage() {
   if (userLoading || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-slate-500" />
+        <Loader2 className="size-8 animate-spin text-[#8c909f]" />
       </div>
     )
   }
@@ -81,13 +81,13 @@ export default function ResultsPage() {
       <div>
         <div className="mb-10">
           <h1 className="text-3xl font-black tracking-tight text-white mb-2">Challenge Results</h1>
-          <p className="text-slate-500 font-medium">Archive of your agent&apos;s historical performance metrics.</p>
+          <p className="text-[#8c909f] font-medium">Archive of your agent&apos;s historical performance metrics.</p>
         </div>
-        <div className="rounded-2xl border border-white/5 bg-white/5 flex flex-col items-center justify-center py-24 text-center">
-          <BarChart3 className="size-8 text-slate-500 mb-4" />
+        <div className="rounded-2xl border border-white/5 bg-[#131313]/5 flex flex-col items-center justify-center py-24 text-center">
+          <BarChart3 className="size-8 text-[#8c909f] mb-4" />
           <h3 className="text-lg font-bold text-white">No results yet</h3>
-          <p className="text-slate-500 mb-6">Enter a challenge to earn coins and build your rank.</p>
-          <Link href="/challenges" className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors">
+          <p className="text-[#8c909f] mb-6">Enter a challenge to earn coins and build your rank.</p>
+          <Link href="/challenges" className="px-6 py-2 bg-[#4d8efe] text-white font-bold rounded-xl hover:bg-[#3a7aee] transition-colors">
             Deploy to Arena
           </Link>
         </div>
@@ -99,50 +99,50 @@ export default function ResultsPage() {
     <div>
       <div className="mb-10">
         <h1 className="text-3xl font-black tracking-tight text-white mb-2">Challenge Results</h1>
-        <p className="text-slate-500 font-medium">Archive of your agent&apos;s historical performance metrics.</p>
+        <p className="text-[#8c909f] font-medium">Archive of your agent&apos;s historical performance metrics.</p>
       </div>
 
-      <div className="rounded-2xl border border-white/5 bg-white/5 overflow-hidden">
+      <div className="rounded-2xl border border-white/5 bg-[#131313]/5 overflow-hidden">
         <table className="w-full text-left">
           <thead className="border-b border-white/5 bg-black/40">
             <tr>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Challenge</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Placement</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Score</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">ELO Change</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Earnings</th>
-              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-right">Date</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8c909f]">Challenge</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8c909f]">Placement</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8c909f]">Score</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8c909f]">ELO Change</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8c909f]">Earnings</th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8c909f] text-right">Date</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 font-medium">
             {results.map((res) => {
               const eloStr = `${res.eloChange >= 0 ? '+' : ''}${res.eloChange}`
               return (
-                <tr key={res.id} className="group hover:bg-white/5 transition-colors cursor-pointer">
+                <tr key={res.id} className="group hover:bg-[#131313]/5 transition-colors cursor-pointer">
                   <td className="px-6 py-6">
                     <div className="font-bold text-white">{res.challenge}</div>
-                    <div className="text-xs text-slate-500 font-mono">{res.category}</div>
+                    <div className="text-xs text-[#8c909f] font-mono">{res.category}</div>
                   </td>
                   <td className="px-6 py-6">
-                    <span className={`text-xl font-black ${res.placement === 1 ? 'text-amber-400' : 'text-slate-300'}`}>
+                    <span className={`text-xl font-black ${res.placement === 1 ? 'text-[#ffb780]' : 'text-[#c2c6d5]'}`}>
                       #{res.placement}
                     </span>
                   </td>
-                  <td className="px-6 py-6 font-mono text-slate-300">
+                  <td className="px-6 py-6 font-mono text-[#c2c6d5]">
                     {res.score}/100
                   </td>
                   <td className="px-6 py-6">
-                    <span className={`font-bold font-mono ${res.eloChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    <span className={`font-bold font-mono ${res.eloChange >= 0 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'}`}>
                       {eloStr}
                     </span>
                   </td>
                   <td className="px-6 py-6">
-                    <div className="flex items-center gap-2 text-amber-500 font-black">
+                    <div className="flex items-center gap-2 text-[#ffb780] font-black">
                       <Coins className="size-4" />
                       {res.coins}
                     </div>
                   </td>
-                  <td className="px-6 py-6 text-right text-slate-500 font-mono text-sm">
+                  <td className="px-6 py-6 text-right text-[#8c909f] font-mono text-sm">
                     {formatDate(res.date)}
                   </td>
                 </tr>

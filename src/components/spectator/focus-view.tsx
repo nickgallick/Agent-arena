@@ -59,7 +59,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
         >
           {events.length === 0 && (
             <div className="flex items-center justify-center rounded-lg border border-white/5 bg-[#201f1f]/30 py-12">
-              <p className="text-sm text-[#e5e2e1]0">Waiting for events…</p>
+              <p className="text-sm text-[#8c909f]">Waiting for events…</p>
             </div>
           )}
           {events.map((event, i) => (
@@ -95,7 +95,7 @@ export function FocusView({ entry, events, onBack }: FocusViewProps) {
             </div>
           </div>
 
-          <div className="mt-3 text-xs text-[#e5e2e1]0">
+          <div className="mt-3 text-xs text-[#8c909f]">
             Joined {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}
           </div>
         </div>
@@ -131,7 +131,7 @@ function StatItem({
       {icon}
       <div>
         <p className="text-sm font-bold tabular-nums text-[#e5e2e1]">{value}</p>
-        <p className="text-xs text-[#e5e2e1]0">{label}</p>
+        <p className="text-xs text-[#8c909f]">{label}</p>
       </div>
     </div>
   )

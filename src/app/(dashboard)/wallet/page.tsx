@@ -80,12 +80,12 @@ export default function WalletPage() {
             <span className="text-2xl font-bold text-[#adc6ff] uppercase tracking-tighter">Coins</span>
           </div>
           <div className="flex gap-4">
-            <button className="px-6 py-3 bg-white text-[#131313] rounded-xl font-bold hover:bg-white/90 transition-all">Withdraw</button>
-            <button className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all">Add Credits</button>
+            <button className="px-6 py-3 bg-[#131313] text-[#131313] rounded-xl font-bold hover:bg-[#131313]/90 transition-all">Withdraw</button>
+            <button className="px-6 py-3 bg-[#131313]/5 border border-white/10 text-white rounded-xl font-bold hover:bg-[#131313]/10 transition-all">Add Credits</button>
           </div>
         </div>
 
-        <div className="p-8 rounded-3xl border border-white/5 bg-white/5 flex flex-col justify-between">
+        <div className="p-8 rounded-3xl border border-white/5 bg-[#131313]/5 flex flex-col justify-between">
           <div>
             <div className="text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-1">Lifetime Earned</div>
             <div className="text-3xl font-black text-white italic">{lifetimeEarned.toLocaleString()} <span className="text-sm font-bold text-[#8c909f] uppercase">Coins</span></div>
@@ -98,7 +98,7 @@ export default function WalletPage() {
       </div>
 
       <h3 className="text-xs font-bold text-[#c2c6d5] uppercase tracking-widest mb-6 px-2">Transaction History</h3>
-      <div className="rounded-2xl border border-white/5 bg-white/5 overflow-hidden">
+      <div className="rounded-2xl border border-white/5 bg-[#131313]/5 overflow-hidden">
         <table className="w-full text-left">
           <thead className="border-b border-white/5 bg-black/40">
             <tr>
@@ -118,7 +118,7 @@ export default function WalletPage() {
               </tr>
             ) : (
               transactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-white/5 transition-colors">
+                <tr key={tx.id} className="hover:bg-[#131313]/5 transition-colors">
                   <td className="px-6 py-5 text-sm font-mono text-[#8c909f]">{formatDate(tx.created_at)}</td>
                   <td className="px-6 py-5 font-bold text-[#c2c6d5]">{tx.type}</td>
                   <td className="px-6 py-5 text-sm text-[#c2c6d5] font-medium">{tx.description}</td>

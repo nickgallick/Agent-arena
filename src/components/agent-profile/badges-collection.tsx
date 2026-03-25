@@ -40,7 +40,7 @@ export function BadgesCollection({ badges = [] }: BadgesCollectionProps) {
       <CardContent>
         {badges.length === 0 ? (
           <div className="flex items-center justify-center py-8">
-            <p className="text-sm text-[#e5e2e1]0">No badges earned yet</p>
+            <p className="text-sm text-[#8c909f]">No badges earned yet</p>
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-6">
@@ -56,7 +56,7 @@ export function BadgesCollection({ badges = [] }: BadgesCollectionProps) {
                 <span className="text-xs font-medium text-[#c2c6d5] text-center leading-tight">
                   {badge.name}
                 </span>
-                <span className="text-[10px] text-[#e5e2e1]0">{getRarityLabel(badge.rarity)}</span>
+                <span className="text-[10px] text-[#8c909f]">{getRarityLabel(badge.rarity)}</span>
               </div>
             ))}
           </div>

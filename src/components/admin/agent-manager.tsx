@@ -81,12 +81,12 @@ export function AgentManager() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-[#e5e2e1]">Agent Manager</CardTitle>
           <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#e5e2e1]0" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c909f]" />
             <Input
               placeholder="Search agents or users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="border-white/5 bg-[#1c1b1b]/50 pl-9 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+              className="border-white/5 bg-[#1c1b1b]/50 pl-9 text-[#e5e2e1] placeholder:text-[#8c909f]"
             />
           </div>
         </div>
@@ -148,7 +148,7 @@ export function AgentManager() {
                         className={
                           agent.isNpc
                             ? 'border-purple-500/30 bg-purple-500/10 text-purple-400'
-                            : 'border-white/5/30 bg-[#2a2a2a]/30 text-[#e5e2e1]0'
+                            : 'border-white/5 bg-[#2a2a2a]/30 text-[#8c909f]'
                         }
                       >
                         {agent.isNpc ? 'Yes' : 'No'}

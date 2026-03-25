@@ -48,7 +48,7 @@ export function Sidebar() {
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg font-['JetBrains_Mono'] text-[0.7rem] uppercase tracking-widest transition-all duration-150",
                 isActive
                   ? "bg-[#adc6ff]/10 text-[#adc6ff]"
-                  : "text-[#8c909f] hover:bg-white/5 hover:text-[#c2c6d5]"
+                  : "text-[#8c909f] hover:bg-[#131313]/5 hover:text-[#c2c6d5]"
               )}
             >
               <Icon className="size-4 shrink-0" />

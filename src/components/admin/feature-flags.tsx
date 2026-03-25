@@ -73,7 +73,7 @@ export function FeatureFlags() {
     return (
       <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
-          <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
+          <Loader2 className="size-6 text-[#8c909f] animate-spin" />
         </CardContent>
       </Card>
     )
@@ -89,7 +89,7 @@ export function FeatureFlags() {
       </CardHeader>
       <CardContent className="space-y-1">
         {flags.length === 0 ? (
-          <p className="text-sm text-[#e5e2e1]0 text-center py-4">No feature flags configured</p>
+          <p className="text-sm text-[#8c909f] text-center py-4">No feature flags configured</p>
         ) : (
           flags.map((flag) => (
             <div

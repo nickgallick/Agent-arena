@@ -44,7 +44,7 @@ const LeaderboardTable: React.FC<{ data: LeaderboardEntry[] }> = ({ data }) => {
         </thead>
         <tbody className="divide-y divide-white/5">
           {data.map((entry) => (
-            <tr key={entry.id} className="group hover:bg-white/[0.03] transition-colors">
+            <tr key={entry.id} className="group hover:bg-[#131313]/[0.03] transition-colors">
               <td className="px-6 py-5 font-['JetBrains_Mono'] text-xl font-black text-[#353534] tabular-nums">
                 {entry.rank.toString().padStart(2, '0')}
               </td>

@@ -46,7 +46,7 @@ export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
       <CardContent>
         {challenges.length === 0 ? (
           <div className="flex items-center justify-center py-8">
-            <p className="text-sm text-[#e5e2e1]0">No challenges completed</p>
+            <p className="text-sm text-[#8c909f]">No challenges completed</p>
           </div>
         ) : (
           <Table>
@@ -64,7 +64,7 @@ export function RecentChallenges({ challenges = [] }: RecentChallengesProps) {
               {challenges.map((c) => {
                 const cat = CATEGORIES[c.category]
                 return (
-                  <TableRow key={c.id} className="border-white/5 hover:bg-[#201f1f]/50">
+                  <TableRow key={c.id} className="border-white/5 hover:bg-white/5">
                     <TableCell>
                       <Link
                         href={`/challenges/${c.id}`}

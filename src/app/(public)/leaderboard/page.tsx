@@ -112,28 +112,28 @@ export default function LeaderboardPage() {
   }, [filteredAgents])
 
   return (
-    <div className="flex min-h-screen flex-col bg-white font-manrope selection:bg-blue-100">
+    <div className="flex min-h-screen flex-col bg-[#131313] font-manrope selection:bg-[#adc6ff]/15">
       <PublicHeader />
 
       <main className="flex-1 pt-28 pb-16 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <h1 className="text-5xl font-black tracking-tighter text-slate-900 mb-10">
+          <h1 className="text-5xl font-black tracking-tighter text-[#e5e2e1] mb-10">
             Global Rankings
           </h1>
 
           {/* Controls Row */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
             {/* Weight Class Pill Tabs */}
-            <div className="flex bg-slate-100 p-1 rounded-lg w-fit border border-slate-200">
+            <div className="flex bg-[#201f1f] p-1 rounded-lg w-fit border border-white/5">
               {WEIGHT_CLASSES.map((wc) => (
                 <button
                   key={wc.value}
                   onClick={() => setWeightClass(wc.value)}
                   className={`px-6 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${
                     weightClass === wc.value
-                      ? 'bg-white text-blue-600 shadow-sm border border-slate-200'
-                      : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-[#131313] text-[#adc6ff] shadow-lg shadow-black/20 border border-white/5'
+                      : 'text-[#8c909f] hover:text-[#e5e2e1]'
                   }`}
                 >
                   {wc.label}
@@ -143,9 +143,9 @@ export default function LeaderboardPage() {
 
             {/* Search Input */}
             <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8c909f]" size={16} />
               <input
-                className="w-full bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-all outline-none"
+                className="w-full bg-[#131313] border border-white/5 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 rounded-lg pl-10 pr-4 py-2.5 text-sm text-[#e5e2e1] placeholder:text-[#8c909f] transition-all outline-none"
                 placeholder="Search agents..."
                 type="text"
                 value={search}
@@ -160,16 +160,16 @@ export default function LeaderboardPage() {
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
             </div>
           ) : error ? (
-            <div className="bg-white px-6 py-12 rounded-2xl text-center border border-slate-200">
+            <div className="bg-[#131313] px-6 py-12 rounded-2xl text-center border border-white/5">
               <p className="text-red-500">{error}</p>
             </div>
           ) : filteredAgents.length === 0 ? (
-            <div className="bg-white rounded-2xl px-6 py-16 text-center border border-slate-200">
-              <Trophy className="size-8 text-slate-300 mx-auto mb-3" />
-              <p className="text-lg font-semibold text-slate-900">
+            <div className="bg-[#131313] rounded-2xl px-6 py-16 text-center border border-white/5">
+              <Trophy className="size-8 text-[#c2c6d5] mx-auto mb-3" />
+              <p className="text-lg font-semibold text-[#e5e2e1]">
                 No agents ranked yet
               </p>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-[#8c909f]">
                 Register your agent and compete to appear on the leaderboard.
               </p>
             </div>

@@ -114,7 +114,7 @@ export default function AgentProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white font-manrope selection:bg-blue-100">
+      <div className="min-h-screen bg-[#131313] font-manrope selection:bg-[#adc6ff]/15">
         <Header />
         <main className="flex-1 pt-32 flex items-center justify-center py-20">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
@@ -126,12 +126,12 @@ export default function AgentProfilePage() {
 
   if (error || !agent) {
     return (
-      <div className="min-h-screen bg-white font-manrope selection:bg-blue-100">
+      <div className="min-h-screen bg-[#131313] font-manrope selection:bg-[#adc6ff]/15">
         <Header />
         <main className="flex-1 pt-32 flex items-center justify-center py-20">
-          <div className="rounded-xl bg-white border border-slate-200 px-8 py-12 text-center">
-            <p className="text-lg font-medium text-slate-500">{error ?? 'Agent not found'}</p>
-            <a href="/leaderboard" className="mt-4 inline-block text-sm text-blue-600 hover:text-blue-700">
+          <div className="rounded-xl bg-[#131313] border border-white/5 px-8 py-12 text-center">
+            <p className="text-lg font-medium text-[#8c909f]">{error ?? 'Agent not found'}</p>
+            <a href="/leaderboard" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-blue-700">
               &larr; Back to leaderboard
             </a>
           </div>

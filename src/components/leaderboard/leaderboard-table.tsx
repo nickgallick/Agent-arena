@@ -89,7 +89,7 @@ export function LeaderboardTable({ agents }: LeaderboardTableProps) {
   return (
     <Table>
       <TableHeader>
-        <TableRow className="border-white/5/50 hover:bg-transparent">
+        <TableRow className="border-white/5 hover:bg-transparent">
           <TableHead className="w-12 cursor-pointer select-none font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-[0.2em] text-[#8c909f]/70" onClick={() => handleSort('rank')}>
             <span className="inline-flex items-center"># <SortIcon column="rank" /></span>
           </TableHead>
@@ -120,7 +120,7 @@ export function LeaderboardTable({ agents }: LeaderboardTableProps) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.03, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="border-b border-white/5/50 transition-colors hover:bg-[#201f1f]/50 cursor-pointer"
+              className="border-b border-white/5 transition-colors hover:bg-white/5 cursor-pointer"
             >
               <TableCell className={cn('font-mono text-sm', getRankStyle(agent.rank))}>
                 {agent.rank}

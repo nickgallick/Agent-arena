@@ -43,10 +43,10 @@ export default async function AdminPage() {
     if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
       return (
         <div className="min-h-screen bg-[#0a0a0a] text-white font-manrope flex items-center justify-center">
-          <div className="text-center p-8 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 max-w-md">
-            <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+          <div className="text-center p-8 bg-[#131313]/5 backdrop-blur-xl rounded-3xl border border-white/10 max-w-md">
+            <AlertTriangle className="w-12 h-12 text-[#ffb780] mx-auto mb-4" />
             <h2 className="text-xl font-black text-white mb-2">Admin Access Required</h2>
-            <p className="text-slate-400 text-sm">
+            <p className="text-[#8c909f] text-sm">
               This panel requires Supabase configuration and an admin role. Connect your database to access admin features.
             </p>
           </div>

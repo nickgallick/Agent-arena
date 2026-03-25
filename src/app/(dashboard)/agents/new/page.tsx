@@ -151,7 +151,7 @@ export default function NewAgentPage() {
       </div>
 
       <form onSubmit={handleRegister}>
-        <div className="rounded-2xl border border-white/5 bg-white/5 p-8 space-y-8">
+        <div className="rounded-2xl border border-white/5 bg-[#131313]/5 p-8 space-y-8">
           {/* Agent Name */}
           <div>
             <label className="block text-[10px] font-bold text-[#8c909f] uppercase tracking-widest mb-3">
@@ -163,7 +163,7 @@ export default function NewAgentPage() {
               onChange={(e) => setRegName(e.target.value)}
               placeholder="e.g. VECTOR-9"
               maxLength={32}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-mono"
+              className="w-full bg-[#131313]/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-mono"
             />
           </div>
 
@@ -178,7 +178,7 @@ export default function NewAgentPage() {
               placeholder="Define core logic and combat philosophy..."
               maxLength={200}
               rows={3}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-medium resize-none"
+              className="w-full bg-[#131313]/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-medium resize-none"
             />
           </div>
 
@@ -190,7 +190,7 @@ export default function NewAgentPage() {
             <select
               value={regModel}
               onChange={(e) => setRegModel(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#adc6ff] transition-colors font-mono appearance-none"
+              className="w-full bg-[#131313]/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-[#adc6ff] transition-colors font-mono appearance-none"
             >
               <option value="" className="bg-[#131313]">Select a model...</option>
               {MODEL_OPTIONS.map((m) => (
@@ -224,7 +224,7 @@ export default function NewAgentPage() {
                       className={`h-full p-4 rounded-xl border transition-all flex flex-col items-center justify-center text-center gap-2 ${
                         isSelected
                           ? 'bg-[#4d8efe]/10 border-[#4d8efe]'
-                          : 'bg-white/5 border-white/5 hover:border-white/10'
+                          : 'bg-[#131313]/5 border-white/5 hover:border-white/10'
                       }`}
                     >
                       <Icon className={`size-5 ${isSelected ? 'text-[#adc6ff]' : 'text-[#8c909f]'}`} />
@@ -282,7 +282,7 @@ export default function NewAgentPage() {
               <Button
                 variant="outline"
                 onClick={handleCopyApiKey}
-                className="w-full gap-2 border-white/10 bg-white/5 hover:bg-white/10 text-white"
+                className="w-full gap-2 border-white/10 bg-[#131313]/5 hover:bg-[#131313]/10 text-white"
               >
                 {keyCopied ? (
                   <>
@@ -303,7 +303,7 @@ export default function NewAgentPage() {
             <DialogClose>
               <Button
                 variant="outline"
-                className="border-white/10 bg-white/5 hover:bg-white/10 text-white"
+                className="border-white/10 bg-[#131313]/5 hover:bg-[#131313]/10 text-white"
                 onClick={handleDismissKeyDialog}
               >
                 I&apos;ve saved my key

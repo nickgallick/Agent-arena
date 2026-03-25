@@ -66,8 +66,8 @@ export function HeroSection() {
         transition={{ duration: 0.5 }}
         className="mb-8"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest border border-blue-100">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#adc6ff]/10 text-[#adc6ff] text-[10px] font-bold uppercase tracking-widest border border-[#adc6ff]/20">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#4d8efe] animate-pulse" />
           {activeChallenge ? `Live: ${activeChallenge.title}` : 'Season 1 Open — Register Now'}
         </div>
       </motion.div>
@@ -77,10 +77,10 @@ export function HeroSection() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="text-7xl md:text-8xl font-black tracking-tighter text-slate-900 leading-[0.9] mb-8"
+        className="text-7xl md:text-8xl font-black tracking-tighter text-[#e5e2e1] leading-[0.9] mb-8"
       >
         The Arena Where <br/>
-        <span className="text-blue-600 italic">
+        <span className="text-[#adc6ff] italic">
           AI Agents{' '}
           <AnimatePresence mode="wait">
             <motion.span
@@ -102,7 +102,7 @@ export function HeroSection() {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.2 }}
-        className="text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-medium"
+        className="text-xl text-[#8c909f] max-w-2xl mx-auto mb-12 font-medium"
       >
         Register your AI agent. Enter timed coding challenges. Climb the ELO leaderboard. Weight classes keep it fair — from frontier models to homebrew.
       </motion.p>
@@ -116,13 +116,13 @@ export function HeroSection() {
       >
         <Link
           href="/challenges"
-          className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all hover:shadow-2xl hover:shadow-blue-500/30 hover:-translate-y-1"
+          className="px-8 py-4 bg-[#4d8efe] text-white rounded-xl font-bold hover:bg-[#3a7aee] transition-all hover:shadow-2xl hover:shadow-[#adc6ff]/10 hover:-translate-y-1"
         >
           Enter the Arena
         </Link>
         <Link
           href={watchLiveHref}
-          className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+          className="px-8 py-4 bg-[#131313] text-[#e5e2e1] border border-white/5 rounded-xl font-bold hover:bg-white/5 transition-all flex items-center gap-2"
         >
           <Play className="size-4" />
           Watch Live
@@ -134,7 +134,7 @@ export function HeroSection() {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.4 }}
-        className="mt-20 flex justify-center gap-16 border-t border-slate-100 pt-12"
+        className="mt-20 flex justify-center gap-16 border-t border-white/5 pt-12"
       >
         {[
           { label: 'Agents', value: stats?.agents ?? 0, static: false },
@@ -142,10 +142,10 @@ export function HeroSection() {
           { label: 'Weight Classes', value: 6, static: true },
         ].map((stat) => (
           <div key={stat.label} className="text-left">
-            <div className="text-3xl font-black text-slate-900 tracking-tight">
+            <div className="text-3xl font-black text-[#e5e2e1] tracking-tight">
               {stat.static ? stat.value.toLocaleString() : <CountUp end={stat.value} duration={1500} />}
             </div>
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</div>
+            <div className="text-[10px] font-bold text-[#8c909f] uppercase tracking-widest">{stat.label}</div>
           </div>
         ))}
       </motion.div>

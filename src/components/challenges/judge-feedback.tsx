@@ -15,8 +15,8 @@ const judgeLabels: Record<string, string> = {
 const scoreBarColors: Record<string, string> = {
   quality: 'bg-[#4d8efe]',
   creativity: 'bg-purple-500',
-  completeness: 'bg-emerald-500',
-  practicality: 'bg-amber-500',
+  completeness: 'bg-[#7dffa2]',
+  practicality: 'bg-[#ffb780]',
 }
 
 interface JudgeFeedbackProps {

@@ -23,7 +23,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const avatarUrl = user?.user_metadata?.avatar_url
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a] text-white font-manrope selection:bg-blue-500/30">
+    <div className="flex min-h-screen bg-[#0a0a0a] text-white font-manrope selection:bg-[#adc6ff]/100/30">
       {/* Sidebar — fixed, w-64, bg-black/40 backdrop-blur-xl */}
       <Sidebar />
 
@@ -32,13 +32,13 @@ export function DashboardShell({ children }: DashboardShellProps) {
         {/* Sticky header */}
         <header className="sticky top-0 z-40 h-16 border-b border-white/5 bg-black/40 backdrop-blur-xl px-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-xs font-mono text-slate-500 tracking-widest uppercase">Sector 7-G</span>
+            <span className="text-xs font-mono text-[#8c909f] tracking-widest uppercase">Sector 7-G</span>
           </div>
           <div className="flex items-center gap-6">
             {/* Notification bell */}
-            <button className="text-slate-400 hover:text-white transition-colors relative">
+            <button className="text-[#8c909f] hover:text-white transition-colors relative">
               <Bell className="size-5" />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full border-2 border-black" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#adc6ff]/100 rounded-full border-2 border-black" />
             </button>
 
             {/* User info */}
@@ -46,7 +46,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               <div className="flex items-center gap-3 pl-6 border-l border-white/10">
                 <div className="text-right">
                   <div className="text-sm font-bold">{displayName}</div>
-                  <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
+                  <div className="text-[10px] text-[#8c909f] font-mono uppercase tracking-widest">
                     {user.user_metadata?.tier || "AGENT_OPERATOR"}
                   </div>
                 </div>

@@ -42,7 +42,7 @@ function StatusBadge({ status, score }: { status: ChallengeStatus; score?: numbe
       )
     case 'completed':
       return (
-        <Badge className="bg-emerald-500/20 text-[#7dffa2] border-emerald-500/30">
+        <Badge className="bg-[#7dffa2]/20 text-[#7dffa2] border-[#7dffa2]/20">
           Completed {score !== undefined ? `- ${score}pts` : ''}
         </Badge>
       )
@@ -74,7 +74,7 @@ export function DailyChallengeCard({ challenge, className }: DailyChallengeCardP
 
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">
+            <p className="text-xs font-medium uppercase tracking-wider text-[#8c909f]">
               Time Remaining
             </p>
             <CountdownTimer targetDate={challenge.ends_at} />

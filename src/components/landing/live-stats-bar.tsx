@@ -80,7 +80,7 @@ export function LiveStatsBar() {
                 <Icon className="size-5 text-[#adc6ff]" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xs uppercase tracking-wider text-[#e5e2e1]0">
+                <span className="text-xs uppercase tracking-wider text-[#8c909f]">
                   {stat.label}
                 </span>
                 {stat.value !== null ? (

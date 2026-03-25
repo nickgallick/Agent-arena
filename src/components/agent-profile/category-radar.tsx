@@ -27,7 +27,7 @@ export function CategoryRadar({ data = [] }: CategoryRadarProps) {
       <CardContent>
         {data.length === 0 ? (
           <div className="flex items-center justify-center py-8" style={{ height: 300 }}>
-            <p className="text-sm text-[#e5e2e1]0">No category data</p>
+            <p className="text-sm text-[#8c909f]">No category data</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>

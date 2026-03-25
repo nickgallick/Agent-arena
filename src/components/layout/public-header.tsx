@@ -41,12 +41,12 @@ export function PublicHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full pointer-events-none">
-      {/* Floating pill nav — light theme */}
-      <nav className="pointer-events-auto bg-white/80 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-slate-200 shadow-lg shadow-slate-200/50 flex items-center gap-8 font-manrope tracking-tight">
+      {/* Floating pill nav — dark theme */}
+      <nav className="pointer-events-auto bg-[#131313]/80 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-fit px-6 py-2 border border-white/5 shadow-lg shadow-black/20 flex items-center gap-8 font-manrope tracking-tight">
         {/* Brand */}
         <Link
           href="/"
-          className="text-xl font-bold tracking-tighter text-slate-900 hover:text-blue-600 transition-colors duration-150 whitespace-nowrap"
+          className="text-xl font-bold tracking-tighter text-[#e5e2e1] hover:text-[#adc6ff] transition-colors duration-150 whitespace-nowrap"
         >
           Bouts
         </Link>
@@ -59,8 +59,8 @@ export function PublicHeader() {
               href={link.href}
               className={
                 isActive(link.href)
-                  ? "text-blue-600 font-semibold transition-colors duration-150"
-                  : "text-slate-500 hover:text-slate-900 transition-colors duration-150"
+                  ? "text-[#adc6ff] font-semibold transition-colors duration-150"
+                  : "text-[#8c909f] hover:text-[#e5e2e1] transition-colors duration-150"
               }
             >
               {link.label}
@@ -69,13 +69,13 @@ export function PublicHeader() {
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-4 border-l border-slate-200 pl-6">
+        <div className="flex items-center gap-4 border-l border-white/5 pl-6">
           {loading ? (
-            <div className="h-8 w-28 animate-pulse rounded-full bg-slate-100" />
+            <div className="h-8 w-28 animate-pulse rounded-full bg-[#201f1f]" />
           ) : user ? (
             <>
               {/* Notifications */}
-              <button className="text-slate-400 hover:text-slate-900 scale-95 active:scale-90 transition-transform">
+              <button className="text-[#8c909f] hover:text-[#e5e2e1] scale-95 active:scale-90 transition-transform">
                 <Bell className="size-5" />
               </button>
 
@@ -83,7 +83,7 @@ export function PublicHeader() {
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="text-slate-500 hover:text-slate-900 scale-95 active:scale-90 transition-transform"
+                  className="text-[#8c909f] hover:text-[#e5e2e1] scale-95 active:scale-90 transition-transform"
                 >
                   {avatarUrl ? (
                     <Image
@@ -101,29 +101,29 @@ export function PublicHeader() {
                 {dropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                    <div className="absolute right-0 top-full mt-3 z-50 w-48 rounded-xl bg-white border border-slate-200 shadow-2xl shadow-slate-200/50 py-1">
-                      <div className="px-4 py-2.5 border-b border-slate-100">
-                        <div className="text-sm font-medium text-slate-900">{displayName}</div>
-                        <div className="text-xs text-slate-400 truncate">{user.email}</div>
+                    <div className="absolute right-0 top-full mt-3 z-50 w-48 rounded-xl bg-[#131313] border border-white/5 shadow-2xl shadow-black/20 py-1">
+                      <div className="px-4 py-2.5 border-b border-white/5">
+                        <div className="text-sm font-medium text-[#e5e2e1]">{displayName}</div>
+                        <div className="text-xs text-[#8c909f] truncate">{user.email}</div>
                       </div>
                       <Link
                         href="/agents"
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#c2c6d5] hover:bg-white/5 transition-colors"
                       >
                         <Bot className="size-4" /> My Agents
                       </Link>
                       <Link
                         href="/settings"
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-[#c2c6d5] hover:bg-white/5 transition-colors"
                       >
                         <Settings className="size-4" /> Settings
                       </Link>
-                      <div className="my-1 border-t border-slate-100" />
+                      <div className="my-1 border-t border-white/5" />
                       <button
                         onClick={handleSignOut}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-slate-50 transition-colors"
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-white/5 transition-colors"
                       >
                         <LogOut className="size-4" /> Sign out
                       </button>
@@ -135,7 +135,7 @@ export function PublicHeader() {
               {/* Launch Agent CTA */}
               <Link
                 href="/agents/new"
-                className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm font-bold hover:bg-blue-700 transition-colors whitespace-nowrap"
+                className="bg-[#4d8efe] text-white px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#3a7aee] transition-colors whitespace-nowrap"
               >
                 Launch Agent
               </Link>
@@ -143,7 +143,7 @@ export function PublicHeader() {
           ) : (
             <Link
               href="/login"
-              className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm font-bold hover:bg-blue-700 transition-colors"
+              className="bg-[#4d8efe] text-white px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#3a7aee] transition-colors"
             >
               Launch Agent
             </Link>
@@ -153,7 +153,7 @@ export function PublicHeader() {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden text-slate-500 hover:text-slate-900 transition-colors p-1"
+            className="md:hidden text-[#8c909f] hover:text-[#e5e2e1] transition-colors p-1"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -163,7 +163,7 @@ export function PublicHeader() {
 
       {/* Mobile dropdown — light */}
       {mobileOpen && (
-        <div className="pointer-events-auto absolute inset-x-4 top-16 z-40 mt-2 rounded-2xl bg-white/95 backdrop-blur-xl border border-slate-200 shadow-2xl shadow-slate-200/50 md:hidden">
+        <div className="pointer-events-auto absolute inset-x-4 top-16 z-40 mt-2 rounded-2xl bg-[#131313]/95 backdrop-blur-xl border border-white/5 shadow-2xl shadow-black/20 md:hidden">
           <nav className="flex flex-col gap-1 px-4 py-3">
             {NAV.map((link) => (
               <Link
@@ -172,26 +172,26 @@ export function PublicHeader() {
                 onClick={() => setMobileOpen(false)}
                 className={
                   isActive(link.href)
-                    ? "rounded px-3 py-2.5 text-sm font-semibold text-blue-600 bg-blue-50"
-                    : "rounded px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    ? "rounded px-3 py-2.5 text-sm font-semibold text-[#adc6ff] bg-[#adc6ff]/10"
+                    : "rounded px-3 py-2.5 text-sm text-[#c2c6d5] hover:bg-white/5 hover:text-[#e5e2e1]"
                 }
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-          <div className="border-t border-slate-100 px-4 py-3">
+          <div className="border-t border-white/5 px-4 py-3">
             {user ? (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {avatarUrl ? (
                     <Image src={avatarUrl} alt="" width={28} height={28} className="size-7 rounded-full" />
                   ) : (
-                    <div className="size-7 rounded-full bg-slate-100 flex items-center justify-center">
-                      <User className="size-4 text-blue-600" />
+                    <div className="size-7 rounded-full bg-[#201f1f] flex items-center justify-center">
+                      <User className="size-4 text-[#adc6ff]" />
                     </div>
                   )}
-                  <span className="text-sm text-slate-600">{displayName}</span>
+                  <span className="text-sm text-[#c2c6d5]">{displayName}</span>
                 </div>
                 <button onClick={handleSignOut} className="text-sm text-red-500 hover:text-red-600">
                   Sign out
@@ -201,7 +201,7 @@ export function PublicHeader() {
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="block w-full text-center bg-blue-600 text-white font-bold px-6 py-2.5 rounded-full text-sm hover:bg-blue-700 transition-colors"
+                className="block w-full text-center bg-[#4d8efe] text-white font-bold px-6 py-2.5 rounded-full text-sm hover:bg-[#3a7aee] transition-colors"
               >
                 Launch Agent
               </Link>

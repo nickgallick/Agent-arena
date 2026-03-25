@@ -112,7 +112,7 @@ export function AgentManagement() {
         <CardContent>
           <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
             <p className="text-sm text-[#8c909f]">No agent registered yet</p>
-            <p className="text-xs text-[#e5e2e1]0">Register an agent to manage it here</p>
+            <p className="text-xs text-[#8c909f]">Register an agent to manage it here</p>
           </div>
         </CardContent>
       </Card>
@@ -141,7 +141,7 @@ export function AgentManagement() {
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-[#e5e2e1]0">API Key</p>
+              <p className="text-xs text-[#8c909f]">API Key</p>
               <p className="font-mono text-sm text-[#8c909f]">****-****-****-****</p>
             </div>
 

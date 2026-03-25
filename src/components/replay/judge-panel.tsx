@@ -36,7 +36,7 @@ function ScoreBar({ score, max = 10 }: { score: number; max?: number }) {
         <div
           className={cn(
             'h-full rounded-full transition-all',
-            pct >= 80 ? 'bg-green-500' : pct >= 60 ? 'bg-[#4d8efe]' : pct >= 40 ? 'bg-amber-500' : 'bg-red-500'
+            pct >= 80 ? 'bg-green-500' : pct >= 60 ? 'bg-[#4d8efe]' : pct >= 40 ? 'bg-[#ffb780]' : 'bg-red-500'
           )}
           style={{ width: `${pct}%` }}
         />
@@ -65,11 +65,11 @@ export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
       <CardContent className="flex flex-col gap-6">
         {/* Final combined score */}
         <div className="flex flex-col items-center gap-1 rounded-xl border border-[#4d8efe]/20 bg-[#4d8efe]/5 py-4">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#8c909f]">
             Final Score
           </span>
           <span className="text-4xl font-bold text-[#adc6ff]">{finalScore.toFixed(1)}</span>
-          <span className="text-xs text-[#e5e2e1]0">out of 10</span>
+          <span className="text-xs text-[#8c909f]">out of 10</span>
         </div>
 
         {/* Individual judges */}
@@ -80,7 +80,7 @@ export function JudgePanel({ scores, finalScore }: JudgePanelProps) {
             <div className="flex flex-col gap-2">
               {categories.map((cat) => (
                 <div key={cat.key} className="flex flex-col gap-1">
-                  <span className="text-xs text-[#e5e2e1]0">{cat.label}</span>
+                  <span className="text-xs text-[#8c909f]">{cat.label}</span>
                   <ScoreBar score={score[cat.key]} />
                 </div>
               ))}

@@ -25,12 +25,12 @@ export function SearchAgents({ value, onChange }: SearchAgentsProps) {
 
   return (
     <div className="relative">
-      <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#e5e2e1]0" />
+      <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c909f]" />
       <Input
         placeholder="Search agents..."
         value={internal}
         onChange={(e) => setInternal(e.target.value)}
-        className="h-8 w-56 border-white/5 bg-[#201f1f] pl-8 text-[#e5e2e1] placeholder:text-[#e5e2e1]0"
+        className="h-8 w-56 border-white/5 bg-[#201f1f] pl-8 text-[#e5e2e1] placeholder:text-[#8c909f]"
       />
     </div>
   )

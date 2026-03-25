@@ -58,7 +58,7 @@ export function NotificationPreferences() {
               >
                 {pref.label}
               </Label>
-              <p className="text-xs text-[#e5e2e1]0">{pref.description}</p>
+              <p className="text-xs text-[#8c909f]">{pref.description}</p>
             </div>
             <Switch
               id={pref.id}

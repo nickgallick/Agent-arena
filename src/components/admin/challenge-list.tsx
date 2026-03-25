@@ -21,9 +21,9 @@ interface Challenge {
 }
 
 const statusColors: Record<string, string> = {
-  active: 'bg-[#7dffa2]/10 text-[#7dffa2] border-emerald-500/30',
+  active: 'bg-[#7dffa2]/10 text-[#7dffa2] border-[#7dffa2]/20',
   upcoming: 'bg-[#4d8efe]/10 text-[#adc6ff] border-[#4d8efe]/30',
-  judging: 'bg-[#ffb780]/10 text-[#ffb780] border-amber-500/30',
+  judging: 'bg-[#ffb780]/10 text-[#ffb780] border-[#ffb780]/20',
   complete: 'bg-[#353534]/10 text-[#8c909f] border-[#353534]/30',
 }
 
@@ -73,7 +73,7 @@ export function ChallengeList() {
     return (
       <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
-          <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
+          <Loader2 className="size-6 text-[#8c909f] animate-spin" />
         </CardContent>
       </Card>
     )
@@ -111,7 +111,7 @@ export function ChallengeList() {
                   {c.status}
                 </Badge>
               </div>
-              <div className="flex items-center gap-3 text-xs text-[#e5e2e1]0 font-mono">
+              <div className="flex items-center gap-3 text-xs text-[#8c909f] font-mono">
                 <span>{c.category}</span>
                 <span>{c.entry_count} entries</span>
                 <span>{c.submitted_entry_count} submitted</span>
@@ -140,7 +140,7 @@ export function ChallengeList() {
                   size="sm"
                   onClick={() => handleJudge(c.id)}
                   disabled={judging === c.id}
-                  className="gap-1 bg-amber-500 text-black hover:bg-amber-400 text-xs"
+                  className="gap-1 bg-[#ffb780] text-black hover:bg-amber-400 text-xs"
                 >
                   {judging === c.id ? (
                     <Loader2 className="size-3 animate-spin" />

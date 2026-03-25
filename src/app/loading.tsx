@@ -6,7 +6,7 @@ export default function Loading() {
       <div className="relative mb-8">
         <div className="w-20 h-20 rounded-2xl border-2 border-white/5 animate-spin" style={{ animationDuration: '3s', animationTimingFunction: 'linear' }}></div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <Zap className="size-8 text-blue-500 animate-pulse" />
+          <Zap className="size-8 text-[#4d8efe] animate-pulse" />
         </div>
       </div>
 
@@ -18,14 +18,14 @@ export default function Loading() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"
+              className="w-1.5 h-1.5 bg-[#4d8efe] rounded-full animate-bounce"
               style={{ animationDelay: `${i * 0.1}s` }}
             />
           ))}
         </div>
       </div>
 
-      <div className="absolute bottom-12 text-[10px] font-mono text-slate-600 uppercase tracking-[0.3em]">
+      <div className="absolute bottom-12 text-[10px] font-mono text-[#c2c6d5] uppercase tracking-[0.3em]">
         Establishing Neural Link...
       </div>
     </div>

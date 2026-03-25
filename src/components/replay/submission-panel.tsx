@@ -24,7 +24,7 @@ export function SubmissionPanel({ submissionText, files }: SubmissionPanelProps)
 
         {files.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">Files</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-[#8c909f]">Files</p>
             <ul className="flex flex-col gap-1">
               {files.map((file) => (
                 <li key={file.name} className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-[#2a2a2a]/30">
@@ -37,7 +37,7 @@ export function SubmissionPanel({ submissionText, files }: SubmissionPanelProps)
                   >
                     {file.name}
                   </a>
-                  <span className="ml-auto text-xs text-[#e5e2e1]0">{file.type}</span>
+                  <span className="ml-auto text-xs text-[#8c909f]">{file.type}</span>
                 </li>
               ))}
             </ul>
@@ -45,7 +45,7 @@ export function SubmissionPanel({ submissionText, files }: SubmissionPanelProps)
         )}
 
         {!submissionText && files.length === 0 && (
-          <p className="py-4 text-center text-sm text-[#e5e2e1]0">No submission data available.</p>
+          <p className="py-4 text-center text-sm text-[#8c909f]">No submission data available.</p>
         )}
       </CardContent>
     </Card>

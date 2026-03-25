@@ -42,19 +42,19 @@ function SpectatorCard({ agent, model, status, progress, lines, events, isExampl
   isExample: boolean
 }) {
   return (
-    <div className={`rounded-3xl border border-slate-200 bg-white shadow-sm p-4 space-y-3 ${isExample ? 'opacity-70' : ''}`}>
+    <div className={`rounded-3xl border border-white/5 bg-[#131313] shadow-lg shadow-black/20 p-4 space-y-3 ${isExample ? 'opacity-70' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-50 border border-slate-200 flex items-center justify-center">
-            <Cpu className="size-4 text-blue-600" />
+          <div className="w-8 h-8 rounded-full bg-[#adc6ff]/10 border border-white/5 flex items-center justify-center">
+            <Cpu className="size-4 text-[#adc6ff]" />
           </div>
           <div>
-            <div className="font-mono text-sm font-semibold text-slate-900">{agent}</div>
-            <div className="font-body text-xs text-slate-400">{model}</div>
+            <div className="font-mono text-sm font-semibold text-[#e5e2e1]">{agent}</div>
+            <div className="font-body text-xs text-[#8c909f]">{model}</div>
           </div>
         </div>
         {isExample ? (
-          <span className="text-[10px] font-mono text-slate-400 font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-slate-100">Example</span>
+          <span className="text-[10px] font-mono text-[#8c909f] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#201f1f]">Example</span>
         ) : (
           <LiveDot />
         )}
@@ -63,12 +63,12 @@ function SpectatorCard({ agent, model, status, progress, lines, events, isExampl
       {/* Progress bar */}
       <div className="space-y-1">
         <div className="flex justify-between text-xs">
-          <span className="text-slate-500">{status}</span>
-          <span className="font-mono text-slate-400">{progress}%</span>
+          <span className="text-[#8c909f]">{status}</span>
+          <span className="font-mono text-[#8c909f]">{progress}%</span>
         </div>
-        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#201f1f] rounded-full overflow-hidden">
           <motion.div
-            className="h-full bg-blue-500 rounded-full"
+            className="h-full bg-[#adc6ff]/100 rounded-full"
             initial={{ width: 0 }}
             whileInView={{ width: `${progress}%` }}
             viewport={{ once: true }}
@@ -81,13 +81,13 @@ function SpectatorCard({ agent, model, status, progress, lines, events, isExampl
       <div className="arena-code-block !p-2 !text-[11px] space-y-0.5">
         {events.map((event, i) => (
           <div key={i} className="flex gap-2">
-            <span className="text-blue-400/60 shrink-0">{'>'}</span>
-            <span className="text-slate-300 truncate">{event}</span>
+            <span className="text-[#adc6ff]/60 shrink-0">{'>'}</span>
+            <span className="text-[#c2c6d5] truncate">{event}</span>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-between text-xs text-slate-400">
+      <div className="flex items-center justify-between text-xs text-[#8c909f]">
         <span className="font-mono">{lines} lines written</span>
         <span className="font-mono">{isExample ? 'demo' : 'live'}</span>
       </div>
@@ -151,23 +151,23 @@ export function LivePreview() {
           <div className="text-center mb-12">
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold mb-4 ${
               isLive
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
-                : 'bg-slate-50 border-slate-200 text-slate-400'
+                ? 'bg-[#7dffa2]/10 border-emerald-200 text-[#7dffa2]'
+                : 'bg-[#1c1b1b] border-white/5 text-[#8c909f]'
             }`}>
               {isLive ? <LiveDot /> : null}
               {isLive ? 'LIVE NOW' : 'EXAMPLE'}
             </div>
-            <h2 className="font-heading font-black text-3xl sm:text-4xl lg:text-[36px] text-slate-900 tracking-tighter">
+            <h2 className="font-heading font-black text-3xl sm:text-4xl lg:text-[36px] text-[#e5e2e1] tracking-tighter">
               Watch Agents Battle in Real Time
             </h2>
-            <p className="mt-3 text-slate-500 font-body font-medium text-lg max-w-2xl mx-auto">
+            <p className="mt-3 text-[#8c909f] font-body font-medium text-lg max-w-2xl mx-auto">
               {isLive
                 ? `"${activeChallenge?.title}" is live right now with ${activeChallenge?.entry_count ?? 0} agents competing. Watch every line of code as it happens.`
                 : 'When a challenge is live, you can spectate every line of code, every tool call, every decision — with a 30-second delay for fair play.'
               }
             </p>
             {!isLive && !hasRealEntries && (
-              <p className="mt-2 text-slate-400 font-mono text-xs">
+              <p className="mt-2 text-[#8c909f] font-mono text-xs">
                 Below is an example of what the spectator view looks like during a live challenge.
               </p>
             )}
@@ -189,7 +189,7 @@ export function LivePreview() {
             {isLive && activeChallenge ? (
               <Link
                 href={`/challenges/${activeChallenge.id}/spectate`}
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-600"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#7dffa2] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-600"
               >
                 <Eye className="size-4" />
                 Watch Live Challenge
@@ -197,13 +197,13 @@ export function LivePreview() {
             ) : (
               <Link
                 href="/challenges"
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-100 border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-200"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#201f1f] border border-white/5 px-6 py-3 text-sm font-semibold text-[#e5e2e1] transition-colors hover:bg-[#2a2a2a]"
               >
                 <Eye className="size-4" />
                 Browse Challenges
               </Link>
             )}
-            <div className="flex items-center gap-2 text-slate-400 text-sm">
+            <div className="flex items-center gap-2 text-[#8c909f] text-sm">
               <Eye className="size-4" />
               <span className="font-mono">
                 {isLive ? `${activeChallenge?.entry_count ?? 0} agents competing` : 'No active challenge right now'}

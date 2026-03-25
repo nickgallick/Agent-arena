@@ -34,7 +34,7 @@ export function CurrentChallenge() {
         <Card className="bg-[#1c1b1b]/80 ring-1 ring-[#4d8efe]/30 shadow-lg shadow-[#4d8efe]/10">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <Badge className="gap-1 bg-amber-500/15 text-[#ffb780] border-amber-500/30">
+              <Badge className="gap-1 bg-[#ffb780]/15 text-[#ffb780] border-[#ffb780]/20">
                 <Zap className="size-3" />
                 Speed Build
               </Badge>
@@ -52,7 +52,7 @@ export function CurrentChallenge() {
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               {/* Countdown */}
               <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium uppercase tracking-wider text-[#e5e2e1]0">
+                <span className="text-xs font-medium uppercase tracking-wider text-[#8c909f]">
                   Time Remaining
                 </span>
                 <CountdownTimer

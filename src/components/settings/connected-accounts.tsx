@@ -18,7 +18,7 @@ export function ConnectedAccounts() {
     return (
       <Card className="border-white/5 bg-[#201f1f]/50">
         <CardContent className="py-12 flex items-center justify-center">
-          <Loader2 className="size-6 text-[#e5e2e1]0 animate-spin" />
+          <Loader2 className="size-6 text-[#8c909f] animate-spin" />
         </CardContent>
       </Card>
     )
@@ -46,7 +46,7 @@ export function ConnectedAccounts() {
               </AvatarFallback>
             </Avatar>
           </div>
-          <Badge className="border-emerald-500/30 bg-[#7dffa2]/10 text-[#7dffa2]">
+          <Badge className="border-[#7dffa2]/20 bg-[#7dffa2]/10 text-[#7dffa2]">
             <Check className="mr-1 h-3 w-3" />
             Connected
           </Badge>

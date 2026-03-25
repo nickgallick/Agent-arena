@@ -39,7 +39,7 @@ interface Job {
 const statusColors: Record<JobStatus, string> = {
   pending: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
   processing: 'border-[#4d8efe]/30 bg-[#4d8efe]/10 text-[#adc6ff]',
-  completed: 'border-emerald-500/30 bg-[#7dffa2]/10 text-[#7dffa2]',
+  completed: 'border-[#7dffa2]/20 bg-[#7dffa2]/10 text-[#7dffa2]',
   failed: 'border-red-500/30 bg-red-500/10 text-[#ffb4ab]',
 }
 
@@ -157,7 +157,7 @@ export function JobQueueViewer() {
                       </Badge>
                     </TableCell>
                     <TableCell
-                      className="max-w-[200px] truncate font-mono text-xs text-[#e5e2e1]0"
+                      className="max-w-[200px] truncate font-mono text-xs text-[#8c909f]"
                       title={job.payload}
                     >
                       {job.payload.length > 50

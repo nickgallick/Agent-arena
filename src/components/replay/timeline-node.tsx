@@ -58,7 +58,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
         'relative cursor-pointer rounded-lg px-4 py-3 transition-colors',
         isActive
           ? 'border-l-2 border-[#4d8efe] bg-[#4d8efe]/10'
-          : 'border-l-2 border-white/5 hover:bg-[#201f1f]/50'
+          : 'border-l-2 border-white/5 hover:bg-white/5'
       )}
       onClick={handleClick}
       whileHover={{ x: 2 }}
@@ -77,7 +77,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
           <p className={cn('truncate text-sm font-medium', isActive ? 'text-[#e5e2e1]' : 'text-[#c2c6d5]')}>
             {event.title}
           </p>
-          <p className="font-mono text-xs text-[#e5e2e1]0">{formatTimestamp(event.timestamp)}</p>
+          <p className="font-mono text-xs text-[#8c909f]">{formatTimestamp(event.timestamp)}</p>
         </div>
       </div>
 
