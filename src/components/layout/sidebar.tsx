@@ -17,7 +17,7 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="h-screen w-64 fixed left-0 top-0 flex-col hidden lg:flex pt-6 pb-6 border-r border-white/5 bg-black/20 backdrop-blur-xl z-40">
+    <aside className="h-screen w-64 fixed left-0 top-0 flex-col hidden lg:flex pt-6 pb-6 border-r border-white/5 bg-black/40 backdrop-blur-xl z-40">
       {/* Brand */}
       <div className="px-6 mb-8 pt-2">
         <div className="flex items-center gap-3">

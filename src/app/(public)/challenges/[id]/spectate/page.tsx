@@ -1,9 +1,6 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
-import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
 import { SpectateClient } from './spectate-client'
 import type { Challenge, ChallengeEntry } from '@/types/challenge'
 
@@ -46,27 +43,17 @@ export default async function SpectatePage({
   const typedEntries = (entries ?? []) as unknown as ChallengeEntry[]
 
   return (
-    <PageWithSidebar>
-    <div className="flex min-h-screen flex-col bg-[#131313]">
-      <Header />
-      <main className="flex-1 pt-20">
-        <div className="mx-auto max-w-7xl px-4 py-8">
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center py-24">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/5 border-t-[#e5e2e1]" />
-              </div>
-            }
-          >
-            <SpectateClient
-              challenge={typedChallenge}
-              entries={typedEntries}
-            />
-          </Suspense>
+    <Suspense
+      fallback={
+        <div className="h-screen bg-[#0a0a0a] flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/5 border-t-white" />
         </div>
-      </main>
-      <Footer />
-    </div>
-    </PageWithSidebar>
+      }
+    >
+      <SpectateClient
+        challenge={typedChallenge}
+        entries={typedEntries}
+      />
+    </Suspense>
   )
 }

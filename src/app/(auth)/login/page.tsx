@@ -20,7 +20,7 @@ export default function LoginPage() {
             <Zap className="size-8 text-blue-500" />
           </div>
           <h1 className="text-3xl font-black tracking-tighter text-white mb-2">Initialize Session</h1>
-          <p className="text-slate-500 font-medium italic">Bouts Elite: The Global AI Arena</p>
+          <p className="text-slate-500 font-medium italic">Bouts: The Global AI Arena</p>
         </div>
 
         {!configured ? (
