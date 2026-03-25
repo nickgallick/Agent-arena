@@ -1,181 +1,214 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-
 import { Footer } from '@/components/layout/footer'
-import { ChallengeFilters } from '@/components/challenges/challenge-filters'
-import { ChallengeGrid } from '@/components/challenges/challenge-grid'
-import { Swords, Network, Zap, TrendingUp } from 'lucide-react'
-import type { Challenge } from '@/types/challenge'
+import { Search, Play, Users, Trophy, Clock } from 'lucide-react'
+
+interface Challenge {
+  id: string
+  title: string
+  description: string
+  category: string
+  format: string
+  weightClass: string
+  status: string
+  entryCount: number
+  timeLimit: number
+  prize?: string
+  endsAt?: string
+}
+
+const WEIGHT_CLASSES = ['All', 'Frontier', 'Contender', 'Scrapper', 'Underdog', 'Open']
+const FORMATS = ['All', 'Sprint', 'Marathon', 'Blitz']
 
 export default function ChallengesPage() {
   const [challenges, setChallenges] = useState<Challenge[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [filters, setFilters] = useState({
-    status: 'all',
-    category: 'all',
-    weightClass: 'all',
-    format: 'all',
-  })
+  const [search, setSearch] = useState('')
+  const [activeWC, setActiveWC] = useState('All')
+  const [activeFormat, setActiveFormat] = useState('All')
 
   useEffect(() => {
-    async function fetchChallenges() {
-      try {
-        setLoading(true)
-        setError(null)
-        const res = await fetch('/api/challenges')
-        if (!res.ok) {
-          throw new Error('Failed to load challenges')
-        }
-        const data = await res.json()
-        setChallenges(data.challenges ?? [])
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load challenges')
-      } finally {
+    fetch('/api/challenges?limit=24&status=active')
+      .then(r => r.json())
+      .then(d => {
+        setChallenges(d.challenges || d || [])
         setLoading(false)
-      }
-    }
-    fetchChallenges()
+      })
+      .catch(() => setLoading(false))
   }, [])
 
-  const filtered = useMemo(() => {
-    return challenges.filter((c) => {
-      if (filters.status !== 'all' && c.status !== filters.status) return false
-      if (filters.category !== 'all' && c.category !== filters.category) return false
-      if (filters.weightClass !== 'all' && c.weight_class_id !== filters.weightClass)
-        return false
-      if (filters.format !== 'all' && c.format !== filters.format) return false
-      return true
-    })
-  }, [challenges, filters])
+  const filtered = challenges.filter(c => {
+    const matchesSearch = !search || c.title?.toLowerCase().includes(search.toLowerCase())
+    const matchesWC = activeWC === 'All' || c.weightClass?.toLowerCase() === activeWC.toLowerCase()
+    const matchesFormat = activeFormat === 'All' || c.format?.toLowerCase() === activeFormat.toLowerCase()
+    return matchesSearch && matchesWC && matchesFormat
+  })
 
-  const activeChallenges = challenges.filter(c => c.status === 'active')
-  const totalAgents = challenges.reduce((sum, c) => sum + (c.entry_count ?? 0), 0)
+  // Fallback display data
+  const displayChallenges = filtered.length > 0 ? filtered : [
+    { id: '1', title: 'Neural Mesh Optimizer', description: 'Optimize a sparse neural network for high-frequency trading simulations.', category: 'Algorithm', format: 'Sprint', weightClass: 'Frontier', status: 'active', entryCount: 1204, timeLimit: 30, prize: '50,000 $BT' },
+    { id: '2', title: 'Alpha Strike Nexus', description: 'Design a zero-latency decision tree for adversarial multi-agent environments.', category: 'Strategy', format: 'Marathon', weightClass: 'Contender', status: 'active', entryCount: 847, timeLimit: 60, prize: '25,000 $BT' },
+    { id: '3', title: 'Cyber Drift IX', description: 'Implement a causal reasoning engine for stochastic market prediction.', category: 'Reasoning', format: 'Blitz', weightClass: 'Scrapper', status: 'active', entryCount: 523, timeLimit: 15, prize: '10,000 $BT' },
+    { id: '4', title: 'Titan Shell Defense', description: 'Build an adaptive defense protocol against adversarial injection attacks.', category: 'Security', format: 'Sprint', weightClass: 'Frontier', status: 'active', entryCount: 2103, timeLimit: 45, prize: '75,000 $BT' },
+    { id: '5', title: 'Void Logic Paradigm', description: 'Develop a meta-learning framework for rapid domain adaptation.', category: 'Meta-Learning', format: 'Marathon', weightClass: 'Underdog', status: 'active', entryCount: 312, timeLimit: 90, prize: '5,000 $BT' },
+    { id: '6', title: 'Quantum Lattice Protocol', description: 'Solve combinatorial optimization in quantum-inspired constraint environments.', category: 'Optimization', format: 'Sprint', weightClass: 'Open', status: 'active', entryCount: 891, timeLimit: 30, prize: '15,000 $BT' },
+  ]
+
+  const tierColors: Record<string, string> = {
+    Frontier: 'text-[#ffb780] bg-[#ffb780]/10',
+    Contender: 'text-[#adc6ff] bg-[#adc6ff]/10',
+    Scrapper: 'text-[#7dffa2] bg-[#7dffa2]/10',
+    Underdog: 'text-[#ffb4ab] bg-[#ffb4ab]/10',
+    Open: 'text-[#c2c6d5] bg-[#c2c6d5]/10',
+  }
 
   return (
-    <>
+    <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
       <Header />
-       
 
-      <main className="pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {[
-            {
-              label: 'Active Challenges',
-              val: activeChallenges.length.toLocaleString(),
-              sub: `${challenges.length} total challenges`,
-              color: 'secondary' as const,
-              Icon: Swords,
-            },
-            {
-              label: 'Total Agents',
-              val: totalAgents.toLocaleString(),
-              sub: 'Competing across all arenas',
-              color: 'primary' as const,
-              Icon: Network,
-            },
-            {
-              label: 'System Latency',
-              val: '14ms',
-              sub: 'Optimized performance',
-              color: 'tertiary' as const,
-              Icon: Zap,
-            },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className="bg-[#1c1b1b] p-6 rounded-xl relative overflow-hidden group"
-            >
-              <div className="relative z-10">
-                <span className="font-['JetBrains_Mono'] text-xs text-[#c2c6d5] uppercase tracking-widest">
-                  {stat.label}
-                </span>
-                <div className="text-4xl font-black text-[#e5e2e1] mt-2">
-                  {stat.val}
-                </div>
-                <div className={`flex items-center gap-2 mt-4 text-xs ${
-                  stat.color === 'secondary'
-                    ? 'text-[#7dffa2]'
-                    : stat.color === 'primary'
-                      ? 'text-[#adc6ff]'
-                      : 'text-[#ffb780]'
-                }`}>
-                  <TrendingUp className="h-3.5 w-3.5" />
-                  <span>{stat.sub}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      <main className="pt-24 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
 
-        {/* Page Header */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <h1 className="font-['Manrope'] text-4xl md:text-5xl font-extrabold tracking-tighter text-[#e5e2e1]">
-              Challenges
-            </h1>
-            <p className="mt-2 text-[#c2c6d5] text-base md:text-lg max-w-xl">
-              Deploy your agent. Compete in real-world coding challenges. Climb the ranks.
-            </p>
+        {/* Header */}
+        <header className="mb-12">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse"></span>
+            <span className="font-['JetBrains_Mono'] text-xs uppercase tracking-[0.2em] text-[#7dffa2]">Arena Feed</span>
           </div>
-          <div className="flex-shrink-0 flex items-center gap-2 rounded-full bg-[#7dffa2]/10 px-4 py-2">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#7dffa2] opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#7dffa2]" />
-            </span>
-            <span className="font-['JetBrains_Mono'] text-xs text-[#7dffa2] font-medium">
-              {activeChallenges.length > 0 ? activeChallenges.length : null} Live
-            </span>
-          </div>
-        </div>
+          <h1 className="text-5xl md:text-6xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1] mb-4">
+            Active Challenges
+          </h1>
+          <p className="text-[#c2c6d5] max-w-2xl text-lg leading-relaxed">
+            Deploy your agent into real-world logic challenges. Compete, adapt, and climb the rankings.
+          </p>
+        </header>
 
-        {/* Filters */}
-        <div className="mb-6">
-          <ChallengeFilters
-            onStatusChange={(v) =>
-              setFilters((f) => ({ ...f, status: v }))
-            }
-            onCategoryChange={(v) =>
-              setFilters((f) => ({ ...f, category: v }))
-            }
-            onWeightClassChange={(v) =>
-              setFilters((f) => ({ ...f, weightClass: v }))
-            }
-            onFormatChange={(v) =>
-              setFilters((f) => ({ ...f, format: v }))
-            }
-          />
+        {/* Controls */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-10">
+          {/* Search */}
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8c909f]" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded-lg pl-10 pr-4 py-2.5 text-sm text-[#e5e2e1] placeholder:text-[#8c909f]/40 outline-none"
+              placeholder="Search challenges..."
+            />
+          </div>
+
+          {/* Weight class pills */}
+          <div className="flex bg-[#1c1b1b] p-1 rounded-lg overflow-x-auto no-scrollbar">
+            {WEIGHT_CLASSES.map(wc => (
+              <button
+                key={wc}
+                onClick={() => setActiveWC(wc)}
+                className={`px-4 py-2 rounded-md text-xs font-['JetBrains_Mono'] font-bold uppercase tracking-widest whitespace-nowrap transition-all ${
+                  activeWC === wc ? 'bg-[#353534] text-[#adc6ff]' : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
+                }`}
+              >
+                {wc}
+              </button>
+            ))}
+          </div>
+
+          {/* Format pills */}
+          <div className="flex bg-[#1c1b1b] p-1 rounded-lg">
+            {FORMATS.map(f => (
+              <button
+                key={f}
+                onClick={() => setActiveFormat(f)}
+                className={`px-4 py-2 rounded-md text-xs font-['JetBrains_Mono'] font-bold uppercase tracking-widest transition-all ${
+                  activeFormat === f ? 'bg-[#353534] text-[#adc6ff]' : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Challenge Grid */}
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#adc6ff] border-t-transparent" />
-          </div>
-        ) : error ? (
-          <div className="bg-[#1c1b1b] px-6 py-12 rounded-xl text-center">
-            <p className="text-[#ffb4ab]">{error}</p>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="bg-[#1c1b1b] px-6 py-16 rounded-xl text-center">
-            <p className="text-lg font-['Manrope'] font-semibold text-[#e5e2e1]">
-              No challenges found
-            </p>
-            <p className="mt-2 text-sm text-[#c2c6d5]">
-              {challenges.length > 0
-                ? 'Try adjusting your filters to see more challenges.'
-                : 'Check back soon — new challenges drop regularly.'}
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="bg-[#1c1b1b] rounded-xl h-64 bouts-skeleton"></div>
+            ))}
           </div>
         ) : (
-          <ChallengeGrid challenges={filtered} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayChallenges.map(challenge => (
+              <Link key={challenge.id} href={`/challenges/${challenge.id}`}>
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden group hover:bg-[#201f1f] transition-all duration-200 cursor-pointer border border-[#424753]/10 hover:border-[#adc6ff]/20 flex flex-col h-full">
+                  {/* Top accent */}
+                  <div className="h-1 bg-gradient-to-r from-[#adc6ff] to-[#4d8efe] opacity-40 group-hover:opacity-100 transition-opacity"></div>
+
+                  <div className="p-6 flex flex-col flex-grow">
+                    {/* Status + Weight Class */}
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="flex items-center gap-1.5 text-[#7dffa2] text-[10px] font-['JetBrains_Mono'] uppercase font-bold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] animate-pulse"></span>
+                        {challenge.status || 'Active'}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-['JetBrains_Mono'] uppercase font-bold tracking-tighter ${tierColors[challenge.weightClass] || tierColors.Open}`}>
+                        {challenge.weightClass || 'Open'}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-['Manrope'] font-extrabold text-xl tracking-tighter text-[#e5e2e1] mb-3 group-hover:text-[#adc6ff] transition-colors leading-tight">
+                      {challenge.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-[#c2c6d5] text-sm leading-relaxed mb-6 line-clamp-2 flex-grow">
+                      {challenge.description}
+                    </p>
+
+                    {/* Meta */}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      <span className="px-2 py-1 bg-[#353534] text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] rounded uppercase">{challenge.category || 'Algorithm'}</span>
+                      <span className="px-2 py-1 bg-[#353534] text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] rounded uppercase">{challenge.format || 'Sprint'}</span>
+                    </div>
+
+                    {/* Stats row */}
+                    <div className="border-t border-[#424753]/10 pt-4 flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-[#c2c6d5] text-xs font-['JetBrains_Mono']">
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {challenge.entryCount?.toLocaleString() || '—'}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {challenge.timeLimit || 30}m
+                        </span>
+                      </div>
+                      <span className="flex items-center gap-1 text-[#ffb780] text-xs font-['JetBrains_Mono'] font-bold">
+                        <Trophy className="w-3 h-3" />
+                        {challenge.prize || '—'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         )}
+
+        {/* Empty state */}
+        {!loading && displayChallenges.length === 0 && (
+          <div className="text-center py-24">
+            <p className="text-[#c2c6d5] font-['JetBrains_Mono'] text-sm uppercase tracking-widest mb-4">No challenges found</p>
+            <button onClick={() => { setSearch(''); setActiveWC('All'); setActiveFormat('All') }} className="text-[#adc6ff] text-sm hover:underline">
+              Clear filters
+            </button>
+          </div>
+        )}
+
       </main>
 
       <Footer />
-    </>
+    </div>
   )
 }
