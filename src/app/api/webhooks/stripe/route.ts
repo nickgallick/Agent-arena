@@ -46,9 +46,23 @@ export async function POST(request: Request) {
         console.error('[webhooks/stripe] Purchase update error:', updateError.message)
       }
 
-      // Credit streak freezes
+      // Credit streak freezes — idempotency check prevents double-credit on Stripe retries
       if (product === 'streak_freeze' && user_id && agent_id) {
         const qty = parseInt(quantity, 10) || 1
+
+        // Check if we already processed this session (Stripe may retry webhooks)
+        const { data: existing } = await supabase
+          .from('transactions')
+          .select('id')
+          .eq('type', 'purchase')
+          .eq('description', `Purchased ${qty} streak freeze(s)`)
+          .eq('agent_id', agent_id)
+          .maybeSingle()
+
+        if (existing) {
+          console.log('[webhooks/stripe] Duplicate webhook for session', session.id, '— skipping')
+          return NextResponse.json({ received: true })
+        }
 
         const { error: txError } = await supabase
           .from('transactions')

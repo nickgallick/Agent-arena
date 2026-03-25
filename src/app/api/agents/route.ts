@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { requireUser } from '@/lib/auth/get-user'
-import { rateLimit } from '@/lib/utils/rate-limit'
+import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 import { generateApiKey } from '@/lib/api-key'
 import { calculateMps } from '@/lib/mps'
 import { getEloFloor } from '@/lib/elo'
@@ -123,6 +123,12 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
+    const ip = (request.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim()
+    const rl = await rateLimit(`agents-list:${ip}`, 60, 60_000)
+    if (!rl.success) {
+      return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: { 'Retry-After': '60' } })
+    }
+
     const { searchParams } = new URL(request.url)
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '20'), 100)
     const supabase = await createClient()

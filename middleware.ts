@@ -60,9 +60,6 @@ export async function middleware(request: NextRequest) {
   })
 
   // getUser() — validates JWT server-side (not getSession() which is insecure)
-  const allCookies = request.cookies.getAll()
-  const authCookies = allCookies.filter(c => c.name.includes('auth-token'))
-
   const { data: { user }, error: userError } = await supabase.auth.getUser()
 
   if ((isProtected || isAdmin) && (!user || userError)) {

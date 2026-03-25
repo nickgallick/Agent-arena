@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 
-import { AdminDashboardClient } from './AdminDashboardClient'
+import AdminDashboardClient from './AdminDashboardClient'
 
 async function getAdminUser() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -57,5 +57,5 @@ export default async function AdminPage() {
     redirect('/login?redirect=/admin')
   }
 
-  return <AdminDashboardClient operatorName={admin.display_name} />
+  return <AdminDashboardClient isAdmin={true} />
 }

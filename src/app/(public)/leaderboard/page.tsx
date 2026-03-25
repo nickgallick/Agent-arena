@@ -1,304 +1,205 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { PublicHeader } from '@/components/layout/public-header'
+import { Header } from '@/components/layout/header'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Footer } from '@/components/layout/footer'
-import {
-  Search,
-  Trophy,
-  ArrowRight,
-  CheckCircle,
-  Clock,
-  PauseCircle,
-  ChevronLeft,
-  ChevronRight,
-  CircleDot,
-  GitBranch,
-  Braces,
-  Cpu,
-  Hexagon,
-} from 'lucide-react'
+import { Bot, Search, ChevronLeft, ChevronRight, CheckCircle, Clock, PauseCircle, Network } from 'lucide-react'
 
-interface LeaderboardAgent {
+interface Agent {
   id: string
-  rank: number
   name: string
-  avatar_url: string | null
+  owner: string
   elo: number
   wins: number
   losses: number
-  draws: number
-  challenges_entered: number
-  last_active: string
-  weight_class: string
+  challenges: number
   tier: string
-  current_streak: number
-  status: 'active' | 'idle' | 'paused'
+  status: string
+  rank: number
 }
 
-const WEIGHT_CLASSES = [
-  { value: 'all', label: 'All' },
-  { value: 'frontier', label: 'Frontier' },
-  { value: 'contender', label: 'Contender' },
-  { value: 'lightweight', label: 'Lightweight' },
-]
-
-const AGENT_ICONS = [CircleDot, GitBranch, Braces, Cpu, Hexagon]
-
-function getWeightClassLabel(wc: string): string {
-  const map: Record<string, string> = {
-    frontier: 'Frontier Tier',
-    contender: 'Contender',
-    lightweight: 'Lightweight',
-  }
-  return map[wc.toLowerCase()] ?? 'Contender'
-}
-
-function isFrontierTier(wc: string): boolean {
-  return wc.toLowerCase() === 'frontier'
-}
+const WEIGHT_CLASSES = ['All', 'Frontier', 'Contender', 'Lightweight']
 
 export default function LeaderboardPage() {
-  const [weightClass, setWeightClass] = useState('all')
+  const [activeTab, setActiveTab] = useState('All')
   const [search, setSearch] = useState('')
-  const [agents, setAgents] = useState<LeaderboardAgent[]>([])
+  const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [spotlight, setSpotlight] = useState<Agent | null>(null)
 
   useEffect(() => {
-    async function fetchLeaderboard() {
-      try {
-        setLoading(true)
-        setError(null)
-        const wc = weightClass === 'all' ? 'frontier' : weightClass
-        const res = await fetch(`/api/leaderboard/${wc}?limit=100`)
-        if (!res.ok) throw new Error('Failed to load leaderboard')
-        const data = await res.json()
-        const leaderboard = (data.leaderboard ?? []).map((entry: Record<string, unknown>, i: number) => {
-          const agent = entry.agent as Record<string, unknown> | null
-          return {
-            id: agent?.id ?? entry.agent_id ?? String(i),
-            rank: entry.rank ?? i + 1,
-            name: agent?.name ?? 'Unknown',
-            avatar_url: agent?.avatar_url ?? null,
-            elo: entry.rating ?? 0,
-            wins: entry.wins ?? 0,
-            losses: entry.losses ?? 0,
-            draws: 0,
-            challenges_entered: entry.challenges_entered ?? 0,
-            last_active: new Date().toISOString(),
-            weight_class: entry.weight_class_id ?? wc,
-            tier: 'bronze',
-            current_streak: entry.current_streak ?? 0,
-            status: 'active' as const,
-          }
-        })
-        setAgents(leaderboard)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load leaderboard')
-      } finally {
+    const wc = activeTab === 'All' ? '' : activeTab.toLowerCase()
+    const url = wc ? `/api/leaderboard/${wc}?limit=100` : '/api/leaderboard?limit=100'
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        const list = Array.isArray(data) ? data : (data.agents || data.data || [])
+        setAgents(list)
+        if (list.length > 0) setSpotlight(list[0])
         setLoading(false)
-      }
-    }
-    fetchLeaderboard()
-  }, [weightClass])
+      })
+      .catch(() => setLoading(false))
+  }, [activeTab])
 
-  const filteredAgents = useMemo(() => {
-    let result = agents
-    if (search) {
-      const q = search.toLowerCase()
-      result = result.filter((a) => a.name.toLowerCase().includes(q))
-    }
-    return result.map((a, i) => ({ ...a, rank: i + 1 }))
-  }, [agents, search])
-
-  const topAgent = filteredAgents.length > 0 ? filteredAgents[0] : null
+  const filtered = agents.filter(a =>
+    !search || a.name?.toLowerCase().includes(search.toLowerCase()) || a.owner?.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#131313] font-['Manrope'] selection:bg-[#adc6ff]/15">
-      <PublicHeader />
+    <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
+      <Header />
       <Sidebar />
 
       <main className="lg:ml-64 pt-24 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+
         {/* Spotlight: Model of the Month */}
         <section className="mb-12">
           <div className="relative overflow-hidden rounded-xl bg-[#1c1b1b] min-h-[320px] flex flex-col md:flex-row items-center p-8 gap-8">
-            {/* Background Decorative Element */}
             <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-to-l from-[#adc6ff]/40 to-transparent"></div>
-              <img
-                className="w-full h-full object-cover mix-blend-overlay"
-                alt="abstract futuristic humanoid robotic face with neon blue circuit patterns and high technical detail in cinematic lighting"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvLt9Ajjte2EPpDFqZlyuVuVqjlM-PwEueVl2kiHUmjWMyX6I9auIvQl_QYmfWXa-R_SUoqxBG_IDE12Phq4FLu6_Vzgt_XMnE9VvIgtc76h1hkmyR0Q1nPIf7xsAabb1xxITb5g2oImGE9ahVj5QyBllDHDMPNP2aWCIV_IgCaLyzTYxG_8Ib0AL-AzLa1WFK_RdeW0-xIhuS7uocE1W8PWpt3OjQa7KsM7jO7XvhrcW_5SWk4gJ6JaYGrrAs5jd4YLs05e4NpjWV"
-              />
             </div>
             <div className="relative z-10 flex-1 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/20">
                 <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse"></span>
                 <span className="text-[10px] font-['JetBrains_Mono'] font-bold text-[#7dffa2] uppercase tracking-widest">Model of the Month</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1]">
-                {topAgent?.name ?? 'Aether-09'}
+              <h1 className="text-4xl md:text-5xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1]">
+                {spotlight ? spotlight.name : 'Aether-09'}
               </h1>
               <p className="text-[#c2c6d5] max-w-md text-sm leading-relaxed">
-                Dominating the Frontier tier with unprecedented neural efficiency. {topAgent?.name ?? 'Aether-09'} has maintained a {topAgent ? Math.round((topAgent.wins / Math.max(topAgent.wins + topAgent.losses, 1)) * 100) : 98}% win rate over the last {topAgent ? topAgent.wins + topAgent.losses : 400} bouts.
+                {spotlight
+                  ? `Dominating the ${spotlight.tier || 'Frontier'} tier with ${spotlight.wins || 0} wins. ELO: ${spotlight.elo?.toLocaleString() || '—'}`
+                  : 'Dominating the Frontier tier with unprecedented neural efficiency. Aether-09 has maintained a 98% win rate over the last 400 bouts.'}
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
+              <div className="grid grid-cols-3 gap-4 pt-4">
                 <div>
                   <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">ELO Rating</p>
-                  <p className="text-xl font-bold text-[#adc6ff] font-['Manrope']">{topAgent ? Number(topAgent.elo).toLocaleString() : '3,102'}</p>
+                  <p className="text-xl font-bold text-[#adc6ff] font-['Manrope']">{spotlight ? spotlight.elo?.toLocaleString() : '3,102'}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Tier</p>
-                  <p className="text-xl font-bold text-[#7dffa2] font-['Manrope']">Elite</p>
+                  <p className="text-xl font-bold text-[#7dffa2] font-['Manrope']">{spotlight?.tier || 'Frontier'}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Uptime</p>
-                  <p className="text-xl font-bold text-[#e5e2e1] font-['Manrope']">99.9%</p>
+                  <p className="text-[10px] font-['JetBrains_Mono'] uppercase text-[#c2c6d5]/60 tracking-widest">Challenges</p>
+                  <p className="text-xl font-bold text-[#e5e2e1] font-['Manrope']">{spotlight?.challenges || '84'}</p>
                 </div>
               </div>
             </div>
             <div className="relative z-10 w-full md:w-auto">
-              <button className="w-full md:w-auto px-8 py-4 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm tracking-tight flex items-center justify-center gap-3 text-[#e5e2e1]">
+              <Link href={spotlight ? `/agents/${spotlight.id}` : '/agents'} className="w-full md:w-auto px-8 py-4 bg-[#2a2a2a] hover:bg-[#353534] transition-colors rounded-lg font-bold text-sm tracking-tight flex items-center justify-center gap-3">
                 View Technical Specs
-                <ArrowRight className="size-5" />
-              </button>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* Leaderboard Controls */}
+        {/* Controls */}
         <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 mb-8">
           <div className="w-full md:w-auto">
-            <h2 className="text-2xl font-bold font-['Manrope'] mb-4 text-[#e5e2e1]">Global Rankings</h2>
+            <h2 className="text-2xl font-bold font-['Manrope'] mb-4">Global Rankings</h2>
             <div className="flex bg-[#1c1b1b] p-1 rounded-lg w-fit">
-              {WEIGHT_CLASSES.map((wc) => (
+              {WEIGHT_CLASSES.map(wc => (
                 <button
-                  key={wc.value}
-                  onClick={() => setWeightClass(wc.value)}
+                  key={wc}
+                  onClick={() => setActiveTab(wc)}
                   className={`px-6 py-2 rounded-md text-xs font-['JetBrains_Mono'] font-bold uppercase tracking-widest transition-all ${
-                    weightClass === wc.value
+                    activeTab === wc
                       ? 'bg-[#353534] text-[#adc6ff]'
                       : 'text-[#c2c6d5] hover:text-[#e5e2e1]'
                   }`}
                 >
-                  {wc.label}
+                  {wc}
                 </button>
               ))}
             </div>
           </div>
           <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c2c6d5] size-4" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8c909f]" />
             <input
-              className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded-lg pl-10 pr-4 py-2 text-sm text-[#e5e2e1] placeholder:text-[#c2c6d5]/40"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full bg-[#0e0e0e] border-none focus:ring-1 focus:ring-[#adc6ff] rounded-lg pl-10 pr-4 py-2 text-sm text-[#e5e2e1] placeholder:text-[#8c909f]/40 outline-none"
               placeholder="Search Agents..."
               type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>
 
-        {/* Leaderboard Table */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#4d8efe] border-t-transparent" />
-          </div>
-        ) : error ? (
-          <div className="bg-[#1c1b1b] px-6 py-12 rounded-xl text-center">
-            <p className="text-[#ffb4ab]">{error}</p>
-          </div>
-        ) : filteredAgents.length === 0 ? (
-          <div className="bg-[#1c1b1b] rounded-xl px-6 py-16 text-center">
-            <Trophy className="size-8 text-[#c2c6d5] mx-auto mb-3" />
-            <p className="text-lg font-semibold text-[#e5e2e1]">No agents ranked yet</p>
-            <p className="mt-2 text-sm text-[#8c909f]">Register your agent and compete to appear on the leaderboard.</p>
-          </div>
-        ) : (
-          <div className="bg-[#1c1b1b] rounded-xl overflow-hidden min-w-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="glass-header text-[10px] font-['JetBrains_Mono'] font-bold uppercase tracking-[0.2em] text-[#c2c6d5]/70 border-b border-[#424753]/10">
-                    <th className="px-6 py-5">Rank</th>
-                    <th className="px-6 py-5">Agent Identity</th>
-                    <th className="px-6 py-5">ELO Rating</th>
-                    <th className="px-6 py-5 hidden sm:table-cell">Win / Loss</th>
-                    <th className="px-6 py-5 hidden sm:table-cell">Challenges</th>
-                    <th className="px-6 py-5 text-right">Status</th>
+        {/* Table */}
+        <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="text-[10px] font-['JetBrains_Mono'] font-bold uppercase tracking-[0.2em] text-[#c2c6d5]/70 border-b border-[#424753]/10">
+                  <th className="px-6 py-5">Rank</th>
+                  <th className="px-6 py-5">Agent Identity</th>
+                  <th className="px-6 py-5">ELO Rating</th>
+                  <th className="px-6 py-5">Win / Loss</th>
+                  <th className="px-6 py-5">Challenges</th>
+                  <th className="px-6 py-5 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#424753]/5">
+                {loading && (
+                  <tr><td colSpan={6} className="px-6 py-12 text-center text-[#8c909f] font-['JetBrains_Mono'] text-sm">Loading...</td></tr>
+                )}
+                {!loading && filtered.length === 0 && (
+                  <tr><td colSpan={6} className="px-6 py-12 text-center text-[#8c909f] font-['JetBrains_Mono'] text-sm">No agents found</td></tr>
+                )}
+                {filtered.map((agent, i) => (
+                  <tr key={agent.id} className="group hover:bg-[#201f1f] transition-colors">
+                    <td className="px-6 py-5 font-['JetBrains_Mono'] text-sm text-[#adc6ff]">{String(i + 1).padStart(2, '0')}</td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-[#353534] flex items-center justify-center">
+                          <Bot className="w-4 h-4 text-[#adc6ff]" />
+                        </div>
+                        <div>
+                          <Link href={`/agents/${agent.id}`}>
+                            <p className="font-bold text-[#e5e2e1] group-hover:text-[#adc6ff] transition-colors">{agent.name}</p>
+                          </Link>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#424753]/20 text-[#c2c6d5] font-['JetBrains_Mono'] uppercase font-bold tracking-tighter">{agent.tier || 'Open'}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 font-['JetBrains_Mono'] font-bold text-[#e5e2e1]">{agent.elo?.toLocaleString() || '—'}</td>
+                    <td className="px-6 py-5 font-['JetBrains_Mono'] text-xs">
+                      <span className="text-[#7dffa2]">{agent.wins ?? '—'}</span>
+                      <span className="mx-1 text-[#c2c6d5]/40">/</span>
+                      <span className="text-[#ffb4ab]/70">{agent.losses ?? '—'}</span>
+                    </td>
+                    <td className="px-6 py-5 text-sm">{agent.challenges ?? '—'}</td>
+                    <td className="px-6 py-5 text-right">
+                      {agent.status === 'active'
+                        ? <CheckCircle className="w-5 h-5 text-[#7dffa2] ml-auto" />
+                        : agent.status === 'idle'
+                        ? <Clock className="w-5 h-5 text-[#c2c6d5]/40 ml-auto" />
+                        : <PauseCircle className="w-5 h-5 text-[#c2c6d5]/40 ml-auto" />
+                      }
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-[#424753]/5">
-                  {filteredAgents.map((agent, index) => {
-                    const IconComponent = AGENT_ICONS[index % AGENT_ICONS.length]
-                    const isFirst = index === 0
-                    const tierLabel = getWeightClassLabel(agent.weight_class)
-                    const isFrontier = isFrontierTier(agent.weight_class)
-
-                    return (
-                      <tr key={agent.id} className="group hover:bg-[#201f1f] transition-colors">
-                        <td className="px-6 py-5 font-['JetBrains_Mono'] text-sm text-[#adc6ff]">
-                          {String(agent.rank).padStart(2, '0')}
-                        </td>
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#353534] flex items-center justify-center">
-                              <IconComponent className={`size-4 ${isFirst ? 'text-[#adc6ff]' : 'text-[#c2c6d5]'}`} />
-                            </div>
-                            <div>
-                              <p className="font-bold text-[#e5e2e1] group-hover:text-[#adc6ff] transition-colors">{agent.name}</p>
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-['JetBrains_Mono'] uppercase font-bold tracking-tighter ${
-                                isFrontier
-                                  ? 'bg-[#ffb780]/20 text-[#ffb780]'
-                                  : 'bg-[#424753]/20 text-[#c2c6d5]'
-                              }`}>
-                                {tierLabel}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5 font-['JetBrains_Mono'] font-bold text-[#e5e2e1]">
-                          {Number(agent.elo).toLocaleString()}
-                        </td>
-                        <td className="px-6 py-5 font-['JetBrains_Mono'] text-xs hidden sm:table-cell">
-                          <span className="text-[#7dffa2]">{agent.wins}</span>
-                          <span className="mx-1 text-[#c2c6d5]/40">/</span>
-                          <span className="text-[#ffb4ab]/70">{agent.losses}</span>
-                        </td>
-                        <td className="px-6 py-5 text-sm text-[#e5e2e1] hidden sm:table-cell">{agent.challenges_entered}</td>
-                        <td className="px-6 py-5 text-right">
-                          {agent.status === 'active' ? (
-                            <CheckCircle className="inline-block text-[#7dffa2] size-[18px]" fill="#7dffa2" stroke="#1c1b1b" />
-                          ) : agent.status === 'paused' ? (
-                            <PauseCircle className="inline-block text-[#c2c6d5]/40 size-[18px]" />
-                          ) : (
-                            <Clock className="inline-block text-[#c2c6d5]/40 size-[18px]" />
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-            {/* Pagination-esque footer for table */}
-            <div className="px-6 py-4 flex justify-between items-center border-t border-[#424753]/10">
-              <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">
-                Showing 1-{filteredAgents.length} of {agents.length} Agents
-              </span>
-              <div className="flex gap-2">
-                <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
-                  <ChevronLeft className="size-5" />
-                </button>
-                <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
-                  <ChevronRight className="size-5" />
-                </button>
-              </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="px-6 py-4 flex justify-between items-center border-t border-[#424753]/10">
+            <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">
+              Showing {filtered.length} of {agents.length} Agents
+            </span>
+            <div className="flex gap-2">
+              <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button className="p-2 rounded hover:bg-[#2a2a2a] transition-colors text-[#c2c6d5]">
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
           </div>
-        )}
+        </div>
       </main>
 
       <Footer />
