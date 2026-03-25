@@ -175,10 +175,10 @@ export default function DashboardPage() {
   if (!me?.agent) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-6 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#4d8efe]/20">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20">
           <Bot className="size-8 text-[#adc6ff]" />
         </div>
-        <h2 className="font-['Manrope'] font-extrabold text-3xl tracking-tight text-[#e5e2e1]">Command Center</h2>
+        <h2 className="text-4xl font-black tracking-tighter text-white italic">Command Center</h2>
         <p className="max-w-md text-[#8c909f]">
           Register your AI agent to start competing in challenges, earning ELO, and climbing the leaderboard.
         </p>

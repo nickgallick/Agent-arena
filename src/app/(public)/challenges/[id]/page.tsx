@@ -87,9 +87,9 @@ function ChallengeDetailContent() {
       <PageWithSidebar>
         <main className="pt-16 min-h-screen">
           <div className="max-w-7xl mx-auto px-6 py-12 flex items-center justify-center min-h-[60vh]">
-            <div className="rounded-xl bg-[#1c1b1b] px-8 py-12 text-center">
-              <p className="text-lg font-medium text-[#c2c6d5]">{error ?? 'Challenge not found'}</p>
-              <Link href="/challenges" className="mt-4 inline-block text-sm text-[#adc6ff] hover:text-[#adc6ff]/80">
+            <div className="rounded-xl bg-white border border-slate-200 px-8 py-12 text-center">
+              <p className="text-lg font-medium text-slate-500">{error ?? 'Challenge not found'}</p>
+              <Link href="/challenges" className="mt-4 inline-block text-sm text-blue-600 hover:text-blue-600/80">
                 ← Back to challenges
               </Link>
             </div>
@@ -106,10 +106,10 @@ function ChallengeDetailContent() {
       <main className="pt-16 min-h-screen">
         <div className="max-w-7xl mx-auto px-6 py-12">
           {/* Breadcrumb / Back Navigation */}
-          <div className="mb-8 flex items-center gap-2 text-[#c2c6d5] font-['Manrope'] text-sm">
-            <Link href="/challenges" className="hover:text-[#adc6ff] transition-colors">Challenges</Link>
+          <div className="mb-8 flex items-center gap-2 text-slate-400 font-['Manrope'] text-xs font-bold uppercase tracking-widest">
+            <Link href="/challenges" className="hover:text-blue-600 transition-colors">Challenges</Link>
             <ChevronRight className="size-3" />
-            <span className="text-[#e5e2e1] font-semibold">{challenge.title}</span>
+            <span className="text-slate-900 font-semibold">{challenge.title}</span>
           </div>
 
           {/* Bento Grid Layout */}
@@ -129,7 +129,7 @@ function ChallengeDetailContent() {
                     {(challenge.status === 'active' || challenge.status === 'judging') && (
                       <Link
                         href={`/challenges/${challenge.id}/spectate`}
-                        className="px-8 py-4 border border-white/5 text-[#e5e2e1] font-bold rounded-lg hover:bg-[#2a2a2a] active:scale-95 transition-all flex items-center justify-center gap-2"
+                        className="px-8 py-4 bg-white text-slate-900 border border-slate-200 font-bold rounded-xl hover:bg-slate-50 active:scale-95 transition-all flex items-center justify-center gap-2"
                       >
                         <Video className="size-4" />
                         Watch Live Stream
@@ -141,21 +141,21 @@ function ChallengeDetailContent() {
 
               {/* Environment Log (System Constraints) */}
               {challenge.prompt && (
-                <div className="bg-[#1c1b1b] p-6 rounded-xl border-none">
+                <div className="bg-white border border-slate-200 p-6 rounded-xl">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-[#c2c6d5]">System Constraints</h3>
-                    <Info className="size-3.5 text-[#c2c6d5]" />
+                    <h3 className="font-['JetBrains_Mono'] text-xs uppercase tracking-widest text-slate-500">System Constraints</h3>
+                    <Info className="size-3.5 text-slate-400" />
                   </div>
-                  <div className="space-y-2 font-['JetBrains_Mono'] text-sm text-[#7dffa2]">
-                    <div className="flex justify-between items-center p-2 bg-[#0e0e0e] rounded">
+                  <div className="space-y-2 font-['JetBrains_Mono'] text-sm text-blue-600">
+                    <div className="flex justify-between items-center p-2 bg-slate-50 rounded">
                       <span>TIME_LIMIT_MIN</span>
                       <span className="font-bold">{challenge.time_limit_minutes}</span>
                     </div>
-                    <div className="flex justify-between items-center p-2 bg-[#0e0e0e] rounded">
+                    <div className="flex justify-between items-center p-2 bg-slate-50 rounded">
                       <span>FORMAT</span>
                       <span className="font-bold">{challenge.format.toUpperCase()}</span>
                     </div>
-                    <div className="flex justify-between items-center p-2 bg-[#0e0e0e] rounded">
+                    <div className="flex justify-between items-center p-2 bg-slate-50 rounded">
                       <span>WEIGHT_CLASS</span>
                       <span className="font-bold">{(challenge.weight_class_id ?? 'OPEN').toUpperCase()}</span>
                     </div>
@@ -165,8 +165,8 @@ function ChallengeDetailContent() {
 
               {/* Live spectator / results / entries section */}
               {challenge.status === 'active' && entries.length > 0 && (
-                <div className="bg-[#1c1b1b] rounded-xl p-6">
-                  <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-[#8c909f] mb-4">
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
                     Live Competitors
                   </h2>
                   <LiveSpectatorView challenge={challenge} entries={entries} userId={null} />
@@ -174,9 +174,9 @@ function ChallengeDetailContent() {
               )}
 
               {challenge.status === 'complete' && (
-                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
-                  <div className="px-6 py-4 bg-[#2a2a2a]">
-                    <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-[#c2c6d5]">
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                  <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
+                    <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-slate-500">
                       Final Rankings
                     </h2>
                   </div>
@@ -184,16 +184,16 @@ function ChallengeDetailContent() {
                     <ResultsTable entries={entries} />
                   ) : (
                     <div className="px-6 py-12 text-center">
-                      <p className="text-[#c2c6d5]">No entries were submitted.</p>
+                      <p className="text-slate-500">No entries were submitted.</p>
                     </div>
                   )}
                 </div>
               )}
 
               {challenge.status !== 'active' && challenge.status !== 'complete' && (
-                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
-                  <div className="px-6 py-4 bg-[#2a2a2a]">
-                    <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-[#c2c6d5]">
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                  <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
+                    <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-slate-500">
                       Entries ({entries.length})
                     </h2>
                   </div>
@@ -201,15 +201,15 @@ function ChallengeDetailContent() {
                     <EntryList entries={entries} status={challenge.status} />
                   ) : (
                     <div className="px-6 py-12 text-center">
-                      <p className="text-[#c2c6d5]">No entries yet — be the first to compete!</p>
+                      <p className="text-slate-500">No entries yet — be the first to compete!</p>
                     </div>
                   )}
                 </div>
               )}
 
               {judgeScores.length > 0 && topEntry && challenge.status === 'complete' && (
-                <div className="bg-[#1c1b1b] rounded-xl p-6">
-                  <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-[#8c909f] mb-4">
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                  <h2 className="font-['JetBrains_Mono'] text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
                     Judge Feedback — #{topEntry.placement} {topEntry.agent?.name ?? 'Winner'}
                   </h2>
                   <JudgeFeedback scores={judgeScores} />
@@ -220,29 +220,29 @@ function ChallengeDetailContent() {
             {/* Right Column: Status & Stats (4 Cols) */}
             <div className="lg:col-span-4 space-y-6">
               {/* Status / Countdown Card */}
-              <div className="bg-[#201f1f] rounded-xl p-6 shadow-xl border-none relative overflow-hidden">
+              <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3 opacity-10">
                   <Timer className="size-16" />
                 </div>
-                <h3 className="font-['Manrope'] font-bold text-[#c2c6d5] text-sm mb-6 uppercase tracking-wider">Session Status</h3>
+                <h3 className="font-['Manrope'] font-bold text-slate-500 text-sm mb-6 uppercase tracking-wider">Session Status</h3>
                 <div className="space-y-8">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase mb-1">Time Remaining</span>
-                    <span className="text-4xl font-['JetBrains_Mono'] font-bold text-[#e5e2e1] tabular-nums tracking-tight">
+                    <span className="text-[10px] font-['JetBrains_Mono'] text-slate-500 uppercase mb-1">Time Remaining</span>
+                    <span className="text-4xl font-['JetBrains_Mono'] font-bold text-slate-900 tabular-nums tracking-tight">
                       {challenge.status === 'active' ? '--:--:--' : challenge.status === 'complete' ? '00:00:00' : '--:--:--'}
                     </span>
-                    <div className="w-full h-1 bg-[#353534] mt-3 rounded-full overflow-hidden">
-                      <div className={`h-full bg-[#adc6ff] ${challenge.status === 'complete' ? 'w-full' : challenge.status === 'active' ? 'w-2/3' : 'w-0'}`} />
+                    <div className="w-full h-1 bg-slate-200 mt-3 rounded-full overflow-hidden">
+                      <div className={`h-full bg-blue-600 ${challenge.status === 'complete' ? 'w-full' : challenge.status === 'active' ? 'w-2/3' : 'w-0'}`} />
                     </div>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase mb-1">Active Competitors</span>
+                    <span className="text-[10px] font-['JetBrains_Mono'] text-slate-500 uppercase mb-1">Active Competitors</span>
                     <div className="flex items-center gap-3">
-                      <span className="text-3xl font-['Manrope'] font-extrabold text-[#e5e2e1]">
+                      <span className="text-3xl font-['Manrope'] font-extrabold text-slate-900">
                         {entries.length > 0 ? entries.length.toLocaleString() : challenge.entry_count.toLocaleString()}
                       </span>
                       {entries.length > 0 && (
-                        <span className="text-[#7dffa2] text-xs font-['JetBrains_Mono'] flex items-center gap-1">
+                        <span className="text-emerald-500 text-xs font-['JetBrains_Mono'] flex items-center gap-1">
                           <TrendingUp className="size-3" />
                           {entries.length}
                         </span>
@@ -254,9 +254,9 @@ function ChallengeDetailContent() {
 
               {/* Arena HUD — Top Performers */}
               {entries.length > 0 && (
-                <div className="bg-white/5 backdrop-blur-xl border border-white/5 rounded-xl p-6">
+                <div className="bg-slate-50/50 border border-slate-200 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-['Manrope'] font-bold text-xs uppercase text-[#adc6ff]">Top Performers</h3>
+                    <h3 className="font-['Manrope'] font-bold text-xs uppercase text-blue-600">Top Performers</h3>
                     {challenge.status === 'active' && (
                       <span className="px-2 py-0.5 bg-[#ffb4ab]/20 text-[#ffb4ab] text-[10px] font-['JetBrains_Mono'] rounded">LIVE</span>
                     )}

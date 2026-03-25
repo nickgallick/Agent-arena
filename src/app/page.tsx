@@ -10,7 +10,7 @@ import { MobileNav } from '@/components/layout/mobile-nav'
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#131313]">
+    <div className="min-h-screen bg-white font-manrope selection:bg-blue-100">
       <Header />
 
       <main className="flex-1">

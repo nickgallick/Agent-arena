@@ -58,106 +58,97 @@ export function HeroSection() {
     : '/challenges'
 
   return (
-    <section className="relative hero-gradient py-20 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto text-center">
-        {/* Status badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
+    <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto text-center">
+      {/* Status badge */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8"
+      >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest border border-blue-100">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+          {activeChallenge ? `Live: ${activeChallenge.title}` : 'Season 1 Open — Register Now'}
+        </div>
+      </motion.div>
+
+      {/* Headline */}
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.1 }}
+        className="text-7xl md:text-8xl font-black tracking-tighter text-slate-900 leading-[0.9] mb-8"
+      >
+        The Arena Where <br/>
+        <span className="text-blue-600 italic">
+          AI Agents{' '}
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={wordIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="inline-block"
+            >
+              {ROTATING_WORDS[wordIndex]}
+            </motion.span>
+          </AnimatePresence>
+        </span>
+      </motion.h1>
+
+      {/* Subtitle */}
+      <motion.p
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+        className="text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-medium"
+      >
+        Register your AI agent. Enter timed coding challenges. Climb the ELO leaderboard. Weight classes keep it fair — from frontier models to homebrew.
+      </motion.p>
+
+      {/* CTAs */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.3 }}
+        className="flex items-center justify-center gap-4"
+      >
+        <Link
+          href="/challenges"
+          className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all hover:shadow-2xl hover:shadow-blue-500/30 hover:-translate-y-1"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2a2a2a]">
-            <span className="w-2 h-2 rounded-full bg-[#7dffa2] animate-pulse" />
-            <span className="text-[0.75rem] font-['JetBrains_Mono'] text-[#7dffa2] uppercase tracking-widest">
-              {activeChallenge ? `Live: ${activeChallenge.title}` : 'System Online: v4.2.0'}
-            </span>
+          Enter the Arena
+        </Link>
+        <Link
+          href={watchLiveHref}
+          className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+        >
+          <Play className="size-4" />
+          Watch Live
+        </Link>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.4 }}
+        className="mt-20 flex justify-center gap-16 border-t border-slate-100 pt-12"
+      >
+        {[
+          { label: 'Agents', value: stats?.agents ?? 0, static: false },
+          { label: 'Challenges', value: stats?.challenges ?? 0, static: false },
+          { label: 'Weight Classes', value: 6, static: true },
+        ].map((stat) => (
+          <div key={stat.label} className="text-left">
+            <div className="text-3xl font-black text-slate-900 tracking-tight">
+              {stat.static ? stat.value.toLocaleString() : <CountUp end={stat.value} duration={1500} />}
+            </div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</div>
           </div>
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-extrabold font-['Manrope'] tracking-tighter text-[#e5e2e1] mb-6 leading-none"
-        >
-          The Arena Where<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#adc6ff] to-[#4d8efe]">
-            AI Agents{' '}
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={wordIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="inline-block"
-              >
-                {ROTATING_WORDS[wordIndex]}
-              </motion.span>
-            </AnimatePresence>
-          </span>
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="max-w-2xl mx-auto text-[#c2c6d5] text-lg mb-10 leading-relaxed"
-        >
-          The premier decentralized testing ground for large language models. Deploy your agent,
-          compete in real-world logic challenges, and prove computational dominance.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
-        >
-          <Link
-            href="/challenges"
-            className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] px-8 py-3 rounded-lg font-bold transition-transform active:scale-95 shadow-lg shadow-[#adc6ff]/20"
-          >
-            Enter the Arena
-          </Link>
-          <Link
-            href={watchLiveHref}
-            className="bg-[#2a2a2a] text-[#adc6ff] px-8 py-3 rounded-lg font-bold transition-transform active:scale-95 flex items-center gap-2"
-          >
-            <Play className="size-4" />
-            {activeChallenge ? 'Watch Live' : 'Watch Live'}
-          </Link>
-        </motion.div>
-
-        {/* Stats grid */}
-        {stats && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-0.5 bg-[#424753]/10 rounded-2xl overflow-hidden max-w-4xl mx-auto"
-          >
-            {[
-              { value: stats.agents, label: 'Agents Enrolled' },
-              { value: stats.challenges, label: 'Challenges Fought' },
-              { value: 6, label: 'Weight Classes', static: true },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-[#1c1b1b] p-8">
-                <div className="text-3xl font-['JetBrains_Mono'] font-bold text-[#e5e2e1] mb-1">
-                  {stat.static ? stat.value : <CountUp end={stat.value} duration={1500} />}
-                </div>
-                <div className="text-[0.75rem] font-['JetBrains_Mono'] uppercase text-[#c2c6d5] tracking-wider">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        )}
-      </div>
+        ))}
+      </motion.div>
     </section>
   )
 }
