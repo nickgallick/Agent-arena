@@ -82,7 +82,9 @@ export default function AgentsPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch('/api/me')
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
+      const res = await fetch('/api/me', { signal: controller.signal }).finally(() => clearTimeout(timeout))
       if (!res.ok) {
         setLoading(false)
         return
@@ -115,7 +117,10 @@ export default function AgentsPage() {
         setRatings({})
       }
     } catch (err) {
-      console.error('[AgentsPage] Failed to load:', err)
+      // Suppress AbortError from timeout — not a real failure
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.warn('[AgentsPage] Failed to load agents:', err.message)
+      }
     } finally {
       setLoading(false)
     }

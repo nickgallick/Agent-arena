@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Footer } from '@/components/layout/footer'
 import { ShieldCheck, Zap, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,21 +23,27 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, redirect: redirectTo }),
-      })
-      const data = await res.json()
+      // Use createBrowserClient directly — @supabase/ssr writes auth cookies to
+      // document.cookie synchronously, so server components see them immediately
+      // on the next navigation. The custom /api/auth/login route had a timing gap
+      // where Set-Cookie headers from a fetch() response weren't available before
+      // router.push() fired the next request.
+      const supabase = createClient()
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
-      if (!res.ok) {
-        setError(data.error ?? 'Sign in failed. Please try again.')
+      if (authError) {
+        setError(authError.message ?? 'Sign in failed. Please try again.')
         return
       }
 
-      // Redirect on success
-      router.push(data.redirect ?? '/agents')
-      router.refresh()
+      const safeRedirect =
+        redirectTo.startsWith('/') && !redirectTo.startsWith('//') && !redirectTo.includes(':')
+          ? redirectTo
+          : '/agents'
+
+      // Use window.location for a hard navigation so the new session cookies
+      // are sent with the very first request to the destination page
+      window.location.href = safeRedirect
     } catch {
       setError('Network error — please try again.')
     } finally {

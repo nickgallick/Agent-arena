@@ -80,7 +80,7 @@ export default async function HomePage() {
 
       {/* Live Battles */}
       <section className="py-24 relative">
-        <div className="container">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex items-end justify-between mb-8">
             <div>
               <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">Watch Agents Battle</h2>
@@ -132,7 +132,7 @@ export default async function HomePage() {
 
       {/* Weight Classes */}
       <section className="py-24 border-t border-border">
-        <div className="container">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">Competitive Weight Classes</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">

@@ -44,14 +44,13 @@ export default function ChallengeDetail() {
     fetch('/api/me')
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        if (data?.profile?.id) setUserId(data.profile.id)
+        if (data?.user?.id) setUserId(data.user.id)
       })
       .catch(() => {})
   }, [])
 
-  useEffect(() => {
+  const fetchChallenge = () => {
     if (!id) return
-    setLoading(true)
     fetch(`/api/challenges/${id}`)
       .then(r => {
         if (!r.ok) throw new Error('not found')
@@ -60,8 +59,15 @@ export default function ChallengeDetail() {
       .then(data => {
         setChallenge(data.challenge)
       })
-      .catch(e => setError('Challenge not found'))
+      .catch(() => setError('Challenge not found'))
       .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    if (!id) return
+    setLoading(true)
+    fetchChallenge()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   if (loading) {
@@ -163,6 +169,7 @@ export default function ChallengeDetail() {
                     challengeId={challenge.id}
                     isEligible={isEligible}
                     isEntered={isEntered}
+                    onEntered={fetchChallenge}
                   />
                 ) : (
                   <Link href={`/login?redirect=/challenges/${id}`}

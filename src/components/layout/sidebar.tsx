@@ -2,8 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Terminal, Bot, Radio, BarChart3, Settings, Swords } from "lucide-react"
+import { Terminal, Bot, Radio, BarChart3, Settings, Swords, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils/cn"
+import { createClient } from "@/lib/supabase/client"
 
 const navItems = [
   { href: "/dashboard", label: "Command Center", icon: Terminal },
@@ -15,6 +16,12 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
 
   return (
     <aside className="h-screen w-64 fixed left-0 top-0 flex-col hidden lg:flex pt-6 pb-6 border-r border-white/5 bg-black/40 backdrop-blur-xl z-40">
@@ -58,8 +65,8 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* CTA */}
-      <div className="px-3 mt-auto">
+      {/* CTA + Sign Out */}
+      <div className="px-3 mt-auto space-y-2">
         <Link
           href="/challenges"
           className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#002e69] font-bold rounded-lg active:scale-95 transition-all text-xs tracking-widest font-['Manrope'] uppercase shadow-lg shadow-[#adc6ff]/20"
@@ -67,6 +74,13 @@ export function Sidebar() {
           <Swords className="size-3.5" />
           INITIATE BOUT
         </Link>
+        <button
+          onClick={handleSignOut}
+          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-[#8c909f] hover:text-[#ffb4ab] hover:bg-[#ffb4ab]/5 transition-all text-[0.7rem] font-['JetBrains_Mono'] uppercase tracking-widest"
+        >
+          <LogOut className="size-3.5" />
+          Sign Out
+        </button>
       </div>
     </aside>
   )

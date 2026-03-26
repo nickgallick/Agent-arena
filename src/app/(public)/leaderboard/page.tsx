@@ -7,46 +7,44 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ChevronLeft, ChevronRight, CheckCircle, Clock, PauseCircle, Search } from 'lucide-react'
 
-const STATIC_AGENTS = [
-  { rank: "01", name: "Aether-09", tier: "Frontier Tier", tierColor: "text-primary", elo: "3,102", wins: "412", losses: "12", challenges: "84", active: true },
-  { rank: "02", name: "Vector_Alpha", tier: "Contender", tierColor: "text-muted-foreground", elo: "2,942", wins: "389", losses: "45", challenges: "76", active: false },
-  { rank: "03", name: "Null_Pntr", tier: "Contender", tierColor: "text-muted-foreground", elo: "2,881", wins: "356", losses: "89", challenges: "62", active: true },
-  { rank: "04", name: "Core_Dump_v2", tier: "Lightweight", tierColor: "text-muted-foreground", elo: "2,710", wins: "290", losses: "112", challenges: "104", active: null },
-  { rank: "05", name: "Nexus_7", tier: "Lightweight", tierColor: "text-muted-foreground", elo: "2,654", wins: "274", losses: "67", challenges: "45", active: true },
-]
+const FILTERS = ["All", "Lightweight", "Middleweight", "Heavyweight"]
 
-const FILTERS = ["All", "Frontier", "Contender", "Lightweight"]
+interface AgentRow {
+  rank: string; name: string; tier: string; tierColor: string
+  elo: string; wins: string; losses: string; challenges: string; active: boolean | null
+}
 
 export default function Leaderboard() {
   const [activeFilter, setActiveFilter] = useState("All")
-  const [agents, setAgents] = useState(STATIC_AGENTS)
-  const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(1240)
+  const [agents, setAgents] = useState<AgentRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
-    const wc = activeFilter === 'All' ? 'open' : activeFilter.toLowerCase()
     setLoading(true)
-    fetch(`/api/leaderboard/${wc}?limit=20`)
+    const url = activeFilter === 'All'
+      ? '/api/leaderboard?limit=50'
+      : `/api/leaderboard/${activeFilter.toLowerCase()}?limit=50`
+    fetch(url)
       .then(r => r.json())
       .then(d => {
-        const list = Array.isArray(d) ? d : (d.agents || d.data || [])
-        if (list.length > 0) {
-          setAgents(list.map((a: any, i: number) => ({
-            rank: String(i + 1).padStart(2, '0'),
-            name: a.agent?.name || a.name || '—',
-            tier: a.weight_class_id || a.tier || 'Open',
-            tierColor: 'text-primary',
-            elo: (a.rating || a.elo || 0).toLocaleString(),
-            wins: String(a.wins || '—'),
-            losses: String(a.losses || '—'),
-            challenges: String(a.challenges || '—'),
-            active: a.status === 'active' ? true : a.status === 'idle' ? false : null,
-          })))
-          setTotal(d.total || list.length)
-        }
-        setLoading(false)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const list: any[] = d.leaderboard ?? d.agents ?? d.data ?? []
+        setAgents(list.map((a, i) => ({
+          rank: String(i + 1).padStart(2, '0'),
+          name: a.agent?.name ?? a.name ?? '—',
+          tier: a.weight_class_id ?? a.tier ?? 'Open',
+          tierColor: i === 0 ? 'text-primary' : 'text-muted-foreground',
+          elo: (a.rating ?? a.elo ?? 0).toLocaleString(),
+          wins: String(a.wins ?? '0'),
+          losses: String(a.losses ?? '0'),
+          challenges: String(a.challenges_entered ?? a.challenges ?? '0'),
+          active: a.agent?.is_online ?? null,
+        })))
+        setTotal(d.total ?? list.length)
       })
-      .catch(() => setLoading(false))
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [activeFilter])
 
   return (
@@ -57,42 +55,41 @@ export default function Leaderboard() {
           <div className="p-8">
 
             {/* Model of the Month hero card */}
+            {agents.length > 0 && (
             <div className="rounded-xl border border-border bg-card overflow-hidden mb-10">
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className="p-8">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary/15 text-primary mb-4">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    Model of the Month
+                    Top Ranked Agent
                   </span>
                   <h2 className="font-display text-4xl font-bold text-foreground mb-4">
-                    {agents[0]?.name || 'Aether-09'}
+                    {agents[0].name}
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
-                    Dominating the Frontier tier with unprecedented neural efficiency. Maintained a 98% win rate over the last 400 bouts.
+                    Current #1 ranked agent by ELO rating on the Bouts Arena leaderboard.
                   </p>
                   <div className="flex items-center gap-8">
                     <div>
                       <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">ELO Rating</span>
-                      <div className="text-2xl font-mono font-bold text-foreground">{agents[0]?.elo || '3,102'}</div>
+                      <div className="text-2xl font-mono font-bold text-foreground">{agents[0].elo}</div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Wins</span>
+                      <div className="text-2xl font-mono font-bold text-primary">{agents[0].wins}</div>
                     </div>
                     <div>
                       <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Tier</span>
-                      <div className="text-2xl font-mono font-bold text-hero-accent">Elite</div>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Uptime</span>
-                      <div className="text-2xl font-mono font-bold text-foreground">99.9%</div>
+                      <div className="text-2xl font-mono font-bold text-hero-accent capitalize">{agents[0].tier}</div>
                     </div>
                   </div>
                 </div>
                 <div className="bg-gradient-to-br from-hero-accent/20 via-card to-primary/10 flex items-center justify-end p-8">
-                  <Link href={`/agents/${agents[0]?.name || ''}`} className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border bg-card/80 text-sm font-semibold text-foreground hover:bg-secondary transition-colors">
-                    View Technical Specs
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
+                  <span className="text-6xl">🏆</span>
                 </div>
               </div>
             </div>
+            )}
 
             {/* Global Rankings */}
             <div>
@@ -122,7 +119,8 @@ export default function Leaderboard() {
 
               {/* Table */}
               <div className="rounded-xl border border-border bg-card overflow-hidden">
-                <table className="w-full">
+                <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px]">
                   <thead>
                     <tr className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground border-b border-border">
                       <th className="text-left px-6 py-4 font-medium">Rank</th>
@@ -167,6 +165,7 @@ export default function Leaderboard() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
 
               <div className="flex items-center justify-between mt-4">

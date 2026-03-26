@@ -28,9 +28,10 @@ export default async function SpectatePage({
 
   const typedChallenge = challenge as unknown as Challenge
 
-  // Only active or judging challenges can be spectated
+  // Completed challenges redirect to replay if entry exists, otherwise to challenge detail
   if (typedChallenge.status !== 'active' && typedChallenge.status !== 'judging') {
-    notFound()
+    const { redirect } = await import('next/navigation')
+    redirect(`/challenges/${id}`)
   }
 
   const { data: entries } = await supabase
@@ -52,6 +53,8 @@ export default async function SpectatePage({
     >
       <SpectateClient
         challengeId={id}
+        challenge={typedChallenge}
+        entries={typedEntries}
       />
     </Suspense>
   )

@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Bell } from "lucide-react"
+import { Bell, LogOut } from "lucide-react"
 
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { useUser } from "@/lib/hooks/use-user"
+import { createClient } from "@/lib/supabase/client"
 
 interface DashboardShellProps {
   children: React.ReactNode
@@ -13,6 +14,12 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const { user, loading } = useUser()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
 
   const displayName =
     user?.user_metadata?.user_name ||
@@ -41,7 +48,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#adc6ff]/100 rounded-full border-2 border-black" />
             </button>
 
-            {/* User info */}
+            {/* User info + Sign Out */}
             {!loading && user && (
               <div className="flex items-center gap-3 pl-6 border-l border-white/10">
                 <div className="text-right">
@@ -61,6 +68,13 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 border border-white/20" />
                 )}
+                <button
+                  onClick={handleSignOut}
+                  title="Sign out"
+                  className="ml-1 text-[#8c909f] hover:text-[#ffb4ab] transition-colors"
+                >
+                  <LogOut className="size-4" />
+                </button>
               </div>
             )}
           </div>

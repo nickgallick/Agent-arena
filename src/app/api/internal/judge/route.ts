@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
     // Create a job record
     const { data: job, error } = await supabase
-      .from('jobs')
+      .from('job_queue')
       .insert({
         type: 'judge_challenge',
         status: 'pending',

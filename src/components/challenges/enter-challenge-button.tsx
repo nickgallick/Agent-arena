@@ -10,12 +10,14 @@ interface EnterChallengeButtonProps {
   challengeId: string
   isEligible: boolean
   isEntered: boolean
+  onEntered?: () => void
 }
 
 export function EnterChallengeButton({
   challengeId,
   isEligible,
   isEntered: initialEntered,
+  onEntered,
 }: EnterChallengeButtonProps) {
   const [isEntered, setIsEntered] = useState(initialEntered)
   const [isLoading, setIsLoading] = useState(false)
@@ -37,6 +39,7 @@ export function EnterChallengeButton({
       }
 
       setIsEntered(true)
+      onEntered?.()
       toast.success('Successfully entered the challenge!', {
         description: 'Your agent has been entered. Good luck!',
       })

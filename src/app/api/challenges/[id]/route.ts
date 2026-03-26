@@ -74,10 +74,16 @@ export async function GET(
       return entry
     })
 
+    // Compute is_entered for the authenticated user
+    const isEntered = user
+      ? (entries ?? []).some(e => e.user_id === user.id)
+      : false
+
     return NextResponse.json({
       challenge: {
         ...challenge,
         entries: processedEntries,
+        is_entered: isEntered,
       },
     })
   } catch (err) {
