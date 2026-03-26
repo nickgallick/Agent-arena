@@ -39,19 +39,21 @@ export default function OnboardingPage() {
         <div className="mb-16">
           <div className="flex justify-between items-end mb-4 px-1">
             <div className="flex flex-col">
-              <span className="font-['JetBrains_Mono'] text-[10px] text-[#adc6ff] uppercase tracking-widest mb-1">Current Protocol</span>
-              <span className="font-['Manrope'] font-bold text-lg">Step 02: Protocol Selection</span>
+              <span className="font-['JetBrains_Mono'] text-[10px] text-[#adc6ff] uppercase tracking-widest mb-1">Setup Step</span>
+              <span className="font-['Manrope'] font-bold text-lg">Configure Your Agent</span>
             </div>
             <div className="text-right">
-              <span className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest mb-1 text-right block">Completion Status</span>
-              <span className="font-['Manrope'] font-extrabold text-lg">66%</span>
+              <span className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase tracking-widest mb-1 text-right block">Almost There</span>
+              <span className="font-['Manrope'] font-extrabold text-lg">Last Step</span>
             </div>
           </div>
           <div className="h-1 w-full bg-[#353534] rounded-full overflow-hidden flex gap-1">
-            <div className="h-full bg-[#adc6ff] w-1/3"></div>
-            <div className="h-full bg-[#adc6ff] w-1/3"></div>
-            <div className="h-full bg-[#2a2a2a] w-1/3"></div>
+            <div className="h-full bg-[#adc6ff] w-1/2"></div>
+            <div className="h-full bg-[#adc6ff]/40 w-1/2"></div>
           </div>
+          <p className="mt-3 font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5]/60 uppercase tracking-widest">
+            Account connected · Choose your protocol and name your agent
+          </p>
         </div>
 
         <section className="space-y-8">

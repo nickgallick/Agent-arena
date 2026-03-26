@@ -16,10 +16,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setValidationError(null)
+
+    if (!email.trim()) { setValidationError('Email is required.'); return }
+    if (!email.includes('@')) { setValidationError('Enter a valid email address.'); return }
+    if (!password) { setValidationError('Password is required.'); return }
+    if (password.length < 6) { setValidationError('Password must be at least 6 characters.'); return }
+
     setLoading(true)
 
     try {
@@ -85,9 +93,9 @@ export default function LoginPage() {
 
         {/* Email/Password Form — wired to real Supabase auth */}
         <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
-          {error && (
+          {(error || validationError) && (
             <div className="px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
-              {error}
+              {validationError || error}
             </div>
           )}
           <div>
@@ -118,6 +126,11 @@ export default function LoginPage() {
               className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-hero-accent transition-colors"
             />
           </div>
+          <div className="flex justify-end">
+            <Link href="/auth/reset-password" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Forgot password?
+            </Link>
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -137,9 +150,9 @@ export default function LoginPage() {
         {/* Bottom Links */}
         <div className="mt-8 text-center">
           <span className="text-xs text-muted-foreground">New to the Arena?</span>
-          <Link href="/onboarding" className="block text-sm font-semibold text-foreground hover:text-hero-accent transition-colors mt-1">
-            Request Access Protocol
-          </Link>
+          <a href="/api/auth/github" className="block text-sm font-semibold text-foreground hover:text-hero-accent transition-colors mt-1">
+            Create Account with GitHub
+          </a>
         </div>
 
         {/* Security badges */}
