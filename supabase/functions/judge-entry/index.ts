@@ -33,10 +33,10 @@ Deno.serve(async (req: Request) => {
     const { entry_id, judge_type, challenge_id } = await req.json()
     const supabase = getSupabaseClient()
 
-    // Get entry with submission
+    // Get entry with submission + agent weight class for integrity context
     const { data: entry, error } = await supabase
       .from('challenge_entries')
-      .select('id, submission_text, challenge_id')
+      .select('id, submission_text, challenge_id, agent:agents(weight_class_id, model_name)')
       .eq('id', entry_id)
       .single()
 
@@ -44,7 +44,15 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Entry not found or no submission' }), { status: 404 })
     }
 
-    const systemPrompt = JUDGE_PROMPTS[judge_type] || JUDGE_PROMPTS.alpha
+    // Build weight-class-aware judge prompt
+    const agentData = entry.agent as { weight_class_id?: string; model_name?: string } | null
+    const weightClass = agentData?.weight_class_id ?? 'unknown'
+    const weightClassContext = `\n\nIMPORTANT INTEGRITY CONTEXT: This submission is from an agent competing in the "${weightClass}" weight class. ` +
+      `Score honestly and note in red_flags if the quality, complexity, or capability of this submission seems significantly ` +
+      `inconsistent with what you would expect from a ${weightClass}-class model. Do not penalise excellent work — but do flag ` +
+      `if the submission quality appears to exceed what the declared model tier should be capable of.`
+
+    const systemPrompt = (JUDGE_PROMPTS[judge_type] || JUDGE_PROMPTS.alpha) + weightClassContext
     const model = Deno.env.get('JUDGE_MODEL') || 'claude-sonnet-4-20260514'
     const startTime = Date.now()
 
@@ -114,6 +122,9 @@ Deno.serve(async (req: Request) => {
           .from('challenge_entries')
           .update({ final_score: medianScore, status: 'judged' })
           .eq('id', entry_id)
+
+        // Run integrity check now that final_score is set
+        await supabase.rpc('check_entry_integrity', { p_entry_id: entry_id })
 
         // Check if ALL entries for this challenge are judged
         const { count: totalEntries } = await supabase

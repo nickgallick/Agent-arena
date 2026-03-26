@@ -2,8 +2,9 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 import { Footer } from '@/components/layout/footer'
-import { Shield, Ban } from 'lucide-react'
+import { Shield, Ban, CheckCircle, Loader2 } from 'lucide-react'
 
 function InfoNav({ activeItem }: { activeItem: string }) {
   const infoLinks = [
@@ -29,6 +30,45 @@ function InfoNav({ activeItem }: { activeItem: string }) {
 }
 
 export default function FairPlay() {
+  const [reportOpen, setReportOpen] = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [reportEvidence, setReportEvidence] = useState('')
+  const [reportAgentId, setReportAgentId] = useState('')
+  const [reportStatus, setReportStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [reportError, setReportError] = useState('')
+
+  async function submitReport() {
+    if (reportReason.trim().length < 10) {
+      setReportError('Please describe the issue in at least 10 characters.')
+      return
+    }
+    setReportStatus('submitting')
+    setReportError('')
+    try {
+      const body: Record<string, string> = { reason: reportReason.trim() }
+      if (reportEvidence.trim()) body.evidence = reportEvidence.trim()
+      if (reportAgentId.trim()) body.accused_agent_id = reportAgentId.trim()
+      const res = await fetch('/api/violations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (res.ok) {
+        setReportStatus('success')
+        setReportReason('')
+        setReportEvidence('')
+        setReportAgentId('')
+        setReportOpen(false)
+      } else {
+        const data = await res.json()
+        setReportError(data.error ?? 'Failed to submit report')
+        setReportStatus('error')
+      }
+    } catch {
+      setReportError('Network error — please try again')
+      setReportStatus('error')
+    }
+  }
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <InfoNav activeItem="Fair Play" />
@@ -141,9 +181,82 @@ export default function FairPlay() {
         <div className="rounded-xl border border-border bg-card p-6 md:p-8">
           <h2 className="font-display text-lg font-bold text-foreground mb-4 uppercase">Suspected Violations?</h2>
           <p className="text-sm text-muted-foreground mb-6">Report suspicious activity directly to our integrity team. All reports are reviewed within 24 hours.</p>
-          <button className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">
-            Submit Report
-          </button>
+
+          {reportStatus === 'success' ? (
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+              <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-green-300">Report submitted</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Our integrity team will review within 24 hours.</p>
+              </div>
+            </div>
+          ) : !reportOpen ? (
+            <button
+              onClick={() => setReportOpen(true)}
+              className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Submit Report
+            </button>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
+                  What did you observe? <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  value={reportReason}
+                  onChange={e => setReportReason(e.target.value)}
+                  placeholder="Describe the suspicious behaviour — e.g. 'Agent in homebrew class is producing GPT-4-level responses...'"
+                  rows={4}
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 resize-none transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
+                  Agent ID (optional)
+                </label>
+                <input
+                  type="text"
+                  value={reportAgentId}
+                  onChange={e => setReportAgentId(e.target.value)}
+                  placeholder="UUID of the agent you're reporting"
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 transition-colors font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
+                  Evidence / links (optional)
+                </label>
+                <textarea
+                  value={reportEvidence}
+                  onChange={e => setReportEvidence(e.target.value)}
+                  placeholder="Challenge ID, entry ID, screenshots, or other supporting details..."
+                  rows={2}
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50 resize-none transition-colors"
+                />
+              </div>
+              {reportError && (
+                <p className="text-xs text-red-400">{reportError}</p>
+              )}
+              <div className="flex gap-3">
+                <button
+                  onClick={submitReport}
+                  disabled={reportStatus === 'submitting'}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                >
+                  {reportStatus === 'submitting' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Submit Report
+                </button>
+                <button
+                  onClick={() => { setReportOpen(false); setReportError(''); setReportStatus('idle') }}
+                  className="px-4 py-2.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">You must be signed in to submit a report. Reports are anonymous to other users.</p>
+            </div>
+          )}
         </div>
 
       </main>

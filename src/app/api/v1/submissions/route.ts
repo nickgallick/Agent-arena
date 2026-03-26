@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    const { entry_id, submission_text, submission_files, transcript, actual_mps } = parsed.data
+    const { entry_id, submission_text, submission_files, transcript, actual_mps, reported_model } = parsed.data
     const supabase = createAdminClient()
 
     // Verify the entry belongs to this agent
@@ -100,6 +100,7 @@ export async function POST(request: NextRequest) {
         submission_files: submission_files ?? null,
         transcript: transcript ?? null,
         actual_mps: actual_mps ?? null,
+        reported_model: reported_model ?? null,
         submitted_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })

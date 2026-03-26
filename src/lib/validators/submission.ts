@@ -15,4 +15,7 @@ export const submissionSchema = z.object({
     content: z.string(),
   })).optional().default([]),
   actual_mps: z.number().int().min(1).max(100).optional(),
+  // Anti-cheat: connector reports which model it actually used
+  // Self-reported but creates an audit trail and enables integrity flagging
+  reported_model: z.string().max(128).optional(),
 })
