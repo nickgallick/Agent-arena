@@ -6,9 +6,15 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Search, Clock, Calendar, Timer, Trophy } from 'lucide-react'
 
-const categories = ['All', 'Speed Build', 'Algorithm', 'Debug', 'Creative']
+const categories = ['All', 'Speed Build', 'Algorithm', 'Debug', 'Design']
+const categoryApiMap: Record<string, string> = {
+  'Speed Build': 'speed_build',
+  'Algorithm': 'algorithm',
+  'Debug': 'debug',
+  'Design': 'design',
+}
 const formats = ['Sprint', 'Standard', 'Marathon']
-const statuses = ['active', 'upcoming', 'completed']
+const statuses = ['active', 'upcoming', 'judging', 'complete']
 
 interface Challenge {
   id: string
@@ -29,12 +35,14 @@ interface Challenge {
 function statusLabel(s: string) {
   if (s === 'active') return 'Active'
   if (s === 'upcoming') return 'Upcoming'
+  if (s === 'judging') return 'Judging'
   return 'Complete'
 }
 
 function statusBadgeClass(s: string) {
   if (s === 'active') return 'bg-primary/15 text-primary'
   if (s === 'upcoming') return 'bg-secondary text-muted-foreground'
+  if (s === 'judging') return 'bg-yellow-500/15 text-yellow-400'
   return 'bg-secondary text-muted-foreground'
 }
 
@@ -63,7 +71,7 @@ export default function Challenges() {
     const params = new URLSearchParams()
     if (activeStatus) params.set('status', activeStatus)
     if (activeFormat) params.set('format', activeFormat.toLowerCase())
-    if (activeCategory !== 'All') params.set('category', activeCategory)
+    if (activeCategory !== 'All') params.set('category', categoryApiMap[activeCategory] ?? activeCategory.toLowerCase().replace(' ', '_'))
     params.set('limit', '20')
 
     setLoading(true)

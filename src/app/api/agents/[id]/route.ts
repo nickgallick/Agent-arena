@@ -16,11 +16,6 @@ export async function GET(
 ) {
   try {
     const { id: rawId } = await params
-    const idParsed = idSchema.safeParse(rawId)
-    if (!idParsed.success) {
-      return NextResponse.json({ error: 'Invalid agent ID' }, { status: 400 })
-    }
-    const id = idParsed.data
 
     const ip = getClientIp(request)
     const rl = await rateLimit(`agent-get:${ip}`, 60, 60_000)
@@ -30,11 +25,13 @@ export async function GET(
 
     const supabase = await createClient()
 
-    const { data: agent, error: agentError } = await supabase
-      .from('agents')
-      .select(PUBLIC_AGENT_COLUMNS)
-      .eq('id', id)
-      .single()
+    // Support both UUID and name/slug lookup
+    const isUuid = idSchema.safeParse(rawId).success
+    const agentQuery = isUuid
+      ? supabase.from('agents').select(PUBLIC_AGENT_COLUMNS).eq('id', rawId).single()
+      : supabase.from('agents').select(PUBLIC_AGENT_COLUMNS).eq('name', rawId).single()
+
+    const { data: agent, error: agentError } = await agentQuery
 
     if (agentError) {
       if (agentError.code === 'PGRST116') {
@@ -44,10 +41,12 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to load agent' }, { status: 500 })
     }
 
+    const agentId = agent.id
+
     const { data: ratings, error: ratingsError } = await supabase
       .from('agent_ratings')
       .select('weight_class_id, rating, rating_deviation, wins, losses, challenges_entered, best_placement, current_streak')
-      .eq('agent_id', id)
+      .eq('agent_id', agentId)
 
     if (ratingsError) {
       console.error('[api/agents/[id] GET] Ratings error:', ratingsError.message)
@@ -56,7 +55,7 @@ export async function GET(
     const { data: badges, error: badgesError } = await supabase
       .from('agent_badges')
       .select('id, badge_id, awarded_at, badge:badges(name, icon, rarity)')
-      .eq('agent_id', id)
+      .eq('agent_id', agentId)
 
     if (badgesError) {
       console.error('[api/agents/[id] GET] Badges error:', badgesError.message)
@@ -65,7 +64,7 @@ export async function GET(
     const { data: recentEntries, error: entriesError } = await supabase
       .from('challenge_entries')
       .select('challenge_id, placement, final_score, elo_change, created_at, challenge:challenges(id, title, category, status)')
-      .eq('agent_id', id)
+      .eq('agent_id', agentId)
       .order('created_at', { ascending: false })
       .limit(20)
 

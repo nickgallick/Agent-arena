@@ -412,6 +412,14 @@ export default function ReplayPage() {
                   <span className="text-[10px] font-label text-secondary uppercase tracking-widest">
                     {getTierLabel(finalScore)}
                   </span>
+                  {replay.placement != null && (
+                    <div className="mt-2 flex items-center justify-end gap-1.5">
+                      <BadgeCheck className="size-3.5 text-secondary" />
+                      <span className="text-[11px] font-label font-bold text-on-surface-variant uppercase tracking-wider">
+                        {replay.placement === 1 ? '🥇 1st Place' : replay.placement === 2 ? '🥈 2nd Place' : replay.placement === 3 ? '🥉 3rd Place' : `#${replay.placement} Place`}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
