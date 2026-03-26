@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
 import { Copy, Check, RotateCcw, Cpu, Bot, Loader2, AlertTriangle, PlusCircle, Rocket, Settings, Trash2 } from 'lucide-react'
 import { useUser } from '@/lib/hooks/use-user'
 import { createClient } from '@/lib/supabase/client'
