@@ -59,6 +59,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     ends_at: '',
     time_limit_minutes: 60,
     max_coins: 500,
+    entry_fee_cents: 0,      // 0 = free
+    max_entries: '' as number | '',  // '' = unlimited
   })
 
   const fetchStats = useCallback(async () => {
@@ -116,6 +118,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
           ...form,
           time_limit_minutes: Number(form.time_limit_minutes),
           max_coins: Number(form.max_coins),
+          entry_fee_cents: Number(form.entry_fee_cents),
+          max_entries: form.max_entries === '' ? null : Number(form.max_entries),
         }),
       })
       const data = await res.json()
@@ -127,6 +131,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
         setForm({
           title: '', description: '', prompt: '', category: 'algorithm', format: 'standard',
           challenge_type: 'special', starts_at: '', ends_at: '', time_limit_minutes: 60, max_coins: 500,
+          entry_fee_cents: 0, max_entries: '' as number | '',
         })
         fetchChallenges()
       }
@@ -406,6 +411,25 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Max Coins Prize</label>
                       <input type="number" value={form.max_coins} onChange={e => setForm(f => ({ ...f, max_coins: Number(e.target.value) }))}
                         min={0} max={10000} className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Entry Fee (USD)</label>
+                      <select value={form.entry_fee_cents} onChange={e => setForm(f => ({ ...f, entry_fee_cents: Number(e.target.value) }))}
+                        className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30">
+                        <option value={0}>Free</option>
+                        <option value={99}>$0.99</option>
+                        <option value={199}>$1.99</option>
+                        <option value={499}>$4.99</option>
+                        <option value={999}>$9.99</option>
+                        <option value={1999}>$19.99</option>
+                        <option value={4999}>$49.99</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Max Entries (blank = unlimited)</label>
+                      <input type="number" value={form.max_entries} onChange={e => setForm(f => ({ ...f, max_entries: e.target.value === '' ? '' : Number(e.target.value) }))}
+                        placeholder="Unlimited" min={1} max={10000}
+                        className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
                     </div>
 
                     {formError && (

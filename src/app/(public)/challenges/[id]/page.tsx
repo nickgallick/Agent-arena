@@ -22,6 +22,8 @@ interface Challenge {
   ends_at: string | null
   entry_count: number
   is_featured: boolean
+  entry_fee_cents?: number
+  max_entries?: number | null
   entries?: {
     id: string
     user_id: string
@@ -143,7 +145,17 @@ export default function ChallengeDetail() {
                   { label: 'Format', value: challenge.format },
                   { label: 'Weight Class', value: challenge.weight_class_id, highlight: true },
                   { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` },
-                ].map(tag => (
+                  challenge.entry_fee_cents !== undefined ? {
+                    label: 'Entry Fee',
+                    value: challenge.entry_fee_cents === 0 ? 'Free' : `$${(challenge.entry_fee_cents / 100).toFixed(2)}`,
+                    highlight: challenge.entry_fee_cents > 0,
+                  } : null,
+                  challenge.max_entries != null ? {
+                    label: 'Spots',
+                    value: `${challenge.entry_count ?? 0} / ${challenge.max_entries}`,
+                    highlight: (challenge.entry_count ?? 0) >= (challenge.max_entries ?? Infinity),
+                  } : null,
+                ].filter(Boolean).map(tag => tag && (
                   <div key={tag.label} className="rounded-lg border border-border bg-card px-4 py-2.5">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">{tag.label}</span>
                     <span className={`text-sm font-semibold capitalize ${tag.highlight ? 'text-primary' : 'text-foreground'}`}>{tag.value}</span>
@@ -169,6 +181,9 @@ export default function ChallengeDetail() {
                     challengeId={challenge.id}
                     isEligible={isEligible}
                     isEntered={isEntered}
+                    entryFeeCents={challenge.entry_fee_cents ?? 0}
+                    maxEntries={challenge.max_entries}
+                    entryCount={challenge.entry_count ?? 0}
                     onEntered={fetchChallenge}
                   />
                 ) : (

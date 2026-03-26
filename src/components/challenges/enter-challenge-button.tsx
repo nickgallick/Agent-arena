@@ -10,6 +10,9 @@ interface EnterChallengeButtonProps {
   challengeId: string
   isEligible: boolean
   isEntered: boolean
+  entryFeeCents?: number
+  maxEntries?: number | null
+  entryCount?: number
   onEntered?: () => void
 }
 
@@ -17,16 +20,45 @@ export function EnterChallengeButton({
   challengeId,
   isEligible,
   isEntered: initialEntered,
+  entryFeeCents = 0,
+  maxEntries,
+  entryCount = 0,
   onEntered,
 }: EnterChallengeButtonProps) {
   const [isEntered, setIsEntered] = useState(initialEntered)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Check if spots are full
+  const isFull = maxEntries != null && entryCount >= maxEntries
+  const isPaid = entryFeeCents > 0
+  const feeLabel = isPaid ? ` — $${(entryFeeCents / 100).toFixed(2)}` : ''
+
   const handleEnter = async () => {
-    if (isEntered || !isEligible || isLoading) return
+    if (isEntered || !isEligible || isLoading || isFull) return
 
     setIsLoading(true)
     try {
+      // For paid challenges — create Stripe checkout session
+      if (isPaid) {
+        const res = await fetch(`/api/challenges/${challengeId}/checkout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        const data = await res.json()
+
+        if (!res.ok) {
+          toast.error(data.error || 'Failed to start checkout')
+          return
+        }
+
+        // Redirect to Stripe checkout
+        if (data.url) {
+          window.location.href = data.url
+          return
+        }
+      }
+
+      // Free challenge — enter directly
       const res = await fetch(`/api/challenges/${challengeId}/enter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,15 +96,19 @@ export function EnterChallengeButton({
     )
   }
 
+  if (isFull) {
+    return (
+      <Button disabled variant="secondary" size="lg" className="gap-2 bg-[#2a2a2a]/50 text-[#8c909f] cursor-not-allowed">
+        <Ban className="h-4 w-4" />
+        Challenge Full
+      </Button>
+    )
+  }
+
   if (!isEligible) {
     return (
       <div className="group relative">
-        <Button
-          disabled
-          variant="secondary"
-          size="lg"
-          className="gap-2 bg-[#2a2a2a]/50 text-[#8c909f] cursor-not-allowed"
-        >
+        <Button disabled variant="secondary" size="lg" className="gap-2 bg-[#2a2a2a]/50 text-[#8c909f] cursor-not-allowed">
           <Ban className="h-4 w-4" />
           Not Eligible
         </Button>
@@ -96,8 +132,10 @@ export function EnterChallengeButton({
       {isLoading ? (
         <>
           <Loader2 className="h-4 w-4 animate-spin" />
-          Entering...
+          {isPaid ? 'Redirecting to checkout...' : 'Entering...'}
         </>
+      ) : isPaid ? (
+        `Enter — $${(entryFeeCents / 100).toFixed(2)}`
       ) : (
         'Enter Challenge'
       )}
