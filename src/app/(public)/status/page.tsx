@@ -1,9 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Footer } from '@/components/layout/footer'
-import { CheckCircle2, AlertCircle } from 'lucide-react'
+import { CheckCircle2, Clock, Loader2, AlertCircle } from 'lucide-react'
 
 function InfoNav({ activeItem }: { activeItem: string }) {
   const infoLinks = [
@@ -14,7 +15,9 @@ function InfoNav({ activeItem }: { activeItem: string }) {
   ]
   return (
     <nav className="border-b border-border px-4 md:px-6 py-4 flex items-center justify-between">
-      <Link href="/" className="inline-flex hover:opacity-80 transition-opacity"><Image src="/bouts-logo.png" alt="Bouts" width={145} height={68} className="h-12 w-auto" /></Link>
+      <Link href="/" className="inline-flex hover:opacity-80 transition-opacity">
+        <Image src="/bouts-logo.png" alt="Bouts" width={145} height={68} className="h-12 w-auto" />
+      </Link>
       <div className="hidden md:flex items-center gap-8">
         {infoLinks.map(link => (
           <Link key={link.label} href={link.href}
@@ -28,20 +31,42 @@ function InfoNav({ activeItem }: { activeItem: string }) {
   )
 }
 
-export default function Status() {
-  const incidents = [
-    { date: '2024-05-22', title: 'API Mesh Scaling Event', desc: 'Automated cluster expansion to handle surge in requests.', status: 'RESOLVED', duration: '12m' },
-    { date: '2024-05-18', title: 'Scheduled Database Optimization', desc: 'Index rebuilding on Kinetic Ledger. No downtime observed.', status: 'RESOLVED', duration: '45m' },
-    { date: '2024-05-14', title: 'Intermittent Connector Latency', desc: 'Network congestion in AP-SOUTH-1 affected 0.04% of connections.', status: 'RESOLVED', duration: '4m', highlight: true },
-    { date: '2024-05-02', title: 'System Core Upgrade (v2.4.0)', desc: 'Major update to Judge Pipeline neural weighting engines.', status: 'RESOLVED', duration: '1h 20m' },
-  ]
+interface StatusData {
+  status: string
+  updated_at: string
+  metrics: {
+    total_agents: number
+    active_challenges: number
+    total_entries_30d: number
+    avg_judge_latency_ms: number | null
+    last_judge_at: string | null
+  }
+  services: { name: string; status: string }[]
+  activity_series: number[]
+}
 
-  const regions = [
-    { name: 'US-EAST-1', status: 'ONLINE' },
-    { name: 'EU-WEST-1', status: 'ONLINE' },
-    { name: 'AP-SOUTH-1', status: 'ONLINE' },
-    { name: 'SA-EAST-1', status: 'ONLINE' },
-  ]
+function timeAgo(iso: string) {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (diff < 60) return `${diff}s ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  return `${Math.floor(diff / 86400)}d ago`
+}
+
+export default function Status() {
+  const [data, setData] = useState<StatusData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/status')
+      .then(r => r.json())
+      .then(d => { setData(d); setLoading(false) })
+      .catch(() => { setError(true); setLoading(false) })
+  }, [])
+
+  const isOperational = data?.status === 'operational'
+  const maxActivity = data ? Math.max(...data.activity_series, 1) : 1
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -51,129 +76,141 @@ export default function Status() {
         {/* Hero */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-12">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-              <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-primary font-bold">Systems Operational</span>
-            </div>
+            {loading ? (
+              <div className="flex items-center gap-2 mb-4">
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground">Loading status...</span>
+              </div>
+            ) : error ? (
+              <div className="flex items-center gap-2 mb-4">
+                <AlertCircle className="w-4 h-4 text-red-400" />
+                <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-red-400">Status unavailable</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 mb-4">
+                <span className={`w-2.5 h-2.5 rounded-full ${isOperational ? 'bg-primary' : 'bg-amber-500'}`} />
+                <span className={`text-[10px] font-mono uppercase tracking-[0.15em] font-bold ${isOperational ? 'text-primary' : 'text-amber-400'}`}>
+                  {isOperational ? 'All Systems Operational' : 'Degraded Performance'}
+                </span>
+              </div>
+            )}
             <h1 className="font-display text-3xl md:text-5xl font-extrabold text-foreground uppercase tracking-wide mb-4">Network Status</h1>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
-              Real-time telemetry from the BOUTS ELITE global mesh. All core orchestration layers are performing within nominal parameters.
+              Live telemetry from the Bouts platform. Data refreshes every 60 seconds.
+              {data && <span className="block mt-1 text-[10px] font-mono text-muted-foreground/60">Last updated: {timeAgo(data.updated_at)}</span>}
             </p>
           </div>
-          <div className="rounded-xl border border-border bg-card px-6 py-4">
-            <div className="flex items-center gap-8">
+
+          {data && (
+            <div className="rounded-xl border border-border bg-card px-6 py-4 grid grid-cols-2 gap-6">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Uptime (30d)</span>
-                <span className="text-2xl font-mono font-bold text-primary">99.998%</span>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Active Challenges</span>
+                <span className="text-2xl font-mono font-bold text-primary">{data.metrics.active_challenges}</span>
               </div>
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Global Latency</span>
-                <span className="text-2xl font-mono font-bold text-foreground">14ms</span>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Total Agents</span>
+                <span className="text-2xl font-mono font-bold text-foreground">{data.metrics.total_agents}</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Entries (30d)</span>
+                <span className="text-2xl font-mono font-bold text-foreground">{data.metrics.total_entries_30d}</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Judge Latency</span>
+                <span className="text-2xl font-mono font-bold text-foreground">
+                  {data.metrics.avg_judge_latency_ms != null ? `${(data.metrics.avg_judge_latency_ms / 1000).toFixed(1)}s` : '—'}
+                </span>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* API Mesh + Judge Pipeline */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
-          <div className="lg:col-span-2 rounded-xl border border-l-2 border-l-primary border-border bg-card p-4 md:p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="font-display text-lg font-bold text-foreground uppercase tracking-wider">API Mesh</h3>
-                <span className="text-xs text-muted-foreground">Global Gateway & Rate Limiting</span>
-              </div>
-              <span className="px-2.5 py-1 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-primary/15 text-primary">STABLE</span>
-            </div>
-            <div className="flex items-end gap-1 h-14 mb-2">
-              {Array.from({ length: 30 }).map((_, i) => (
-                <div key={i} className={`flex-1 rounded-sm ${i === 22 ? 'bg-amber-500' : 'bg-primary'}`} style={{ height: `${70 + Math.random() * 30}%` }} />
-              ))}
-            </div>
-            <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-              <span>30 days ago</span>
-              <span>99.8% operational</span>
-              <span>Today</span>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border bg-card p-4 md:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display text-lg font-bold text-foreground uppercase tracking-wider">Judge Pipeline</h3>
-              <CheckCircle2 className="w-5 h-5 text-primary" />
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Throughput</span>
-                <span className="text-sm font-mono font-bold text-foreground">4.2k ops/s</span>
-              </div>
-              <div className="border-t border-border" />
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Neural Load</span>
-                <span className="text-sm font-mono font-bold text-primary">24%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Connector + Database */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
-          <div className="rounded-xl border border-l-2 border-l-primary border-border bg-card p-4 md:p-6">
-            <h3 className="font-display text-lg font-bold text-foreground uppercase tracking-wider mb-5">Connector Network</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {regions.map(r => (
-                <div key={r.name} className="rounded-lg border border-border p-3">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">{r.name}</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-sm font-mono font-bold text-foreground">{r.status}</span>
+        {/* Services */}
+        {data && (
+          <div className="rounded-xl border border-border bg-card p-5 md:p-6 mb-8">
+            <h2 className="font-display text-lg font-bold text-foreground uppercase tracking-wider mb-5">Services</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {data.services.map(svc => (
+                <div key={svc.name} className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                  <span className="text-sm text-foreground font-medium">{svc.name}</span>
+                  <div className="flex items-center gap-2">
+                    {svc.status === 'operational' ? (
+                      <CheckCircle2 className="w-4 h-4 text-primary" />
+                    ) : svc.status === 'idle' ? (
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-amber-400" />
+                    )}
+                    <span className={`text-[10px] font-mono uppercase tracking-wider font-bold ${
+                      svc.status === 'operational' ? 'text-primary'
+                      : svc.status === 'idle' ? 'text-muted-foreground'
+                      : 'text-amber-400'
+                    }`}>{svc.status}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        )}
 
-          <div className="rounded-xl border border-l-2 border-l-primary border-border bg-card p-4 md:p-6">
-            <div className="mb-3">
-              <h3 className="font-display text-lg font-bold text-foreground uppercase tracking-wider">Database Cluster</h3>
-              <span className="text-xs text-muted-foreground">Distributed Kinetic Ledger</span>
-            </div>
-            <div className="mb-3">
-              <span className="text-2xl font-mono font-bold text-foreground block">0.4ms</span>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Avg Query Latency</span>
+        {/* Activity chart */}
+        {data && (
+          <div className="rounded-xl border border-border bg-card p-5 md:p-6 mb-8">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="font-display text-lg font-bold text-foreground uppercase tracking-wider">Challenge Activity</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Entries submitted per day — last 30 days</p>
+              </div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{data.metrics.total_entries_30d} total</span>
             </div>
             <div className="flex items-end gap-1 h-20">
-              {Array.from({ length: 24 }).map((_, i) => (
-                <div key={i} className="flex-1 rounded-sm bg-muted-foreground/30" style={{ height: `${20 + Math.random() * 80}%` }} />
+              {data.activity_series.map((count, i) => (
+                <div
+                  key={i}
+                  className="flex-1 rounded-sm bg-primary transition-all"
+                  style={{ height: `${Math.max(4, (count / maxActivity) * 100)}%`, opacity: count === 0 ? 0.15 : 1 }}
+                  title={`${count} entries`}
+                />
               ))}
             </div>
+            <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-muted-foreground mt-2">
+              <span>30 days ago</span>
+              <span>Today</span>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Incident Log */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-xl md:text-2xl font-extrabold text-foreground uppercase tracking-wider">Incident Log</h2>
-            <button className="text-[10px] font-mono uppercase tracking-wider text-primary font-bold hover:text-primary/80">Download Report</button>
-          </div>
-          <div className="space-y-3">
-            {incidents.map((inc, i) => (
-              <div key={i} className="rounded-xl border border-border bg-card px-4 md:px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-                <span className="text-sm font-mono text-muted-foreground flex-shrink-0">{inc.date}</span>
-                <div className="flex-1">
-                  <h4 className={`text-sm font-bold mb-0.5 ${inc.highlight ? 'text-amber-400' : 'text-foreground'}`}>{inc.title}</h4>
-                  <p className="text-xs text-muted-foreground">{inc.desc}</p>
-                </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <span className="px-2.5 py-1 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-primary/15 text-primary">{inc.status}</span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">DURATION: {inc.duration}</span>
+        {/* Judge pipeline detail */}
+        {data?.metrics.last_judge_at && (
+          <div className="rounded-xl border border-border bg-card p-5 md:p-6 mb-8">
+            <h2 className="font-display text-lg font-bold text-foreground uppercase tracking-wider mb-4">Judge Pipeline</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Status</span>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-mono font-bold text-primary">Operational</span>
                 </div>
               </div>
-            ))}
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Avg Score Latency</span>
+                <span className="text-sm font-mono font-bold text-foreground">
+                  {data.metrics.avg_judge_latency_ms != null ? `${(data.metrics.avg_judge_latency_ms / 1000).toFixed(1)}s` : '—'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Last Score</span>
+                <span className="text-sm font-mono font-bold text-foreground">{timeAgo(data.metrics.last_judge_at)}</span>
+              </div>
+            </div>
           </div>
-          <div className="text-center mt-8">
-            <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground">END OF LOGS FOR MAY 2024</span>
+        )}
+
+        {loading && (
+          <div className="flex items-center justify-center py-24">
+            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
           </div>
-        </div>
+        )}
 
       </main>
       <Footer />
