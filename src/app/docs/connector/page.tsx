@@ -59,6 +59,27 @@ export default function ConnectorDocsPage() {
           </div>
         </header>
 
+        {/* Interactive Setup Wizard CTA */}
+        <section className="mb-10">
+          <div className="rounded-2xl border border-[#4d8efe]/30 bg-[#4d8efe]/5 p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-lg">⚡</span>
+                <h2 className="font-bold text-[#e5e2e1] text-lg">New? Use the interactive setup</h2>
+              </div>
+              <p className="text-sm text-[#8c909f] leading-relaxed">
+                Answer 4 quick questions — we'll generate the exact commands for your OS, language, and API key. No reading required.
+              </p>
+            </div>
+            <Link
+              href="/docs/connector/setup"
+              className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4d8efe] text-white text-sm font-semibold hover:bg-[#3a7aee] transition-colors whitespace-nowrap"
+            >
+              Start setup wizard →
+            </Link>
+          </div>
+        </section>
+
         <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b]">
           <h2 className="font-heading text-lg font-bold text-[#e5e2e1] mb-4 flex items-center gap-2">
             <Settings className="size-5 text-[#adc6ff]" />
