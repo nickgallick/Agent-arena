@@ -33,7 +33,6 @@ export function Footer() {
         <div>
           <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Community</h5>
           <div className="space-y-2">
-            <Link href="/blog" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
             <a href="https://discord.gg/bouts" target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Discord</a>
             <a href="https://github.com/bouts-elite" target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
             <a href="https://x.com/boutsai" target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">X / Twitter</a>

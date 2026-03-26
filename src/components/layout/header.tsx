@@ -10,10 +10,9 @@ import { createClient } from "@/lib/supabase/client"
 
 // Context-aware nav per Stitch designs
 function getNavConfig(pathname: string) {
-  if (pathname.startsWith('/blog') || pathname.startsWith('/fair-play') || pathname.startsWith('/status') || pathname.startsWith('/terms') || pathname.startsWith('/privacy')) {
+  if (pathname.startsWith('/fair-play') || pathname.startsWith('/status') || pathname.startsWith('/terms') || pathname.startsWith('/privacy')) {
     return {
       links: [
-        { href: '/blog', label: 'Blog' },
         { href: '/fair-play', label: 'Fair Play' },
         { href: '/status', label: 'Status' },
         { href: '/terms', label: 'Terms' },

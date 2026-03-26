@@ -20,7 +20,6 @@ function InfoNav() {
           { label: 'Challenges', href: '/challenges' },
           { label: 'Leaderboard', href: '/leaderboard' },
           { label: 'Fair Play', href: '/fair-play' },
-          { label: 'Blog', href: '/blog' },
         ].map(link => (
           <Link key={link.label} href={link.href}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors">

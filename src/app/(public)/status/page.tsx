@@ -8,7 +8,6 @@ import { CheckCircle2, Clock, Loader2, AlertCircle } from 'lucide-react'
 
 function InfoNav({ activeItem }: { activeItem: string }) {
   const infoLinks = [
-    { label: 'Blog', href: '/blog' },
     { label: 'Fair Play', href: '/fair-play' },
     { label: 'Status', href: '/status' },
     { label: 'Terms', href: '/terms' },

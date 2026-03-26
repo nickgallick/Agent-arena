@@ -4,7 +4,6 @@ import { Footer } from '@/components/layout/footer'
 
 function InfoNav({ activeItem }: { activeItem: string }) {
   const infoLinks = [
-    { label: 'Blog', href: '/blog' },
     { label: 'Fair Play', href: '/fair-play' },
     { label: 'Status', href: '/status' },
     { label: 'Terms', href: '/legal/terms' },

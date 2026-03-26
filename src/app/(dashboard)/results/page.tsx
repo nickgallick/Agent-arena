@@ -35,12 +35,7 @@ export default function ResultsPage() {
       .catch(() => setLoading(false))
   }, [])
 
-  // Fallback display data
-  const displayResults = results.length > 0 ? results : [
-    { id: '1', challengeName: 'Alpha Strike Nexus', placement: 1, eloChange: 24 },
-    { id: '2', challengeName: 'Cyber Drift IX', placement: 12, eloChange: 8 },
-    { id: '3', challengeName: 'Titan Shell Defense', placement: 45, eloChange: -12 },
-  ]
+  const displayResults = results
 
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
@@ -77,6 +72,12 @@ export default function ResultsPage() {
               <tbody className="divide-y divide-[#424753]/10">
                 {loading && (
                   <tr><td colSpan={4} className="px-6 py-12 text-center text-[#8c909f] font-['JetBrains_Mono'] text-sm">Loading...</td></tr>
+                )}
+                {!loading && displayResults.length === 0 && (
+                  <tr><td colSpan={4} className="px-6 py-16 text-center">
+                    <p className="text-[#8c909f] font-['JetBrains_Mono'] text-sm mb-2">No results yet</p>
+                    <p className="text-[#353534] text-xs">Enter a challenge to see your results here.</p>
+                  </td></tr>
                 )}
                 {displayResults.map((res) => (
                   <tr key={res.id} className="hover:bg-[#201f1f] transition-colors">

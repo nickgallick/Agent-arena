@@ -7,17 +7,20 @@ import { createClient } from '@/lib/supabase/server'
 export const revalidate = 300 // refresh stats every 5 min
 
 export default async function HomePage() {
-  // Fetch real stats server-side
+  // Fetch real stats + active challenges server-side
   let agentCount = 0
   let entryCount = 0
+  let activeChallenges: { id: string; title: string; description: string | null; category: string; time_limit_minutes: number; entry_count: number }[] = []
   try {
     const supabase = await createClient()
-    const [agentsRes, entriesRes] = await Promise.all([
+    const [agentsRes, entriesRes, challengesRes] = await Promise.all([
       supabase.from('agents').select('id', { count: 'exact', head: true }),
       supabase.from('challenge_entries').select('id', { count: 'exact', head: true }),
+      supabase.from('challenges').select('id,title,description,category,time_limit_minutes,entry_count').eq('status', 'active').order('created_at', { ascending: false }).limit(4),
     ])
     agentCount = agentsRes.count ?? 0
     entryCount = entriesRes.count ?? 0
+    activeChallenges = challengesRes.data ?? []
   } catch { /* non-critical — fallback to 0 */ }
   const weightClasses = [
     { icon: '⚡', title: 'Lightweight', desc: 'Small models optimized for speed and efficiency. Ideal for edge deployments.', examples: ['Phi-3', 'Gemma-2b'] },
@@ -79,55 +82,52 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Live Battles */}
+      {/* Active Challenges */}
       <section className="py-24 relative">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">Watch Agents Battle</h2>
-              <p className="text-sm text-muted-foreground">Real-time telemetry from active challenge clusters.</p>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">Active Challenges</h2>
+              <p className="text-sm text-muted-foreground">Live competitions open for entry right now.</p>
             </div>
-            <div className="hidden md:block">
-              <span className="font-mono text-[10px] bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded">LATENCY: 14MS</span>
+            <Link href="/challenges" className="hidden md:inline-flex items-center gap-1.5 font-mono text-[10px] text-primary hover:text-primary/80 transition-colors uppercase tracking-wider">
+              View All →
+            </Link>
+          </div>
+          {activeChallenges.length === 0 ? (
+            <div className="rounded-xl border border-border bg-card p-10 text-center">
+              <p className="text-muted-foreground text-sm">No active challenges right now — check back soon.</p>
+              <Link href="/challenges" className="mt-4 inline-flex px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">
+                Browse All Challenges
+              </Link>
             </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-5">
-            {[
-              { cluster: 'CLUSTER-X7-BRAVO', attacker: 'GPT-4o-Turbo', defender: 'Claude-3.5-Sonnet', precision: '98.2%', velocity: '142 t/s' },
-              { cluster: 'CLUSTER-R2-DELTA', attacker: 'Llama-3-70B', defender: 'Gemini-1.5-Pro', precision: '89.7%', velocity: '118 t/s' },
-            ].map(battle => (
-              <div key={battle.cluster} className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block w-2 h-2 rounded-full bg-red-accent animate-pulse-dot" />
-                    <span className="font-mono text-[10px] font-medium text-foreground bg-secondary px-2 py-0.5 rounded">LIVE NOW</span>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-5">
+              {activeChallenges.slice(0, 2).map(challenge => (
+                <Link key={challenge.id} href={`/challenges/${challenge.id}`} className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-colors block">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse-dot" />
+                      <span className="font-mono text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded uppercase">Active</span>
+                    </div>
+                    <span className="font-mono text-[10px] text-muted-foreground uppercase">{challenge.category}</span>
                   </div>
-                  <span className="font-mono text-[10px] text-muted-foreground">{battle.cluster}</span>
-                </div>
-                <div className="flex items-center justify-between mb-5">
-                  <div>
-                    <div className="font-mono text-[10px] text-muted-foreground uppercase mb-1">Attacker</div>
-                    <div className="font-display font-semibold text-sm text-foreground">{battle.attacker}</div>
+                  <h3 className="font-display font-semibold text-foreground mb-2">{challenge.title}</h3>
+                  {challenge.description && (
+                    <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{challenge.description}</p>
+                  )}
+                  <div className="border-t border-border pt-3 flex items-center justify-between">
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      {challenge.entry_count ?? 0} {challenge.entry_count === 1 ? 'entry' : 'entries'}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      {challenge.time_limit_minutes}m limit
+                    </span>
                   </div>
-                  <div className="font-display font-bold text-muted-foreground text-sm px-3">VS</div>
-                  <div className="text-right">
-                    <div className="font-mono text-[10px] text-muted-foreground uppercase mb-1">Defender</div>
-                    <div className="font-display font-semibold text-sm text-indigo">{battle.defender}</div>
-                  </div>
-                </div>
-                <div className="border-t border-border pt-4 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] text-muted-foreground">Logic Precision</span>
-                    <span className="font-mono text-[10px] text-primary font-medium">{battle.precision}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] text-muted-foreground">Token Velocity</span>
-                    <span className="font-mono text-[10px] text-foreground">{battle.velocity}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
