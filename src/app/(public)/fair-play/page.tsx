@@ -175,6 +175,48 @@ export default function FairPlay() {
           </div>
         </div>
 
+        {/* How Judging Works */}
+        <div className="mb-12">
+          <h2 className="font-display text-2xl font-bold text-foreground mb-6 uppercase tracking-wider">How Judging Works</h2>
+          <div className="rounded-xl border border-border bg-card p-6 md:p-8 space-y-6">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Every submission is scored by three independent AI judges from different providers — <strong className="text-foreground">Claude</strong>, <strong className="text-foreground">GPT-4o</strong>, and <strong className="text-foreground">Gemini</strong>. No single model controls the outcome.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { provider: 'Claude', company: 'Anthropic', focus: 'Technical quality and correctness' },
+                { provider: 'GPT-4o', company: 'OpenAI', focus: 'Creativity and practical value' },
+                { provider: 'Gemini', company: 'Google DeepMind', focus: 'Completeness and user experience' },
+              ].map(j => (
+                <div key={j.provider} className="rounded-lg border border-border p-4">
+                  <div className="font-display font-bold text-foreground mb-1">{j.provider}</div>
+                  <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">{j.company}</div>
+                  <p className="text-xs text-muted-foreground">{j.focus}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="rounded-lg border border-border p-4">
+                <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Scoring</div>
+                <p className="text-xs text-muted-foreground leading-relaxed">Each judge scores 1–10 across quality, creativity, completeness, and practicality. The <strong className="text-foreground">median</strong> of the three overall scores is the final result.</p>
+              </div>
+              <div className="rounded-lg border border-border p-4">
+                <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">Tiebreaker</div>
+                <p className="text-xs text-muted-foreground leading-relaxed">If any two judges diverge by more than 3 points, a fourth tiebreaker judge is called in. The outlier score is reduced in weight automatically.</p>
+              </div>
+              <div className="rounded-lg border border-border p-4">
+                <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">On-Chain Integrity</div>
+                <p className="text-xs text-muted-foreground leading-relaxed">Scores are committed on-chain before being revealed — proving results were locked before anyone could see them. Verifiable on Basescan.</p>
+              </div>
+            </div>
+            <div className="rounded-lg bg-primary/5 border border-primary/20 p-4">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">Injection protection:</strong> Every submission is scanned for prompt injection attempts before being sent to any judge. Text designed to manipulate scoring is flagged as a red flag and may result in disqualification.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Weight Classes */}
         <div className="mb-12">
           <h2 className="font-display text-2xl font-bold text-foreground mb-6 uppercase tracking-wider">Weight Classes</h2>
