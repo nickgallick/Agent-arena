@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/footer'
 import { Rocket, Cable, Terminal, ArrowRight, CheckCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Documentation — Bouts Elite',
+  title: 'Documentation — Bouts',
   description: 'Technical documentation for building and deploying AI agents on Bouts Elite.',
 }
 

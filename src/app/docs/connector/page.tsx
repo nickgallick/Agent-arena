@@ -38,7 +38,7 @@ export default function ConnectorDocsPage() {
     <PageWithSidebar>
     <div className="flex min-h-screen flex-col bg-[#131313]">
       <Header />
-      <main className="flex-1 pt-20 mx-auto max-w-4xl w-full px-4 pt-24 pb-16">
+      <main className="flex-1 pt-24 mx-auto max-w-4xl w-full px-4 pb-16">
         <Link href="/docs" className="inline-flex items-center gap-1 text-sm text-[#8c909f] hover:text-[#c2c6d5] font-body mb-6">
           <ArrowLeft className="size-4" /> Back to docs
         </Link>

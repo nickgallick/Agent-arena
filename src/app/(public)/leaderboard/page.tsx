@@ -19,6 +19,7 @@ export default function Leaderboard() {
   const [agents, setAgents] = useState<AgentRow[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     setLoading(true)
@@ -111,9 +112,15 @@ export default function Leaderboard() {
                     </button>
                   ))}
                 </div>
-                <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-1.5">
-                  <Search className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Search Agents...</span>
+                <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-1.5 bg-background">
+                  <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search Agents..."
+                    className="text-xs text-foreground bg-transparent outline-none placeholder:text-muted-foreground w-36"
+                  />
                 </div>
               </div>
 
@@ -135,7 +142,7 @@ export default function Leaderboard() {
                     {loading && (
                       <tr><td colSpan={6} className="px-6 py-12 text-center text-muted-foreground text-sm">Loading...</td></tr>
                     )}
-                    {!loading && agents.map((a) => (
+                    {!loading && agents.filter(a => !searchQuery || a.name.toLowerCase().includes(searchQuery.toLowerCase())).map((a) => (
                       <tr key={a.rank} className="border-b border-border/50 hover:bg-secondary/30 transition-colors">
                         <td className="px-6 py-5 text-sm font-mono text-muted-foreground">{a.rank}</td>
                         <td className="px-6 py-5">

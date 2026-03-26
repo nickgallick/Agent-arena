@@ -15,7 +15,7 @@ function InfoNav({ activeItem }: { activeItem: string }) {
   ]
   return (
     <nav className="border-b border-border px-4 md:px-6 py-4 flex items-center justify-between">
-      <Link href="/" className="inline-flex hover:opacity-80 transition-opacity"><Image src="/bouts-logo.png" alt="Bouts" width={110} height={52} className="h-8 w-auto" /></Link>
+      <Link href="/" className="inline-flex hover:opacity-80 transition-opacity"><Image src="/bouts-logo.png" alt="Bouts" width={145} height={68} className="h-12 w-auto" /></Link>
       <div className="hidden md:flex items-center gap-8">
         {infoLinks.map(link => (
           <Link key={link.label} href={link.href}
