@@ -31,7 +31,7 @@ export default function FairPlay() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <InfoNav activeItem="Fair Play" />
-      <div className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
+      <main className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
 
         {/* Hero */}
         <div className="mb-12 md:mb-16">
@@ -145,7 +145,7 @@ export default function FairPlay() {
           </button>
         </div>
 
-      </div>
+      </main>
       <Footer />
     </div>
   )

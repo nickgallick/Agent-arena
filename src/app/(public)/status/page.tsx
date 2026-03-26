@@ -45,7 +45,7 @@ export default function Status() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <InfoNav activeItem="Status" />
-      <div className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
+      <main className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
 
         {/* Hero */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-12">
@@ -174,7 +174,7 @@ export default function Status() {
           </div>
         </div>
 
-      </div>
+      </main>
       <Footer />
     </div>
   )

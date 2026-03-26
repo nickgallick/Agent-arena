@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { Footer } from '@/components/layout/footer'
 
 const featuredArticle = {
+  slug: 'zero-latency-neural-handshakes',
   tag: 'Featured Analysis',
   date: 'OCT 24, 2024',
   title: 'Architecting Zero-Latency Neural Handshakes in Competitive Arenas',
@@ -12,14 +13,14 @@ const featuredArticle = {
 }
 
 const sideArticles = [
-  { tag: 'TECH LOG // 082', title: 'Protocol V4: The Rise of Kinetic Command Systems', desc: 'Exploring the transition from reactive scripts to intentional strategic reasoning.', date: 'Oct 20, 2024' },
-  { tag: 'INSIGHT // 041', title: 'Why Intelligence is the New Global Currency', desc: 'The economic implications of neural performance optimization in the BOUTS ecosystem.', date: 'Oct 18, 2024' },
+  { slug: 'protocol-v4-kinetic-command', tag: 'TECH LOG // 082', title: 'Protocol V4: The Rise of Kinetic Command Systems', desc: 'Exploring the transition from reactive scripts to intentional strategic reasoning.', date: 'Oct 20, 2024' },
+  { slug: 'intelligence-global-currency', tag: 'INSIGHT // 041', title: 'Why Intelligence is the New Global Currency', desc: 'The economic implications of neural performance optimization in the BOUTS ecosystem.', date: 'Oct 18, 2024' },
 ]
 
 const gridArticles = [
-  { category: 'System Update', title: 'Universal Arena Scaling: The Next Frontier', desc: "We've overhauled the orchestration engine to support 10k+ concurrent agent interactions with 99.99% synchronization accuracy.", date: 'OCT 15' },
-  { category: 'Security Protocol', title: 'Fair Play Manifesto: Neural Integrity', desc: 'Defining the boundaries of adversarial machine learning in competition.', date: 'OCT 12' },
-  { category: 'AI Theory', title: 'Cognitive Friction in Multi-Agent Systems', desc: 'A study on how autonomous agents negotiate shared objectives in high-velocity competitive environments.', date: 'OCT 09' },
+  { slug: 'universal-arena-scaling', category: 'System Update', title: 'Universal Arena Scaling: The Next Frontier', desc: "We've overhauled the orchestration engine to support 10k+ concurrent agent interactions with 99.99% synchronization accuracy.", date: 'OCT 15' },
+  { slug: 'fair-play-neural-integrity', category: 'Security Protocol', title: 'Fair Play Manifesto: Neural Integrity', desc: 'Defining the boundaries of adversarial machine learning in competition.', date: 'OCT 12' },
+  { slug: 'cognitive-friction-multi-agent', category: 'AI Theory', title: 'Cognitive Friction in Multi-Agent Systems', desc: 'A study on how autonomous agents negotiate shared objectives in high-velocity competitive environments.', date: 'OCT 09' },
 ]
 
 const infoLinks = [
@@ -51,7 +52,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <InfoNav activeItem="Blog" />
 
-      <div className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
+      <main className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
 
         {/* Hero */}
         <div className="mb-8 md:mb-12">
@@ -85,20 +86,20 @@ export default function BlogPage() {
                 </div>
                 <h2 className="font-display text-lg md:text-2xl font-bold text-foreground mb-2">{featuredArticle.title}</h2>
                 <p className="text-sm text-muted-foreground mb-4 hidden md:block">{featuredArticle.desc}</p>
-                <a href="#" className="text-sm font-semibold text-foreground flex items-center gap-2 hover:gap-3 transition-all">
+                <Link href={`/blog/${featuredArticle.slug}`} className="text-sm font-semibold text-foreground flex items-center gap-2 hover:gap-3 transition-all">
                   Read Deep Dive →
-                </a>
+                </Link>
               </div>
             </div>
           </div>
           <div className="flex flex-col gap-6">
             {sideArticles.map((article, i) => (
-              <div key={i} className="rounded-xl border border-border bg-card p-5 flex flex-col">
+              <Link key={i} href={`/blog/${article.slug}`} className="rounded-xl border border-border bg-card p-5 flex flex-col hover:border-primary/40 transition-colors">
                 <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-primary mb-2">{article.tag}</span>
                 <h3 className="font-display text-lg font-bold text-foreground mb-2">{article.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-3">{article.desc}</p>
                 <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{article.date}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -106,7 +107,7 @@ export default function BlogPage() {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 md:mb-16">
           {gridArticles.map((article, i) => (
-            <div key={i} className="rounded-xl border border-border bg-card overflow-hidden">
+            <Link key={i} href={`/blog/${article.slug}`} className="rounded-xl border border-border bg-card overflow-hidden hover:border-primary/40 transition-colors block">
               <div className="h-32 md:h-40 bg-gradient-to-br from-secondary to-background" />
               <div className="p-5">
                 <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground block mb-2">{article.category}</span>
@@ -114,10 +115,10 @@ export default function BlogPage() {
                 <p className="text-xs text-muted-foreground leading-relaxed mb-4">{article.desc}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">{article.date}</span>
-                  <a href="#" className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors">READ MORE →</a>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-primary">READ MORE →</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -134,7 +135,7 @@ export default function BlogPage() {
             </button>
           </div>
         </div>
-      </div>
+      </main>
 
       <Footer />
     </div>

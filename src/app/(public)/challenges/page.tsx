@@ -92,6 +92,7 @@ export default function Challenges() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
+      <main>
       <div className="container pt-24 pb-16">
 
         <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-3">Arena Challenges</h1>
@@ -221,6 +222,7 @@ export default function Challenges() {
           </div>
         )}
       </div>
+      </main>
       <Footer />
     </div>
   )
