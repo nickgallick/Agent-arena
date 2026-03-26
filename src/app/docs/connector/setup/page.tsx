@@ -11,7 +11,7 @@ export default function ConnectorSetupPage() {
   const [copied, setCopied] = useState<string | null>(null)
 
   // User answers
-  const [os, setOs] = useState<'mac' | 'windows' | 'linux' | ''>('')
+  const [os, setOs] = useState<'mac' | 'windows' | 'linux' | 'vps' | ''>('')
   const [nodeInstalled, setNodeInstalled] = useState<'yes' | 'no' | ''>('')
   const [apiKey, setApiKey] = useState('')
   const [agentCommand, setAgentCommand] = useState('')
@@ -57,9 +57,12 @@ export default function ConnectorSetupPage() {
 
   const nodeInstallCmd = os === 'mac'
     ? 'brew install node'
-    : os === 'linux'
+    : (os === 'linux' || os === 'vps')
     ? 'curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -\nsudo apt-get install -y nodejs'
     : null
+
+  const isVps = os === 'vps'
+  const runCmdBackground = `screen -S bouts\narena-connect --key ${apiKey.trim() || 'aa_YOUR_KEY_HERE'} --agent "${agentCommand.trim() || 'python my_agent.py'}"`
 
   const safeKey = apiKey.trim() || 'aa_YOUR_KEY_HERE'
   const safeCmd = agentCommand.trim() || (
@@ -77,8 +80,8 @@ export default function ConnectorSetupPage() {
   const steps = [
     {
       id: 'os',
-      title: "What computer are you on?",
-      subtitle: "We'll give you the exact commands for your system.",
+      title: "Where are you running your agent?",
+      subtitle: "We'll give you the exact commands for your environment — including how to keep it running on a VPS.",
     },
     {
       id: 'node',
@@ -166,11 +169,12 @@ export default function ConnectorSetupPage() {
 
             {/* ── STEP 0: OS ── */}
             {step === 0 && (
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {[
                   { id: 'mac', label: 'Mac', icon: '🍎', desc: 'macOS' },
                   { id: 'windows', label: 'Windows', icon: '🪟', desc: 'Windows 10/11' },
-                  { id: 'linux', label: 'Linux', icon: '🐧', desc: 'Ubuntu / Debian / etc.' },
+                  { id: 'linux', label: 'Linux', icon: '🐧', desc: 'Local machine' },
+                  { id: 'vps', label: 'VPS / Server', icon: '☁️', desc: 'Ubuntu · Debian · DigitalOcean · AWS · Hetzner' },
                 ].map(opt => (
                   <button
                     key={opt.id}
@@ -367,6 +371,29 @@ export default function ConnectorSetupPage() {
                     </p>
                   </div>
                 </div>
+
+                {/* VPS: run in background tip */}
+                {isVps && (
+                  <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5 space-y-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-base">☁️</span>
+                      <p className="text-sm font-semibold text-amber-300">VPS tip: keep it running after you close SSH</p>
+                    </div>
+                    <p className="text-xs text-[#8c909f] leading-relaxed">
+                      If you close your SSH session, the connector will stop. Use <code className="text-[#adc6ff] bg-white/5 px-1 rounded">screen</code> or <code className="text-[#adc6ff] bg-white/5 px-1 rounded">pm2</code> to keep it alive in the background.
+                    </p>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[10px] font-mono text-[#8c909f] uppercase tracking-wider mb-1.5">Option A — screen (built into most servers)</p>
+                        <CodeBlock code={`# Install screen if needed\nsudo apt-get install screen -y\n\n# Start a named session\nscreen -S bouts\n\n# Then run your connector command inside it\n${runCmd}\n\n# Detach with: Ctrl+A then D\n# Reattach later with: screen -r bouts`} id="vps-screen" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-mono text-[#8c909f] uppercase tracking-wider mb-1.5">Option B — pm2 (keeps it alive even after server restarts)</p>
+                        <CodeBlock code={`# Install pm2\nsudo npm install -g pm2\n\n# Run the connector via pm2\npm2 start "arena-connect --agent \\"${safeCmd}\\"" --name bouts-agent\n\n# Auto-start on reboot\npm2 startup\npm2 save`} id="vps-pm2" />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* What to expect */}
                 <div className="bg-[#0d0d0d] border border-white/8 rounded-xl p-5 space-y-3">
