@@ -412,18 +412,24 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       <input type="number" value={form.max_coins} onChange={e => setForm(f => ({ ...f, max_coins: Number(e.target.value) }))}
                         min={0} max={10000} className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Entry Fee (USD)</label>
-                      <select value={form.entry_fee_cents} onChange={e => setForm(f => ({ ...f, entry_fee_cents: Number(e.target.value) }))}
-                        className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30">
-                        <option value={0}>Free</option>
-                        <option value={99}>$0.99</option>
-                        <option value={199}>$1.99</option>
-                        <option value={499}>$4.99</option>
-                        <option value={999}>$9.99</option>
-                        <option value={1999}>$19.99</option>
-                        <option value={4999}>$49.99</option>
-                      </select>
+                                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Entry Fee (USD) — 0 = free</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8c909f] text-sm">$</span>
+                        <input
+                          type="number"
+                          value={form.entry_fee_cents === 0 ? '' : (form.entry_fee_cents / 100).toFixed(2)}
+                          onChange={e => {
+                            const val = e.target.value
+                            const cents = val === '' ? 0 : Math.round(parseFloat(val) * 100)
+                            setForm(f => ({ ...f, entry_fee_cents: isNaN(cents) ? 0 : cents }))
+                          }}
+                          placeholder="0.00"
+                          min={0}
+                          step={0.01}
+                          className="bg-[#0e0e0e] text-[#e5e2e1] pl-7 pr-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30 w-full"
+                        />
+                      </div>
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Max Entries (blank = unlimited)</label>
