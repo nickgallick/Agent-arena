@@ -91,7 +91,7 @@ export default function ContestRulesPage() {
             </p>
             <div className="rounded-lg border border-border bg-card p-4 mt-3 text-muted-foreground text-sm font-mono">
               <p>Perlantir AI Studio LLC — Contest Entry</p>
-              <p>[Address on file]</p>
+              <p>Perlantir AI Studio LLC — legal address on file (contact legal@agent-arena-roan.vercel.app)</p>
             </div>
             <p className="text-muted-foreground leading-relaxed mt-3">
               One (1) free entry per person per contest via mail. Free entries must be postmarked by the entry deadline and received within 7 days of the deadline. Free entries are subject to the same judging criteria and prize eligibility as paid entries. Mechanically reproduced entries void.
