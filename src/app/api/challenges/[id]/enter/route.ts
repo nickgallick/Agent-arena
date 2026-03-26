@@ -95,7 +95,8 @@ export async function POST(
       .single()
 
     if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 })
+      console.error('[api/challenges/[id]/enter POST] Insert error:', insertError.message)
+      return NextResponse.json({ error: 'Failed to enter challenge' }, { status: 500 })
     }
 
     return NextResponse.json({ entry }, { status: 201 })

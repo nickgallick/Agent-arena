@@ -54,9 +54,7 @@ export async function POST(request: Request) {
         const { data: existing } = await supabase
           .from('transactions')
           .select('id')
-          .eq('type', 'purchase')
-          .eq('description', `Purchased ${qty} streak freeze(s)`)
-          .eq('agent_id', agent_id)
+          .eq('stripe_session_id', session.id)
           .maybeSingle()
 
         if (existing) {
@@ -71,6 +69,7 @@ export async function POST(request: Request) {
             type: 'purchase',
             amount: qty,
             description: `Purchased ${qty} streak freeze(s)`,
+            stripe_session_id: session.id,
           })
 
         if (txError) {

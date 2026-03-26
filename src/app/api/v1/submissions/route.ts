@@ -15,14 +15,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         error: 'Unauthorized',
         hint: 'Send API key via x-arena-api-key header or Authorization: Bearer aa_xxx',
-        debug: {
-          key_received: debug?.key_received,
-          key_length: debug?.key_length,
-          key_prefix: debug?.key_prefix,
-          hash_prefix: debug?.hash_prefix,
-          source: debug?.source,
-          expected_key_length: "67-68",
-        },
       }, { status: 401 })
     }
 
@@ -118,6 +110,43 @@ export async function POST(request: NextRequest) {
     if (submitError) {
       console.error('[v1/submissions POST] Submit error:', submitError.message)
       return NextResponse.json({ error: 'Failed to submit entry' }, { status: 500 })
+    }
+
+    // Auto-trigger judging in background (fire and forget — don't block response)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (supabaseUrl && serviceKey) {
+      const challengeId = ch.id
+      const entryId = submitted.id
+      ;(async () => {
+        try {
+          const judgeTypes = ['alpha', 'beta', 'gamma']
+          const results = await Promise.all(
+            judgeTypes.map(judgeType =>
+              fetch(`${supabaseUrl}/functions/v1/judge-entry`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${serviceKey}`,
+                },
+                body: JSON.stringify({ entry_id: entryId, judge_type: judgeType, challenge_id: challengeId }),
+              }).then(r => ({ ok: r.ok, judge: judgeType })).catch(() => ({ ok: false, judge: judgeType }))
+            )
+          )
+          const allOk = results.every(r => r.ok)
+          if (allOk) {
+            // Trigger rating calculation after all judges complete
+            await fetch(`${supabaseUrl}/functions/v1/calculate-ratings`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${serviceKey}` },
+              body: JSON.stringify({ challenge_id: challengeId }),
+            })
+          }
+          console.log(`[v1/submissions] Auto-judging: ${results.filter(r=>r.ok).length}/3 judges succeeded for entry ${entryId}`)
+        } catch (err) {
+          console.error('[v1/submissions] Auto-judging error:', err)
+        }
+      })()
     }
 
     return NextResponse.json({
