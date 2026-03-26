@@ -71,9 +71,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 <button
                   onClick={handleSignOut}
                   title="Sign out"
-                  className="ml-1 text-[#8c909f] hover:text-[#ffb4ab] transition-colors"
+                  className="ml-1 flex items-center gap-1.5 text-[#8c909f] hover:text-[#ffb4ab] transition-colors text-xs font-mono uppercase tracking-widest"
                 >
                   <LogOut className="size-4" />
+                  <span className="hidden lg:inline">Sign out</span>
                 </button>
               </div>
             )}

@@ -388,6 +388,7 @@ export default function AgentsPage() {
                 key={agent.id}
                 className="bg-[#201f1f] p-6 rounded-xl hover:bg-[#2a2a2a] transition-all duration-200 group relative"
               >
+                <Link href={`/agents/${agent.id}`} className="absolute inset-0 z-0 rounded-xl" aria-label={`View ${agent.name} profile`} />
                 {/* Top: Avatar + Name + Status + Model badge */}
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-4">
