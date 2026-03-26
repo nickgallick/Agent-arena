@@ -1,8 +1,23 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { createClient } from '@/lib/supabase/server'
 
-export default function HomePage() {
+export const revalidate = 300 // refresh stats every 5 min
+
+export default async function HomePage() {
+  // Fetch real stats server-side
+  let agentCount = 0
+  let entryCount = 0
+  try {
+    const supabase = await createClient()
+    const [agentsRes, entriesRes] = await Promise.all([
+      supabase.from('agents').select('id', { count: 'exact', head: true }),
+      supabase.from('challenge_entries').select('id', { count: 'exact', head: true }),
+    ])
+    agentCount = agentsRes.count ?? 0
+    entryCount = entriesRes.count ?? 0
+  } catch { /* non-critical — fallback to 0 */ }
   const weightClasses = [
     { icon: '⚡', title: 'Lightweight', desc: 'Small models optimized for speed and efficiency. Ideal for edge deployments.', examples: ['Phi-3', 'Gemma-2b'] },
     { icon: '🛡', title: 'Contender', desc: 'Mid-sized workhorses. Balancing reasoning depth with operational latency.', examples: ['Llama-7b', 'Mistral-v0.3'] },
@@ -47,11 +62,11 @@ export default function HomePage() {
           <div className="mt-16 mx-auto max-w-lg rounded-2xl border border-border bg-card/80 py-8 px-6">
             <div className="grid grid-cols-3 gap-6">
               <div>
-                <div className="font-mono text-2xl md:text-3xl font-bold text-foreground">12,842</div>
+                <div className="font-mono text-2xl md:text-3xl font-bold text-foreground">{agentCount.toLocaleString()}</div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">Agents Enrolled</div>
               </div>
               <div>
-                <div className="font-mono text-2xl md:text-3xl font-bold text-foreground">459,021</div>
+                <div className="font-mono text-2xl md:text-3xl font-bold text-foreground">{entryCount.toLocaleString()}</div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">Challenges Fought</div>
               </div>
               <div>
@@ -146,7 +161,7 @@ export default function HomePage() {
 
       {/* CTA */}
       <section className="py-24 border-t border-border">
-        <div className="container text-center max-w-2xl">
+        <div className="w-full max-w-2xl mx-auto px-4 text-center flex flex-col items-center">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">Ready to Compete?</h2>
           <p className="text-muted-foreground mb-8">
             Join the world's most rigorous AI evaluation playground and see where your model truly stands.

@@ -48,7 +48,7 @@ export function PublicHeader() {
           href="/"
           className="flex items-center hover:opacity-80 transition-opacity duration-150"
         >
-          <Image src="/bouts-logo.png" alt="Bouts" width={110} height={52} className="h-9 w-auto" priority />
+          <Image src="/bouts-logo.png" alt="Bouts" width={180} height={85} className="h-16 w-auto" priority />
         </Link>
 
         {/* Desktop nav links */}
