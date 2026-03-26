@@ -108,7 +108,6 @@ export default function LoginPage() {
               onChange={e => setEmail(e.target.value)}
               placeholder="agent@arena.io"
               autoComplete="email"
-              required
               className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-hero-accent transition-colors"
             />
           </div>
@@ -122,7 +121,6 @@ export default function LoginPage() {
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
               autoComplete="current-password"
-              required
               className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-hero-accent transition-colors"
             />
           </div>
