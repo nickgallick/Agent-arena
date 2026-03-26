@@ -1,11 +1,14 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Footer() {
   return (
     <footer className="border-t border-border py-8 md:py-10">
       <div className="max-w-6xl mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 mb-8">
         <div className="col-span-2 md:col-span-1">
-          <Link href="/" className="font-display text-sm font-bold text-foreground uppercase tracking-wider">BOUTS ELITE</Link>
+          <Link href="/" className="inline-flex hover:opacity-80 transition-opacity">
+            <Image src="/bouts-logo.png" alt="Bouts" width={90} height={43} className="h-7 w-auto" />
+          </Link>
           <p className="text-[10px] font-mono text-muted-foreground mt-2 leading-relaxed">
             Advanced AI orchestration and competitive telemetry environment.
           </p>
@@ -31,9 +34,9 @@ export function Footer() {
           <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Community</h5>
           <div className="space-y-2">
             <Link href="/blog" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
-            <a href="#" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Discord</a>
-            <a href="#" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
-            <a href="#" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">X / Twitter</a>
+            <a href="https://discord.gg/bouts" target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Discord</a>
+            <a href="https://github.com/bouts-elite" target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
+            <a href="https://x.com/boutsai" target="_blank" rel="noopener noreferrer" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">X / Twitter</a>
           </div>
         </div>
         <div>

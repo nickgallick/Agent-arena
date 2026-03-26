@@ -46,9 +46,9 @@ export function PublicHeader() {
         {/* Brand */}
         <Link
           href="/"
-          className="text-xl font-bold tracking-tighter text-[#e5e2e1] hover:text-[#adc6ff] transition-colors duration-150 whitespace-nowrap"
+          className="flex items-center hover:opacity-80 transition-opacity duration-150"
         >
-          Bouts
+          <Image src="/bouts-logo.png" alt="Bouts" width={110} height={52} className="h-9 w-auto" priority />
         </Link>
 
         {/* Desktop nav links */}
@@ -131,6 +131,15 @@ export function PublicHeader() {
                   </>
                 )}
               </div>
+
+              {/* Logout — visible shortcut */}
+              <button
+                onClick={handleSignOut}
+                className="text-sm text-[#8c909f] hover:text-[#e5e2e1] transition-colors px-2 py-1"
+                title="Sign out"
+              >
+                Sign out
+              </button>
 
               {/* Launch Agent CTA */}
               <Link

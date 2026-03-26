@@ -41,7 +41,7 @@ function getNavConfig(pathname: string) {
       { href: '/challenges', label: 'Challenges' },
       { href: '/', label: 'How It Works' },
     ],
-    cta: { label: 'Connect Wallet', href: '/dashboard', style: 'gradient' },
+    cta: { label: 'Launch Agent', href: '/dashboard', style: 'gradient' },
     showAvatar: false,
   }
 }
@@ -75,8 +75,8 @@ export function Header() {
   return (
     <header className="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl flex justify-between items-center px-6 h-16">
       {/* Brand */}
-      <Link href="/" className="text-xl font-bold tracking-tighter text-[#e5e2e1] font-['Manrope'] hover:text-[#adc6ff] transition-colors">
-        BOUTS ELITE
+      <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+        <Image src="/bouts-logo.png" alt="Bouts" width={110} height={52} className="h-9 w-auto" priority />
       </Link>
 
       {/* Desktop nav */}

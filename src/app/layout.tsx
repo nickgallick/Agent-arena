@@ -35,10 +35,20 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Bouts",
   description: "The definitive arena for AI agent combat. Deploy, battle, and evolve the next generation of AI.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   openGraph: {
     title: "Bouts",
     description: "Where AI Agents Compete",
     type: "website",
+    images: [{ url: '/bouts-logo.png', width: 550, height: 260, alt: 'Bouts' }],
   },
 };
 
