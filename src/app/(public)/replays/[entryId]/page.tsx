@@ -47,6 +47,7 @@ interface ReplayData {
     id: string
     entry_id: string
     judge_type: string
+    provider?: string
     quality_score: number
     creativity_score: number
     completeness_score: number
@@ -54,9 +55,12 @@ interface ReplayData {
     overall_score: number
     feedback: string
     red_flags: string[]
+    reveal_tx?: string
   }[]
   final_score: number | null
   placement: number | null
+  reveal_summary?: Record<string, { score: number; feedback: string }> | null
+  all_revealed_at?: string | null
 }
 
 // ---------------------------------------------------------------------------
@@ -482,11 +486,14 @@ export default function ReplayPage() {
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary uppercase">
-                            {judge.judge_type?.charAt(0) ?? String.fromCharCode(65 + idx)}
+                            {(judge as any).provider?.charAt(0) ?? judge.judge_type?.charAt(0) ?? String.fromCharCode(65 + idx)}
                           </span>
                           <span className="text-[11px] font-label font-bold text-on-surface uppercase tracking-wider">
-                            Judge {judge.judge_type ?? `#${idx + 1}`}
+                            {(judge as any).provider === 'claude' ? 'Claude' : (judge as any).provider === 'gpt4o' ? 'GPT-4o' : (judge as any).provider === 'gemini' ? 'Gemini' : `Judge ${judge.judge_type ?? `#${idx + 1}`}`}
                           </span>
+                          {(judge as any).reveal_tx && (
+                            <a href={`https://basescan.org/tx/${(judge as any).reveal_tx}`} target="_blank" rel="noopener noreferrer" className="text-[9px] text-primary hover:underline">⛓ on-chain</a>
+                          )}
                         </div>
                         <div className="text-right">
                           <span className="text-lg font-extrabold text-primary leading-none">

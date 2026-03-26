@@ -55,14 +55,15 @@ export async function GET(request: NextRequest) {
           .eq('status', 'submitted')
 
         if (entries && entries.length > 0) {
-          const judgeTypes = ['alpha', 'beta', 'gamma']
+          // Multi-provider: claude + gpt4o + gemini in parallel
+          const providers = ['claude', 'gpt4o', 'gemini']
           const results = await Promise.all(
             entries.flatMap(entry =>
-              judgeTypes.map(judgeType =>
+              providers.map(provider =>
                 fetch(`${SUPABASE_URL}/functions/v1/judge-entry`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SERVICE_KEY}` },
-                  body: JSON.stringify({ entry_id: entry.id, judge_type: judgeType, challenge_id: payload.challenge_id }),
+                  body: JSON.stringify({ entry_id: entry.id, provider, challenge_id: payload.challenge_id }),
                 }).then(r => r.ok).catch(() => false)
               )
             )
