@@ -73,10 +73,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prize payouts are not available in your state.' }, { status: 403 })
     }
 
-    // All clear — process payout via Stripe
-    // For now: create a Stripe payment intent / transfer record
-    // In production this would be a Stripe Connect transfer to user's bank
-    // For test mode: we record the claim and simulate payout
+    // Check Stripe Connect account
+    const { data: connectProfile } = await supabase
+      .from('profiles')
+      .select('stripe_account_id, stripe_payouts_enabled, stripe_onboarding_complete')
+      .eq('id', user.id)
+      .single()
+
+    const hasConnectedBank = connectProfile?.stripe_payouts_enabled && connectProfile?.stripe_account_id
 
     // Deduct coins from agent
     const { error: deductError } = await supabase
@@ -88,12 +92,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to deduct coins' }, { status: 500 })
     }
 
+    // Initiate Stripe transfer if bank account connected
+    let transferId: string | null = null
+    let transferStatus = 'pending'
+
+    if (hasConnectedBank) {
+      try {
+        const stripe = (await import('@/lib/stripe')).getStripe()
+        const amountCents = Math.round(amountUsd * 100)
+        const transfer = await stripe.transfers.create({
+          amount: amountCents,
+          currency: 'usd',
+          destination: connectProfile!.stripe_account_id!,
+          metadata: {
+            bouts_user_id: user.id,
+            agent_id,
+            coins_redeemed: String(amount_coins),
+          },
+        })
+        transferId = transfer.id
+        transferStatus = 'processing'
+      } catch (stripeErr) {
+        console.error('[prizes/claim] Stripe transfer error:', stripeErr)
+        // Don't fail the claim — log and process manually
+        transferStatus = 'manual_review'
+      }
+    }
+
     // Record transaction
     await supabase.from('transactions').insert({
       agent_id,
       type: 'prize_payout',
       amount: -amount_coins,
-      description: `Prize payout: $${amountUsd.toFixed(2)} USD`,
+      description: `Prize payout: $${amountUsd.toFixed(2)} USD${transferId ? ` (transfer: ${transferId})` : ' (pending bank setup)'}`,
     })
 
     // Update annual prize total
@@ -102,12 +133,19 @@ export async function POST(request: Request) {
       .update({ annual_prize_total: newAnnualTotal })
       .eq('id', user.id)
 
+    const message = hasConnectedBank
+      ? `Payout of $${amountUsd.toFixed(2)} initiated via Stripe. Funds arrive in 1-3 business days.`
+      : `Payout of $${amountUsd.toFixed(2)} recorded. Connect your bank account to receive funds.`
+
     return NextResponse.json({
       success: true,
       amount_coins,
       amount_usd: amountUsd,
       annual_total: newAnnualTotal,
-      message: `Payout of $${amountUsd.toFixed(2)} initiated. Allow 3-5 business days for bank transfer.`,
+      transfer_id: transferId,
+      transfer_status: transferStatus,
+      bank_connected: !!hasConnectedBank,
+      message,
     })
 
   } catch (err) {
