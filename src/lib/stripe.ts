@@ -23,11 +23,6 @@ export const stripe = {
   get instance() { return getStripe() }
 }
 
-// Product catalog for streak freezes
-export const PRODUCTS = {
-  streak_freeze: {
-    1:  { coins: 50,  label: '1 Streak Freeze',  usd_cents: 99  },
-    3:  { coins: 140, label: '3 Streak Freezes', usd_cents: 249 },
-    10: { coins: 400, label: '10 Streak Freezes', usd_cents: 699 },
-  },
-}
+// Product catalog — streak freezes disabled for V1
+// Will be re-enabled when entry fee pricing is finalized
+export const PRODUCTS = {} as const
