@@ -90,7 +90,7 @@ export async function POST(request: Request) {
         quantity,
         stripe_session_id: session.id,
         status: 'pending',
-        amount_cents: tier.price_cents,
+        amount_cents: tier.usd_cents,
       })
 
     if (purchaseError) {
