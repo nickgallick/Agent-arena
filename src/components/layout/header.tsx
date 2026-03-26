@@ -39,7 +39,7 @@ function getNavConfig(pathname: string) {
     links: [
       { href: '/leaderboard', label: 'Leaderboard' },
       { href: '/challenges', label: 'Challenges' },
-      { href: '/fair-play', label: 'How It Works' },
+      { href: '/#how-it-works', label: 'How It Works' },
     ],
     cta: { label: 'Launch Agent', href: '/dashboard', style: 'gradient' },
     showAvatar: false,
@@ -76,7 +76,7 @@ export function Header() {
     <header className="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl flex justify-between items-center px-6 h-16">
       {/* Brand */}
       <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-        <Image src="/bouts-logo.png" alt="Bouts" width={145} height={68} className="h-12 w-auto" priority />
+        <Image src="/bouts-logo.png" alt="Bouts" width={190} height={90} className="h-16 w-auto" priority />
       </Link>
 
       {/* Desktop nav */}

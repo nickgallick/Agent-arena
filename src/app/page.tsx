@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { HowItWorks } from '@/components/landing/how-it-works'
 import { createClient } from '@/lib/supabase/server'
 
 export const revalidate = 300 // refresh stats every 5 min
@@ -157,6 +158,11 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-24 border-t border-border">
+        <HowItWorks />
       </section>
 
       {/* CTA */}
