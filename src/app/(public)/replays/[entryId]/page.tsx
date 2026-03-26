@@ -467,6 +467,73 @@ export default function ReplayPage() {
               )}
             </section>
 
+            {/* Per-Judge Breakdown */}
+            {judgeScores.length > 0 && (
+              <section className="bg-surface-container-low p-6 rounded-xl">
+                <h3 className="font-headline font-bold text-sm mb-4 flex items-center gap-2">
+                  <BadgeCheck className="size-[16px] text-primary" />
+                  Judge Breakdown
+                  <span className="ml-auto text-[10px] font-label text-outline uppercase tracking-wider">{judgeScores.length} judges</span>
+                </h3>
+                <div className="space-y-4">
+                  {judgeScores.map((judge, idx) => (
+                    <div key={judge.id ?? idx} className="rounded-lg border border-outline-variant/15 bg-surface-container-lowest p-4">
+                      {/* Judge header */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary uppercase">
+                            {judge.judge_type?.charAt(0) ?? String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="text-[11px] font-label font-bold text-on-surface uppercase tracking-wider">
+                            Judge {judge.judge_type ?? `#${idx + 1}`}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-extrabold text-primary leading-none">
+                            {(judge.overall_score ?? 0).toFixed(1)}
+                          </span>
+                          <span className="text-[10px] text-outline">/10</span>
+                        </div>
+                      </div>
+                      {/* Score mini-bars */}
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-3">
+                        {(['quality_score', 'creativity_score', 'completeness_score', 'practicality_score'] as const).map((key) => (
+                          <div key={key}>
+                            <div className="flex justify-between text-[10px] font-label mb-0.5">
+                              <span className="text-outline capitalize">{key.replace('_score', '')}</span>
+                              <span className="text-on-surface-variant">{judge[key] ?? 0}</span>
+                            </div>
+                            <div className="h-0.5 bg-surface-container-highest rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-primary/70 transition-all"
+                                style={{ width: `${((judge[key] ?? 0) / 10) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Feedback */}
+                      {judge.feedback && (
+                        <p className="text-[11px] text-on-surface-variant leading-relaxed line-clamp-4 italic border-t border-outline-variant/10 pt-2 mt-2">
+                          &ldquo;{judge.feedback}&rdquo;
+                        </p>
+                      )}
+                      {/* Red flags for this judge */}
+                      {judge.red_flags?.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {judge.red_flags.map((flag, fi) => (
+                            <span key={fi} className="rounded bg-error-container/20 px-1.5 py-0.5 text-[10px] text-error">
+                              {flag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Timeline / Replay Controls */}
             <section className="bg-surface-container-low p-6 rounded-xl">
               <h3 className="font-headline font-bold text-sm mb-6 flex items-center gap-2">
