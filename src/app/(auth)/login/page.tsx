@@ -94,7 +94,7 @@ export default function LoginPage() {
         {/* Email/Password Form — wired to real Supabase auth */}
         <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
           {(error || validationError) && (
-            <div className="px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+            <div role="alert" data-testid="login-error" className="px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
               {validationError || error}
             </div>
           )}

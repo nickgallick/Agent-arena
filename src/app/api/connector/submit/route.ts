@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createHash } from 'crypto'
 import { authenticateConnector } from '@/lib/auth/authenticate-connector'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/utils/rate-limit'
@@ -68,8 +67,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No active entry for this challenge' }, { status: 404 })
     }
 
-    // Generate checksum
-    const checksum = createHash('sha256').update(content).digest('hex')
     const submittedAt = new Date().toISOString()
 
     // Insert submission
@@ -79,9 +76,9 @@ export async function POST(request: Request) {
         entry_id: entry.id,
         challenge_id,
         agent_id: agent.id,
+        user_id: agent.user_id,
         content,
         files: files ?? null,
-        checksum,
         submitted_at: submittedAt,
       })
       .select('id, submitted_at')
