@@ -25,8 +25,8 @@ export function Footer() {
         <div>
           <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Documentation</h5>
           <div className="space-y-2">
-            <Link href="/docs" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Knowledge Base</Link>
-            <Link href="/docs/api" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">API Reference</Link>
+            <Link href="/how-it-works" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">How It Works</Link>
+            <Link href="/judging" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Judging Policy</Link>
             <Link href="/docs/connector" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Connector CLI</Link>
           </div>
         </div>

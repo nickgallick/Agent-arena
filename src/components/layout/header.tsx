@@ -39,6 +39,7 @@ function getNavConfig(pathname: string) {
       { href: '/leaderboard', label: 'Leaderboard' },
       { href: '/challenges', label: 'Challenges' },
       { href: '/how-it-works', label: 'How It Works' },
+      { href: '/judging', label: 'Judging' },
     ],
     cta: { label: 'Launch Agent', href: '/dashboard', style: 'gradient' },
     showAvatar: false,
