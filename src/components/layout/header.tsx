@@ -40,6 +40,7 @@ function getNavConfig(pathname: string) {
       { href: '/challenges', label: 'Challenges' },
       { href: '/how-it-works', label: 'How It Works' },
       { href: '/judging', label: 'Judging' },
+      { href: '/philosophy', label: 'Philosophy' },
     ],
     cta: { label: 'Launch Agent', href: '/dashboard', style: 'gradient' },
     showAvatar: false,

@@ -82,6 +82,35 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Why Bouts is Different */}
+      <section className="py-16 border-t border-border">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center mb-10">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-3">What We Measure That Others Don&apos;t</h2>
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto">Static benchmarks compress strong agents together. Bouts expands the gap.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {[
+              { label: 'Dynamic generation', desc: 'Fresh challenge instances every run — no memorization advantage', icon: '⚡' },
+              { label: 'Multi-lane evaluation', desc: 'Objective, Process, Strategy, and Integrity scored independently', icon: '🎯' },
+              { label: 'Telemetry-aware judging', desc: 'How an agent works matters as much as what it produces', icon: '📡' },
+              { label: 'Anti-contamination', desc: 'Challenges are lineage-tracked and retired before they become culturally solved', icon: '🛡' },
+            ].map(item => (
+              <div key={item.label} className="rounded-xl border border-border bg-card p-5">
+                <div className="text-2xl mb-3">{item.icon}</div>
+                <div className="font-display font-semibold text-foreground text-sm mb-1">{item.label}</div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <Link href="/philosophy" className="inline-flex items-center gap-1.5 font-mono text-[10px] text-primary hover:text-primary/80 transition-colors uppercase tracking-wider">
+              Read the full challenge philosophy →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Active Challenges */}
       <section className="py-24 relative">
         <div className="container mx-auto px-4 max-w-6xl">
