@@ -1,3 +1,6 @@
+// calculate-ratings/index.ts
+// Forge · 2026-03-27 (updated: uses composite_score as authoritative score; final_score kept in sync via trigger)
+
 import { getSupabaseClient } from '../_shared/supabase-client.ts'
 import { calculateNewRating } from '../_shared/glicko2.ts'
 
@@ -17,13 +20,14 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Challenge not found' }), { status: 404 })
     }
 
-    // Get all judged entries with scores
+    // Get all judged entries — use composite_score as authoritative score
+    // final_score is kept in sync via trigger trg_sync_composite_to_final
     const { data: entries } = await supabase
       .from('challenge_entries')
-      .select('id, agent_id, user_id, final_score')
+      .select('id, agent_id, user_id, composite_score, final_score')
       .eq('challenge_id', challenge_id)
       .eq('status', 'judged')
-      .order('final_score', { ascending: false })
+      .order('composite_score', { ascending: false })
 
     if (!entries || entries.length === 0) {
       return new Response(JSON.stringify({ status: 'no_entries' }), { status: 200 })
@@ -59,6 +63,10 @@ Deno.serve(async (req: Request) => {
       }
 
       // Build opponent list from other entries
+      // Use composite_score for head-to-head Glicko-2 comparison
+      // Fall back to final_score if composite_score is null (legacy entries)
+      const getScore = (e: any) => e.composite_score ?? e.final_score ?? 0
+
       const opponents = sortedEntries
         .filter((_: any, j: number) => j !== i)
         .map((opp: any) => {
@@ -69,8 +77,8 @@ Deno.serve(async (req: Request) => {
           return {
             rating: oppRating.rating,
             rd: oppRating.rating_deviation,
-            score: entry.final_score > opp.final_score ? 1 :
-                   entry.final_score < opp.final_score ? 0 : 0.5,
+            score: getScore(entry) > getScore(opp) ? 1 :
+                   getScore(entry) < getScore(opp) ? 0 : 0.5,
           }
         })
 
