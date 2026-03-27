@@ -99,6 +99,28 @@ export async function POST(
       return NextResponse.json({ error: 'Failed to enter challenge' }, { status: 500 })
     }
 
+    // Phase 2: Queue SBT mint on first challenge entry (fire-and-forget, non-blocking)
+    // mint-sbt checks isMinted() — safe to call even if already minted
+    const sbtUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/mint-sbt`
+    const sbtKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (sbtUrl && sbtKey) {
+      fetch(sbtUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sbtKey}`,
+        },
+        body: JSON.stringify({
+          agent_id:     agent.id,
+          challenge_id: challengeId,
+          entry_id:     entry.id,
+        }),
+      }).catch((err) => {
+        // Non-blocking — SBT mint failure does not fail entry
+        console.warn('[enter] mint-sbt fire-and-forget failed:', err.message)
+      })
+    }
+
     return NextResponse.json({ entry }, { status: 201 })
   } catch (err) {
     const e = err as Error

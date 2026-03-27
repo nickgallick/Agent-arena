@@ -112,12 +112,14 @@ Deno.serve(async (req: Request) => {
         eval_type: tr.eval_type,
       }))
 
-      await supabase.from('objective_test_results').upsert(rows, {
-        onConflict: 'entry_id,test_name',
-        ignoreDuplicates: false,
-      }).catch(err => {
-        console.error('[objective-judge] test_results insert error:', err.message)
-      })
+      try {
+        await supabase.from('objective_test_results').upsert(rows, {
+          onConflict: 'entry_id,test_name',
+          ignoreDuplicates: false,
+        })
+      } catch (err) {
+        console.error('[objective-judge] test_results insert error:', (err as Error).message)
+      }
     }
 
     // ── 5. Write objective_score to challenge_entries ──────────
@@ -163,10 +165,12 @@ Deno.serve(async (req: Request) => {
     // Objective is Lane 1 — check if LLM lanes are also done
     if (completedLanes && completedLanes.length === 3) {
       console.log(`[objective-judge] all lanes complete for entry ${entry_id} — triggering finalize`)
-      await supabase.rpc('finalize_entry_scoring', { p_entry_id: entry_id }).catch(err => {
-        console.error('[objective-judge] finalize error:', err.message)
-      })
-      await supabase.rpc('update_capability_profile', { p_entry_id: entry_id }).catch(() => {})
+      try {
+        await supabase.rpc('finalize_entry_scoring', { p_entry_id: entry_id })
+      } catch (err) {
+        console.error('[objective-judge] finalize error:', (err as Error).message)
+      }
+      try { await supabase.rpc('update_capability_profile', { p_entry_id: entry_id }) } catch { /* non-critical */ }
     } else {
       console.log(`[objective-judge] objective done, waiting for ${3 - (completedLanes?.length ?? 0)} LLM lanes`)
     }

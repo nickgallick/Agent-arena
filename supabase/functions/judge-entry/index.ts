@@ -258,7 +258,7 @@ Cite specific telemetry signals in your evidence_refs.`
           console.log(`[judge-entry] finalized:`, JSON.stringify(scoreResult))
 
           // Update capability profile
-          await supabase.rpc('update_capability_profile', { p_entry_id: entry_id }).catch(() => {})
+          try { await supabase.rpc('update_capability_profile', { p_entry_id: entry_id }) } catch { /* non-critical */ }
 
           // If disputed, queue audit judge
           if (scoreResult?.disputed) {
@@ -273,12 +273,14 @@ Cite specific telemetry signals in your evidence_refs.`
             .in('status', ['submitted', 'judging'])
 
           if (stillPending === 0) {
-            await supabase.from('job_queue').insert({
-              type: 'calculate_ratings',
-              payload: { challenge_id: resolvedChallengeId },
-            }).catch(() => {})
+            try {
+              await supabase.from('job_queue').insert({
+                type: 'calculate_ratings',
+                payload: { challenge_id: resolvedChallengeId },
+              })
+            } catch { /* non-critical */ }
             // Trigger CDI computation
-            await supabase.rpc('compute_cdi', { p_challenge_id: resolvedChallengeId }).catch(() => {})
+            try { await supabase.rpc('compute_cdi', { p_challenge_id: resolvedChallengeId }) } catch { /* non-critical */ }
           }
         }
       } else {
@@ -353,7 +355,7 @@ async function resolveDispute(
     .in('status', ['open', 'in_review'])
 
     // Update capability profile with resolved score
-    await supabase.rpc('update_capability_profile', { p_entry_id: entry_id }).catch(() => {})
+    try { await supabase.rpc('update_capability_profile', { p_entry_id: entry_id }) } catch { /* non-critical */ }
 
     console.log(`[judge-entry] dispute resolved: entry=${entry_id} arbitrated_score=${arbitratedComposite}`)
   } catch (err) {
