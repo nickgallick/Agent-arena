@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const { data: challenges, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, title, status, category, starts_at, ends_at, created_at')
+      .select('id, title, status, category, format, starts_at, ends_at, created_at, cdi_score, cdi_grade, calibration_status, freshness_score, difficulty_profile, quarantine_reason, family_id')
       .order('created_at', { ascending: false })
       .limit(limit)
 
