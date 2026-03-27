@@ -61,7 +61,27 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     max_coins: 500,
     entry_fee_cents: 0,      // 0 = free
     max_entries: '' as number | '',  // '' = unlimited
+    family_id: '' as string,
+    difficulty_profile: {
+      reasoning_depth: 5,
+      tool_dependence: 5,
+      ambiguity: 5,
+      deception: 5,
+      time_pressure: 5,
+      error_recovery_burden: 5,
+      non_local_dependency: 5,
+      evaluation_strictness: 5,
+    } as Record<string, number>,
   })
+  const [families, setFamilies] = useState<{ id: string; name: string; prestige: string }[]>([])
+
+  // Load challenge families for selector
+  useEffect(() => {
+    fetch('/api/admin/challenge-families')
+      .then(r => r.ok ? r.json() : { families: [] })
+      .then(d => setFamilies(d.families ?? []))
+      .catch(() => {})
+  }, [])
 
   const fetchStats = useCallback(async () => {
     setStatsLoading(true)
@@ -120,6 +140,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
           max_coins: Number(form.max_coins),
           entry_fee_cents: Number(form.entry_fee_cents),
           max_entries: form.max_entries === '' ? null : Number(form.max_entries),
+          family_id: form.family_id || null,
+          difficulty_profile: form.difficulty_profile,
         }),
       })
       const data = await res.json()
@@ -131,7 +153,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
         setForm({
           title: '', description: '', prompt: '', category: 'algorithm', format: 'standard',
           challenge_type: 'special', starts_at: '', ends_at: '', time_limit_minutes: 60, max_coins: 500,
-          entry_fee_cents: 0, max_entries: '' as number | '',
+          entry_fee_cents: 0, max_entries: '' as number | '', family_id: '',
+          difficulty_profile: { reasoning_depth: 5, tool_dependence: 5, ambiguity: 5, deception: 5, time_pressure: 5, error_recovery_burden: 5, non_local_dependency: 5, evaluation_strictness: 5 },
         })
         fetchChallenges()
       }
@@ -436,6 +459,56 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       <input type="number" value={form.max_entries} onChange={e => setForm(f => ({ ...f, max_entries: e.target.value === '' ? '' : Number(e.target.value) }))}
                         placeholder="Unlimited" min={1} max={10000}
                         className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
+                    </div>
+
+                    {/* Challenge Family */}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Challenge Family</label>
+                      <select value={form.family_id} onChange={e => setForm(f => ({ ...f, family_id: e.target.value }))}
+                        className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30">
+                        <option value="">— None (standalone) —</option>
+                        {families.map(fam => (
+                          <option key={fam.id} value={fam.id}>{fam.name} ({fam.prestige})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Spacer */}
+                    <div />
+
+                    {/* Difficulty Profile */}
+                    <div className="md:col-span-2 space-y-3">
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5] flex items-center gap-2">
+                        Difficulty Profile <span className="text-[#8c909f] normal-case tracking-normal font-normal">(1–10 per dimension)</span>
+                      </label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[
+                          { key: 'reasoning_depth',       label: 'Reasoning' },
+                          { key: 'tool_dependence',       label: 'Tool Dep.' },
+                          { key: 'ambiguity',             label: 'Ambiguity' },
+                          { key: 'deception',             label: 'Deception' },
+                          { key: 'time_pressure',         label: 'Time Pressure' },
+                          { key: 'error_recovery_burden', label: 'Recovery' },
+                          { key: 'non_local_dependency',  label: 'Non-Local Dep.' },
+                          { key: 'evaluation_strictness', label: 'Strictness' },
+                        ].map(dim => (
+                          <div key={dim.key} className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f]">{dim.label}</span>
+                              <span className="text-[10px] font-['JetBrains_Mono'] font-bold text-[#adc6ff]">{form.difficulty_profile[dim.key]}</span>
+                            </div>
+                            <input
+                              type="range" min={1} max={10} step={1}
+                              value={form.difficulty_profile[dim.key]}
+                              onChange={e => setForm(f => ({
+                                ...f,
+                                difficulty_profile: { ...f.difficulty_profile, [dim.key]: Number(e.target.value) }
+                              }))}
+                              className="w-full h-1 accent-[#4d8efe] cursor-pointer"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
                     {formError && (
