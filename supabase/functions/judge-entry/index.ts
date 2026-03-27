@@ -70,9 +70,39 @@ Deno.serve(async (req: Request) => {
     // Pre-flight injection detection
     const injectionFlags = detectInjection(entry.submission_text)
 
+    // Fetch telemetry metrics if available (used to ground Process + Recovery judges)
+    const { data: metrics } = await supabase
+      .from('run_metrics')
+      .select('thrash_rate,revert_ratio,tool_discipline,verification_density,wasted_action_ratio,pivot_count,error_count,test_run_count,total_events,telemetry_process_score,telemetry_recovery_score,telemetry_efficiency_score,pct_explore,pct_implement,pct_verify,pct_recover')
+      .eq('entry_id', entry_id)
+      .maybeSingle()
+
+    // Build telemetry context string for judges
+    let telemetryContext = ''
+    if (metrics) {
+      telemetryContext = `
+TELEMETRY DATA (objective behavioral signals from agent's run — use as evidence):
+- Total events: ${metrics.total_events}
+- Thrash rate: ${((metrics.thrash_rate ?? 0) * 100).toFixed(1)}% (retries / tool calls — lower is better)
+- Revert ratio: ${((metrics.revert_ratio ?? 0) * 100).toFixed(1)}% (reverts / total — lower is better)
+- Tool discipline: ${((metrics.tool_discipline ?? 0) * 100).toFixed(1)}% (higher is better)
+- Verification density: ${((metrics.verification_density ?? 0) * 100).toFixed(1)}% (test runs / implement steps)
+- Wasted action ratio: ${((metrics.wasted_action_ratio ?? 0) * 100).toFixed(1)}%
+- Pivot count: ${metrics.pivot_count} | Error count: ${metrics.error_count} | Test runs: ${metrics.test_run_count}
+- Phase distribution: explore ${((metrics.pct_explore ?? 0) * 100).toFixed(0)}% / implement ${((metrics.pct_implement ?? 0) * 100).toFixed(0)}% / verify ${((metrics.pct_verify ?? 0) * 100).toFixed(0)}% / recover ${((metrics.pct_recover ?? 0) * 100).toFixed(0)}%
+- Computed process score: ${metrics.telemetry_process_score?.toFixed(1) ?? 'N/A'}
+- Computed recovery score: ${metrics.telemetry_recovery_score?.toFixed(1) ?? 'N/A'}
+- Computed efficiency score: ${metrics.telemetry_efficiency_score?.toFixed(1) ?? 'N/A'}
+
+Your score should be informed by this telemetry. High thrash/revert rates indicate poor process quality. Low verification density indicates skipping tests. Provide evidence_refs citing specific telemetry signals.`
+    } else {
+      telemetryContext = '\nNOTE: No structured telemetry available for this run. Score based on submission content only.'
+    }
+
     // Build context extra for the judge
     const contextExtra = `Challenge format: ${challengeFormat}. Agent weight class: ${weightClass}.` +
-      (injectionFlags.length > 0 ? ` WARNING: Pre-flight injection signals detected: ${injectionFlags.join(', ')}` : '')
+      telemetryContext +
+      (injectionFlags.length > 0 ? `\nWARNING: Pre-flight injection signals detected: ${injectionFlags.join(', ')}` : '')
 
     // === Run the lane judge ===
     const result = await callLaneJudge(lane, entry.submission_text, contextExtra)
@@ -198,11 +228,26 @@ async function handleAllLanesComplete(
   // Weights — custom override or format default
   const weights = resolveWeights(format, customWeights)
 
-  // Composite: objective is 0 until Phase 2 (deterministic runner)
-  // For now, use process+strategy weighted, integrity as modifier
+  // Fetch telemetry-derived scores for efficiency weighting
+  const { data: metrics } = await supabase
+    .from('run_metrics')
+    .select('telemetry_efficiency_score,telemetry_process_score,telemetry_recovery_score')
+    .eq('entry_id', entry_id)
+    .maybeSingle()
+
+  // Use telemetry efficiency score if available, else fall back to process score proxy
+  const efficiencyScore = metrics?.telemetry_efficiency_score ?? processScore * 0.8
+
+  // If telemetry available, blend telemetry process score with LLM process score
+  const blendedProcessScore = metrics?.telemetry_process_score != null
+    ? (processScore * 0.6 + metrics.telemetry_process_score * 0.4)
+    : processScore
+
+  // Composite: objective is 0 until Phase 3 (deterministic runner)
   const baseScore =
-    processScore  * (weights.process  / (weights.process + weights.strategy)) * (weights.process + weights.strategy) / 100 * 100 +
-    strategyScore * (weights.strategy / (weights.process + weights.strategy)) * (weights.process + weights.strategy) / 100 * 100
+    blendedProcessScore * weights.process +
+    strategyScore       * weights.strategy +
+    efficiencyScore     * weights.efficiency
 
   // Clamp integrity adjustment
   const clampedAdj = Math.max(-25, Math.min(10, integrityAdj))
@@ -214,9 +259,10 @@ async function handleAllLanesComplete(
 
   // Update challenge_entries
   await supabase.from('challenge_entries').update({
-    process_score: processScore,
+    process_score: blendedProcessScore,
     strategy_score: strategyScore,
     integrity_adjustment: clampedAdj,
+    efficiency_score: efficiencyScore,
     composite_score: compositeScore,
     final_score: compositeScore / 10, // backcompat: final_score was 0-10
     status: isDisputed ? 'judging' : 'judged',

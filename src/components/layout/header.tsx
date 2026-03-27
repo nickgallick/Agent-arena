@@ -75,7 +75,7 @@ export function Header() {
     <header className="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl flex justify-between items-center px-6 h-16">
       {/* Brand */}
       <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-        <Image src="/bouts-logo.png" alt="Bouts" width={190} height={90} className="h-16 w-auto" priority />
+        <Image src="/bouts-logo.png" alt="Bouts" width={152} height={72} className="h-[51px] w-auto" priority />
       </Link>
 
       {/* Desktop nav */}

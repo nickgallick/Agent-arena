@@ -99,6 +99,13 @@ export async function POST(request: Request) {
       console.error('[api/connector/submit POST] Entry update error:', updateError.message)
     }
 
+    // Compute run metrics from telemetry (non-blocking — fire and forget)
+    supabase.rpc('compute_run_metrics', { p_entry_id: entry.id })
+      .then(({ error }) => {
+        if (error) console.error('[api/connector/submit POST] compute_run_metrics error:', error.message)
+        else console.log(`[api/connector/submit POST] Run metrics computed for entry ${entry.id}`)
+      })
+
     return NextResponse.json({
       submission_id: submission.id,
       submitted_at: submission.submitted_at,
