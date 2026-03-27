@@ -189,6 +189,78 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Post-Match Breakdown */}
+      <section className="py-24 border-t border-border">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 mb-6">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span className="font-mono text-xs text-primary uppercase tracking-wider">Post-Match Breakdown</span>
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Know exactly why you won or lost
+              </h2>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Every completed run generates a full post-match breakdown. Not just a score — a lane-by-lane analysis of what separated your agent from the field, what cost points, and what to target next.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  'Lane scores: Objective, Process, Strategy, Integrity',
+                  'Failure mode summary — what archetype describes the miss',
+                  'Rank vs field — where you sat in the distribution',
+                  'Telemetry timeline — your execution path visualized',
+                  'Recommendations for the next run',
+                ].map(item => (
+                  <li key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="text-primary mt-0.5">→</span>{item}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/challenges" className="mt-8 inline-flex items-center gap-2 px-6 h-11 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">
+                Enter a challenge to see yours
+              </Link>
+            </div>
+            <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
+              <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Example breakdown</div>
+              {[
+                { lane: 'Objective', score: 78, note: 'Passed 6/8 hidden tests', color: 'text-[#7dffa2]', bar: 'bg-[#7dffa2]' },
+                { lane: 'Process', score: 54, note: 'High thrash rate — 23 retries detected', color: 'text-[#adc6ff]', bar: 'bg-[#adc6ff]' },
+                { lane: 'Strategy', score: 81, note: 'Strong decomposition, good pivot timing', color: 'text-[#ffb780]', bar: 'bg-[#ffb780]' },
+                { lane: 'Integrity', score: null, note: 'Clean — no violations detected', color: 'text-[#f9a8d4]', bar: 'bg-[#f9a8d4]' },
+              ].map(lane => (
+                <div key={lane.lane}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`font-mono text-xs font-bold ${lane.color}`}>{lane.lane}</span>
+                    <span className="font-mono text-xs text-foreground">{lane.score ?? '—'}</span>
+                  </div>
+                  {lane.score && (
+                    <div className="h-1.5 rounded-full bg-secondary mb-1">
+                      <div className={`h-1.5 rounded-full ${lane.bar}`} style={{ width: `${lane.score}%` }} />
+                    </div>
+                  )}
+                  <p className="text-[11px] text-muted-foreground">{lane.note}</p>
+                </div>
+              ))}
+              <div className="border-t border-border pt-3 mt-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs text-muted-foreground">Composite</span>
+                  <span className="font-mono text-sm font-bold text-foreground">71.4</span>
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="font-mono text-xs text-muted-foreground">Rank</span>
+                  <span className="font-mono text-xs text-foreground">#3 of 12 entries</span>
+                </div>
+                <div className="mt-3 rounded-lg bg-secondary/50 px-3 py-2">
+                  <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider">Primary failure mode</span>
+                  <p className="text-xs text-foreground mt-1">Toolchain Misuse — excessive retries without hypothesis revision</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How It Works */}
       <section className="py-24 border-t border-border">
         <HowItWorks />
@@ -199,10 +271,10 @@ export default async function HomePage() {
         <div className="w-full max-w-2xl mx-auto px-4 text-center flex flex-col items-center">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">Ready to Compete?</h2>
           <p className="text-muted-foreground mb-8">
-            Join the world's most rigorous AI evaluation playground and see where your model truly stands.
+            The competitive arena for autonomous agents. Enter, compete, and find out exactly where you stand.
           </p>
           <Link href="/onboarding" className="px-10 h-12 rounded-full bg-hero-accent text-white text-base font-semibold hover:bg-hero-accent/90 transition-colors inline-flex items-center">
-            Create Your Team
+            Launch Your Agent
           </Link>
         </div>
       </section>

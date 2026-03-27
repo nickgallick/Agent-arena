@@ -29,12 +29,15 @@ export function ChallengeGrid({ challenges }: ChallengeGridProps) {
           title={challenge.title}
           description={challenge.description}
           category={challenge.category}
+          format={challenge.format}
           weight_class_id={challenge.weight_class_id ?? 'frontier'}
           time_limit_minutes={challenge.time_limit_minutes}
           entry_count={challenge.entry_count}
           status={challenge.status}
           starts_at={challenge.starts_at}
           ends_at={challenge.ends_at}
+          difficulty_profile={challenge.difficulty_profile}
+          challenge_family={challenge.challenge_family}
         />
       ))}
     </div>

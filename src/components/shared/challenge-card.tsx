@@ -7,6 +7,17 @@ import { WeightClassBadge } from '@/components/shared/weight-class-badge'
 import { formatDuration } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
 
+interface DifficultyProfile {
+  reasoning_depth?: number
+  tool_dependence?: number
+  ambiguity?: number
+  deception?: number
+  time_pressure?: number
+  error_recovery?: number
+  non_local_dependency?: number
+  evaluation_strictness?: number
+}
+
 interface ChallengeCardProps {
   id: string
   title: string
@@ -18,6 +29,9 @@ interface ChallengeCardProps {
   status: string
   starts_at: string
   ends_at: string
+  difficulty_profile?: DifficultyProfile | null
+  challenge_family?: string | null
+  format?: string
   className?: string
 }
 
@@ -42,6 +56,29 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 const defaultCategory = { name: 'Challenge', icon: '🏆', color: '#3B82F6' }
 const defaultStatus = { label: 'Open', color: '#8c909f' }
 
+const familyLabels: Record<string, string> = {
+  'blacksite-debug': 'Blacksite Debug',
+  'fog-of-war': 'Fog of War',
+  'false-summit': 'False Summit',
+  'constraint-maze': 'Constraint Maze',
+  'versus-arena': 'Versus',
+  'forensic-cascade': 'Forensic Cascade',
+  'toolchain-disaster': 'Toolchain Disaster',
+}
+
+function DifficultyBar({ label, value }: { label: string; value: number }) {
+  const color = value >= 8 ? '#f9a8d4' : value >= 6 ? '#ffb780' : value >= 4 ? '#adc6ff' : '#7dffa2'
+  return (
+    <div className="flex items-center gap-2">
+      <span className="font-mono text-[9px] text-[#8c909f] w-20 shrink-0 uppercase tracking-wider truncate">{label}</span>
+      <div className="flex-1 h-1 rounded-full bg-[#2a2a2a]">
+        <div className="h-1 rounded-full transition-all" style={{ width: `${(value / 10) * 100}%`, backgroundColor: color }} />
+      </div>
+      <span className="font-mono text-[9px] w-3 text-right" style={{ color }}>{value}</span>
+    </div>
+  )
+}
+
 export function ChallengeCard({
   id,
   title,
@@ -51,10 +88,28 @@ export function ChallengeCard({
   time_limit_minutes,
   entry_count,
   status,
+  difficulty_profile,
+  challenge_family,
+  format,
   className,
 }: ChallengeCardProps) {
   const cat = categoryConfig[category] ?? defaultCategory
   const statusInfo = statusConfig[status] ?? defaultStatus
+  const familyLabel = challenge_family ? (familyLabels[challenge_family] ?? challenge_family) : null
+
+  // Pick top 3 highest difficulty dimensions to surface
+  const topDimensions = difficulty_profile
+    ? Object.entries({
+        'Reasoning': difficulty_profile.reasoning_depth,
+        'Tool dep.': difficulty_profile.tool_dependence,
+        'Ambiguity': difficulty_profile.ambiguity,
+        'Deception': difficulty_profile.deception,
+        'Recovery': difficulty_profile.error_recovery,
+      })
+        .filter(([, v]) => v != null)
+        .sort(([, a], [, b]) => (b as number) - (a as number))
+        .slice(0, 3) as [string, number][]
+    : []
 
   return (
     <Link href={`/challenges/${id}`} className="block">
@@ -76,19 +131,31 @@ export function ChallengeCard({
             >
               {cat.icon}
             </span>
+            <div>
+              <span
+                className="rounded-full px-2.5 py-0.5 text-xs font-medium font-['JetBrains_Mono']"
+                style={{ backgroundColor: `${cat.color}1a`, color: cat.color }}
+              >
+                {cat.name}
+              </span>
+              {familyLabel && (
+                <span className="ml-1.5 text-[10px] font-mono text-[#8c909f]">{familyLabel}</span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {format && (
+              <span className="rounded px-2 py-0.5 text-[10px] font-mono text-[#8c909f] bg-[#252525]">
+                {format.charAt(0).toUpperCase() + format.slice(1)}
+              </span>
+            )}
             <span
-              className="rounded-full px-2.5 py-0.5 text-xs font-medium font-['JetBrains_Mono']"
-              style={{ backgroundColor: `${cat.color}1a`, color: cat.color }}
+              className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+              style={{ backgroundColor: `${statusInfo.color}1a`, color: statusInfo.color }}
             >
-              {cat.name}
+              {statusInfo.label}
             </span>
           </div>
-          <span
-            className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-            style={{ backgroundColor: `${statusInfo.color}1a`, color: statusInfo.color }}
-          >
-            {statusInfo.label}
-          </span>
         </div>
 
         {/* Title + description */}
@@ -96,6 +163,15 @@ export function ChallengeCard({
           {title}
         </h3>
         <p className="mt-1.5 text-sm text-[#c2c6d5] line-clamp-2">{description}</p>
+
+        {/* Difficulty profile bars */}
+        {topDimensions.length > 0 && (
+          <div className="mt-4 space-y-1.5 pt-3 border-t border-white/5">
+            {topDimensions.map(([label, value]) => (
+              <DifficultyBar key={label} label={label} value={value} />
+            ))}
+          </div>
+        )}
 
         {/* Footer: metadata chips */}
         <div className="mt-4 flex items-center gap-2">

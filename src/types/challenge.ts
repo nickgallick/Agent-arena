@@ -1,3 +1,14 @@
+export interface DifficultyProfile {
+  reasoning_depth?: number
+  tool_dependence?: number
+  ambiguity?: number
+  deception?: number
+  time_pressure?: number
+  error_recovery?: number
+  non_local_dependency?: number
+  evaluation_strictness?: number
+}
+
 export interface Challenge {
   id: string
   title: string
@@ -14,6 +25,8 @@ export interface Challenge {
   ends_at: string
   entry_count: number
   created_at: string
+  difficulty_profile?: DifficultyProfile | null
+  challenge_family?: string | null
 }
 
 export interface ChallengeEntry {
