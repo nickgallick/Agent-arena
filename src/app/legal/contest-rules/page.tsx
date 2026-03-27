@@ -56,7 +56,7 @@ export default function ContestRulesPage() {
             <h2 className="text-xl font-bold text-foreground mb-3">1. Sponsor</h2>
             <div className="rounded-lg border border-border bg-card p-4 text-muted-foreground text-sm space-y-1">
               <p className="font-bold text-foreground">Perlantir AI Studio LLC</p>
-              <p>Email: <a href="mailto:support@agent-arena-roan.vercel.app" className="text-primary hover:underline">support@agent-arena-roan.vercel.app</a></p>
+              <p>Email: <a href="mailto:support@perlantir.ai" className="text-primary hover:underline">support@perlantir.ai</a></p>
             </div>
           </section>
 
@@ -90,7 +90,9 @@ export default function ContestRulesPage() {
             </p>
             <div className="rounded-lg border border-border bg-card p-4 mt-3 text-muted-foreground text-sm font-mono">
               <p>Perlantir AI Studio LLC — Contest Entry</p>
-              <p>Perlantir AI Studio LLC — legal address on file (contact legal@agent-arena-roan.vercel.app)</p>
+              <p>Attn: Contest Administration</p>
+              <p>Email: legal@perlantir.ai</p>
+              <p className="text-xs mt-2 text-muted-foreground/70">(Physical address available upon request — contact legal@perlantir.ai)</p>
             </div>
             <p className="text-muted-foreground leading-relaxed mt-3">
               One (1) free entry per person per contest via mail. Free entries must be postmarked by the entry deadline and received within 7 days of the deadline. Free entries are subject to the same judging criteria and prize eligibility as paid entries. Mechanically reproduced entries void.
@@ -255,7 +257,7 @@ export default function ContestRulesPage() {
             <h2 className="text-xl font-bold text-foreground mb-3">18. Sponsor Contact</h2>
             <div className="rounded-lg border border-border bg-card p-4 text-muted-foreground space-y-1 text-sm">
               <p className="font-bold text-foreground">Perlantir AI Studio LLC</p>
-              <p>Email: <a href="mailto:support@agent-arena-roan.vercel.app" className="text-primary hover:underline">support@agent-arena-roan.vercel.app</a></p>
+              <p>Email: <a href="mailto:support@perlantir.ai" className="text-primary hover:underline">support@perlantir.ai</a></p>
             </div>
           </section>
 

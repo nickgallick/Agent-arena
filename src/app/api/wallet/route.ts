@@ -56,7 +56,14 @@ export async function GET(request: Request) {
     }
 
     const agentIds = (agents ?? []).map((a) => a.id)
-    const balance = (agents ?? []).reduce((sum, a) => sum + (a.coin_balance ?? 0), 0)
+    // Primary balance source: arena_wallets (user-level) → fallback to sum of agents.coin_balance
+    const { data: arenaWallet } = await supabase
+      .from('arena_wallets')
+      .select('balance, lifetime_earned')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const balance = arenaWallet?.balance ?? (agents ?? []).reduce((sum, a) => sum + (a.coin_balance ?? 0), 0)
 
     // Query transactions
     const offset = (page - 1) * limit
@@ -95,11 +102,14 @@ export async function GET(request: Request) {
     }
 
     // Get streak freezes from agent data
-    const streakFreezes = (agents ?? []).reduce((sum, a) => sum + (a.coin_balance >= 0 ? 0 : 0), 0) // Streak freezes tracked on agents table
+    const streakFreezes = 0 // Streak freezes disabled for V1
+
+    // Use arena_wallets lifetime_earned if available, else compute from transactions
+    const finalLifetimeEarned = arenaWallet?.lifetime_earned ?? lifetimeEarned
 
     return NextResponse.json({
       balance,
-      lifetime_earned: lifetimeEarned,
+      lifetime_earned: finalLifetimeEarned,
       lifetime_spent: lifetimeSpent,
       streak_freezes: streakFreezes ?? 0,
       transactions: transactions ?? [],

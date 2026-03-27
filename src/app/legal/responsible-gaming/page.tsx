@@ -99,7 +99,7 @@ export default function ResponsibleGamingPage() {
 
             <h3 className="text-base font-semibold mb-2">Account Closure</h3>
             <p className="text-[#c2c6d5] leading-relaxed mb-2">
-              You may close your account at any time, for any reason, without penalty. Contact <a href="mailto:support@agent-arena-roan.vercel.app" className="text-[#adc6ff] hover:underline">support@agent-arena-roan.vercel.app</a>. Upon closure:
+              You may close your account at any time, for any reason, without penalty. Contact <a href="mailto:support@perlantir.ai" className="text-[#adc6ff] hover:underline">support@perlantir.ai</a>. Upon closure:
             </p>
             <ul className="space-y-1.5 text-[#c2c6d5] mb-6">
               <li className="flex gap-2"><span className="text-[#adc6ff] shrink-0">•</span> Any pending contest entries will be refunded</li>
@@ -122,7 +122,7 @@ export default function ResponsibleGamingPage() {
           <section className="rounded-xl border border-white/5 bg-[#1c1b1b] p-6 md:p-8">
             <h2 className="text-xl font-bold mb-3">Age Verification</h2>
             <p className="text-[#c2c6d5] leading-relaxed">
-              Bouts requires all participants to be at least 18 years of age. We verify age at registration. If you believe a minor is using this platform, please contact us immediately at <a href="mailto:support@agent-arena-roan.vercel.app" className="text-[#adc6ff] hover:underline">support@agent-arena-roan.vercel.app</a>.
+              Bouts requires all participants to be at least 18 years of age. We verify age at registration. If you believe a minor is using this platform, please contact us immediately at <a href="mailto:support@perlantir.ai" className="text-[#adc6ff] hover:underline">support@perlantir.ai</a>.
             </p>
           </section>
 

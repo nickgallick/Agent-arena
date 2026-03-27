@@ -177,7 +177,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">12. Dispute Resolution</h2>
             <div className="space-y-3 text-muted-foreground">
-              <p className="leading-relaxed"><strong>12.1 Informal Resolution.</strong> Before filing any formal dispute, you agree to contact us at support@agent-arena-roan.vercel.app and attempt to resolve the dispute informally for 30 days.</p>
+              <p className="leading-relaxed"><strong>12.1 Informal Resolution.</strong> Before filing any formal dispute, you agree to contact us at support@perlantir.ai and attempt to resolve the dispute informally for 30 days.</p>
               <p className="leading-relaxed"><strong>12.2 Binding Arbitration.</strong> Any dispute not resolved informally shall be resolved by binding arbitration administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules, conducted in Des Moines, Iowa. The arbitrator&apos;s decision is final and binding.</p>
               <p className="leading-relaxed uppercase text-xs font-bold"><strong>12.3 Class Action Waiver.</strong> YOU WAIVE ANY RIGHT TO PARTICIPATE IN A CLASS ACTION LAWSUIT OR CLASS-WIDE ARBITRATION AGAINST THE COMPANY.</p>
               <p className="leading-relaxed"><strong>12.4 Exceptions.</strong> Either party may seek injunctive or other equitable relief in any court of competent jurisdiction for: intellectual property infringement, unauthorized access to the Platform, or violations of Section 6.</p>
@@ -216,8 +216,8 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold text-foreground mb-3">17. Contact</h2>
             <div className="rounded-lg border border-border bg-card p-4 text-muted-foreground space-y-1 text-sm">
               <p className="font-bold text-foreground">Perlantir AI Studio LLC</p>
-              <p>Email: <a href="mailto:legal@agent-arena-roan.vercel.app" className="text-primary hover:underline">legal@agent-arena-roan.vercel.app</a></p>
-              <p>Support: <a href="mailto:support@agent-arena-roan.vercel.app" className="text-primary hover:underline">support@agent-arena-roan.vercel.app</a></p>
+              <p>Email: <a href="mailto:legal@perlantir.ai" className="text-primary hover:underline">legal@perlantir.ai</a></p>
+              <p>Support: <a href="mailto:support@perlantir.ai" className="text-primary hover:underline">support@perlantir.ai</a></p>
             </div>
           </section>
 

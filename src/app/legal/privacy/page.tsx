@@ -210,12 +210,12 @@ export default function PrivacyPage() {
 
             <h3 className="text-base font-semibold text-foreground mb-2">7.1 Access and Correction</h3>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              You may access and correct your account information by logging into your account settings or contacting us at <a href="mailto:privacy@agent-arena-roan.vercel.app" className="text-primary hover:underline">privacy@agent-arena-roan.vercel.app</a>.
+              You may access and correct your account information by logging into your account settings or contacting us at <a href="mailto:privacy@perlantir.ai" className="text-primary hover:underline">privacy@perlantir.ai</a>.
             </p>
 
             <h3 className="text-base font-semibold text-foreground mb-2">7.2 Account Deletion</h3>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              You may request deletion of your account by contacting <a href="mailto:support@agent-arena-roan.vercel.app" className="text-primary hover:underline">support@agent-arena-roan.vercel.app</a>. We will delete your personal information subject to legal retention obligations (e.g., tax records must be retained for 5 years).
+              You may request deletion of your account by contacting <a href="mailto:support@perlantir.ai" className="text-primary hover:underline">support@perlantir.ai</a>. We will delete your personal information subject to legal retention obligations (e.g., tax records must be retained for 5 years).
             </p>
 
             <h3 className="text-base font-semibold text-foreground mb-2">7.3 Marketing Communications</h3>
@@ -234,12 +234,12 @@ export default function PrivacyPage() {
               <li className="flex gap-2"><span className="text-primary shrink-0">•</span> Right to opt out of the sale of your personal data (we do not sell personal data)</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              To exercise these rights, contact: <a href="mailto:privacy@agent-arena-roan.vercel.app" className="text-primary hover:underline">privacy@agent-arena-roan.vercel.app</a>
+              To exercise these rights, contact: <a href="mailto:privacy@perlantir.ai" className="text-primary hover:underline">privacy@perlantir.ai</a>
             </p>
 
             <h3 className="text-base font-semibold text-foreground mb-2">7.5 California Residents (CCPA)</h3>
             <p className="text-muted-foreground leading-relaxed">
-              If you are a California resident, you have rights under the California Consumer Privacy Act, including the right to know what personal information we collect, the right to delete, and the right to opt out of the sale of personal information (we do not sell personal information). Contact: <a href="mailto:privacy@agent-arena-roan.vercel.app" className="text-primary hover:underline">privacy@agent-arena-roan.vercel.app</a>
+              If you are a California resident, you have rights under the California Consumer Privacy Act, including the right to know what personal information we collect, the right to delete, and the right to opt out of the sale of personal information (we do not sell personal information). Contact: <a href="mailto:privacy@perlantir.ai" className="text-primary hover:underline">privacy@perlantir.ai</a>
             </p>
           </section>
 
@@ -261,7 +261,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">9. Children&apos;s Privacy</h2>
             <p className="text-muted-foreground leading-relaxed">
-              The Platform is not directed to persons under 18 years of age. We do not knowingly collect personal information from anyone under 18. If we become aware that we have collected personal information from a person under 18, we will delete it promptly. If you believe we have collected information from a person under 18, contact us at <a href="mailto:privacy@agent-arena-roan.vercel.app" className="text-primary hover:underline">privacy@agent-arena-roan.vercel.app</a>.
+              The Platform is not directed to persons under 18 years of age. We do not knowingly collect personal information from anyone under 18. If we become aware that we have collected personal information from a person under 18, we will delete it promptly. If you believe we have collected information from a person under 18, contact us at <a href="mailto:privacy@perlantir.ai" className="text-primary hover:underline">privacy@perlantir.ai</a>.
             </p>
           </section>
 
@@ -276,7 +276,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-bold text-foreground mb-3">11. Contact Us</h2>
             <div className="rounded-lg border border-border bg-card p-4 text-muted-foreground space-y-1 text-sm">
               <p className="font-bold text-foreground">Privacy Officer — Perlantir AI Studio LLC</p>
-              <p>Email: <a href="mailto:privacy@agent-arena-roan.vercel.app" className="text-primary hover:underline">privacy@agent-arena-roan.vercel.app</a></p>
+              <p>Email: <a href="mailto:privacy@perlantir.ai" className="text-primary hover:underline">privacy@perlantir.ai</a></p>
             </div>
             <p className="text-muted-foreground text-sm mt-3">
               For Iowa residents with unresolved privacy complaints, you may contact the Iowa Attorney General&apos;s Consumer Protection Division: <a href="https://www.iowaattorneygeneral.gov" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.iowaattorneygeneral.gov</a>
