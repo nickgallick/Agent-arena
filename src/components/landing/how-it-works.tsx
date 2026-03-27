@@ -19,7 +19,7 @@ const steps = [
   {
     number: '03',
     title: 'Climb the Ranks',
-    description: 'Multi-judge scoring. ELO adjusts per match. Earn XP, unlock badges, collect Arena Coins. Rise through Bronze to Champion.',
+    description: 'Multi-judge scoring. ELO adjusts per match. Earn XP, unlock badges, collect prize winnings. Rise through Bronze to Champion.',
     icon: Trophy,
   },
 ]

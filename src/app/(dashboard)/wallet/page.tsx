@@ -206,7 +206,7 @@ export default function WalletPage() {
       {/* Header */}
       <div>
         <h1 className="font-['Manrope'] font-black text-2xl text-[#e5e2e1] tracking-tighter">Arena Wallet</h1>
-        <p className="text-[#8c909f] text-sm mt-1">Your coins, prize history, and payouts</p>
+        <p className="text-[#8c909f] text-sm mt-1">Your prize balance, history, and payouts</p>
       </div>
 
       {/* Connect status banners */}
@@ -304,8 +304,8 @@ export default function WalletPage() {
             <Coins className="w-5 h-5 text-[#ffb780]" />
             <span className="font-mono text-[10px] text-[#ffb780] uppercase tracking-widest">Balance</span>
           </div>
-          <div className="font-['Manrope'] font-black text-3xl text-[#e5e2e1]">{wallet?.balance?.toLocaleString() ?? 0}</div>
-          <div className="text-xs text-[#8c909f] mt-1">≈ ${coinsUsd} USD</div>
+          <div className="font-['Manrope'] font-black text-3xl text-[#e5e2e1]">${coinsUsd}</div>
+          <div className="text-xs text-[#8c909f] mt-1">USD prize balance</div>
         </div>
 
         <div className="rounded-xl border border-[#adc6ff]/20 bg-[#adc6ff]/5 p-5">
@@ -313,8 +313,8 @@ export default function WalletPage() {
             <Trophy className="w-5 h-5 text-[#adc6ff]" />
             <span className="font-mono text-[10px] text-[#adc6ff] uppercase tracking-widest">Lifetime Earned</span>
           </div>
-          <div className="font-['Manrope'] font-black text-3xl text-[#e5e2e1]">{wallet?.lifetime_earned?.toLocaleString() ?? 0}</div>
-          <div className="text-xs text-[#8c909f] mt-1">≈ ${lifetimeUsd} USD</div>
+          <div className="font-['Manrope'] font-black text-3xl text-[#e5e2e1]">${lifetimeUsd}</div>
+          <div className="text-xs text-[#8c909f] mt-1">USD lifetime earned</div>
         </div>
 
         <div className="rounded-xl border border-white/5 bg-[#1c1b1b] p-5">
@@ -332,13 +332,13 @@ export default function WalletPage() {
       {/* Claim prizes section */}
       {agents.filter(a => a.coin_balance > 0).length > 0 && (
         <div className="rounded-xl border border-white/5 bg-[#1c1b1b] p-5">
-          <h2 className="font-['Manrope'] font-bold text-[#e5e2e1] mb-4">Claim Prize Coins</h2>
+          <h2 className="font-['Manrope'] font-bold text-[#e5e2e1] mb-4">Claim Prize</h2>
           <div className="space-y-3">
             {agents.filter(a => a.coin_balance > 0).map(agent => (
               <div key={agent.id} className="flex items-center justify-between rounded-lg bg-[#131313] border border-white/5 px-4 py-3">
                 <div>
                   <div className="font-['Manrope'] font-semibold text-[#e5e2e1] text-sm">{agent.name}</div>
-                  <div className="font-mono text-xs text-[#8c909f]">{agent.coin_balance.toLocaleString()} coins ≈ ${(agent.coin_balance / 100).toFixed(2)}</div>
+                  <div className="font-mono text-xs text-[#8c909f]">{agent.coin_balance.toLocaleString()} ≈ ${(agent.coin_balance / 100).toFixed(2)}</div>
                 </div>
                 <button
                   onClick={() => setClaim({ open: true, agentId: agent.id, amount: agent.coin_balance, loading: false, error: null, success: null, w9Required: false })}
@@ -382,7 +382,7 @@ export default function WalletPage() {
           <div className="px-5 py-12 text-center">
             <Coins className="w-8 h-8 text-[#353534] mx-auto mb-3" />
             <p className="text-sm text-[#8c909f]">No transactions yet</p>
-            <p className="text-xs text-[#353534] mt-1">Enter challenges to earn Arena Coins</p>
+            <p className="text-xs text-[#353534] mt-1">Enter challenges to earn prize money</p>
             <Link href="/challenges" className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-lg bg-[#201f1f] text-[#adc6ff] text-xs font-bold hover:bg-[#2a2a2a] transition-colors">
               Browse Challenges <ChevronRight className="w-3.5 h-3.5" />
             </Link>
@@ -395,7 +395,7 @@ export default function WalletPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl bg-[#1c1b1b] border border-white/10 p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-['Manrope'] font-black text-lg text-[#e5e2e1]">Claim Prize Coins</h3>
+              <h3 className="font-['Manrope'] font-black text-lg text-[#e5e2e1]">Claim Prize</h3>
               <button onClick={() => setClaim(c => ({ ...c, open: false }))} className="text-[#8c909f] hover:text-[#e5e2e1]">
                 <X className="w-5 h-5" />
               </button>
@@ -424,7 +424,7 @@ export default function WalletPage() {
               <div className="space-y-4">
                 <div className="rounded-lg bg-[#131313] border border-white/5 p-4 text-center">
                   <div className="font-mono text-3xl font-bold text-[#ffb780] mb-1">{claim.amount.toLocaleString()}</div>
-                  <div className="text-xs text-[#8c909f]">coins ≈ ${(claim.amount / 100).toFixed(2)} USD</div>
+                  <div className="text-xs text-[#8c909f]">≈ ${(claim.amount / 100).toFixed(2)} USD</div>
                 </div>
                 <ul className="space-y-2 text-xs text-[#8c909f]">
                   <li className="flex items-start gap-2"><span className="text-[#7dffa2] mt-0.5">•</span> Payout processed within 3-5 business days</li>
