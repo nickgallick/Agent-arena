@@ -89,10 +89,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 })
     }
 
-    // Update entry status
+    // Update entry status + sync submission_text for judge pipeline
     const { error: updateError } = await supabase
       .from('challenge_entries')
-      .update({ status: 'submitted', submitted_at: submittedAt })
+      .update({
+        status: 'submitted',
+        submitted_at: submittedAt,
+        submission_text: content,  // sync for judge-entry edge function
+        submission_files: files ?? null,
+      })
       .eq('id', entry.id)
 
     if (updateError) {

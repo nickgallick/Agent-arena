@@ -110,10 +110,10 @@ Your score should be informed by this telemetry. High thrash/revert rates indica
     // Merge pre-flight flags
     const allFlags = [...new Set([...injectionFlags, ...result.flags])]
 
-    // Store in judge_outputs (new schema)
+    // Store in judge_outputs — upsert on (entry_id, lane) to prevent duplicates
     const { data: outputRow, error: outputErr } = await supabase
       .from('judge_outputs')
-      .insert({
+      .upsert({
         entry_id,
         challenge_id: challenge_id ?? entry.challenge_id,
         lane,
@@ -131,7 +131,7 @@ Your score should be informed by this telemetry. High thrash/revert rates indica
         is_fallback: result.is_fallback,
         fallback_from: result.is_fallback ? lane : null,
         is_arbitration: lane === 'audit',
-      })
+      }, { onConflict: 'entry_id,lane' })
       .select('id')
       .single()
 
@@ -180,7 +180,30 @@ Your score should be informed by this telemetry. High thrash/revert rates indica
       .eq('is_arbitration', false)
 
     if (completedLanes && completedLanes.length === 3) {
-      await handleAllLanesComplete(supabase, entry_id, challenge_id ?? entry.challenge_id, completedLanes, challengeFormat, challengeData?.judge_weights)
+      // Delegate composite scoring to DB function — atomic, no race conditions
+      const { data: scoreResult, error: scoreErr } = await supabase
+        .rpc('finalize_entry_scoring', { p_entry_id: entry_id })
+      if (scoreErr) {
+        console.error('[judge-entry] finalize_entry_scoring error:', scoreErr.message)
+      } else {
+        console.log(`[judge-entry] scoring finalized: entry=${entry_id}`, JSON.stringify(scoreResult))
+        // Update capability profile after scoring
+        await supabase.rpc('update_capability_profile', { p_entry_id: entry_id }).catch(() => {})
+        // Check if all entries scored → trigger ratings
+        const { count: stillPending } = await supabase
+          .from('challenge_entries')
+          .select('id', { count: 'exact', head: true })
+          .eq('challenge_id', challenge_id ?? entry.challenge_id)
+          .in('status', ['submitted', 'judging'])
+        if (stillPending === 0) {
+          await supabase.from('job_queue').insert({
+            type: 'calculate_ratings',
+            payload: { challenge_id: challenge_id ?? entry.challenge_id },
+          }).catch(() => {})
+        }
+      }
+    } else {
+      console.log(`[judge-entry] lanes complete: ${completedLanes?.length ?? 0}/3 for entry ${entry_id}`)
     }
 
     // Log fallback for monitoring
@@ -258,13 +281,13 @@ async function handleAllLanesComplete(
   const isDisputed = spread > DISPUTE_THRESHOLD
 
   // Update challenge_entries
-  await supabase.from('challenge_entries').update({
+  const { error: updateErr } = await supabase.from('challenge_entries').update({
     process_score: blendedProcessScore,
     strategy_score: strategyScore,
     integrity_adjustment: clampedAdj,
     efficiency_score: efficiencyScore,
     composite_score: compositeScore,
-    final_score: compositeScore / 10, // backcompat: final_score was 0-10
+    // NOTE: final_score is protected by block_score_update trigger — updated via calculate-ratings edge function only
     status: isDisputed ? 'judging' : 'judged',
     dispute_flagged: isDisputed,
     dispute_reason: isDisputed
@@ -279,11 +302,17 @@ async function handleAllLanesComplete(
     },
   }).eq('id', entry_id)
 
+  if (updateErr) {
+    console.error('[judge-entry] composite update error:', updateErr.message, JSON.stringify(updateErr))
+    throw new Error(`composite update failed: ${updateErr.message}`)
+  }
+
+  console.log(`[judge-entry] composite set: entry=${entry_id} composite=${compositeScore.toFixed(1)} process=${blendedProcessScore.toFixed(1)} strategy=${strategyScore} disputed=${isDisputed}`)
+
   // Disqualifying integrity — override composite to 0
   if (integrityOutcome === 'disqualifying') {
     await supabase.from('challenge_entries').update({
       composite_score: 0,
-      final_score: 0,
       status: 'disqualified',
       integrity_flag: 'disqualified',
     }).eq('id', entry_id)
@@ -344,12 +373,14 @@ function resolveWeights(format: string, customWeights?: Record<string, number> |
     }
   }
 
-  return {
+  const FORMAT_WEIGHTS: Record<string, { objective: number; process: number; strategy: number; efficiency: number }> = {
     sprint:   { objective: 0.60, process: 0.15, strategy: 0.15, efficiency: 0.10 },
     standard: { objective: 0.50, process: 0.20, strategy: 0.20, efficiency: 0.10 },
     marathon: { objective: 0.40, process: 0.20, strategy: 0.30, efficiency: 0.10 },
     versus:   { objective: 0.35, process: 0.20, strategy: 0.25, efficiency: 0.20 },
-  }[format] ?? { objective: 0.50, process: 0.20, strategy: 0.20, efficiency: 0.10 }
+  }
+
+  return FORMAT_WEIGHTS[format] ?? FORMAT_WEIGHTS['standard']
 }
 
 // ============================================================

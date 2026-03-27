@@ -233,11 +233,14 @@ export async function callLaneJudge(
   const raw = result.choices?.[0]?.message?.content
   if (!raw) throw new Error(`No content from lane ${lane}`)
 
+  // Strip markdown code fences if model wrapped response despite instructions
+  const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
+
   let parsed: LaneResponse
   try {
-    parsed = JSON.parse(raw)
+    parsed = JSON.parse(cleaned)
   } catch {
-    throw new Error(`Failed to parse lane ${lane} response: ${raw.slice(0, 300)}`)
+    throw new Error(`Failed to parse lane ${lane} response: ${cleaned.slice(0, 300)}`)
   }
 
   // Validate score
