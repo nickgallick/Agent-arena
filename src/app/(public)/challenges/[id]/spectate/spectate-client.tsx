@@ -1,11 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+// SpectateClient — Phase 10: Live Spectator View
+// Wired to real live_events via Supabase Realtime + versus match display
+// No fake data — Forge · 2026-03-27
+
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
-import { Grid2x2, Target, History, Zap, CheckCircle, Lightbulb, Wrench } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import {
+  CheckCircle, Zap, Lightbulb, Wrench, Clock, Users,
+  Trophy, BarChart2, AlertTriangle, RefreshCw,
+} from 'lucide-react'
 import type { Challenge, ChallengeEntry } from '@/types/challenge'
+import { CapabilityRadar } from '@/components/leaderboard/capability-radar'
 
 interface SpectateClientProps {
   challengeId: string
@@ -13,154 +21,365 @@ interface SpectateClientProps {
   entries: ChallengeEntry[]
 }
 
+interface LiveEvent {
+  id: string
+  agent_id: string
+  entry_id: string | null
+  event_type: string
+  event_data: Record<string, unknown>
+  seq_num: number
+  created_at: string
+}
+
+interface VersusMatch {
+  id: string
+  entry_a_id: string
+  entry_b_id: string
+  status: string
+  score_a: number | null
+  score_b: number | null
+  winner_entry_id: string | null
+  is_draw: boolean
+  match_type: string
+}
+
+interface EntryScore {
+  entry_id: string
+  agent_name: string
+  composite_score: number | null
+  process_score: number | null
+  strategy_score: number | null
+  status: string
+  dispute_flagged: boolean
+  capability_profile: {
+    reasoning_depth: number
+    tool_discipline: number
+    recovery_quality: number
+    strategic_planning: number
+    integrity_reliability: number
+    verification_discipline: number
+  } | null
+}
+
 function getTimeRemaining(endsAt: string | null): string {
-  if (!endsAt) return '00:00:00'
+  if (!endsAt) return '--:--:--'
   const diff = Math.max(0, Math.floor((new Date(endsAt).getTime() - Date.now()) / 1000))
+  if (diff === 0) return 'Ended'
   const h = Math.floor(diff / 3600)
   const m = Math.floor((diff % 3600) / 60)
   const s = diff % 60
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
 }
 
-const EVENTS = [
-  { time: '14:22:45', type: 'Success', icon: <CheckCircle className="w-4 h-4" />, msg: 'Entry submitted — awaiting judge evaluation.', color: 'text-[#7dffa2]' },
-  { time: '14:23:01', type: 'Code_Write', icon: <Zap className="w-4 h-4" />, msg: 'Submission received by arena validator.', color: 'text-[#adc6ff]' },
-  { time: '14:23:15', type: 'Thinking', icon: <Lightbulb className="w-4 h-4" />, msg: 'Judge pipeline queued — alpha, beta, gamma.', color: 'text-[#ffb780]' },
-  { time: '14:23:30', type: 'Tool_Call', icon: <Wrench className="w-4 h-4" />, msg: 'Rating calculation will run after judging completes.', color: 'text-[#e5e2e1]' },
-]
+const EVENT_META: Record<string, { color: string; icon: React.ElementType; label: string }> = {
+  tool_call:     { color: 'text-blue-400',   icon: Wrench,       label: 'Tool Call' },
+  code_write:    { color: 'text-purple-400', icon: Zap,          label: 'Code Write' },
+  thinking:      { color: 'text-yellow-400', icon: Lightbulb,    label: 'Thinking' },
+  test_run:      { color: 'text-green-400',  icon: CheckCircle,  label: 'Test Run' },
+  error:         { color: 'text-red-400',    icon: AlertTriangle,label: 'Error' },
+  checkpoint:    { color: 'text-cyan-400',   icon: CheckCircle,  label: 'Checkpoint' },
+  pivot:         { color: 'text-orange-400', icon: RefreshCw,    label: 'Pivot' },
+  submitted:     { color: 'text-green-300',  icon: Trophy,       label: 'Submitted' },
+  status_change: { color: 'text-slate-400',  icon: Clock,        label: 'Status' },
+}
 
-export default function SpectateClient({ challengeId: _challengeId, challenge, entries }: SpectateClientProps) {
+function scoreColor(v: number | null) {
+  if (v == null) return 'text-muted-foreground'
+  if (v >= 70) return 'text-green-400'
+  if (v >= 40) return 'text-yellow-400'
+  return 'text-red-400'
+}
+
+export default function SpectateClient({ challengeId, challenge, entries }: SpectateClientProps) {
   const [timeRemaining, setTimeRemaining] = useState(() => getTimeRemaining(challenge.ends_at ?? null))
+  const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([])
+  const [entryScores, setEntryScores] = useState<EntryScore[]>([])
+  const [versusMatches, setVersusMatches] = useState<VersusMatch[]>([])
+  const [connected, setConnected] = useState(false)
+  const eventsEndRef = useRef<HTMLDivElement>(null)
 
+  // Countdown
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeRemaining(getTimeRemaining(challenge.ends_at ?? null))
-    }, 1000)
+    const timer = setInterval(() => setTimeRemaining(getTimeRemaining(challenge.ends_at ?? null)), 1000)
     return () => clearInterval(timer)
   }, [challenge.ends_at])
 
+  // Fetch initial entry scores with capability profiles
+  useEffect(() => {
+    async function loadEntryScores() {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('challenge_entries')
+        .select('id, status, composite_score, process_score, strategy_score, dispute_flagged, agent:agents(id, name, capability_profile:agent_capability_profiles(reasoning_depth, tool_discipline, recovery_quality, strategic_planning, integrity_reliability, verification_discipline))')
+        .eq('challenge_id', challengeId)
+        .order('composite_score', { ascending: false, nullsFirst: false })
+
+      if (data) {
+        setEntryScores(data.map((e: any) => ({
+          entry_id: e.id,
+          agent_name: e.agent?.name ?? 'Unknown',
+          composite_score: e.composite_score,
+          process_score: e.process_score,
+          strategy_score: e.strategy_score,
+          status: e.status,
+          dispute_flagged: e.dispute_flagged ?? false,
+          capability_profile: e.agent?.capability_profile?.[0] ?? null,
+        })))
+      }
+    }
+    loadEntryScores()
+  }, [challengeId])
+
+  // Fetch versus matches if format is versus
+  useEffect(() => {
+    if (challenge.format !== 'versus') return
+    const supabase = createClient()
+    supabase
+      .from('versus_matches')
+      .select('*')
+      .eq('challenge_id', challengeId)
+      .then(({ data }) => { if (data) setVersusMatches(data) })
+  }, [challengeId, challenge.format])
+
+  // Fetch recent live_events and subscribe to real-time
+  useEffect(() => {
+    const supabase = createClient()
+
+    // Fetch last 50 events
+    supabase
+      .from('live_events')
+      .select('*')
+      .eq('challenge_id', challengeId)
+      .order('seq_num', { ascending: false })
+      .limit(50)
+      .then(({ data }) => {
+        if (data) setLiveEvents([...data].reverse())
+      })
+
+    // Subscribe to new events
+    const channel = supabase
+      .channel(`spectate:${challengeId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'live_events',
+        filter: `challenge_id=eq.${challengeId}`,
+      }, (payload) => {
+        setLiveEvents(prev => [...prev.slice(-99), payload.new as LiveEvent])
+      })
+      // Also subscribe to entry score updates
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'challenge_entries',
+        filter: `challenge_id=eq.${challengeId}`,
+      }, (payload) => {
+        const updated = payload.new as any
+        setEntryScores(prev => prev.map(e =>
+          e.entry_id === updated.id
+            ? { ...e, composite_score: updated.composite_score, process_score: updated.process_score, strategy_score: updated.strategy_score, status: updated.status, dispute_flagged: updated.dispute_flagged }
+            : e
+        ))
+      })
+      .subscribe((status) => {
+        setConnected(status === 'SUBSCRIBED')
+      })
+
+    return () => { supabase.removeChannel(channel) }
+  }, [challengeId])
+
+  // Auto-scroll events
+  useEffect(() => {
+    eventsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [liveEvents])
+
+  const isVersus = challenge.format === 'versus'
   const prizePool = `${(challenge.max_coins ?? 0).toLocaleString()} $BT`
-  const entryCount = entries.length
 
   return (
-    <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
+    <div className="min-h-screen bg-[#0d0d0d] text-[#e5e2e1]">
       <Header />
+      <main className="pt-20 p-6 flex flex-col gap-6 max-w-7xl mx-auto">
 
-      <main className="mt-16 p-6 flex flex-col gap-6 overflow-y-auto min-h-[calc(100vh-64px)]">
-
-        {/* HUD Header */}
-        <header className="bg-[#1c1b1b] p-6 rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3">
-              <span className="bg-[#7dffa2]/10 text-[#7dffa2] px-2 py-1 rounded text-[10px] font-['JetBrains_Mono'] uppercase font-bold tracking-wider flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#7dffa2] animate-pulse"></span>
-                Live
+        {/* Challenge Header */}
+        <div className="rounded-xl border border-white/5 bg-[#131313] p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className={`w-2 h-2 rounded-full ${connected ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`} />
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                {connected ? 'Live' : 'Connecting…'}
               </span>
-              <h1 className="text-2xl font-['Manrope'] font-extrabold tracking-tighter">{challenge.title}</h1>
+              {isVersus && (
+                <span className="text-[10px] font-mono bg-[#4d8efe]/15 text-[#4d8efe] px-2 py-0.5 rounded uppercase tracking-wider">Versus</span>
+              )}
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-[#c2c6d5] text-sm">
-              <div className="flex items-center gap-1.5">
-                <span>👥</span>
-                <span>{entryCount} {entryCount === 1 ? 'agent' : 'agents'} participating</span>
-              </div>
-              <div className="w-1 h-1 rounded-full bg-[#424753]"></div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#7dffa2]">💰</span>
-                <span className="text-[#7dffa2] font-bold">{prizePool} Prize Pool</span>
-              </div>
-              <div className="w-1 h-1 rounded-full bg-[#424753]"></div>
-              <div className="flex items-center gap-1.5">
-                <span>🏷️</span>
-                <span className="uppercase text-[10px] font-['JetBrains_Mono']">{challenge.category} · {challenge.format}</span>
-              </div>
+            <h1 className="text-xl font-bold text-foreground">{challenge.title}</h1>
+            <p className="text-xs text-muted-foreground mt-0.5 capitalize">{challenge.category?.replace(/_/g,' ')} · {challenge.format}</p>
+          </div>
+          <div className="flex items-center gap-6 flex-wrap">
+            <div className="text-center">
+              <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Time Left</div>
+              <div className="text-2xl font-mono font-bold text-foreground tabular-nums">{timeRemaining}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Prize Pool</div>
+              <div className="text-lg font-mono font-bold text-[#4d8efe]">{prizePool}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Competitors</div>
+              <div className="text-lg font-mono font-bold text-foreground">{entries.length}</div>
             </div>
           </div>
-          <div className="flex items-center gap-6">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">Time Remaining</span>
-              <span className="text-2xl font-['JetBrains_Mono'] font-bold text-[#adc6ff]">{timeRemaining}</span>
-            </div>
-            <div className="h-10 w-px bg-[#424753]/30"></div>
-            <div className="flex bg-[#0e0e0e] p-1 rounded-lg">
-              <button className="bg-[#201f1f] px-3 py-1.5 rounded flex items-center gap-2 text-xs font-bold text-[#adc6ff]">
-                <Grid2x2 className="w-4 h-4" />
-                Grid View
-              </button>
-              <button className="px-3 py-1.5 rounded flex items-center gap-2 text-xs font-bold text-[#c2c6d5] hover:text-[#e5e2e1] transition-colors">
-                <Target className="w-4 h-4" />
-                Focus
-              </button>
-            </div>
-          </div>
-        </header>
+        </div>
 
-        {/* Agent Grid — real entries or empty state */}
-        {entryCount === 0 ? (
-          <div className="bg-[#1c1b1b] rounded-xl p-12 text-center">
-            <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono']">NO AGENTS CONNECTED YET</p>
-            <p className="text-[#8c909f] text-xs mt-2">Entries will appear here once agents connect via the Connector CLI</p>
-            <Link href="/docs/connector" className="inline-block mt-4 text-xs text-[#adc6ff] hover:underline">View Connector Docs →</Link>
-          </div>
-        ) : (
-          <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            {entries.slice(0, 4).map((entry, i) => {
-              const agentName = (entry.agent as { name?: string } | null)?.name ?? `Agent ${i + 1}`
-              const agentId = entry.agent_id?.slice(0, 8) ?? '--------'
-              const colors = ['text-[#adc6ff]', 'text-[#7dffa2]', 'text-[#ffb780]', 'text-[#c2c6d5]']
-              const dotColors = ['bg-[#adc6ff]', 'bg-[#7dffa2]', 'bg-[#ffb780]', 'bg-[#c2c6d5]']
-              return (
-                <div key={entry.id} className="bg-[#1c1b1b] rounded-xl overflow-hidden flex flex-col">
-                  <div className="p-5 flex items-center justify-between bg-[#201f1f]">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-[#353534] flex items-center justify-center relative">
-                        <div className="text-2xl">🤖</div>
-                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#201f1f] ${dotColors[i % 4]}`}></div>
-                      </div>
-                      <div>
-                        <h2 className="font-bold text-lg leading-tight">{agentName}</h2>
-                        <p className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5]">
-                          ID: 0x{agentId.toUpperCase()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase block">Status</span>
-                      <span className={`text-sm font-bold font-['JetBrains_Mono'] uppercase ${colors[i % 4]}`}>
-                        {entry.status ?? 'entered'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-4 flex flex-col gap-4">
-                    <div className="bg-[#0e0e0e] rounded-lg p-4 h-64 overflow-y-auto font-['JetBrains_Mono'] text-[11px] leading-relaxed flex flex-col gap-3">
-                      <div className="flex justify-between items-center text-[#c2c6d5] border-b border-[#424753]/10 pb-2">
-                        <span className="flex items-center gap-1.5">
-                          <History className="w-3 h-3" />
-                          LIVE EVENTS FEED
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Left: Leaderboard + Versus */}
+          <div className="space-y-4">
+
+            {/* Versus Match Display */}
+            {isVersus && versusMatches.length > 0 && (
+              <div className="rounded-xl border border-white/5 bg-[#131313] p-4 space-y-3">
+                <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5" /> Versus Matches
+                </h2>
+                {versusMatches.map(match => {
+                  const a = entryScores.find(e => e.entry_id === match.entry_a_id)
+                  const b = entryScores.find(e => e.entry_id === match.entry_b_id)
+                  return (
+                    <div key={match.id} className="rounded-lg border border-white/5 bg-[#1a1a1a] p-3 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="text-muted-foreground capitalize">{match.match_type}</span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] ${match.status === 'complete' ? 'bg-green-500/15 text-green-400' : 'bg-yellow-500/15 text-yellow-400'}`}>
+                          {match.status}
                         </span>
-                        <span className="opacity-50 italic text-[9px]">30s delay active</span>
                       </div>
-                      {EVENTS.map((evt, j) => (
-                        <div key={j} className="flex gap-3">
-                          <span className="text-[#8c909f] opacity-40 shrink-0">{evt.time}</span>
-                          <div className="flex flex-col">
-                            <span className={`${evt.color} flex items-center gap-1.5 uppercase font-bold tracking-tight text-[10px]`}>
-                              {evt.icon}
-                              {evt.type}
-                            </span>
-                            <span className="text-[#c2c6d5] text-[10px]">{evt.msg}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 text-center">
+                          <div className="text-xs font-semibold text-foreground truncate">{a?.agent_name ?? '—'}</div>
+                          <div className={`text-lg font-mono font-bold ${match.winner_entry_id === match.entry_a_id ? 'text-green-400' : scoreColor(match.score_a)}`}>
+                            {match.score_a?.toFixed(0) ?? (a?.composite_score?.toFixed(0) ?? '—')}
                           </div>
                         </div>
-                      ))}
+                        <div className="text-xs font-mono text-muted-foreground font-bold">VS</div>
+                        <div className="flex-1 text-center">
+                          <div className="text-xs font-semibold text-foreground truncate">{b?.agent_name ?? '—'}</div>
+                          <div className={`text-lg font-mono font-bold ${match.winner_entry_id === match.entry_b_id ? 'text-green-400' : scoreColor(match.score_b)}`}>
+                            {match.score_b?.toFixed(0) ?? (b?.composite_score?.toFixed(0) ?? '—')}
+                          </div>
+                        </div>
+                      </div>
+                      {match.is_draw && <div className="text-center text-xs font-mono text-yellow-400">Draw</div>}
                     </div>
-                  </div>
-                </div>
-              )
-            })}
-          </section>
-        )}
-      </main>
+                  )
+                })}
+              </div>
+            )}
 
-      <Footer />
+            {/* Live Leaderboard */}
+            <div className="rounded-xl border border-white/5 bg-[#131313] p-4 space-y-3">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Trophy className="w-3.5 h-3.5" /> Live Standings
+              </h2>
+              {entryScores.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">No entries yet</p>
+              ) : (
+                <div className="space-y-2">
+                  {entryScores.map((e, i) => (
+                    <div key={e.entry_id} className={`flex items-center gap-3 p-2 rounded-lg ${i === 0 ? 'bg-[#4d8efe]/10' : 'bg-[#1a1a1a]'}`}>
+                      <span className="text-xs font-mono text-muted-foreground w-5 text-center">{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-semibold text-foreground truncate">{e.agent_name}</span>
+                          {e.dispute_flagged && <AlertTriangle className="w-3 h-3 text-yellow-400 flex-shrink-0" />}
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {e.process_score != null && (
+                            <span className="text-[10px] font-mono text-blue-400">P{e.process_score.toFixed(0)}</span>
+                          )}
+                          {e.strategy_score != null && (
+                            <span className="text-[10px] font-mono text-purple-400">S{e.strategy_score.toFixed(0)}</span>
+                          )}
+                          <span className={`text-[10px] font-mono capitalize ${e.status === 'judged' ? 'text-green-400' : e.status === 'judging' ? 'text-yellow-400' : 'text-muted-foreground'}`}>
+                            {e.status}
+                          </span>
+                        </div>
+                      </div>
+                      {e.capability_profile ? (
+                        <CapabilityRadar data={e.capability_profile} size={36} />
+                      ) : null}
+                      <span className={`text-sm font-mono font-bold w-10 text-right ${scoreColor(e.composite_score)}`}>
+                        {e.composite_score?.toFixed(0) ?? '—'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right: Live Event Feed */}
+          <div className="lg:col-span-2 rounded-xl border border-white/5 bg-[#131313] flex flex-col" style={{ maxHeight: '70vh' }}>
+            <div className="p-4 border-b border-white/5 flex items-center justify-between">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <BarChart2 className="w-3.5 h-3.5" /> Live Event Feed
+              </h2>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-muted-foreground">{liveEvents.length} events</span>
+                <span className={`text-[10px] font-mono ${connected ? 'text-green-400' : 'text-yellow-400'}`}>
+                  {connected ? '● live' : '○ reconnecting'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0">
+              {liveEvents.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+                  <Zap className="w-8 h-8 opacity-20" />
+                  <p className="text-xs">Waiting for events…</p>
+                  <p className="text-[10px] opacity-50">Events appear here in real-time as agents work</p>
+                </div>
+              ) : (
+                liveEvents.map((evt) => {
+                  const meta = EVENT_META[evt.event_type] ?? { color: 'text-muted-foreground', icon: Zap, label: evt.event_type }
+                  const Icon = meta.icon
+                  const agentEntry = entryScores.find(e => e.entry_id === evt.entry_id)
+                  const timestamp = new Date(evt.created_at).toLocaleTimeString('en-US', { hour12: false })
+                  return (
+                    <div key={evt.id} className="flex items-start gap-3 text-xs">
+                      <span className="font-mono text-muted-foreground text-[10px] w-16 flex-shrink-0 mt-0.5">{timestamp}</span>
+                      <Icon className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${meta.color}`} />
+                      <div className="flex-1 min-w-0">
+                        <span className={`font-mono ${meta.color} text-[10px] uppercase tracking-wider`}>{meta.label}</span>
+                        {agentEntry && (
+                          <span className="text-[10px] text-muted-foreground ml-2">{agentEntry.agent_name}</span>
+                        )}
+                        {evt.event_data?.message && (
+                          <p className="text-foreground/70 mt-0.5 leading-relaxed text-[11px]">
+                            {String(evt.event_data.message).slice(0, 200)}
+                          </p>
+                        )}
+                        {evt.event_data?.tool && (
+                          <p className="text-muted-foreground mt-0.5 font-mono text-[10px]">
+                            tool: {String(evt.event_data.tool)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+              <div ref={eventsEndRef} />
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <Link href={`/challenges/${challengeId}`} className="text-xs font-mono text-muted-foreground hover:text-foreground transition-colors">
+            ← Back to challenge
+          </Link>
+        </div>
+      </main>
     </div>
   )
 }
