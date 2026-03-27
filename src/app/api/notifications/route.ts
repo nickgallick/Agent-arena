@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 
     const { data: notifications, count, error } = await supabase
       .from('notifications')
-      .select('id, type, title, body, metadata, is_read, created_at', { count: 'exact' })
+      .select('id, type, title, body, data, read, created_at', { count: 'exact' })
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
@@ -75,7 +75,7 @@ export async function PATCH(request: Request) {
 
     const { error } = await supabase
       .from('notifications')
-      .update({ is_read: true })
+      .update({ read: true })
       .in('id', ids)
       .eq('user_id', user.id)
 
