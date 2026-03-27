@@ -83,6 +83,29 @@ Deno.serve(async (req: Request) => {
       : provider === 'gemini' ? 'google/gemini-1.5-pro'
       : 'anthropic/claude-sonnet-4-6'
 
+    // Commit score on-chain (if contract is configured)
+    let commitment_hash: string | null = null
+    let commitment_tx: string | null = null
+    let salt_encrypted: string | null = null
+
+    const contractConfigured = Deno.env.get('JUDGE_CONTRACT_ADDRESS') &&
+      Deno.env.get('JUDGE_ORACLE_PRIVATE_KEY') &&
+      (Deno.env.get('BASE_RPC_URL') || Deno.env.get('BASE_SEPOLIA_RPC_URL'))
+
+    if (contractConfigured && provider !== 'tiebreaker') {
+      try {
+        const { commitScore } = await import('../_shared/chain-client.ts')
+        const result = await commitScore(entry_id, provider, evaluation.overall)
+        commitment_hash = result.commitment
+        commitment_tx = result.txHash
+        salt_encrypted = result.saltEncrypted
+        console.log(`[judge-entry] On-chain commit: provider=${provider} tx=${result.txHash}`)
+      } catch (chainErr) {
+        console.error('[judge-entry] On-chain commit failed (non-fatal):', (chainErr as Error).message)
+        // Continue — DB score is still recorded, on-chain is best-effort until fully deployed
+      }
+    }
+
     // Store judge score
     await supabase.from('judge_scores').insert({
       entry_id,
@@ -97,8 +120,9 @@ Deno.serve(async (req: Request) => {
       red_flags: allRedFlags,
       model_used: modelUsed,
       latency_ms: latencyMs,
-      // TODO: populate after chain-client.ts delivered:
-      // commitment_hash, commitment_tx, reveal_tx, salt_encrypted
+      commitment_hash,
+      commitment_tx,
+      salt_encrypted,
     })
 
     // Check if all 3 providers scored this entry
@@ -169,10 +193,38 @@ Deno.serve(async (req: Request) => {
           })
         }
 
-        // TODO: On-chain reveal — wire after chain-client.ts delivered
-        // for (const score of scores) {
-        //   await revealScore(entry_id, score.provider, Math.round(score.overall_score * 10), score.salt)
-        // }
+        // On-chain reveal — fires if contract is configured
+        if (contractConfigured) {
+          try {
+            const { revealScore } = await import('../_shared/chain-client.ts')
+            // Fetch encrypted salts from DB for each provider
+            const { data: scoreRows } = await supabase
+              .from('judge_scores')
+              .select('provider, overall_score, salt_encrypted')
+              .eq('entry_id', entry_id)
+              .in('provider', ['claude', 'gpt4o', 'gemini'])
+              .not('salt_encrypted', 'is', null)
+
+            const revealTxs: Record<string, string> = {}
+            for (const row of scoreRows ?? []) {
+              if (!row.salt_encrypted) continue
+              const scoreInt = Math.round(row.overall_score * 10)
+              const tx = await revealScore(entry_id, row.provider, scoreInt, row.salt_encrypted)
+              revealTxs[row.provider] = tx
+              // Update reveal_tx on the judge_score row
+              await supabase.from('judge_scores')
+                .update({ reveal_tx: tx })
+                .eq('entry_id', entry_id)
+                .eq('provider', row.provider)
+            }
+
+            // Add reveal txs to reveal_summary
+            revealSummary['_txs'] = revealTxs
+            console.log(`[judge-entry] On-chain reveals complete:`, JSON.stringify(revealTxs))
+          } catch (revealErr) {
+            console.error('[judge-entry] On-chain reveal failed (non-fatal):', (revealErr as Error).message)
+          }
+        }
       }
     }
 
