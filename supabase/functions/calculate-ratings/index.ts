@@ -27,37 +27,11 @@ import {
   updateRating,
   AggregationResult,
 } from '../_shared/chain-client-phase2.ts'
-import { generateSalt, encryptSalt } from '../_shared/salt-utils.ts'
-
-// ─── Phase 3 stubs ────────────────────────────────────────────────────────────
-// Replace with real imports when BoutsEscrow + BoutsCompositeCommit are deployed.
-// Interface per Chain spec:
-//   commitComposite(entryId: bytes32, challengeId: bytes32, compositeScore: uint8, salt: bytes32)
-//   revealComposite(entryId: bytes32, compositeScore: uint8, salt: bytes32)
-
-async function commitComposite(_params: {
-  entryId:        string
-  challengeId:    string
-  compositeScore: number   // 0–100 integer (Math.round before passing)
-  salt:           string   // 0x-prefixed 32-byte hex
-}): Promise<string> {
-  // STUB — replace with:
-  // return chainClientPhase3.commitComposite(params)
-  console.log(`[calculate-ratings] STUB commitComposite: entry=${_params.entryId} score=${_params.compositeScore}`)
-  return '0xSTUB_COMMIT_TX'
-}
-
-async function revealComposite(_params: {
-  entryId:        string
-  compositeScore: number
-  salt:           string
-}): Promise<string> {
-  // STUB — replace with:
-  // return chainClientPhase3.revealComposite(params)
-  console.log(`[calculate-ratings] STUB revealComposite: entry=${_params.entryId} score=${_params.compositeScore}`)
-  return '0xSTUB_REVEAL_TX'
-}
-// ─────────────────────────────────────────────────────────────────────────────
+import {
+  commitComposite,
+  revealComposite,
+  finalizeChallenge,
+} from '../_shared/chain-client-phase3.ts'
 
 function chainEnabled(): boolean {
   return !!(
@@ -129,25 +103,22 @@ Deno.serve(async (req: Request) => {
       if (escrowEnabled() && !entry.composite_commitment) {
         try {
           const compositeScore = Math.round(getScore(entry))
-          const salt = generateSalt()
-          const saltEncrypted = await encryptSalt(salt)
 
-          const commitTx = await commitComposite({
+          const { txHash, commitment, salt, saltEncrypted } = await commitComposite({
             entryId:        entry.id,
             challengeId:    challenge_id,
             compositeScore,
-            salt,
           })
 
           await supabase.from('challenge_entries').update({
             composite_salt_encrypted: saltEncrypted,
-            composite_commitment:     commitTx,  // store tx as commitment ref
-            composite_commit_tx:      commitTx,
+            composite_commitment:     commitment,
+            composite_commit_tx:      txHash,
             composite_committed_at:   new Date().toISOString(),
           }).eq('id', entry.id)
 
           commitData[entry.id] = { compositeScore, salt, saltEncrypted }
-          console.log(`[calculate-ratings] P1 committed: entry=${entry.id} score=${compositeScore}`)
+          console.log(`[calculate-ratings] P1 committed: entry=${entry.id} score=${compositeScore} tx=${txHash}`)
         } catch (err) {
           console.warn(`[calculate-ratings] commitComposite failed entry=${entry.id}: ${(err as Error).message}`)
         }
@@ -168,11 +139,11 @@ Deno.serve(async (req: Request) => {
           const revealTx = await revealComposite({
             entryId:        entry.id,
             compositeScore: cd.compositeScore,
-            salt:           cd.salt,
+            saltEncrypted:  cd.saltEncrypted,  // decrypted internally by chain-client-phase3
           })
 
           await supabase.from('challenge_entries').update({
-            composite_reveal_tx:  revealTx,
+            composite_reveal_tx:   revealTx,
             composite_revealed_at: new Date().toISOString(),
           }).eq('id', entry.id)
 
@@ -180,6 +151,28 @@ Deno.serve(async (req: Request) => {
         } catch (err) {
           console.warn(`[calculate-ratings] revealComposite failed entry=${entry.id}: ${(err as Error).message}`)
         }
+      }
+
+      // After all reveals: call finalizeChallenge with eligible entries only
+      // Exclude disqualified entries — contract reverts if any DQ'd entry is passed
+      try {
+        const { data: eligibleEntries } = await supabase
+          .from('challenge_entries')
+          .select('id, composite_score, integrity_flag')
+          .eq('challenge_id', challenge_id)
+          .neq('status', 'disqualified')
+          .not('composite_score', 'is', null)
+          .order('composite_score', { ascending: false })
+
+        if (eligibleEntries && eligibleEntries.length >= 2) {
+          const rankedEntries = eligibleEntries.map((e) => e.id)
+          const finalizeTx = await finalizeChallenge({ challengeId: challenge_id, rankedEntries })
+          console.log(`[calculate-ratings] P2 finalized on-chain: challenge=${challenge_id} entries=${rankedEntries.length} tx=${finalizeTx}`)
+        } else {
+          console.warn(`[calculate-ratings] finalizeChallenge skipped: only ${eligibleEntries?.length ?? 0} eligible entries (min 2)`)
+        }
+      } catch (err) {
+        console.warn(`[calculate-ratings] finalizeChallenge failed: ${(err as Error).message}`)
       }
     }
 
