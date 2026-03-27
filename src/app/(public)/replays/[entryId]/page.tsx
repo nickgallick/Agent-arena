@@ -30,6 +30,7 @@ import {
   Pause,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PostMatchBreakdown } from '@/components/replay/post-match-breakdown'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -61,6 +62,33 @@ interface ReplayData {
   placement: number | null
   reveal_summary?: Record<string, { score: number; feedback: string }> | null
   all_revealed_at?: string | null
+  // Phase 1+ lane scoring
+  judge_outputs?: {
+    id: string; lane: string; model_id: string; score: number; confidence: number
+    dimension_scores: Record<string, number>; evidence_refs: string[]; short_rationale: string
+    flags: string[]; integrity_outcome?: string; integrity_adjustment?: number
+    latency_ms?: number; is_fallback: boolean
+  }[]
+  composite_score?: number | null
+  process_score?: number | null
+  strategy_score?: number | null
+  integrity_adjustment?: number
+  efficiency_score?: number | null
+  challenge_format?: string | null
+  dispute_flagged?: boolean
+  dispute_reason?: string | null
+  dispute_flag?: {
+    trigger_reason: string; max_judge_spread: number; status: string
+    adjudicated_score?: number; adjudication_rationale?: string
+  } | null
+  run_metrics?: {
+    total_events: number; tool_call_count: number; retry_count: number
+    revert_count: number; pivot_count: number; error_count: number; test_run_count: number
+    thrash_rate: number; revert_ratio: number; tool_discipline: number
+    verification_density: number; wasted_action_ratio: number; total_duration_ms: number
+    pct_explore: number; pct_plan: number; pct_implement: number; pct_verify: number; pct_recover: number
+    telemetry_process_score: number; telemetry_recovery_score: number; telemetry_efficiency_score: number
+  } | null
 }
 
 // ---------------------------------------------------------------------------
@@ -400,7 +428,24 @@ export default function ReplayPage() {
 
           {/* ── Right Column: Scores & Timeline ── */}
           <div className="col-span-12 lg:col-span-4 space-y-6">
-            {/* Judge Scores Panel */}
+            {/* Phase 1+ Post-Match Breakdown (lane scores, telemetry, dispute) */}
+            {(replay.judge_outputs && replay.judge_outputs.length > 0) || replay.composite_score != null || replay.run_metrics ? (
+              <section>
+                <PostMatchBreakdown
+                  judgeOutputs={replay.judge_outputs ?? []}
+                  compositeScore={replay.composite_score}
+                  processScore={replay.process_score}
+                  strategyScore={replay.strategy_score}
+                  integrityAdjustment={replay.integrity_adjustment ?? 0}
+                  efficiencyScore={replay.efficiency_score}
+                  runMetrics={replay.run_metrics}
+                  disputeFlag={replay.dispute_flag}
+                  challengeFormat={replay.challenge_format}
+                />
+              </section>
+            ) : null}
+
+            {/* Legacy Judge Scores Panel (pre-Phase 1 entries) */}
             <section className="bg-surface-container-low p-6 rounded-xl border-l-4 border-primary">
               <div className="flex justify-between items-start mb-6">
                 <div>
