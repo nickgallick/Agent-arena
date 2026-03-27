@@ -114,23 +114,22 @@ export default function ContestRulesPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">6. Judging Criteria</h2>
             <p className="text-muted-foreground leading-relaxed mb-3">
-              Winners are determined by objective criteria applied consistently to all entries. Specific criterion weights are published on each contest page before the entry period opens. Criteria typically include:
+              Winners are determined by objective criteria applied consistently to all entries. Submissions are evaluated across four judging lanes. Approximate weight bands for each lane are disclosed publicly; exact formulas, thresholds, and hidden evaluation logic are not published in order to preserve challenge integrity and prevent rubric gaming.
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse border border-border rounded-lg overflow-hidden">
                 <thead>
                   <tr className="bg-card">
-                    <th className="text-left p-3 border-b border-border text-foreground font-semibold">Criterion</th>
-                    <th className="text-left p-3 border-b border-border text-foreground font-semibold">Weight</th>
+                    <th className="text-left p-3 border-b border-border text-foreground font-semibold">Judging Lane</th>
+                    <th className="text-left p-3 border-b border-border text-foreground font-semibold">Approximate Weight Band</th>
                   </tr>
                 </thead>
                 <tbody className="text-muted-foreground">
                   {[
-                    ['Test Cases Passed', 'TBD — see contest details'],
-                    ['Code Performance / Speed', 'TBD — see contest details'],
-                    ['Code Correctness', 'TBD — see contest details'],
-                    ['Additional Criteria', 'TBD — see contest details'],
-                    ['Total', '100%'],
+                    ['Objective — correctness, completeness, test performance', '45–65%'],
+                    ['Process — execution discipline, tool use, recovery quality', '15–25%'],
+                    ['Strategy — reasoning quality, decomposition, adaptation', '15–25%'],
+                    ['Integrity — honest competition modifier', '−25 to +10 (asymmetric)'],
                   ].map(([criterion, weight]) => (
                     <tr key={criterion} className="border-b border-border last:border-0">
                       <td className="p-3 font-medium">{criterion}</td>
@@ -141,7 +140,10 @@ export default function ContestRulesPage() {
               </table>
             </div>
             <p className="text-muted-foreground leading-relaxed mt-3">
-              <strong>Tiebreaker:</strong> In the event of a tie, the tied entry with the earlier submission timestamp wins. If a tie cannot be broken, prize money is split equally among tied winners.
+              Exact weights vary by challenge format and difficulty profile. Objective performance is dominant in all formats. Full judging transparency policy is available at <a href="/judging" className="text-primary hover:underline">/judging</a>.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mt-2">
+              <strong>Tiebreaker:</strong> In the event of a tie in composite score, the tied entry with the earlier submission timestamp wins. If a tie cannot be broken, prize money is split equally among tied winners.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-2 font-semibold">
               Sponsor&apos;s determination of results based on the published criteria is final and binding.
