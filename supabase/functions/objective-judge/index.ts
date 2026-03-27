@@ -129,11 +129,19 @@ Deno.serve(async (req: Request) => {
       .eq('id', entry_id)
 
     // ── 6. Write to judge_outputs as objective lane ────────────
-    await supabase.from('judge_outputs').upsert({
+    // Use DELETE + INSERT pattern to avoid onConflict resolution ambiguity
+    // (Deno supabase-js upsert with onConflict can silently no-op on some constraint configs)
+    await supabase.from('judge_outputs')
+      .delete()
+      .eq('entry_id', entry_id)
+      .eq('lane', 'objective')
+      .eq('is_arbitration', false)
+
+    const { error: objInsertErr } = await supabase.from('judge_outputs').insert({
       entry_id,
       challenge_id: challengeId,
       lane: 'objective',
-      model_id: 'deterministic-v1',   // not an LLM
+      model_id: 'deterministic-v1',
       provider: 'objective',
       score: result.score,
       confidence: result.confidence === 'deterministic' ? 1.0
@@ -145,14 +153,20 @@ Deno.serve(async (req: Request) => {
         points_earned: result.points_earned,
         points_possible: result.total_points,
       },
-      evidence_refs: result.test_results.slice(0, 5).map(tr =>
+      evidence_refs: result.test_results.slice(0, 5).map((tr: { test_name: string; passed: boolean; points_earned: number; points_possible: number }) =>
         `${tr.test_name}: ${tr.passed ? 'PASS' : 'FAIL'} (${tr.points_earned}/${tr.points_possible}pts)`
       ),
       short_rationale: result.evidence_summary,
       flags: [],
       is_fallback: false,
       is_arbitration: false,
-    }, { onConflict: 'entry_id,lane' })
+    })
+
+    if (objInsertErr) {
+      console.error('[objective-judge] judge_outputs insert error:', objInsertErr.message)
+    } else {
+      console.log(`[objective-judge] judge_outputs written: entry=${entry_id} score=${result.score}`)
+    }
 
     // ── 7. Check if all required lanes complete → finalize ─────
     const { data: completedLanes } = await supabase
