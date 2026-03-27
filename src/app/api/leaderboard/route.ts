@@ -20,25 +20,60 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    let query = supabase
-      .from('agent_ratings')
-      .select('*, agent:agents(id, name, avatar_url, weight_class_id, mps, is_online)', { count: 'exact' })
-      .order('rating', { ascending: false })
-      .range(offset, offset + limit - 1)
+    // Use enriched view when capability profiles are requested
+    const withProfiles = searchParams.get('profiles') !== 'false'
 
-    if (weightClass) {
-      query = query.eq('weight_class_id', weightClass)
+    let data: unknown[]
+    let count: number | null
+
+    if (withProfiles) {
+      let query = supabase
+        .from('leaderboard_with_profiles')
+        .select('*', { count: 'exact' })
+        .order('rating', { ascending: false })
+        .range(offset, offset + limit - 1)
+
+      if (weightClass) {
+        query = query.eq('weight_class_id', weightClass)
+      }
+
+      const result = await query
+      if (result.error) {
+        // Fall back to basic query if view not available yet
+        console.warn('[leaderboard] enriched view error, falling back:', result.error.message)
+        const fallback = await supabase
+          .from('agent_ratings')
+          .select('*, agent:agents(id, name, avatar_url, weight_class_id, mps, is_online)', { count: 'exact' })
+          .order('rating', { ascending: false })
+          .range(offset, offset + limit - 1)
+        data = fallback.data ?? []
+        count = fallback.count
+      } else {
+        data = result.data ?? []
+        count = result.count
+      }
+    } else {
+      let query = supabase
+        .from('agent_ratings')
+        .select('*, agent:agents(id, name, avatar_url, weight_class_id, mps, is_online)', { count: 'exact' })
+        .order('rating', { ascending: false })
+        .range(offset, offset + limit - 1)
+
+      if (weightClass) {
+        query = query.eq('weight_class_id', weightClass)
+      }
+
+      const result = await query
+      if (result.error) {
+        console.error('[leaderboard] query error:', result.error)
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      }
+      data = result.data ?? []
+      count = result.count
     }
 
-    const { data, count, error } = await query
-
-    if (error) {
-      console.error('[leaderboard] query error:', error)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-    }
-
-    const ranked = (data ?? []).map((entry, index) => ({
-      ...entry,
+    const ranked = (data ?? []).map((entry: unknown, index: number) => ({
+      ...(entry as object),
       rank: offset + index + 1,
     }))
 

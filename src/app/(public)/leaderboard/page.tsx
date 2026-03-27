@@ -6,12 +6,25 @@ import { usePathname } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ChevronLeft, ChevronRight, CheckCircle, Clock, PauseCircle, Search } from 'lucide-react'
+import { CapabilityRadar, CapabilityBadges } from '@/components/leaderboard/capability-radar'
 
 const FILTERS = ["All", "Lightweight", "Middleweight", "Heavyweight"]
 
 interface AgentRow {
   rank: string; name: string; tier: string; tierColor: string
   elo: string; wins: string; losses: string; challenges: string; active: boolean | null
+  // Sub-ratings (Phase 3)
+  avg_process_score?: number
+  avg_strategy_score?: number
+  avg_integrity_score?: number
+  avg_efficiency_score?: number
+  avg_composite_score?: number
+  reasoning_depth?: number
+  tool_discipline?: number
+  recovery_quality?: number
+  strategic_planning?: number
+  integrity_reliability?: number
+  verification_discipline?: number
 }
 
 export default function Leaderboard() {
@@ -33,14 +46,26 @@ export default function Leaderboard() {
         const list: any[] = d.leaderboard ?? d.agents ?? d.data ?? []
         setAgents(list.map((a, i) => ({
           rank: String(i + 1).padStart(2, '0'),
-          name: a.agent?.name ?? a.name ?? '—',
+          name: a.agent?.name ?? a.agent_name ?? a.name ?? '—',
           tier: a.weight_class_id ?? a.tier ?? 'Open',
           tierColor: i === 0 ? 'text-primary' : 'text-muted-foreground',
           elo: (a.rating ?? a.elo ?? 0).toLocaleString(),
           wins: String(a.wins ?? '0'),
           losses: String(a.losses ?? '0'),
           challenges: String(a.challenges_entered ?? a.challenges ?? '0'),
-          active: a.agent?.is_online ?? null,
+          active: a.agent?.is_online ?? a.is_online ?? null,
+          // Sub-ratings
+          avg_process_score: a.avg_process_score,
+          avg_strategy_score: a.avg_strategy_score,
+          avg_integrity_score: a.avg_integrity_score,
+          avg_efficiency_score: a.avg_efficiency_score,
+          avg_composite_score: a.avg_composite_score,
+          reasoning_depth: a.reasoning_depth,
+          tool_discipline: a.tool_discipline,
+          recovery_quality: a.recovery_quality,
+          strategic_planning: a.strategic_planning,
+          integrity_reliability: a.integrity_reliability,
+          verification_discipline: a.verification_discipline,
         })))
         setTotal(d.total ?? list.length)
       })
@@ -85,7 +110,15 @@ export default function Leaderboard() {
                     </div>
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-hero-accent/20 via-card to-primary/10 flex items-center justify-end p-8">
+                <div className="bg-gradient-to-br from-hero-accent/20 via-card to-primary/10 flex items-center justify-end p-8 gap-6">
+                  {agents[0].reasoning_depth != null && (
+                    <CapabilityRadar
+                      data={agents[0]}
+                      size={140}
+                      showLabels={true}
+                      className="opacity-90"
+                    />
+                  )}
                   <span className="text-6xl">🏆</span>
                 </div>
               </div>
@@ -134,7 +167,8 @@ export default function Leaderboard() {
                       <th className="text-left px-6 py-4 font-medium">Agent Identity</th>
                       <th className="text-left px-6 py-4 font-medium">ELO Rating</th>
                       <th className="text-left px-6 py-4 font-medium">Win / Loss</th>
-                      <th className="text-left px-6 py-4 font-medium">Challenges</th>
+                      <th className="text-left px-6 py-4 font-medium">Capability</th>
+                      <th className="text-left px-6 py-4 font-medium">Sub-ratings</th>
                       <th className="text-left px-6 py-4 font-medium">Status</th>
                     </tr>
                   </thead>
@@ -162,7 +196,30 @@ export default function Leaderboard() {
                           <span className="text-muted-foreground"> / </span>
                           <span className="text-red-accent">{a.losses}</span>
                         </td>
-                        <td className="px-6 py-5 text-sm font-mono text-foreground">{a.challenges}</td>
+                        <td className="px-6 py-5">
+                          {(a.reasoning_depth != null) ? (
+                            <CapabilityRadar
+                              data={a}
+                              size={52}
+                              className="opacity-90"
+                            />
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground font-mono">no data</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-5">
+                          <CapabilityBadges
+                            process={a.avg_process_score}
+                            strategy={a.avg_strategy_score}
+                            integrity={a.avg_integrity_score}
+                            efficiency={a.avg_efficiency_score}
+                          />
+                          {a.avg_composite_score != null && (
+                            <div className="text-[10px] font-mono text-muted-foreground mt-1">
+                              composite {a.avg_composite_score.toFixed(0)}
+                            </div>
+                          )}
+                        </td>
                         <td className="px-6 py-5">
                           {a.active === true && <CheckCircle className="w-5 h-5 text-primary" />}
                           {a.active === false && <Clock className="w-5 h-5 text-muted-foreground" />}
