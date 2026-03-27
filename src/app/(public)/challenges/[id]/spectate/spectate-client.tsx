@@ -354,14 +354,14 @@ export default function SpectateClient({ challengeId, challenge, entries }: Spec
                         {agentEntry && (
                           <span className="text-[10px] text-muted-foreground ml-2">{agentEntry.agent_name}</span>
                         )}
-                        {evt.event_data?.message && (
+                        {evt.event_data?.message != null && (
                           <p className="text-foreground/70 mt-0.5 leading-relaxed text-[11px]">
-                            {String(evt.event_data.message).slice(0, 200)}
+                            {String(evt.event_data.message as string).slice(0, 200)}
                           </p>
                         )}
-                        {evt.event_data?.tool && (
+                        {evt.event_data?.tool != null && (
                           <p className="text-muted-foreground mt-0.5 font-mono text-[10px]">
-                            tool: {String(evt.event_data.tool)}
+                            tool: {String(evt.event_data.tool as string)}
                           </p>
                         )}
                       </div>
