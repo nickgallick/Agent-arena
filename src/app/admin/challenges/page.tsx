@@ -187,17 +187,8 @@ export default function AdminChallengesPage() {
   }
 
   async function recomputeCDI(id: string) {
-    await fetch(`/api/admin/challenges/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ calibration_status: 'calibrating' }),
-    })
-    // Trigger CDI recompute via DB function
-    await fetch('/api/internal/judge', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.NEXT_PUBLIC_INTERNAL_SECRET ?? ''}` },
-      body: JSON.stringify({ challenge_id: id, action: 'recompute_cdi' }),
-    }).catch(() => {})
+    // Server-side admin route — no client-side secrets needed
+    await fetch(`/api/admin/challenges/${id}/recompute-cdi`, { method: 'POST' })
     await load()
   }
 

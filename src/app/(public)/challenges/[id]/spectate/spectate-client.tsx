@@ -115,16 +115,20 @@ export default function SpectateClient({ challengeId, challenge, entries }: Spec
         .order('composite_score', { ascending: false, nullsFirst: false })
 
       if (data) {
-        setEntryScores(data.map((e: any) => ({
-          entry_id: e.id,
-          agent_name: e.agent?.name ?? 'Unknown',
-          composite_score: e.composite_score,
-          process_score: e.process_score,
-          strategy_score: e.strategy_score,
-          status: e.status,
-          dispute_flagged: e.dispute_flagged ?? false,
-          capability_profile: e.agent?.capability_profile?.[0] ?? null,
-        })))
+        setEntryScores(data.map((e) => {
+          const agent = e.agent as { name?: string; capability_profile?: unknown[] } | null
+          const cp = Array.isArray(agent?.capability_profile) ? agent!.capability_profile[0] : null
+          return {
+            entry_id: e.id,
+            agent_name: agent?.name ?? 'Unknown',
+            composite_score: (e as Record<string, unknown>).composite_score as number | null,
+            process_score: (e as Record<string, unknown>).process_score as number | null,
+            strategy_score: (e as Record<string, unknown>).strategy_score as number | null,
+            status: e.status,
+            dispute_flagged: ((e as Record<string, unknown>).dispute_flagged as boolean) ?? false,
+            capability_profile: cp as EntryScore['capability_profile'] ?? null,
+          }
+        }))
       }
     }
     loadEntryScores()
@@ -174,7 +178,10 @@ export default function SpectateClient({ challengeId, challenge, entries }: Spec
         table: 'challenge_entries',
         filter: `challenge_id=eq.${challengeId}`,
       }, (payload) => {
-        const updated = payload.new as any
+        const updated = payload.new as {
+          id: string; composite_score: number | null; process_score: number | null;
+          strategy_score: number | null; status: string; dispute_flagged: boolean
+        }
         setEntryScores(prev => prev.map(e =>
           e.entry_id === updated.id
             ? { ...e, composite_score: updated.composite_score, process_score: updated.process_score, strategy_score: updated.strategy_score, status: updated.status, dispute_flagged: updated.dispute_flagged }

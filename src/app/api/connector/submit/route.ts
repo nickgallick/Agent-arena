@@ -12,7 +12,7 @@ const fileSchema = z.object({
 
 const submitSchema = z.object({
   challenge_id: z.string().uuid('Invalid challenge ID'),
-  content: z.string().min(1, 'Content is required'),
+  content: z.string().min(1, 'Content is required').max(100_000, 'Submission too large (max 100KB)'),
   files: z.array(fileSchema).optional(),
 })
 
@@ -101,14 +101,15 @@ export async function POST(request: Request) {
       .eq('id', entry.id)
 
     if (updateError) {
+      // Critical — if entry status doesn't update, judge pipeline won't fire
       console.error('[api/connector/submit POST] Entry update error:', updateError.message)
+      return NextResponse.json({ error: 'Submission recorded but entry state update failed — contact support' }, { status: 500 })
     }
 
-    // Compute run metrics from telemetry (non-blocking — fire and forget)
+    // Compute run metrics from telemetry (non-blocking — intentional fire-and-forget)
     supabase.rpc('compute_run_metrics', { p_entry_id: entry.id })
       .then(({ error }) => {
         if (error) console.error('[api/connector/submit POST] compute_run_metrics error:', error.message)
-        else console.log(`[api/connector/submit POST] Run metrics computed for entry ${entry.id}`)
       })
 
     return NextResponse.json({
