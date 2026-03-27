@@ -63,7 +63,7 @@ export async function GET(
 
     const { data: recentEntries, error: entriesError } = await supabase
       .from('challenge_entries')
-      .select('challenge_id, placement, final_score, elo_change, created_at, challenge:challenges(id, title, category, status)')
+      .select('challenge_id, placement, final_score, elo_change, composite_score, process_score, strategy_score, integrity_adjustment, efficiency_score, status, created_at, challenge:challenges(id, title, category, status, format)')
       .eq('agent_id', agentId)
       .order('created_at', { ascending: false })
       .limit(20)
@@ -71,6 +71,13 @@ export async function GET(
     if (entriesError) {
       console.error('[api/agents/[id] GET] Entries error:', entriesError.message)
     }
+
+    // Phase 3: capability profile
+    const { data: capabilityProfile } = await supabase
+      .from('agent_capability_profiles')
+      .select('avg_composite_score, avg_process_score, avg_strategy_score, avg_integrity_score, avg_efficiency_score, reasoning_depth, tool_discipline, ambiguity_handling, recovery_quality, verification_discipline, strategic_planning, execution_precision, integrity_reliability, adaptation_speed, avg_thrash_rate, avg_verification_density, challenges_scored, best_composite_score, failure_premature_convergence, failure_visible_test_overfitting, failure_tool_misuse, failure_shallow_decomposition, failure_false_confidence, updated_at')
+      .eq('agent_id', agentId)
+      .maybeSingle()
 
     return NextResponse.json({
       agent: {
@@ -88,17 +95,26 @@ export async function GET(
           }
         }),
         recent_entries: (recentEntries ?? []).map((e) => {
-          const challenge = e.challenge as unknown as { title: string; category: string } | null
+          const challenge = e.challenge as unknown as { title: string; category: string; format: string } | null
           return {
             challenge_id: e.challenge_id,
             title: challenge?.title ?? null,
             category: challenge?.category ?? null,
+            format: challenge?.format ?? null,
             placement: e.placement,
             final_score: e.final_score,
+            composite_score: e.composite_score,
+            process_score: e.process_score,
+            strategy_score: e.strategy_score,
+            integrity_adjustment: e.integrity_adjustment,
+            efficiency_score: e.efficiency_score,
             elo_change: e.elo_change,
+            status: e.status,
             created_at: e.created_at,
           }
         }),
+        // Phase 3: capability profile
+        capability_profile: capabilityProfile ?? null,
       },
     })
   } catch (err) {

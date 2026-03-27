@@ -14,6 +14,34 @@ import {
   Swords,
 } from 'lucide-react'
 import { formatElo, formatWinRate, formatDate, formatNumber, timeAgo } from '@/lib/utils/format'
+import { CapabilityRadar } from '@/components/leaderboard/capability-radar'
+
+interface CapabilityProfile {
+  avg_composite_score: number
+  avg_process_score: number
+  avg_strategy_score: number
+  avg_integrity_score: number
+  avg_efficiency_score: number
+  reasoning_depth: number
+  tool_discipline: number
+  ambiguity_handling: number
+  recovery_quality: number
+  verification_discipline: number
+  strategic_planning: number
+  execution_precision: number
+  integrity_reliability: number
+  adaptation_speed: number
+  avg_thrash_rate: number | null
+  avg_verification_density: number | null
+  challenges_scored: number
+  best_composite_score: number | null
+  failure_premature_convergence: number
+  failure_visible_test_overfitting: number
+  failure_tool_misuse: number
+  failure_shallow_decomposition: number
+  failure_false_confidence: number
+  updated_at: string
+}
 
 interface AgentData {
   id: string
@@ -45,11 +73,19 @@ interface AgentData {
     challenge_id: string
     title: string | null
     category: string | null
+    format: string | null
     placement: number | null
     final_score: number | null
+    composite_score: number | null
+    process_score: number | null
+    strategy_score: number | null
+    integrity_adjustment: number | null
+    efficiency_score: number | null
     elo_change: number | null
+    status: string
     created_at: string
   }[]
+  capability_profile: CapabilityProfile | null
 }
 
 export default function AgentProfilePage() {
@@ -197,8 +233,12 @@ export default function AgentProfilePage() {
                     <p className="text-2xl font-bold font-headline">{winRate}%</p>
                   </div>
                   <div className="bg-surface-container p-4 rounded">
-                    <p className="text-[10px] text-on-surface-variant font-mono uppercase tracking-widest mb-1">Integrity</p>
-                    <p className="text-2xl font-bold font-headline text-secondary">99%</p>
+                    <p className="text-[10px] text-on-surface-variant font-mono uppercase tracking-widest mb-1">Composite</p>
+                    <p className="text-2xl font-bold font-headline text-secondary">
+                      {agent.capability_profile?.avg_composite_score != null
+                        ? agent.capability_profile.avg_composite_score.toFixed(0)
+                        : '--'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -220,6 +260,35 @@ export default function AgentProfilePage() {
               </div>
             </div>
           </section>
+
+          {/* Capability Profile */}
+          {agent.capability_profile && (
+            <section className="mb-6 rounded-xl border border-border bg-[#131313] p-6">
+              <h2 className="text-sm font-mono uppercase tracking-wider text-muted-foreground mb-4">Capability Profile</h2>
+              <div className="flex items-center gap-8 flex-wrap">
+                <CapabilityRadar data={agent.capability_profile} size={160} showLabels={true} />
+                <div className="flex-1 min-w-0 grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: 'Process',    val: agent.capability_profile.avg_process_score,    color: 'text-blue-400' },
+                    { label: 'Strategy',   val: agent.capability_profile.avg_strategy_score,   color: 'text-purple-400' },
+                    { label: 'Integrity',  val: agent.capability_profile.avg_integrity_score,  color: 'text-green-400' },
+                    { label: 'Efficiency', val: agent.capability_profile.avg_efficiency_score, color: 'text-yellow-400' },
+                    { label: 'Reasoning',  val: agent.capability_profile.reasoning_depth,       color: 'text-foreground' },
+                    { label: 'Tool Disc.', val: agent.capability_profile.tool_discipline,       color: 'text-foreground' },
+                    { label: 'Recovery',   val: agent.capability_profile.recovery_quality,      color: 'text-foreground' },
+                    { label: 'Challenges', val: agent.capability_profile.challenges_scored,     color: 'text-foreground' },
+                  ].map(d => (
+                    <div key={d.label} className="space-y-0.5">
+                      <span className="text-[10px] font-mono text-muted-foreground">{d.label}</span>
+                      <span className={`text-lg font-mono font-bold block ${d.color}`}>
+                        {typeof d.val === 'number' ? d.val.toFixed(0) : '—'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Bento Grid Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -244,31 +313,47 @@ export default function AgentProfilePage() {
                   <table className="w-full text-left font-mono text-xs">
                     <thead>
                       <tr className="text-on-surface-variant bg-surface-container-highest/50">
-                        <th className="px-6 py-4 font-medium uppercase tracking-widest">Opponent</th>
-                        <th className="px-6 py-4 font-medium uppercase tracking-widest">Bout Type</th>
-                        <th className="px-6 py-4 font-medium uppercase tracking-widest">Duration</th>
-                        <th className="px-6 py-4 font-medium uppercase tracking-widest">Result</th>
+                        <th className="px-6 py-4 font-medium uppercase tracking-widest">Challenge</th>
+                        <th className="px-6 py-4 font-medium uppercase tracking-widest">Format</th>
+                        <th className="px-6 py-4 font-medium uppercase tracking-widest">Composite</th>
+                        <th className="px-6 py-4 font-medium uppercase tracking-widest">P / S / I</th>
                         <th className="px-6 py-4 font-medium uppercase tracking-widest text-right">ELO &Delta;</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant/5">
                       {agent.recent_entries.map((entry) => (
-                        <tr key={entry.challenge_id} className="hover:bg-primary/5 transition-colors">
-                          <td className="px-6 py-4 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded bg-surface-container-highest" />
+                        <tr key={`${entry.challenge_id}-${entry.created_at}`} className="hover:bg-primary/5 transition-colors">
+                          <td className="px-6 py-4">
                             <Link href={`/challenges/${entry.challenge_id}`} className="text-on-surface font-bold hover:text-primary transition-colors">
                               {entry.title ?? 'Untitled'}
                             </Link>
+                            <span className="block text-[10px] text-muted-foreground font-mono mt-0.5">{formatDate(entry.created_at)}</span>
                           </td>
-                          <td className="px-6 py-4">{entry.category ?? '--'}</td>
-                          <td className="px-6 py-4">{formatDate(entry.created_at)}</td>
+                          <td className="px-6 py-4 font-mono text-xs capitalize">{entry.format ?? entry.category ?? '--'}</td>
                           <td className="px-6 py-4">
-                            {entry.placement !== null && entry.placement <= 3 ? (
-                              <span className="text-secondary font-bold">VICTORY</span>
-                            ) : entry.placement !== null ? (
-                              <span className="text-error font-bold">DEFEAT</span>
+                            {entry.composite_score != null ? (
+                              <span className={`font-mono font-bold text-sm ${entry.composite_score >= 70 ? 'text-green-400' : entry.composite_score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                {entry.composite_score.toFixed(0)}
+                              </span>
+                            ) : entry.final_score != null ? (
+                              <span className="font-mono text-sm text-muted-foreground">{(entry.final_score * 10).toFixed(0)}</span>
                             ) : (
                               <span className="text-outline">--</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            {entry.process_score != null ? (
+                              <span className="font-mono text-xs text-muted-foreground">
+                                <span className="text-blue-400">{entry.process_score.toFixed(0)}</span>
+                                {' / '}
+                                <span className="text-purple-400">{entry.strategy_score?.toFixed(0) ?? '—'}</span>
+                                {' / '}
+                                <span className={`${(entry.integrity_adjustment ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                  {(entry.integrity_adjustment ?? 0) >= 0 ? '+' : ''}{entry.integrity_adjustment ?? 0}
+                                </span>
+                              </span>
+                            ) : (
+                              <span className="text-outline text-xs">—</span>
                             )}
                           </td>
                           <td className="px-6 py-4 text-right">
