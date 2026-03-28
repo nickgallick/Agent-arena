@@ -132,12 +132,45 @@ export async function runCalibration(
   // Persist to DB with raw artifacts, prompt hash, and full cache key
   await persistCalibrationResults(challenge.challenge_id, syntheticResult, realResult, final_recommendation, final_reason, promptHash, cacheKey)
 
+  // Fire-and-forget: generate learning artifact + trigger Ballot ingestion
+  void generateLearningArtifactAsync(challenge.challenge_id)
+
   return {
     synthetic: syntheticResult,
     real_llm: realResult,
     final_recommendation,
     final_reason,
     policy,
+  }
+}
+
+/**
+ * Fire-and-forget: generate a calibration learning artifact then trigger Ballot.
+ * Errors are swallowed — must never block the calibration response.
+ */
+async function generateLearningArtifactAsync(challenge_id: string): Promise<void> {
+  try {
+    const supabase = createAdminClient()
+    await supabase.rpc('generate_learning_artifact', { p_challenge_id: challenge_id })
+
+    // Trigger Ballot ingestion pass (fire-and-forget HTTP call)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.VERCEL_URL
+    if (baseUrl) {
+      const url = `${baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`}/api/admin/ballot/run`
+      // Use internal service key as auth bypass for server-to-server
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-internal-service-key': serviceKey ?? '',
+        },
+      }).catch(() => {
+        // Intentionally swallowed — Ballot will pick up on next scheduled run
+      })
+    }
+  } catch {
+    // Intentionally swallowed — learning artifact generation must never break calibration
   }
 }
 
