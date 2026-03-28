@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen } from 'lucide-react'
+import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Documentation — Bouts',
@@ -28,7 +28,7 @@ export default function DocsPage() {
           </p>
         </header>
 
-        {/* 4 Cards */}
+        {/* 8 Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
 
           {/* Competitor Guide */}
@@ -104,6 +104,85 @@ export default function DocsPage() {
             </div>
             <Link href="/judging" className="flex items-center gap-2 text-[#f9a8d4] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
               TRANSPARENCY POLICY <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Authentication */}
+          <div className="group relative bg-[#1c1b1b] rounded-xl p-8 hover:bg-[#201f1f] transition-all duration-300 flex flex-col justify-between overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Key className="w-24 h-24" />
+            </div>
+            <div>
+              <div className="w-12 h-12 rounded bg-[#7dffa2]/10 flex items-center justify-center mb-6">
+                <Key className="w-6 h-6 text-[#7dffa2]" />
+              </div>
+              <h2 className="text-xl font-bold text-[#e5e2e1] mb-3 tracking-tight">Authentication</h2>
+              <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
+                API tokens, scopes, rate limits, and security best practices for integrating with the Bouts API.
+              </p>
+            </div>
+            <Link href="/docs/auth" className="flex items-center gap-2 text-[#7dffa2] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
+              TOKENS & SCOPES <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* SDK */}
+          <div className="group relative bg-[#1c1b1b] rounded-xl p-8 hover:bg-[#201f1f] transition-all duration-300 flex flex-col justify-between overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Package className="w-24 h-24" />
+            </div>
+            <div>
+              <div className="w-12 h-12 rounded bg-[#adc6ff]/10 flex items-center justify-center mb-6">
+                <Package className="w-6 h-6 text-[#adc6ff]" />
+              </div>
+              <h2 className="text-xl font-bold text-[#e5e2e1] mb-3 tracking-tight">TypeScript SDK</h2>
+              <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
+                Official <code className="font-mono text-xs">@bouts/sdk</code> package. Zero dependencies, full type safety, built-in retry and polling.
+              </p>
+            </div>
+            <Link href="/docs/sdk" className="flex items-center gap-2 text-[#adc6ff] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
+              SDK GUIDE <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Webhooks */}
+          <div className="group relative bg-[#1c1b1b] rounded-xl p-8 hover:bg-[#201f1f] transition-all duration-300 flex flex-col justify-between overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Webhook className="w-24 h-24" />
+            </div>
+            <div>
+              <div className="w-12 h-12 rounded bg-[#f9a8d4]/10 flex items-center justify-center mb-6">
+                <Webhook className="w-6 h-6 text-[#f9a8d4]" />
+              </div>
+              <h2 className="text-xl font-bold text-[#e5e2e1] mb-3 tracking-tight">Webhooks</h2>
+              <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
+                Real-time HTTP event delivery. HMAC-signed, retried automatically, with delivery history and testing tools.
+              </p>
+            </div>
+            <Link href="/docs/webhooks" className="flex items-center gap-2 text-[#f9a8d4] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
+              WEBHOOKS GUIDE <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* CLI */}
+          <div className="group relative bg-[#1c1b1b] rounded-xl p-8 hover:bg-[#201f1f] transition-all duration-300 flex flex-col justify-between overflow-hidden opacity-60">
+            <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Terminal className="w-24 h-24" />
+            </div>
+            <div>
+              <div className="w-12 h-12 rounded bg-[#ffb780]/10 flex items-center justify-center mb-6">
+                <Terminal className="w-6 h-6 text-[#ffb780]" />
+              </div>
+              <div className="flex items-center gap-2 mb-3">
+                <h2 className="text-xl font-bold text-[#e5e2e1] tracking-tight">CLI Guide</h2>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase tracking-widest bg-[#ffb780]/10 text-[#ffb780]">Soon</span>
+              </div>
+              <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
+                Terminal interface for the Bouts platform. Manage challenges, sessions, and submissions from the command line.
+              </p>
+            </div>
+            <Link href="/docs/cli" className="flex items-center gap-2 text-[#ffb780] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
+              PREVIEW <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

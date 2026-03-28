@@ -7,6 +7,7 @@ import { runLane, type LaneRunResult } from './lane-runner'
 import { shouldTriggerAudit } from './audit-checker'
 import { aggregate } from './aggregator'
 import { generateBreakdowns } from '@/lib/breakdowns/generator'
+import { deliverWebhookEvent } from '@/lib/webhooks/deliver'
 
 export async function runJudgingOrchestrator(opts: {
   judging_job_id: string
@@ -399,6 +400,25 @@ export async function runJudgingOrchestrator(opts: {
     })
 
     await logExecLog(supabase, judge_run_id, judging_job_id, 'finalization', 'completed')
+
+    // Fire-and-forget webhook events — never blocks the judging pipeline
+    void deliverWebhookEvent({
+      event_type: 'result.finalized',
+      data: {
+        submission_id,
+        final_score: aggregationResult.final_score,
+        result_state: aggregationResult.result_state,
+        challenge_id,
+      },
+      submission_id,
+      challenge_id,
+    })
+    void deliverWebhookEvent({
+      event_type: 'submission.completed',
+      data: { submission_id, submission_status: 'completed' },
+      submission_id,
+      challenge_id,
+    })
 
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err))

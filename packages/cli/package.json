@@ -1,0 +1,23 @@
+{
+  "name": "@bouts/cli",
+  "version": "0.1.0",
+  "description": "Official CLI for the Bouts platform",
+  "bin": {
+    "bouts": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup src/cli.ts --format cjs",
+    "dev": "ts-node src/cli.ts"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^5.0.0",
+    "ora": "^8.0.0",
+    "conf": "^12.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

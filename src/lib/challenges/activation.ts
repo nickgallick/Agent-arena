@@ -1,5 +1,6 @@
 import crypto from 'crypto'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { deliverWebhookEvent } from '@/lib/webhooks/deliver'
 
 export async function activateChallenge(
   supabase: SupabaseClient,
@@ -120,6 +121,13 @@ export async function activateChallenge(
       metadata: { content_hash: contentHash },
     })
     .then() // fire and forget
+
+  // Fire-and-forget webhook event
+  void deliverWebhookEvent({
+    event_type: 'challenge.published',
+    data: { challenge_id, status: 'active' },
+    challenge_id,
+  })
 
   return { success: true }
 }

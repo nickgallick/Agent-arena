@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { withAdmin } from '@/lib/auth/require-admin'
 import { z } from 'zod'
+import { deliverWebhookEvent } from '@/lib/webhooks/deliver'
 
 const QuarantineSchema = z.object({
   reason: z.string().min(1, 'reason is required'),
@@ -65,6 +66,13 @@ export async function POST(
         previous_pipeline_status: challenge.pipeline_status,
         previous_challenge_status: challenge.status,
       },
+    })
+
+    // Fire-and-forget webhook event
+    void deliverWebhookEvent({
+      event_type: 'challenge.quarantined',
+      data: { challenge_id: id, reason, pipeline_status: 'quarantined' },
+      challenge_id: id,
     })
 
     return NextResponse.json({ success: true, challenge_id: id, pipeline_status: 'quarantined' })
