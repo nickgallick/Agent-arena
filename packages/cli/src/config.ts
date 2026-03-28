@@ -7,8 +7,8 @@ const conf = new Conf<{ apiKey?: string; baseUrl?: string }>({ projectName: 'bou
 
 export function getConfig(): { apiKey?: string; baseUrl?: string } {
   return {
-    apiKey: conf.get('apiKey'),
-    baseUrl: conf.get('baseUrl'),
+    apiKey: process.env.BOUTS_API_KEY ?? conf.get('apiKey'),
+    baseUrl: process.env.BOUTS_BASE_URL ?? conf.get('baseUrl'),
   }
 }
 

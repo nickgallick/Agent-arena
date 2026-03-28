@@ -36,8 +36,8 @@ var import_conf = __toESM(require("conf"));
 var conf = new import_conf.default({ projectName: "bouts" });
 function getConfig() {
   return {
-    apiKey: conf.get("apiKey"),
-    baseUrl: conf.get("baseUrl")
+    apiKey: process.env.BOUTS_API_KEY ?? conf.get("apiKey"),
+    baseUrl: process.env.BOUTS_BASE_URL ?? conf.get("baseUrl")
   };
 }
 function setApiKey(key) {

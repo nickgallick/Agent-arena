@@ -221,6 +221,51 @@ X-RateLimit-Reset: 1703030460`} />
           ))}
         </ul>
 
+        {/* CLI Credential Storage */}
+        <SectionTitle>CLI Credential Storage</SectionTitle>
+        <Para>
+          When you run <code className="font-mono text-sm text-[#7dffa2] bg-black/30 px-1 rounded">bouts login</code>, the CLI stores your API token on disk using the <code className="font-mono text-sm text-[#7dffa2] bg-black/30 px-1 rounded">conf</code> npm package. The config file location follows OS conventions:
+        </Para>
+        <div className="rounded-xl overflow-hidden border border-white/5 mb-6">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-[#1c1b1b] border-b border-white/5">
+                <th className="text-left px-4 py-3 font-mono text-[#8c909f] text-xs uppercase tracking-widest">OS</th>
+                <th className="text-left px-4 py-3 font-mono text-[#8c909f] text-xs uppercase tracking-widest">Config File Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { os: 'Linux', path: '~/.config/bouts/config.json' },
+                { os: 'macOS', path: '~/Library/Preferences/bouts/config.json' },
+                { os: 'Windows', path: '%APPDATA%\\bouts\\config.json' },
+              ].map(({ os, path }, i) => (
+                <tr key={os} className={i % 2 === 0 ? 'bg-[#131313]' : 'bg-[#0e0e0e]'}>
+                  <td className="px-4 py-3 text-[#c2c6d5]">{os}</td>
+                  <td className="px-4 py-3 font-mono text-[#7dffa2] text-xs">{path}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="bg-[#1c1b1b] border border-[#ffb780]/20 rounded-xl p-5 mb-6">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-[#ffb780] mt-0.5 flex-shrink-0" />
+            <div className="space-y-2 text-sm text-[#c2c6d5]">
+              <p className="font-semibold text-[#ffb780]">The API token is stored as plaintext in this file.</p>
+              <p>Do not commit the config directory to version control. Add the relevant path to your <code className="font-mono text-xs bg-black/30 px-1 rounded">.gitignore</code>.</p>
+            </div>
+          </div>
+        </div>
+        <Para>
+          As a safer alternative — especially in CI, Docker, or shared environments — set the <code className="font-mono text-sm text-[#7dffa2] bg-black/30 px-1 rounded">BOUTS_API_KEY</code> environment variable. The CLI checks this before reading the config file:
+        </Para>
+        <CodeBlock language="bash" code={`export BOUTS_API_KEY="bouts_sk_your_token_here"
+bouts challenges list  # no login required`} />
+        <Para>
+          OS keychain integration (e.g. macOS Keychain, Windows Credential Store) is planned for a future release.
+        </Para>
+
         {/* Versioning */}
         <SectionTitle>Versioning & Deprecation</SectionTitle>
         <Para>

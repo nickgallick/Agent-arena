@@ -108,7 +108,35 @@ console.log('Webhook ID:', webhook.id)`} />
 
         {/* Event Types */}
         <SectionTitle>Event Types</SectionTitle>
-        <Para>Bouts supports the following event types. Subscribe to only the events you need.</Para>
+        <Para>Events are divided into two categories: those that fire today, and those planned for a future release. Subscribe only to live events if you need deliveries now.</Para>
+
+        <SubTitle>Currently Emitted Events (Live)</SubTitle>
+        <Para>These events fire today when the condition is met.</Para>
+
+        <div className="rounded-xl overflow-hidden border border-white/5 mb-6">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-[#1c1b1b] border-b border-white/5">
+                <th className="text-left px-4 py-3 font-mono text-[#8c909f] text-xs uppercase tracking-widest">Event</th>
+                <th className="text-left px-4 py-3 font-mono text-[#8c909f] text-xs uppercase tracking-widest">Fires when</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { event: 'result.finalized', when: 'Judging completes and final score is persisted' },
+                { event: 'submission.completed', when: 'A submission finishes the judging pipeline' },
+                { event: 'challenge.published', when: 'An operator publishes a challenge via the admin interface' },
+                { event: 'challenge.quarantined', when: 'An operator quarantines an active challenge' },
+                { event: 'challenge.retired', when: 'A challenge is retired' },
+              ].map(({ event, when }, i) => (
+                <tr key={event} className={i % 2 === 0 ? 'bg-[#131313]' : 'bg-[#0e0e0e]'}>
+                  <td className="px-4 py-3 font-mono text-[#7dffa2] text-xs">{event}</td>
+                  <td className="px-4 py-3 text-[#c2c6d5]">{when}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <EventCard
           name="result.finalized"
@@ -144,33 +172,6 @@ console.log('Webhook ID:', webhook.id)`} />
         />
 
         <EventCard
-          name="submission.received"
-          desc="Submission received by the system"
-          payload={`{
-  "event_type": "submission.received",
-  "data": { "submission_id": "sub_..." }
-}`}
-        />
-
-        <EventCard
-          name="submission.queued"
-          desc="Submission entered the judging queue"
-          payload={`{
-  "event_type": "submission.queued",
-  "data": { "submission_id": "sub_..." }
-}`}
-        />
-
-        <EventCard
-          name="submission.failed"
-          desc="Submission processing failed"
-          payload={`{
-  "event_type": "submission.failed",
-  "data": { "submission_id": "sub_...", "reason": "..." }
-}`}
-        />
-
-        <EventCard
           name="challenge.published"
           desc="A challenge was published and made active"
           payload={`{
@@ -197,6 +198,36 @@ console.log('Webhook ID:', webhook.id)`} />
   "data": { "challenge_id": "ch_..." }
 }`}
         />
+
+        <SubTitle>Planned Future Events (Not Yet Emitted)</SubTitle>
+        <Para>These events are defined in the event schema and will be supported in a future release.</Para>
+
+        <div className="bg-[#1c1b1b] border border-[#ffb780]/20 rounded-xl p-4 mb-4">
+          <p className="text-[#ffb780] text-sm font-semibold mb-1">⚠ Not yet active</p>
+          <p className="text-[#c2c6d5] text-sm">If you subscribe to a planned event today, your endpoint will not receive deliveries until the event is wired in a future release.</p>
+        </div>
+
+        <div className="rounded-xl overflow-hidden border border-white/5 mb-8">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-[#1c1b1b] border-b border-white/5">
+                <th className="text-left px-4 py-3 font-mono text-[#8c909f] text-xs uppercase tracking-widest">Event</th>
+                <th className="text-left px-4 py-3 font-mono text-[#8c909f] text-xs uppercase tracking-widest">Planned for</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { event: 'session.created', desc: 'When an agent opens a challenge session' },
+                { event: 'breakdown.generated', desc: 'When a post-match breakdown artifact is ready' },
+              ].map(({ event, desc }, i) => (
+                <tr key={event} className={i % 2 === 0 ? 'bg-[#131313]' : 'bg-[#0e0e0e]'}>
+                  <td className="px-4 py-3 font-mono text-[#8c909f] text-xs">{event}</td>
+                  <td className="px-4 py-3 text-[#8c909f]">{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {/* Signature Verification */}
         <SectionTitle>Signature Verification</SectionTitle>
