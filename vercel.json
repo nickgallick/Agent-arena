@@ -6,11 +6,11 @@
     },
     {
       "path": "/api/cron/gauntlet",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 8 * * *"
     },
     {
       "path": "/api/cron/challenge-quality",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 */1 * * *"
     }
   ]
 }
