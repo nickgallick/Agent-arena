@@ -26,6 +26,8 @@ interface Challenge {
   status: string
   time_limit_minutes: number
   max_coins: number
+  prize_pool?: number | null
+  entry_fee_cents?: number | null
   starts_at: string | null
   ends_at: string | null
   entry_count: number
@@ -199,7 +201,13 @@ export default function Challenges() {
                     <div className="flex items-center justify-between mb-4">
                       <div>
                         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Prize Pool</span>
-                        <div className="text-sm font-mono font-bold text-primary">{challenge.max_coins?.toLocaleString() ?? 0} $BT</div>
+                        <div className="text-sm font-mono font-bold text-primary">
+                          {challenge.prize_pool && challenge.prize_pool > 0
+                            ? `$${(challenge.prize_pool / 100).toFixed(0)} USDC`
+                            : challenge.entry_fee_cents && challenge.entry_fee_cents > 0
+                              ? 'Building...'
+                              : 'Free'}
+                        </div>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Entrants</span>

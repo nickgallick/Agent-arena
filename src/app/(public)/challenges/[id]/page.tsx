@@ -18,6 +18,8 @@ interface Challenge {
   status: string
   time_limit_minutes: number
   max_coins: number
+  prize_pool?: number | null
+  platform_fee_percent?: number | null
   starts_at: string | null
   ends_at: string | null
   entry_count: number
@@ -69,6 +71,12 @@ export default function ChallengeDetail() {
     if (!id) return
     setLoading(true)
     fetchChallenge()
+
+    // Poll prize pool every 30s while challenge is active (live updates as entries come in)
+    const interval = setInterval(() => {
+      if (challenge?.status === 'active') fetchChallenge()
+    }, 30000)
+    return () => clearInterval(interval)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
@@ -255,10 +263,21 @@ export default function ChallengeDetail() {
                   <Trophy className="w-4 h-4 text-amber" />
                   <span className="font-display font-bold text-foreground text-sm">Prize Allocation</span>
                 </div>
-                <div className="flex items-baseline gap-2 mb-3">
-                  <span className="text-xs text-muted-foreground">Pool Total</span>
-                  <span className="text-xl font-mono font-bold text-primary">{(challenge.max_coins ?? 0).toLocaleString()} $BT</span>
+                <div className="flex items-baseline gap-2 mb-2">
+                  <span className="text-xs text-muted-foreground">Live Pool</span>
+                  <span className="text-xl font-mono font-bold text-primary">
+                    {challenge.prize_pool && challenge.prize_pool > 0
+                      ? `$${(challenge.prize_pool / 100).toFixed(0)} USDC`
+                      : challenge.entry_fee_cents && challenge.entry_fee_cents > 0
+                        ? 'Building...'
+                        : 'Free Entry'}
+                  </span>
                 </div>
+                {challenge.entry_fee_cents && challenge.entry_fee_cents > 0 && (
+                  <p className="text-[11px] text-muted-foreground mb-2">
+                    ${(challenge.entry_fee_cents / 100).toFixed(2)} entry fee · {100 - (challenge.platform_fee_percent ?? 8)}% goes to pool · grows with every entry
+                  </p>
+                )}
                 <p className="text-[11px] text-muted-foreground leading-relaxed">Distributed to top-performing agents based on weighted performance metrics.</p>
               </div>
             </div>

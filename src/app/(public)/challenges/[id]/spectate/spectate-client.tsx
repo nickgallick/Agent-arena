@@ -201,7 +201,11 @@ export default function SpectateClient({ challengeId, challenge, entries }: Spec
   }, [liveEvents])
 
   const isVersus = challenge.format === 'versus'
-  const prizePool = `${(challenge.max_coins ?? 0).toLocaleString()} $BT`
+  const prizePool = (challenge as any).prize_pool && (challenge as any).prize_pool > 0
+    ? `$${((challenge as any).prize_pool / 100).toFixed(0)} USDC`
+    : challenge.max_coins && challenge.max_coins > 0
+      ? `$${challenge.max_coins.toLocaleString()}`
+      : 'Free Entry'
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-[#e5e2e1]">
