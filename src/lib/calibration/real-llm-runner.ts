@@ -479,21 +479,25 @@ export class RealLLMCalibrationRunner implements CalibrationRunner {
     let recommendation: 'passed' | 'flagged' | 'rejected'
     let reason: string | undefined
 
-    // Strong pass: separation is the primary signal — spread is informational only
-    // sep >= pass threshold + not high clustering + fewer than 2 corroborating failure signals = pass
-    if (separation >= CALIBRATION_THRESHOLDS.separation_pass && clusteringRisk !== 'high' && borderlineTriggers.length < 2) {
+    // PASS: separation >= threshold AND fewer than 2 corroborating failure signals
+    // Clustering is informational only — high sep overrides clustering concern
+    // Escalated divergence is a trigger (adds to count) but doesn't auto-veto a high-sep pass
+    const highSep = separation >= CALIBRATION_THRESHOLDS.separation_pass
+    const fewTriggers = borderlineTriggers.length < 2
+
+    if (highSep && fewTriggers) {
       verdict = 'pass'; recommendation = 'passed'
-    } else if (divergenceRisk === 'escalated' && separation < CALIBRATION_THRESHOLDS.separation_pass) {
-      // Escalated divergence only auto-flags when separation is also weak
+    } else if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderlineTriggers.length >= 1) {
       verdict = 'borderline'; recommendation = 'flagged'
-      reason = `Judge divergence escalated — one or more tiers had primary/audit delta > ${CALIBRATION_THRESHOLDS.judge_delta_escalate}pts. Manual review required.`
-    } else if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderlineTriggers.length >= 2) {
-      // Require 2+ triggers to flag — single noisy trigger shouldn't kill a challenge
-      verdict = 'borderline'; recommendation = 'flagged'
-      reason = `Borderline: ${borderlineTriggers.join(', ') || `sep ${separation.toFixed(1)}pts`}`
+      const triggerStr = borderlineTriggers.length > 0
+        ? borderlineTriggers.join(', ')
+        : `sep ${separation.toFixed(1)}pts`
+      reason = divergenceRisk === 'escalated' && !highSep
+        ? `Judge divergence escalated — one or more tiers had primary/audit delta > ${CALIBRATION_THRESHOLDS.judge_delta_escalate}pts. Manual review required.`
+        : `Borderline: ${triggerStr}`
     } else {
       verdict = 'fail'; recommendation = 'rejected'
-      reason = `Insufficient separation (${separation.toFixed(1)}pts) or high clustering risk.`
+      reason = `Insufficient separation (${separation.toFixed(1)}pts).`
     }
 
     return {

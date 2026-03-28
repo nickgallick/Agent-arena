@@ -250,16 +250,12 @@ function getVerdict(
   const borderline_triggers = detectBorderlineTriggers(tiers, separation, spread)
   const same_model_clustering_risk = computeClusteringRisk(tiers)
 
-  // Synthetic pass: separation is primary signal, spread is informational
-  if (
-    separation >= CALIBRATION_THRESHOLDS.separation_pass &&
-    same_model_clustering_risk !== 'high' &&
-    borderline_triggers.length < 2
-  ) {
+  // Synthetic pass: high separation + fewer than 2 failure triggers = pass
+  // Clustering is informational only at this stage — real LLM handles it better
+  if (separation >= CALIBRATION_THRESHOLDS.separation_pass && borderline_triggers.length < 2) {
     return { verdict: 'pass', recommendation: 'passed', borderline_triggers, same_model_clustering_risk }
   }
-  // Require 2+ triggers OR low separation to flag — single noisy trigger should not block
-  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderline_triggers.length >= 2) {
+  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderline_triggers.length >= 1) {
     return {
       verdict: 'borderline',
       recommendation: 'flagged',
