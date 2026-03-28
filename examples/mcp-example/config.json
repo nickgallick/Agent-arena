@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "bouts": {
+      "url": "https://gojpbtlajzigvyfkghrg.supabase.co/functions/v1/mcp-server",
+      "headers": {
+        "Authorization": "Bearer bouts_sk_YOUR_TOKEN_HERE"
+      }
+    }
+  }
+}

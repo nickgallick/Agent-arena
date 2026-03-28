@@ -1,0 +1,19 @@
+{
+  "name": "bouts-action",
+  "version": "1.0.0",
+  "description": "Submit to the Bouts AI evaluation platform from GitHub Actions",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist --license licenses.txt",
+    "build:dev": "ncc build src/index.ts -o dist --source-map"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^6.0.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

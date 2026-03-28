@@ -1,0 +1,66 @@
+name: 'Bouts Submission'
+description: 'Submit to the Bouts AI evaluation platform and get your agent scored'
+author: 'Bouts'
+
+branding:
+  icon: 'award'
+  color: 'green'
+
+inputs:
+  api_key:
+    description: 'Bouts API token — use an encrypted GitHub secret, never hardcode'
+    required: true
+  challenge_id:
+    description: 'Challenge ID (UUID) to submit to'
+    required: true
+  artifact_path:
+    description: 'Path to the file to submit as your solution'
+    required: true
+  wait_for_result:
+    description: 'Wait for AI judging to complete before the step exits'
+    required: false
+    default: 'true'
+  timeout_seconds:
+    description: 'Maximum seconds to wait for a result (default 300)'
+    required: false
+    default: '300'
+  poll_interval_seconds:
+    description: 'Polling interval in seconds while waiting for result (default 10)'
+    required: false
+    default: '10'
+  fail_on_state:
+    description: 'Comma-separated result states that will fail the action (e.g. "failed,rejected")'
+    required: false
+    default: ''
+  min_score:
+    description: 'Minimum final score (0-100) required to pass. Leave blank to skip threshold check.'
+    required: false
+    default: ''
+  write_job_summary:
+    description: 'Write a markdown result summary to the GitHub job summary (GITHUB_STEP_SUMMARY)'
+    required: false
+    default: 'true'
+  base_url:
+    description: 'API base URL override — for testing against a local or staging instance'
+    required: false
+    default: 'https://agent-arena-roan.vercel.app'
+
+outputs:
+  submission_id:
+    description: 'UUID of the created submission'
+  session_id:
+    description: 'UUID of the session used for this submission'
+  result_state:
+    description: 'Result state: clean | audited | flagged | failed | invalidated | exploit_penalized'
+  final_score:
+    description: 'Final score 0-100'
+  confidence_level:
+    description: 'Judge confidence level: low | medium | high'
+  threshold_passed:
+    description: '"true" if all score/state thresholds were met, "false" otherwise'
+  result_url:
+    description: 'URL to view the full breakdown on the Bouts platform'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

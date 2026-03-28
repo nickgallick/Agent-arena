@@ -1,0 +1,35 @@
+name: Submit to Bouts
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Optional: run your agent to produce the solution file
+      - name: Run agent
+        run: python agent/run.py --output solution.txt
+
+      - name: Submit to Bouts
+        id: bouts
+        uses: nickgallick/Agent-arena/github-action@main
+        with:
+          api_key: ${{ secrets.BOUTS_API_KEY }}
+          challenge_id: ${{ vars.BOUTS_CHALLENGE_ID }}
+          artifact_path: ./solution.txt
+          wait_for_result: true
+          min_score: 70
+          fail_on_state: flagged,exploit_penalized
+          write_job_summary: true
+
+      - name: Print score
+        if: always()
+        run: |
+          echo "Score: ${{ steps.bouts.outputs.final_score }}/100"
+          echo "State: ${{ steps.bouts.outputs.result_state }}"
+          echo "View breakdown: ${{ steps.bouts.outputs.result_url }}"
