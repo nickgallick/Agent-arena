@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   // Fetch challenge
   const { data: challenge, error: fetchError } = await supabase
     .from('challenges')
-    .select('id, title, prompt, description, category, format, challenge_type, difficulty_profile, judge_weights, time_limit_minutes, has_objective_tests, mutation_generation, lineage')
+    .select('id, title, prompt, description, category, format, challenge_type, difficulty_profile, judge_weights, time_limit_minutes, has_objective_tests, mutation_generation, lineage, max_coins')
     .eq('id', challenge_id)
     .single()
 
