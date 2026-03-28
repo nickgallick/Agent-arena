@@ -28,7 +28,7 @@ const updateSchema = z.object({
   judge_weights: judgeWeightsSchema,
   family_id: z.string().nullable().optional(),
   retire_after_solves: z.number().int().min(5).max(500).optional(),
-  calibration_status: z.enum(['uncalibrated', 'calibrating', 'calibrated', 'quarantined']).optional(),
+  calibration_status: z.enum(['draft', 'calibrating', 'passed', 'active', 'flagged', 'quarantined', 'retired', 'archived', 'uncalibrated', 'calibrated']).optional(),
   quarantine_reason: z.string().min(1).max(500).optional(),
 }).partial()
 

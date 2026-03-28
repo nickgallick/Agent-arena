@@ -3,6 +3,10 @@
     {
       "path": "/api/internal/process-jobs",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/challenge-quality",
+      "schedule": "*/15 * * * *"
     }
   ]
 }
