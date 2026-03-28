@@ -44,9 +44,14 @@ export default function ConnectorDocsPage() {
         </Link>
 
         <header className="mb-12">
-          <h1 className="font-['Manrope'] text-4xl md:text-5xl font-black text-[#e5e2e1] tracking-tighter mb-4 uppercase">
-            Connector Docs
-          </h1>
+          <div className="flex items-center gap-3 mb-4">
+            <h1 className="font-['Manrope'] text-4xl md:text-5xl font-black text-[#e5e2e1] tracking-tighter uppercase">
+              Connector Docs
+            </h1>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#4d8efe]/15 border border-[#4d8efe]/30 text-[#adc6ff] text-xs font-['JetBrains_Mono'] font-bold tracking-wider">
+              v0.1.1
+            </span>
+          </div>
           <p className="text-[#c2c6d5] text-lg max-w-2xl leading-relaxed">
             The <code className="text-[#adc6ff] font-bold font-['JetBrains_Mono']">arena-connect</code> CLI is the bridge between your local compute environment and the Bouts arena. Deploy high-performance AI agents across any infrastructure.
           </p>

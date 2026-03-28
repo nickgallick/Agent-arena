@@ -3,7 +3,11 @@
 import Image from 'next/image'
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { LayoutDashboard, Swords, Terminal, Bot, Flag, Activity, TrendingUp, Network, Zap, Shield, PlusCircle, X, Loader2 } from 'lucide-react'
+import {
+  LayoutDashboard, Swords, Terminal, Bot, Flag, Activity, TrendingUp,
+  Network, Zap, Shield, PlusCircle, X, Loader2, Inbox, FlaskConical,
+  Package, BarChart3, ChevronDown, ChevronRight,
+} from 'lucide-react'
 
 interface AdminDashboardClientProps {
   isAdmin: boolean
@@ -27,6 +31,114 @@ interface Stats {
   activeEntries: number
 }
 
+// ── Intake Queue types ──
+interface IntakeBundle {
+  id: string
+  challenge_id: string | null
+  validation_status: string
+  validation_results: Record<string, unknown> | null
+  raw_bundle: Record<string, unknown> | null
+  created_at: string
+  challenges: {
+    id: string
+    title: string
+    category: string
+    format: string
+    pipeline_status: string
+  } | null
+}
+
+// ── Forge Review types ──
+interface ForgeReviewItem {
+  id: string
+  challenge_id: string
+  bundle_id: string | null
+  verdict: string | null
+  submitted_at: string
+  challenges: {
+    title: string
+    category: string
+    format: string
+    weight_class_id: string | null
+    pipeline_status: string
+    validation_status?: string
+  } | null
+}
+
+// ── Calibration types ──
+interface CalibrationItem {
+  id: string
+  title: string
+  category: string
+  format: string
+  pipeline_status: string
+  calibration_status: string | null
+  cdi_score: number | null
+  calibration_results: {
+    tier_spread: number | null
+    clustering_risk: number | null
+    borderline_triggers: number | null
+    verdict: string | null
+  } | null
+}
+
+// ── Inventory types ──
+interface InventoryItem {
+  id: string
+  challenge_id: string
+  recommended_decision: string | null
+  advisory_rationale: string | null
+  family_active_count: number | null
+  challenges: {
+    title: string
+    category: string
+    cdi_score: number | null
+    pipeline_status: string
+  } | null
+}
+
+interface InventorySummary {
+  active: number
+  reserve: number
+  queued: number
+}
+
+// ── Health Dashboard types ──
+interface HealthItem {
+  id: string
+  title: string
+  family: string
+  format: string
+  status: string
+  pipeline_status: string
+  calibration_status: string | null
+  cdi_score: number | null
+  solve_rate: number | null
+  score_mean: number | null
+  score_stddev: number | null
+  dispute_rate: number | null
+  exploit_rate: number | null
+  tier_separation: number | null
+  entry_count: number
+  last_calculated_at: string | null
+  health_signal: 'healthy' | 'warning' | 'critical'
+}
+
+interface HealthSummary {
+  healthy: number
+  warning: number
+  critical: number
+}
+
+// ── Judging Queue types ──
+interface JudgingQueueStats {
+  pending: number
+  running: number
+  dead_letters: number
+  avg_latency_ms: number | null
+  stuck_jobs: { id: string; submission_id: string; error_stage: string | null }[]
+}
+
 const CHALLENGE_CATEGORIES = [
   'speed_build', 'deep_research', 'problem_solving', 'algorithm',
   'debug', 'design', 'optimization', 'testing', 'code_golf',
@@ -34,12 +146,33 @@ const CHALLENGE_CATEGORIES = [
 const CHALLENGE_FORMATS = ['sprint', 'standard', 'marathon', 'creative']
 const CHALLENGE_TYPES = ['daily', 'weekly_featured', 'special']
 
+function StatusBadge({ status, className }: { status: string; className?: string }) {
+  const color =
+    status === 'active' || status === 'passed' || status === 'approved_for_calibration'
+      ? 'bg-[#7dffa2]/15 text-[#7dffa2]'
+      : status === 'upcoming' || status === 'pending' || status === 'calibrating'
+        ? 'bg-[#adc6ff]/15 text-[#adc6ff]'
+        : status === 'failed' || status === 'quarantined' || status === 'needs_revision'
+          ? 'bg-[#ffb4ab]/15 text-[#ffb4ab]'
+          : status === 'warning'
+            ? 'bg-[#ffb780]/15 text-[#ffb780]'
+            : 'bg-[#424753]/30 text-[#8c909f]'
+  return (
+    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${color} ${className ?? ''}`}>
+      {status}
+    </span>
+  )
+}
+
 export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState('Dashboard')
 
   // Dashboard stats
   const [stats, setStats] = useState<Stats | null>(null)
   const [statsLoading, setStatsLoading] = useState(false)
+
+  // Judging queue panel
+  const [judgingQueue, setJudgingQueue] = useState<JudgingQueueStats | null>(null)
 
   // Challenges tab
   const [challenges, setChallenges] = useState<Challenge[]>([])
@@ -59,8 +192,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     ends_at: '',
     time_limit_minutes: 60,
     max_coins: 500,
-    entry_fee_cents: 0,      // 0 = free
-    max_entries: '' as number | '',  // '' = unlimited
+    entry_fee_cents: 0,
+    max_entries: '' as number | '',
     family_id: '' as string,
     difficulty_profile: {
       reasoning_depth: 5,
@@ -75,12 +208,59 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
   })
   const [families, setFamilies] = useState<{ id: string; name: string; prestige: string }[]>([])
 
-  // Load challenge families for selector
+  // Intake Queue
+  const [intakeBundles, setIntakeBundles] = useState<IntakeBundle[]>([])
+  const [intakeLoading, setIntakeLoading] = useState(false)
+  const [expandedBundle, setExpandedBundle] = useState<string | null>(null)
+  const [bundleModal, setBundleModal] = useState<IntakeBundle | null>(null)
+
+  // Forge Review
+  const [forgeReviews, setForgeReviews] = useState<ForgeReviewItem[]>([])
+  const [forgeLoading, setForgeLoading] = useState(false)
+  const [revisionModal, setRevisionModal] = useState<{ challenge_id: string; bundle_id?: string } | null>(null)
+  const [revisionNotes, setRevisionNotes] = useState('')
+  const [forgeActionLoading, setForgeActionLoading] = useState<string | null>(null)
+
+  // Calibration
+  const [calibrationItems, setCalibrationItems] = useState<CalibrationItem[]>([])
+  const [calibrationLoading, setCalibrationLoading] = useState(false)
+  const [calibrationActionLoading, setCalibrationActionLoading] = useState<string | null>(null)
+
+  // Inventory
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([])
+  const [inventorySummary, setInventorySummary] = useState<InventorySummary | null>(null)
+  const [inventoryLoading, setInventoryLoading] = useState(false)
+  const [inventoryActionLoading, setInventoryActionLoading] = useState<string | null>(null)
+
+  // Health Dashboard
+  const [healthItems, setHealthItems] = useState<HealthItem[]>([])
+  const [healthSummary, setHealthSummary] = useState<HealthSummary | null>(null)
+  const [healthLoading, setHealthLoading] = useState(false)
+  const [healthActionLoading, setHealthActionLoading] = useState<string | null>(null)
+
   useEffect(() => {
     fetch('/api/admin/challenge-families')
       .then(r => r.ok ? r.json() : { families: [] })
       .then(d => setFamilies(d.families ?? []))
       .catch(() => {})
+  }, [])
+
+  // Fetch judging queue stats (always on mount + tab change to Dashboard)
+  const fetchJudgingQueue = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/judging-queue')
+      if (!res.ok) return
+      const data = await res.json()
+      setJudgingQueue({
+        pending: data.queue?.pending ?? 0,
+        running: (data.queue?.claimed ?? 0) + (data.queue?.running ?? 0),
+        dead_letters: data.queue?.dead_letter ?? 0,
+        avg_latency_ms: data.latency?.avg_ms ?? null,
+        stuck_jobs: data.stuck_jobs ?? [],
+      })
+    } catch {
+      // non-critical
+    }
   }, [])
 
   const fetchStats = useCallback(async () => {
@@ -92,9 +272,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
       ])
       const challengesData = await challengesRes.json()
       const agentsData = await agentsRes.json()
-
       const active = (challengesData.challenges ?? []).filter((c: Challenge) => c.status === 'active').length
-
       setStats({
         challengeCount: challengesData.challenges?.length ?? 0,
         agentCount: agentsData.total ?? 0,
@@ -120,10 +298,104 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     }
   }, [])
 
+  const fetchIntakeQueue = useCallback(async () => {
+    setIntakeLoading(true)
+    try {
+      const res = await fetch('/api/admin/intake-queue')
+      const data = await res.json()
+      setIntakeBundles(data.bundles ?? [])
+    } catch {
+      setIntakeBundles([])
+    } finally {
+      setIntakeLoading(false)
+    }
+  }, [])
+
+  const fetchForgeReviews = useCallback(async () => {
+    setForgeLoading(true)
+    try {
+      const res = await fetch('/api/admin/forge-review')
+      const data = await res.json()
+      setForgeReviews(data.reviews ?? [])
+    } catch {
+      setForgeReviews([])
+    } finally {
+      setForgeLoading(false)
+    }
+  }, [])
+
+  const fetchCalibration = useCallback(async () => {
+    setCalibrationLoading(true)
+    try {
+      const [approvedRes, calibratingRes] = await Promise.all([
+        fetch('/api/admin/challenges?pipeline_status=approved_for_calibration&limit=50'),
+        fetch('/api/admin/challenges?pipeline_status=calibrating&limit=50'),
+      ])
+      const approvedData = await approvedRes.json()
+      const calibratingData = await calibratingRes.json()
+      const combined = [...(approvedData.challenges ?? []), ...(calibratingData.challenges ?? [])]
+      // Deduplicate
+      const seen = new Set<string>()
+      const unique = combined.filter(c => {
+        if (seen.has(c.id)) return false
+        seen.add(c.id)
+        return true
+      })
+      setCalibrationItems(unique.map(c => ({
+        id: c.id,
+        title: c.title,
+        category: c.category,
+        format: c.format ?? '',
+        pipeline_status: c.pipeline_status ?? '',
+        calibration_status: c.calibration_status ?? null,
+        cdi_score: c.cdi_score ?? null,
+        calibration_results: null,
+      })))
+    } catch {
+      setCalibrationItems([])
+    } finally {
+      setCalibrationLoading(false)
+    }
+  }, [])
+
+  const fetchInventory = useCallback(async () => {
+    setInventoryLoading(true)
+    try {
+      const res = await fetch('/api/admin/inventory')
+      const data = await res.json()
+      setInventoryItems(data.candidates ?? [])
+      setInventorySummary(data.summary ?? null)
+    } catch {
+      setInventoryItems([])
+    } finally {
+      setInventoryLoading(false)
+    }
+  }, [])
+
+  const fetchHealth = useCallback(async () => {
+    setHealthLoading(true)
+    try {
+      const res = await fetch('/api/admin/health-dashboard')
+      const data = await res.json()
+      setHealthItems(data.challenges ?? [])
+      setHealthSummary(data.summary ?? null)
+    } catch {
+      setHealthItems([])
+    } finally {
+      setHealthLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
+    fetchJudgingQueue()
     if (activeTab === 'Dashboard') fetchStats()
     if (activeTab === 'Challenges') fetchChallenges()
-  }, [activeTab, fetchStats, fetchChallenges])
+    if (activeTab === 'Intake Queue') fetchIntakeQueue()
+    if (activeTab === 'Forge Review') fetchForgeReviews()
+    if (activeTab === 'Calibration') fetchCalibration()
+    if (activeTab === 'Inventory') fetchInventory()
+    if (activeTab === 'Challenge Health') fetchHealth()
+  }, [activeTab, fetchStats, fetchChallenges, fetchIntakeQueue, fetchForgeReviews, fetchCalibration, fetchInventory, fetchHealth, fetchJudgingQueue])
 
   async function handleCreateChallenge(e: React.FormEvent) {
     e.preventDefault()
@@ -165,6 +437,87 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     }
   }
 
+  async function handleForgeVerdict(challenge_id: string, bundle_id: string | undefined, verdict: 'approved_for_calibration' | 'needs_revision', revision_notes?: string) {
+    setForgeActionLoading(challenge_id)
+    try {
+      const res = await fetch('/api/admin/forge-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          challenge_id,
+          bundle_id,
+          verdict,
+          objective_test_completeness: 'pass',
+          fairness_assessment: verdict === 'needs_revision' ? (revision_notes ?? 'Needs revision') : 'Approved',
+          solvability_verdict: 'Approved',
+          exploit_surface_notes: 'None noted',
+          hidden_test_quality: 'Acceptable',
+          technical_credibility: 'Approved',
+          revision_required: revision_notes,
+        }),
+      })
+      if (res.ok) {
+        await fetchForgeReviews()
+        setRevisionModal(null)
+        setRevisionNotes('')
+      }
+    } catch {
+      // silently handle
+    } finally {
+      setForgeActionLoading(null)
+    }
+  }
+
+  async function handleCalibrationAction(challenge_id: string, action: string) {
+    setCalibrationActionLoading(challenge_id)
+    try {
+      const res = await fetch('/api/admin/calibration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, challenge_id }),
+      })
+      if (res.ok) await fetchCalibration()
+    } catch {
+      // silently handle
+    } finally {
+      setCalibrationActionLoading(null)
+    }
+  }
+
+  async function handleInventoryAction(challenge_id: string, decision: string) {
+    setInventoryActionLoading(challenge_id)
+    try {
+      const res = await fetch('/api/admin/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challenge_id, decision }),
+      })
+      if (res.ok) await fetchInventory()
+    } catch {
+      // silently handle
+    } finally {
+      setInventoryActionLoading(null)
+    }
+  }
+
+  async function handleHealthAction(challenge_id: string, actionType: 'quarantine' | 'retire') {
+    const reason = window.prompt(`Reason for ${actionType}:`)
+    if (!reason) return
+    setHealthActionLoading(`${challenge_id}-${actionType}`)
+    try {
+      const res = await fetch(`/api/admin/challenges/${challenge_id}/${actionType}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason }),
+      })
+      if (res.ok) await fetchHealth()
+    } catch {
+      // silently handle
+    } finally {
+      setHealthActionLoading(null)
+    }
+  }
+
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-[#131313] flex items-center justify-center">
@@ -179,10 +532,15 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
   const tabs = [
     { label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: 'Challenges', icon: <Swords className="w-5 h-5" /> },
+    { label: 'Intake Queue', icon: <Inbox className="w-5 h-5" /> },
+    { label: 'Forge Review', icon: <FlaskConical className="w-5 h-5" /> },
+    { label: 'Calibration', icon: <BarChart3 className="w-5 h-5" /> },
+    { label: 'Inventory', icon: <Package className="w-5 h-5" /> },
+    { label: 'Challenge Health', icon: <Activity className="w-5 h-5" /> },
     { label: 'Jobs Queue', icon: <Terminal className="w-5 h-5" /> },
     { label: 'Agents', icon: <Bot className="w-5 h-5" /> },
     { label: 'Features', icon: <Flag className="w-5 h-5" /> },
-    { label: 'Health', icon: <Activity className="w-5 h-5" /> },
+    { label: 'Health', icon: <Shield className="w-5 h-5" /> },
   ]
 
   return (
@@ -205,7 +563,27 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
         </div>
       </header>
 
-      <main className="flex-grow pt-24 pb-32 px-4 md:px-8 max-w-[1600px] mx-auto w-full grid grid-cols-12 gap-6">
+      {/* Judging Queue Status Bar */}
+      {judgingQueue && (
+        <div className="fixed top-16 w-full z-40 bg-[#0e0e0e]/90 backdrop-blur border-b border-[#424753]/20 px-8 py-2 flex items-center gap-6 text-[10px] font-['JetBrains_Mono']">
+          <span className="text-[#8c909f] uppercase tracking-widest">Judging Queue</span>
+          <span className="text-[#adc6ff]">Pending: <strong>{judgingQueue.pending}</strong></span>
+          <span className="text-[#adc6ff]">Running: <strong>{judgingQueue.running}</strong></span>
+          {judgingQueue.dead_letters > 0 ? (
+            <span className="text-[#ffb4ab] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ffb4ab] animate-pulse inline-block" />
+              Dead Letters: <strong>{judgingQueue.dead_letters}</strong>
+            </span>
+          ) : (
+            <span className="text-[#7dffa2]">Dead Letters: <strong>0</strong></span>
+          )}
+          {judgingQueue.avg_latency_ms != null && (
+            <span className="text-[#c2c6d5]">Avg Latency: <strong>{(judgingQueue.avg_latency_ms / 1000).toFixed(1)}s</strong></span>
+          )}
+        </div>
+      )}
+
+      <main className={`flex-grow ${judgingQueue ? 'pt-32' : 'pt-24'} pb-32 px-4 md:px-8 max-w-[1600px] mx-auto w-full grid grid-cols-12 gap-6`}>
 
         {/* Sidebar */}
         <aside className="col-span-12 lg:col-span-2 space-y-2">
@@ -238,13 +616,12 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
           </div>
         </aside>
 
-        {/* Main Content — conditional per tab */}
+        {/* Main Content */}
         <section className="col-span-12 lg:col-span-10">
 
           {/* ── DASHBOARD TAB ── */}
           {activeTab === 'Dashboard' && (
             <div className="grid grid-cols-12 gap-6">
-              {/* KPI Stats */}
               <div className="col-span-12 md:col-span-4 bg-[#1c1b1b] p-6 rounded-xl relative overflow-hidden group">
                 <div className="relative z-10">
                   <span className="text-xs font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest">Active Challenges</span>
@@ -288,16 +665,14 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                   <Activity className="w-24 h-24" />
                 </div>
               </div>
-
-              {/* Node Health */}
               <div className="col-span-12 md:col-span-6 bg-[#1c1b1b] p-6 rounded-xl flex flex-col justify-between">
                 <div>
                   <h2 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Node Health</h2>
                   <div className="space-y-4">
                     {[
-                      { name: 'Compute Cluster A', bars: [true, true, true, false] },
-                      { name: 'Storage Backend', bars: [true, true, true, true] },
-                      { name: 'Identity Provider', bars: [true, 'error', false, false] },
+                      { name: 'Compute Cluster A', bars: [true, true, true, false] as (boolean | string)[] },
+                      { name: 'Storage Backend', bars: [true, true, true, true] as (boolean | string)[] },
+                      { name: 'Identity Provider', bars: [true, 'error', false, false] as (boolean | string)[] },
                     ].map(node => (
                       <div key={node.name} className="flex items-center justify-between">
                         <span className="text-xs text-[#c2c6d5]">{node.name}</span>
@@ -322,8 +697,6 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                   </div>
                 </div>
               </div>
-
-              {/* Recent Challenges */}
               <div className="col-span-12 md:col-span-6 bg-[#1c1b1b] p-6 rounded-xl">
                 <h2 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Quick Nav</h2>
                 <div className="space-y-3">
@@ -331,6 +704,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                     { label: 'Manage Challenges', sub: 'Create, edit & review bouts', tab: 'Challenges', icon: <Swords className="w-4 h-4" /> },
                     { label: 'Jobs Queue', sub: 'Monitor active & pending jobs', tab: 'Jobs Queue', icon: <Terminal className="w-4 h-4" /> },
                     { label: 'Agent Registry', sub: 'View all registered agents', tab: 'Agents', icon: <Bot className="w-4 h-4" /> },
+                    { label: 'Challenge Health', sub: 'Monitor solve rates & anomalies', tab: 'Challenge Health', icon: <Activity className="w-4 h-4" /> },
                   ].map(item => (
                     <button key={item.tab} onClick={() => setActiveTab(item.tab)}
                       className="w-full bg-[#201f1f] p-3 rounded-lg flex items-center gap-4 hover:bg-[#2a2a2a] transition-colors text-left">
@@ -366,7 +740,6 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                 </div>
               )}
 
-              {/* Create Challenge Form */}
               {showCreateForm && (
                 <div className="bg-[#1c1b1b] p-6 rounded-xl border border-[#adc6ff]/20">
                   <div className="flex items-center justify-between mb-6">
@@ -398,7 +771,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                     <div className="flex flex-col gap-1 md:col-span-2">
                       <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Prompt / Task Instructions *</label>
                       <textarea value={form.prompt} onChange={e => setForm(f => ({ ...f, prompt: e.target.value }))}
-                        placeholder="Full instructions for agents competing in this challenge" required maxLength={10000} rows={4}
+                        placeholder="Full instructions for agents" required maxLength={10000} rows={4}
                         className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30 resize-none" />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -435,7 +808,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       <input type="number" value={form.max_coins} onChange={e => setForm(f => ({ ...f, max_coins: Number(e.target.value) }))}
                         min={0} max={10000} className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
                     </div>
-                                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1">
                       <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Entry Fee (USD) — 0 = free</label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8c909f] text-sm">$</span>
@@ -447,9 +820,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                             const cents = val === '' ? 0 : Math.round(parseFloat(val) * 100)
                             setForm(f => ({ ...f, entry_fee_cents: isNaN(cents) ? 0 : cents }))
                           }}
-                          placeholder="0.00"
-                          min={0}
-                          step={0.01}
+                          placeholder="0.00" min={0} step={0.01}
                           className="bg-[#0e0e0e] text-[#e5e2e1] pl-7 pr-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30 w-full"
                         />
                       </div>
@@ -460,8 +831,6 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                         placeholder="Unlimited" min={1} max={10000}
                         className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
                     </div>
-
-                    {/* Challenge Family */}
                     <div className="flex flex-col gap-1">
                       <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Challenge Family</label>
                       <select value={form.family_id} onChange={e => setForm(f => ({ ...f, family_id: e.target.value }))}
@@ -472,24 +841,20 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                         ))}
                       </select>
                     </div>
-
-                    {/* Spacer */}
                     <div />
-
-                    {/* Difficulty Profile */}
                     <div className="md:col-span-2 space-y-3">
                       <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5] flex items-center gap-2">
                         Difficulty Profile <span className="text-[#8c909f] normal-case tracking-normal font-normal">(1–10 per dimension)</span>
                       </label>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {[
-                          { key: 'reasoning_depth',       label: 'Reasoning' },
-                          { key: 'tool_dependence',       label: 'Tool Dep.' },
-                          { key: 'ambiguity',             label: 'Ambiguity' },
-                          { key: 'deception',             label: 'Deception' },
-                          { key: 'time_pressure',         label: 'Time Pressure' },
+                          { key: 'reasoning_depth', label: 'Reasoning' },
+                          { key: 'tool_dependence', label: 'Tool Dep.' },
+                          { key: 'ambiguity', label: 'Ambiguity' },
+                          { key: 'deception', label: 'Deception' },
+                          { key: 'time_pressure', label: 'Time Pressure' },
                           { key: 'error_recovery_burden', label: 'Recovery' },
-                          { key: 'non_local_dependency',  label: 'Non-Local Dep.' },
+                          { key: 'non_local_dependency', label: 'Non-Local Dep.' },
                           { key: 'evaluation_strictness', label: 'Strictness' },
                         ].map(dim => (
                           <div key={dim.key} className="space-y-1">
@@ -497,8 +862,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                               <span className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f]">{dim.label}</span>
                               <span className="text-[10px] font-['JetBrains_Mono'] font-bold text-[#adc6ff]">{form.difficulty_profile[dim.key]}</span>
                             </div>
-                            <input
-                              type="range" min={1} max={10} step={1}
+                            <input type="range" min={1} max={10} step={1}
                               value={form.difficulty_profile[dim.key]}
                               onChange={e => setForm(f => ({
                                 ...f,
@@ -510,11 +874,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                         ))}
                       </div>
                     </div>
-
-                    {formError && (
-                      <p className="md:col-span-2 text-sm text-[#ffb4ab]">{formError}</p>
-                    )}
-
+                    {formError && <p className="md:col-span-2 text-sm text-[#ffb4ab]">{formError}</p>}
                     <div className="md:col-span-2 flex gap-3">
                       <button type="submit" disabled={formSubmitting}
                         className="flex items-center gap-2 bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] px-6 py-2.5 rounded font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
@@ -530,16 +890,11 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                 </div>
               )}
 
-              {/* Challenges List */}
               <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
                 {challengesLoading ? (
-                  <div className="p-8 flex justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" />
-                  </div>
+                  <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
                 ) : challenges.length === 0 ? (
-                  <div className="p-8 text-center text-[#8c909f] text-sm font-['JetBrains_Mono']">
-                    No challenges found. Create one above.
-                  </div>
+                  <div className="p-8 text-center text-[#8c909f] text-sm font-['JetBrains_Mono']">No challenges found. Create one above.</div>
                 ) : (
                   <table className="w-full text-left text-xs font-['JetBrains_Mono']">
                     <thead>
@@ -555,13 +910,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       {challenges.map(c => (
                         <tr key={c.id} className="hover:bg-[#201f1f] transition-colors">
                           <td className="px-6 py-4 text-[#e5e2e1] font-bold">{c.title}</td>
-                          <td className="px-6 py-4">
-                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase ${
-                              c.status === 'active' ? 'bg-[#7dffa2]/15 text-[#7dffa2]' :
-                              c.status === 'upcoming' ? 'bg-[#adc6ff]/15 text-[#adc6ff]' :
-                              'bg-[#424753]/30 text-[#8c909f]'
-                            }`}>{c.status}</span>
-                          </td>
+                          <td className="px-6 py-4"><StatusBadge status={c.status} /></td>
                           <td className="px-6 py-4 text-[#c2c6d5]">{c.category}</td>
                           <td className="px-6 py-4 text-[#c2c6d5]">{c.entry_count ?? 0}</td>
                           <td className="px-6 py-4 text-[#8c909f]">{new Date(c.created_at).toLocaleDateString()}</td>
@@ -574,6 +923,445 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
             </div>
           )}
 
+          {/* ── INTAKE QUEUE TAB ── */}
+          {activeTab === 'Intake Queue' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Intake Queue</h2>
+              {intakeLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : intakeBundles.length === 0 ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <Inbox className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No bundles pending validation</p>
+                </div>
+              ) : (
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
+                    <thead>
+                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                        <th className="px-6 py-4 uppercase tracking-widest">Bundle ID</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Title</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Family</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Format</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Status</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Created</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#424753]/10">
+                      {intakeBundles.map(bundle => (
+                        <>
+                          <tr key={bundle.id} className="hover:bg-[#201f1f] transition-colors">
+                            <td className="px-6 py-4 text-[#8c909f]">{bundle.id.slice(0, 8)}…</td>
+                            <td className="px-6 py-4 text-[#e5e2e1] font-bold">{bundle.challenges?.title ?? '—'}</td>
+                            <td className="px-6 py-4 text-[#c2c6d5]">{bundle.challenges?.category ?? '—'}</td>
+                            <td className="px-6 py-4 text-[#c2c6d5]">{bundle.challenges?.format ?? '—'}</td>
+                            <td className="px-6 py-4"><StatusBadge status={bundle.validation_status} /></td>
+                            <td className="px-6 py-4 text-[#8c909f]">{new Date(bundle.created_at).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 flex items-center gap-2">
+                              <button
+                                onClick={() => setBundleModal(bundle)}
+                                className="px-3 py-1.5 bg-[#adc6ff]/10 text-[#adc6ff] rounded text-[10px] font-bold hover:bg-[#adc6ff]/20 transition-colors"
+                              >
+                                View Bundle
+                              </button>
+                              {bundle.validation_status === 'failed' && (
+                                <button
+                                  onClick={() => setExpandedBundle(expandedBundle === bundle.id ? null : bundle.id)}
+                                  className="flex items-center gap-1 px-3 py-1.5 bg-[#ffb4ab]/10 text-[#ffb4ab] rounded text-[10px] font-bold hover:bg-[#ffb4ab]/20 transition-colors"
+                                >
+                                  Failures
+                                  {expandedBundle === bundle.id
+                                    ? <ChevronDown className="w-3 h-3" />
+                                    : <ChevronRight className="w-3 h-3" />}
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                          {expandedBundle === bundle.id && bundle.validation_status === 'failed' && (
+                            <tr key={`${bundle.id}-failures`} className="bg-[#1a0a0a]">
+                              <td colSpan={7} className="px-6 py-4">
+                                <div className="space-y-1">
+                                  <p className="text-[10px] uppercase tracking-widest text-[#ffb4ab] mb-2">Failure Reasons</p>
+                                  {bundle.validation_results
+                                    ? Object.entries(bundle.validation_results).map(([k, v]) => (
+                                      <div key={k} className="text-xs text-[#e5e2e1]">
+                                        <span className="text-[#ffb4ab]">{k}:</span> {String(v)}
+                                      </div>
+                                    ))
+                                    : <p className="text-xs text-[#8c909f]">No validation details available</p>
+                                  }
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Bundle JSON Modal */}
+              {bundleModal && (
+                <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+                  <div className="bg-[#1c1b1b] rounded-xl w-full max-w-3xl max-h-[80vh] flex flex-col border border-white/10">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-[#424753]/20">
+                      <h3 className="font-bold text-[#e5e2e1]">Bundle: {bundleModal.id.slice(0, 8)}…</h3>
+                      <button onClick={() => setBundleModal(null)} className="text-[#8c909f] hover:text-[#e5e2e1]"><X className="w-5 h-5" /></button>
+                    </div>
+                    <div className="overflow-auto p-6">
+                      <pre className="text-xs text-[#c2c6d5] font-['JetBrains_Mono'] whitespace-pre-wrap">
+                        {JSON.stringify(bundleModal.raw_bundle ?? bundleModal, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── FORGE REVIEW TAB ── */}
+          {activeTab === 'Forge Review' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Forge Review Queue</h2>
+              {forgeLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : forgeReviews.length === 0 ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <FlaskConical className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No challenges awaiting Forge review</p>
+                </div>
+              ) : (
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
+                    <thead>
+                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                        <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Family</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Format</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Weight</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Validation</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Submitted</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#424753]/10">
+                      {forgeReviews.map(review => (
+                        <tr key={review.id} className="hover:bg-[#201f1f] transition-colors">
+                          <td className="px-6 py-4 text-[#e5e2e1] font-bold">{review.challenges?.title ?? '—'}</td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">{review.challenges?.category ?? '—'}</td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">{review.challenges?.format ?? '—'}</td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">{review.challenges?.weight_class_id ?? 'open'}</td>
+                          <td className="px-6 py-4">
+                            <StatusBadge status={review.challenges?.validation_status ?? review.challenges?.pipeline_status ?? 'pending'} />
+                          </td>
+                          <td className="px-6 py-4 text-[#8c909f]">{new Date(review.submitted_at).toLocaleDateString()}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                disabled={forgeActionLoading === review.challenge_id}
+                                onClick={() => handleForgeVerdict(review.challenge_id, review.bundle_id ?? undefined, 'approved_for_calibration')}
+                                className="px-3 py-1.5 bg-[#7dffa2]/10 text-[#7dffa2] rounded text-[10px] font-bold hover:bg-[#7dffa2]/20 transition-colors disabled:opacity-50"
+                              >
+                                {forgeActionLoading === review.challenge_id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Approve'}
+                              </button>
+                              <button
+                                disabled={forgeActionLoading === review.challenge_id}
+                                onClick={() => setRevisionModal({ challenge_id: review.challenge_id, bundle_id: review.bundle_id ?? undefined })}
+                                className="px-3 py-1.5 bg-[#ffb780]/10 text-[#ffb780] rounded text-[10px] font-bold hover:bg-[#ffb780]/20 transition-colors disabled:opacity-50"
+                              >
+                                Needs Revision
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Revision Modal */}
+              {revisionModal && (
+                <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+                  <div className="bg-[#1c1b1b] rounded-xl w-full max-w-lg border border-white/10">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-[#424753]/20">
+                      <h3 className="font-bold text-[#e5e2e1]">Request Revision</h3>
+                      <button onClick={() => { setRevisionModal(null); setRevisionNotes('') }} className="text-[#8c909f] hover:text-[#e5e2e1]"><X className="w-5 h-5" /></button>
+                    </div>
+                    <div className="p-6 space-y-4">
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Revision Notes *</label>
+                      <textarea
+                        value={revisionNotes}
+                        onChange={e => setRevisionNotes(e.target.value)}
+                        rows={5}
+                        placeholder="Describe what needs to be fixed..."
+                        className="w-full bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30 resize-none"
+                      />
+                      <div className="flex gap-3">
+                        <button
+                          disabled={!revisionNotes.trim() || forgeActionLoading === revisionModal.challenge_id}
+                          onClick={() => handleForgeVerdict(revisionModal.challenge_id, revisionModal.bundle_id, 'needs_revision', revisionNotes)}
+                          className="flex items-center gap-2 bg-[#ffb780] text-[#1a0e00] px-5 py-2.5 rounded font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+                        >
+                          {forgeActionLoading === revisionModal.challenge_id ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit Revision Request'}
+                        </button>
+                        <button onClick={() => { setRevisionModal(null); setRevisionNotes('') }}
+                          className="px-5 py-2.5 rounded font-bold text-sm bg-[#201f1f] text-[#c2c6d5] hover:bg-[#2a2a2a] transition-colors">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── CALIBRATION TAB ── */}
+          {activeTab === 'Calibration' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Calibration</h2>
+              {calibrationLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : calibrationItems.length === 0 ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <BarChart3 className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No challenges pending calibration</p>
+                </div>
+              ) : (
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
+                    <thead>
+                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                        <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">CDI</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Tier Spread</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Clustering Risk</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Borderline Triggers</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Status</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#424753]/10">
+                      {calibrationItems.map(item => (
+                        <tr key={item.id} className="hover:bg-[#201f1f] transition-colors">
+                          <td className="px-6 py-4 text-[#e5e2e1] font-bold">{item.title}</td>
+                          <td className="px-6 py-4">
+                            {item.cdi_score != null ? (
+                              <span className={item.cdi_score >= 60 ? 'text-[#7dffa2] font-bold' : 'text-[#ffb4ab] font-bold'}>
+                                {item.cdi_score.toFixed(1)}
+                              </span>
+                            ) : <span className="text-[#8c909f]">—</span>}
+                          </td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">{item.calibration_results?.tier_spread?.toFixed(2) ?? '—'}</td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">{item.calibration_results?.clustering_risk?.toFixed(2) ?? '—'}</td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">{item.calibration_results?.borderline_triggers ?? '—'}</td>
+                          <td className="px-6 py-4"><StatusBadge status={item.calibration_status ?? 'draft'} /></td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                disabled={calibrationActionLoading === item.id}
+                                onClick={() => handleCalibrationAction(item.id, 'run_synthetic')}
+                                className="px-3 py-1.5 bg-[#adc6ff]/10 text-[#adc6ff] rounded text-[10px] font-bold hover:bg-[#adc6ff]/20 transition-colors disabled:opacity-50"
+                              >
+                                {calibrationActionLoading === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Run Calibration'}
+                              </button>
+                              {item.calibration_status === 'passed' && (
+                                <button
+                                  disabled={calibrationActionLoading === item.id}
+                                  onClick={() => handleInventoryAction(item.id, 'hold_reserve')}
+                                  className="px-3 py-1.5 bg-[#7dffa2]/10 text-[#7dffa2] rounded text-[10px] font-bold hover:bg-[#7dffa2]/20 transition-colors disabled:opacity-50"
+                                >
+                                  Move to Inventory
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── INVENTORY TAB ── */}
+          {activeTab === 'Inventory' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Inventory</h2>
+              {inventorySummary && (
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: 'Active', value: inventorySummary.active, color: 'text-[#7dffa2]' },
+                    { label: 'In Reserve', value: inventorySummary.reserve, color: 'text-[#adc6ff]' },
+                    { label: 'Queued', value: inventorySummary.queued, color: 'text-[#ffb780]' },
+                  ].map(s => (
+                    <div key={s.label} className="bg-[#1c1b1b] p-5 rounded-xl text-center">
+                      <div className={`text-3xl font-black ${s.color}`}>{s.value}</div>
+                      <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest mt-1">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {inventoryLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : inventoryItems.length === 0 ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <Package className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No candidates in inventory</p>
+                </div>
+              ) : (
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
+                    <thead>
+                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                        <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Family</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">CDI</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Recommended</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Advisory</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#424753]/10">
+                      {inventoryItems.map(item => (
+                        <tr key={item.id} className="hover:bg-[#201f1f] transition-colors">
+                          <td className="px-6 py-4 text-[#e5e2e1] font-bold">{item.challenges?.title ?? '—'}</td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">{item.challenges?.category ?? '—'}</td>
+                          <td className="px-6 py-4">
+                            {item.challenges?.cdi_score != null
+                              ? <span className="text-[#adc6ff] font-bold">{item.challenges.cdi_score.toFixed(1)}</span>
+                              : <span className="text-[#8c909f]">—</span>}
+                          </td>
+                          <td className="px-6 py-4">
+                            {item.recommended_decision
+                              ? <StatusBadge status={item.recommended_decision} />
+                              : <span className="text-[#8c909f]">—</span>}
+                          </td>
+                          <td className="px-6 py-4 text-[#8c909f] max-w-[200px] truncate" title={item.advisory_rationale ?? ''}>
+                            {item.advisory_rationale ?? '—'}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-wrap gap-1">
+                              {(['publish_now', 'hold_reserve', 'queue_for_later', 'quarantine'] as const).map(action => (
+                                <button
+                                  key={action}
+                                  disabled={inventoryActionLoading === item.challenge_id}
+                                  onClick={() => handleInventoryAction(item.challenge_id, action)}
+                                  className="px-2 py-1 bg-[#201f1f] text-[#c2c6d5] rounded text-[9px] font-bold hover:bg-[#2a2a2a] transition-colors disabled:opacity-50 uppercase tracking-wider"
+                                >
+                                  {inventoryActionLoading === item.challenge_id ? <Loader2 className="w-3 h-3 animate-spin" /> : action.replace(/_/g, ' ')}
+                                </button>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── CHALLENGE HEALTH TAB ── */}
+          {activeTab === 'Challenge Health' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Challenge Health</h2>
+
+              {healthSummary && (
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: 'Healthy', value: healthSummary.healthy, emoji: '🟢', color: 'border-[#7dffa2]/30' },
+                    { label: 'Warning', value: healthSummary.warning, emoji: '🟡', color: 'border-[#ffb780]/30' },
+                    { label: 'Critical', value: healthSummary.critical, emoji: '🔴', color: 'border-[#ffb4ab]/30' },
+                  ].map(s => (
+                    <div key={s.label} className={`bg-[#1c1b1b] p-5 rounded-xl text-center border ${s.color}`}>
+                      <div className="text-3xl font-black text-[#e5e2e1]">{s.value}</div>
+                      <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest mt-1">{s.emoji} {s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {healthLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : healthItems.length === 0 ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <Activity className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No active challenges to monitor</p>
+                </div>
+              ) : (
+                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
+                    <thead>
+                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                        <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Health</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Solve Rate</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Score Spread</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Dispute Rate</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Exploit Rate</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">CDI</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#424753]/10">
+                      {healthItems.map(item => (
+                        <tr key={item.id} className="hover:bg-[#201f1f] transition-colors">
+                          <td className="px-6 py-4 text-[#e5e2e1] font-bold">{item.title}</td>
+                          <td className="px-6 py-4">
+                            {item.health_signal === 'critical' && <span className="text-[#ffb4ab] font-bold">🔴 Critical</span>}
+                            {item.health_signal === 'warning' && <span className="text-[#ffb780] font-bold">🟡 Warning</span>}
+                            {item.health_signal === 'healthy' && <span className="text-[#7dffa2] font-bold">🟢 Healthy</span>}
+                          </td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">
+                            {item.solve_rate != null ? `${item.solve_rate.toFixed(1)}%` : '—'}
+                          </td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">
+                            {item.score_stddev != null ? item.score_stddev.toFixed(2) : '—'}
+                          </td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">
+                            {item.dispute_rate != null ? `${item.dispute_rate.toFixed(1)}%` : '—'}
+                          </td>
+                          <td className="px-6 py-4 text-[#c2c6d5]">
+                            {item.exploit_rate != null ? `${item.exploit_rate.toFixed(1)}%` : '—'}
+                          </td>
+                          <td className="px-6 py-4">
+                            {item.cdi_score != null
+                              ? <span className={item.cdi_score >= 60 ? 'text-[#7dffa2] font-bold' : 'text-[#ffb4ab] font-bold'}>{item.cdi_score.toFixed(1)}</span>
+                              : <span className="text-[#8c909f]">—</span>}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                disabled={healthActionLoading === `${item.id}-quarantine`}
+                                onClick={() => handleHealthAction(item.id, 'quarantine')}
+                                className="px-3 py-1.5 bg-[#ffb780]/10 text-[#ffb780] rounded text-[10px] font-bold hover:bg-[#ffb780]/20 transition-colors disabled:opacity-50"
+                              >
+                                {healthActionLoading === `${item.id}-quarantine` ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Quarantine'}
+                              </button>
+                              <button
+                                disabled={healthActionLoading === `${item.id}-retire`}
+                                onClick={() => handleHealthAction(item.id, 'retire')}
+                                className="px-3 py-1.5 bg-[#ffb4ab]/10 text-[#ffb4ab] rounded text-[10px] font-bold hover:bg-[#ffb4ab]/20 transition-colors disabled:opacity-50"
+                              >
+                                {healthActionLoading === `${item.id}-retire` ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Retire'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ── JOBS QUEUE TAB ── */}
           {activeTab === 'Jobs Queue' && (
             <div className="space-y-6">
@@ -581,7 +1369,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
               <div className="bg-[#1c1b1b] p-8 rounded-xl text-center">
                 <Terminal className="w-12 h-12 text-[#424753] mx-auto mb-4" />
                 <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">Jobs Queue Management</p>
-                <p className="text-[#8c909f] text-xs mt-2 font-['JetBrains_Mono']">Coming soon — real-time job monitoring dashboard</p>
+                <p className="text-[#8c909f] text-xs mt-2 font-['JetBrains_Mono']">Real-time job monitoring — see status bar above for live queue stats</p>
               </div>
             </div>
           )}
@@ -636,10 +1424,10 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                   <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Node Health</h3>
                   <div className="space-y-4">
                     {[
-                      { name: 'Compute Cluster A', bars: [true, true, true, false] },
-                      { name: 'Storage Backend', bars: [true, true, true, true] },
-                      { name: 'Identity Provider', bars: [true, 'error', false, false] },
-                      { name: 'API Gateway', bars: [true, true, true, true] },
+                      { name: 'Compute Cluster A', bars: [true, true, true, false] as (boolean | string)[] },
+                      { name: 'Storage Backend', bars: [true, true, true, true] as (boolean | string)[] },
+                      { name: 'Identity Provider', bars: [true, 'error', false, false] as (boolean | string)[] },
+                      { name: 'API Gateway', bars: [true, true, true, true] as (boolean | string)[] },
                     ].map(node => (
                       <div key={node.name} className="flex items-center justify-between">
                         <span className="text-xs text-[#c2c6d5]">{node.name}</span>

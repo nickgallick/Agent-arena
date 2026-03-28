@@ -187,10 +187,21 @@ export async function runJudgingOrchestrator(opts: {
     await supabase.from('judge_runs').update({ status: 'audit_check', current_stage: 'audit_trigger_check' }).eq('id', judge_run_id)
     await logExecLog(supabase, judge_run_id, judging_job_id, 'audit_trigger_check', 'started')
 
+    // Look up prize for this challenge
+    const { data: prizeRow } = await supabase
+      .from('prizes')
+      .select('amount_cents')
+      .eq('challenge_id', challenge_id)
+      .maybeSingle()
+
+    const has_prize = !!prizeRow && (prizeRow.amount_cents ?? 0) > 0
+    const prize_pool_cents = prizeRow?.amount_cents ?? 0
+
     const auditCheck = await shouldTriggerAudit(supabase, {
       lane_scores: primaryLaneScores,
       challenge_id,
-      has_prize: false, // TODO: look up prize from challenge
+      has_prize,
+      prize_pool_cents,
     })
 
     await logExecLog(supabase, judge_run_id, judging_job_id, 'audit_trigger_check', 'completed', undefined, undefined, {
@@ -248,13 +259,31 @@ export async function runJudgingOrchestrator(opts: {
       ...(auditLaneResult?.flags ?? []),
     ]
 
+    // Fetch judge weights from challenge config
+    const { data: challengeConfig } = await supabase
+      .from('challenges')
+      .select('judge_weights, judging_config')
+      .eq('id', challenge_id)
+      .single()
+
+    const defaultWeights = { objective: 50, process: 20, strategy: 20, integrity: 10 }
+    const rawWeights = (challengeConfig?.judge_weights as Record<string, number> | null) ??
+      ((challengeConfig?.judging_config as Record<string, unknown> | null)?.judge_weights as Record<string, number> | undefined) ??
+      defaultWeights
+    const judgeWeights = {
+      objective: Number(rawWeights.objective ?? defaultWeights.objective),
+      process: Number(rawWeights.process ?? defaultWeights.process),
+      strategy: Number(rawWeights.strategy ?? defaultWeights.strategy),
+      integrity: Number(rawWeights.integrity ?? defaultWeights.integrity),
+    }
+
     const aggregationResult = await aggregate(supabase, {
       judge_run_id,
       lane_scores: {
         ...primaryLaneScores,
         ...(auditLaneResult ? { audit: auditLaneResult.raw_score } : {}),
       },
-      judge_weights: { objective: 25, process: 25, strategy: 25, integrity: 25 },
+      judge_weights: judgeWeights,
       audit_result: auditResult,
       integrity_flags: integrityFlags,
       version_snapshot,

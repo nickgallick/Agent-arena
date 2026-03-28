@@ -69,7 +69,7 @@ export async function runLane(
     })
 
     try {
-      const result = await callEdgeFunction(fn_name, {
+      const rawResult = await callEdgeFunction(fn_name, {
         submission_id,
         judge_run_id,
         lane,
@@ -77,6 +77,7 @@ export async function runLane(
         model: model_used,
       }, timeout_ms)
 
+      const result = normalizeEdgeFunctionResponse(rawResult, lane)
       const latency_ms = Date.now() - start
 
       // Log: completed
@@ -94,9 +95,9 @@ export async function runLane(
       return {
         lane,
         raw_score: result.raw_score,
-        rationale_summary: result.rationale_summary ?? '',
-        confidence: result.confidence ?? 'medium',
-        flags: result.flags ?? [],
+        rationale_summary: result.rationale_summary,
+        confidence: result.confidence,
+        flags: result.flags,
         model_used,
         latency_ms,
         attempt_number: attempt,
@@ -149,11 +150,28 @@ interface EdgeFunctionResponse {
   flags?: string[]
 }
 
+function normalizeEdgeFunctionResponse(raw: unknown, _lane: string): {
+  raw_score: number
+  rationale_summary: string
+  confidence: 'low' | 'medium' | 'high'
+  flags: string[]
+} {
+  const r = raw as Record<string, unknown>
+  return {
+    raw_score: Number(r.score ?? r.raw_score ?? r.final_score ?? 0),
+    rationale_summary: String(r.rationale ?? r.rationale_summary ?? r.summary ?? r.explanation ?? ''),
+    confidence: (['low', 'medium', 'high'].includes(r.confidence as string)
+      ? r.confidence
+      : 'medium') as 'low' | 'medium' | 'high',
+    flags: Array.isArray(r.flags) ? (r.flags as string[]) : [],
+  }
+}
+
 async function callEdgeFunction(
   fn_name: string,
   payload: Record<string, unknown>,
   timeout_ms: number
-): Promise<EdgeFunctionResponse> {
+): Promise<unknown> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -180,7 +198,7 @@ async function callEdgeFunction(
       throw new Error(`Edge function ${fn_name} returned ${resp.status}: ${body}`)
     }
 
-    const data = await resp.json() as EdgeFunctionResponse
+    const data: unknown = await resp.json()
     return data
   } finally {
     clearTimeout(timer)

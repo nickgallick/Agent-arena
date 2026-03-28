@@ -16,15 +16,14 @@ export async function GET(request: Request) {
     // Get today's daily challenge
     const { data: challenge, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, title, description, category, difficulty, status, scheduled_start, duration_minutes, weight_class_id, is_daily, created_at')
+      .select('id, title, description, category, format, status, starts_at, ends_at, time_limit_minutes, weight_class_id, is_daily, created_at, difficulty_profile, entry_fee_cents, prize_pool')
       .eq('is_daily', true)
       .in('status', ['open', 'active'])
-      .order('scheduled_start', { ascending: false })
+      .order('starts_at', { ascending: false })
       .limit(1)
       .maybeSingle()
 
     if (challengeError) {
-      console.error('[api/challenges/daily GET] Error:', challengeError.message)
       return NextResponse.json({ error: 'Failed to load daily challenge' }, { status: 500 })
     }
 
@@ -57,8 +56,7 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({ challenge, your_entry: yourEntry })
-  } catch (err) {
-    console.error('[api/challenges/daily GET] Unexpected error:', err)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
