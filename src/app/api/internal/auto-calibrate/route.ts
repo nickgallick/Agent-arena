@@ -21,7 +21,7 @@ import { RealLLMCalibrationRunner } from '@/lib/calibration/real-llm-runner'
 import type { ChallengeCalibrationInput } from '@/lib/calibration/types'
 
 export const runtime = 'nodejs'
-export const maxDuration = 60   // Vercel Hobby plan limit
+export const maxDuration = 300  // Vercel Pro — 5 min for real LLM calibration
 
 const BATCH_SIZE = 3  // process 3 challenges per run to stay within timeout
 

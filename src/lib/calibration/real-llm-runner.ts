@@ -180,7 +180,7 @@ Return ONLY valid JSON with per-lane scores and evidence:
     'You are a precise technical calibration judge. Return only valid JSON. Do not compress scores toward the middle.',
     judgePrompt,
     900,
-    15000  // 15s per judge call
+    25000  // 25s per judge call
   )
   if (!result) return null
 
@@ -376,7 +376,7 @@ export class RealLLMCalibrationRunner implements CalibrationRunner {
         TIER_SYSTEM_PROMPTS[tier],
         `Challenge:\n\n${input.prompt}\n\nProvide your solution.`,
         tierMaxTokens,
-        25000,  // 25s per submission — 4 run in parallel, leaves budget for judges
+        45000,  // 45s per submission
         tierTemp
       )
       if (submissionResult?.tokens_used) totalTokens += submissionResult.tokens_used
