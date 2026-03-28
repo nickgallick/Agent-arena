@@ -2,11 +2,41 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/require-admin'
 
-// GET /api/admin/challenge-quality — list all challenges with quality metrics
-export async function GET(_req: NextRequest) {
+// GET /api/admin/challenge-quality?challenge_id=xxx — list all or single challenge quality + snapshots
+export async function GET(req: NextRequest) {
   try { await requireAdmin() } catch (e) { return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
 
   const supabase = createAdminClient()
+  const challengeId = req.nextUrl.searchParams.get('challenge_id')
+
+  if (challengeId) {
+    // Single challenge: return metrics + quality snapshots + activation snapshots
+    const [metricsRes, qualitySnapshotsRes, activationSnapshotsRes] = await Promise.all([
+      supabase.from('challenges').select(`
+        id, title, status, calibration_status,
+        cdi_score, solve_rate, score_mean, score_stddev,
+        dispute_rate, exploit_rate, tier_separation,
+        last_calculated_at, quarantine_reason, quarantined_at,
+        min_required_samples, has_objective_tests, objective_test_count,
+        judge_weights, difficulty_profile, format, created_at
+      `).eq('id', challengeId).single(),
+      supabase.from('challenge_quality_snapshots')
+        .select('*').eq('challenge_id', challengeId)
+        .order('created_at', { ascending: false }).limit(50),
+      supabase.from('challenge_activation_snapshots')
+        .select('*').eq('challenge_id', challengeId)
+        .order('activated_at', { ascending: false }),
+    ])
+
+    if (metricsRes.error) return NextResponse.json({ error: metricsRes.error.message }, { status: 500 })
+    return NextResponse.json({
+      challenge: metricsRes.data,
+      quality_snapshots: qualitySnapshotsRes.data ?? [],
+      activation_snapshots: activationSnapshotsRes.data ?? [],
+    })
+  }
+
+  // All challenges
   const { data, error } = await supabase
     .from('challenges')
     .select(`
