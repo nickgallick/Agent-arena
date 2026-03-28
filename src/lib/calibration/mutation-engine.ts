@@ -208,9 +208,11 @@ Generate a mutated version. Return ONLY a JSON object with these fields:
       freshness_delta: freshnessDelta,
       anti_drift_warnings: antiDriftWarnings,
     }
+    // (old return removed — see end of function)
 
     // Item 3: Hard gates for flagship families
-    const isflagship = input.challenge_type != null && FLAGSHIP_FAMILIES.has(input.challenge_type)
+    const challengeType = input.challenge_type ?? ''
+    const isflagship = challengeType !== '' && FLAGSHIP_FAMILIES.has(challengeType)
     if (isflagship) {
       const hardViolations: string[] = []
 
@@ -228,13 +230,48 @@ Generate a mutated version. Return ONLY a JSON object with these fields:
       }
 
       if (hardViolations.length > 0) {
-        // Return with hard_gate_blocked flag — caller must reject this mutation
-        return {
-          ...output,
+        const blockedOutput: MutationOutput & { hard_gate_blocked: true } = {
+          parent_challenge_id: input.challenge_id,
+          mutation_type: input.mutation_type,
+          mutation_generation: generation,
+          title: parsed.title ?? `${input.title} (Variant ${generation})`,
+          prompt: parsed.prompt ?? input.prompt,
+          description: parsed.description ?? '',
+          category: input.category,
+          format: input.format,
+          challenge_type: input.challenge_type ?? null,
+          difficulty_profile: parsed.difficulty_profile ?? input.difficulty_profile ?? {},
+          lineage: { parent: input.challenge_id, generation, mutation_chain: [input.mutation_type], mutation_notes: parsed.mutation_notes ?? '' },
+          mutation_notes: parsed.mutation_notes ?? '',
+          invariants_preserved: invariantsPreserved,
+          invariants_changed: invariantsChanged,
+          family_identity_preserved: familyPreserved,
+          freshness_delta: freshnessDelta,
           anti_drift_warnings: [...antiDriftWarnings, ...hardViolations],
           hard_gate_blocked: true,
-        } as MutationOutput & { hard_gate_blocked: true }
+        }
+        return blockedOutput
       }
+    }
+
+    return {
+      parent_challenge_id: input.challenge_id,
+      mutation_type: input.mutation_type,
+      mutation_generation: generation,
+      title: parsed.title ?? `${input.title} (Variant ${generation})`,
+      prompt: parsed.prompt ?? input.prompt,
+      description: parsed.description ?? '',
+      category: input.category,
+      format: input.format,
+      challenge_type: input.challenge_type ?? null,
+      difficulty_profile: parsed.difficulty_profile ?? input.difficulty_profile ?? {},
+      lineage: { parent: input.challenge_id, generation, mutation_chain: [input.mutation_type], mutation_notes: parsed.mutation_notes ?? '' },
+      mutation_notes: parsed.mutation_notes ?? '',
+      invariants_preserved: invariantsPreserved,
+      invariants_changed: invariantsChanged,
+      family_identity_preserved: familyPreserved,
+      freshness_delta: freshnessDelta,
+      anti_drift_warnings: antiDriftWarnings,
     }
   } catch (err) {
     console.error('[mutation-engine] JSON parse error:', err)
