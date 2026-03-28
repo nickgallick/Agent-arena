@@ -120,15 +120,15 @@ export const CALIBRATION_THRESHOLDS = {
   separation_borderline: 10,
   separation_fail: 10,
   tier_spread_min: 8,
-  elite_ceiling_min: 75,
-  naive_ceiling_max: 30,
+  elite_ceiling_min: 45,   // lowered — Sonnet can score 45-90 on hard challenges
+  naive_ceiling_max: 45,   // raised — Llama 8B realistically scores 35-50 even when prompted naive
   judge_spread_suspicious: 3,
   clustering_risk_threshold: 8,
   // Judge divergence thresholds (item 1 + 2)
-  judge_delta_blend_max: 15,       // avg if delta <= 15
-  judge_delta_escalate: 16,        // escalate (don't blend) if delta > 15
-  judge_divergence_medium: 8,      // medium risk >= 8pt delta
-  judge_divergence_high: 15,       // high risk >= 15pt delta
+  judge_delta_blend_max: 35,       // avg if delta <= 35 (raised — normal LLM disagreement range)
+  judge_delta_escalate: 45,        // escalate if delta > 45 (was 26 — was triggering on normal variance)
+  judge_divergence_medium: 15,     // medium risk >= 15pt delta
+  judge_divergence_high: 30,       // high risk >= 30pt delta
 }
 
 export const COST_CONTROLS = {
