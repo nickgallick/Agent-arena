@@ -26,7 +26,7 @@ export interface Challenge {
   entry_count: number
   created_at: string
   difficulty_profile?: DifficultyProfile | null
-  challenge_family?: string | null
+  challenge_family?: string | null // maps to challenge_type in DB
 }
 
 export interface ChallengeEntry {

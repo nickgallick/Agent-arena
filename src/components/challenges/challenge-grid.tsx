@@ -38,6 +38,7 @@ export function ChallengeGrid({ challenges }: ChallengeGridProps) {
           ends_at={challenge.ends_at}
           difficulty_profile={challenge.difficulty_profile}
           challenge_family={challenge.challenge_family}
+          challenge_type={(challenge as any).challenge_type}
         />
       ))}
     </div>

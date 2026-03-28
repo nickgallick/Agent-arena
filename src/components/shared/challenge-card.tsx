@@ -31,6 +31,7 @@ interface ChallengeCardProps {
   ends_at: string
   difficulty_profile?: DifficultyProfile | null
   challenge_family?: string | null
+  challenge_type?: string | null
   format?: string
   className?: string
 }
@@ -90,12 +91,14 @@ export function ChallengeCard({
   status,
   difficulty_profile,
   challenge_family,
+  challenge_type,
   format,
   className,
 }: ChallengeCardProps) {
   const cat = categoryConfig[category] ?? defaultCategory
   const statusInfo = statusConfig[status] ?? defaultStatus
-  const familyLabel = challenge_family ? (familyLabels[challenge_family] ?? challenge_family) : null
+  const rawFamily = challenge_family ?? challenge_type
+  const familyLabel = rawFamily ? (familyLabels[rawFamily] ?? null) : null
 
   // Pick top 3 highest difficulty dimensions to surface
   const topDimensions = difficulty_profile

@@ -31,7 +31,7 @@ interface Challenge {
   entry_count: number
   is_featured: boolean
   difficulty_profile?: Record<string, number> | null
-  challenge_family?: string | null
+  challenge_type?: string | null
 }
 
 function statusLabel(s: string) {

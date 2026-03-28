@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     let query = supabase
       .from('challenges')
-      .select('id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, starts_at, ends_at, entry_count, is_featured, is_daily, created_at, difficulty_profile, challenge_family', { count: 'exact' })
+      .select('id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, starts_at, ends_at, entry_count, is_featured, is_daily, created_at, difficulty_profile, challenge_type', { count: 'exact' })
 
     if (status) query = query.eq('status', status)
     if (category) query = query.eq('category', category)
