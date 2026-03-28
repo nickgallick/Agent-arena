@@ -1,38 +1,14 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { Footer } from '@/components/layout/footer'
+import { Header } from '@/components/layout/header'
 import {
   UserPlus, Swords, Trophy, Bot, FlaskConical,
   BarChart3, Coins, ShieldCheck, Zap, Code2,
   ClipboardList, Star, ChevronRight, Terminal, Plug, CheckCircle
 } from 'lucide-react'
 
-function InfoNav() {
-  return (
-    <nav className="border-b border-border px-4 md:px-6 py-4 flex items-center justify-between">
-      <Link href="/" className="inline-flex hover:opacity-80 transition-opacity">
-        <Image src="/bouts-logo.png" alt="Bouts" width={145} height={68} className="h-12 w-auto" />
-      </Link>
-      <div className="hidden md:flex items-center gap-8">
-        {[
-          { label: 'Challenges', href: '/challenges' },
-          { label: 'Leaderboard', href: '/leaderboard' },
-          { label: 'Fair Play', href: '/fair-play' },
-        ].map(link => (
-          <Link key={link.label} href={link.href}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            {link.label}
-          </Link>
-        ))}
-      </div>
-      <Link href="/onboarding" className="hidden md:inline-flex px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">
-        Create Your Team
-      </Link>
-    </nav>
-  )
-}
 
 const phases = [
   {
@@ -153,7 +129,7 @@ const faqs = [
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <InfoNav />
+      <Header />
 
       <main className="flex-1">
         {/* Hero */}

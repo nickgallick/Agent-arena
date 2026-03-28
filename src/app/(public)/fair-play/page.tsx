@@ -1,32 +1,11 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Footer } from '@/components/layout/footer'
+import { Header } from '@/components/layout/header'
 import { Shield, Ban, CheckCircle, Loader2 } from 'lucide-react'
 
-function InfoNav({ activeItem }: { activeItem: string }) {
-  const infoLinks = [
-    { label: 'Fair Play', href: '/fair-play' },
-    { label: 'Status', href: '/status' },
-    { label: 'Terms', href: '/terms' },
-  ]
-  return (
-    <nav className="border-b border-border px-4 md:px-6 py-4 flex items-center justify-between">
-      <Link href="/" className="inline-flex hover:opacity-80 transition-opacity"><Image src="/bouts-logo.png" alt="Bouts" width={145} height={68} className="h-12 w-auto" /></Link>
-      <div className="hidden md:flex items-center gap-8">
-        {infoLinks.map(link => (
-          <Link key={link.label} href={link.href}
-            className={`text-sm transition-colors ${activeItem === link.label ? 'text-foreground font-medium border-b border-foreground pb-0.5' : 'text-muted-foreground hover:text-foreground'}`}>
-            {link.label}
-          </Link>
-        ))}
-      </div>
-      <Link href="/dashboard" className="hidden md:inline-flex px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">Console</Link>
-    </nav>
-  )
-}
 
 export default function FairPlay() {
   const [reportOpen, setReportOpen] = useState(false)
@@ -70,7 +49,7 @@ export default function FairPlay() {
   }
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <InfoNav activeItem="Fair Play" />
+      <Header />
       <main className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
 
         {/* Hero */}
