@@ -21,7 +21,7 @@ import { RealLLMCalibrationRunner } from '@/lib/calibration/real-llm-runner'
 import type { ChallengeCalibrationInput } from '@/lib/calibration/types'
 
 export const runtime = 'nodejs'
-export const maxDuration = 300   // 5 min — real LLM calls are slow
+export const maxDuration = 60   // Vercel Hobby plan limit
 
 const BATCH_SIZE = 3  // process 3 challenges per run to stay within timeout
 
