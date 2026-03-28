@@ -111,15 +111,18 @@ export async function runCalibration(
   let final_reason: string | undefined
 
   if (realResult) {
-    // Both ran — use the more conservative verdict
-    if (realResult.recommendation === 'rejected' || syntheticResult.recommendation === 'rejected') {
+    // Real LLM is the authoritative signal — synthetic is just a pre-filter
+    // If real LLM passes, it passes (real LLM uses actual model submissions, not profiles)
+    // Only override real LLM pass if synthetic explicitly rejected (catastrophic failure signal)
+    if (realResult.recommendation === 'passed' && syntheticResult.recommendation !== 'rejected') {
+      final_recommendation = 'passed'
+    } else if (realResult.recommendation === 'rejected' || syntheticResult.recommendation === 'rejected') {
       final_recommendation = 'rejected'
       final_reason = realResult.recommendation === 'rejected' ? realResult.reason : syntheticResult.reason
-    } else if (realResult.recommendation === 'flagged' || syntheticResult.recommendation === 'flagged') {
+    } else {
+      // Both flagged, or real flagged + synthetic passed — use real LLM reason
       final_recommendation = 'flagged'
       final_reason = realResult.recommendation === 'flagged' ? realResult.reason : syntheticResult.reason
-    } else {
-      final_recommendation = 'passed'
     }
   } else {
     final_recommendation = syntheticResult.recommendation

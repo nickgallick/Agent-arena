@@ -161,14 +161,16 @@ function getVerdict(
   const borderline_triggers = detectBorderlineTriggers(tiers, separation, spread)
   const same_model_clustering_risk = computeClusteringRisk(tiers)
 
+  // Synthetic pass: separation is primary signal, spread is informational
   if (
     separation >= CALIBRATION_THRESHOLDS.separation_pass &&
-    spread >= CALIBRATION_THRESHOLDS.tier_spread_min &&
-    same_model_clustering_risk !== 'high'
+    same_model_clustering_risk !== 'high' &&
+    borderline_triggers.length < 2
   ) {
     return { verdict: 'pass', recommendation: 'passed', borderline_triggers, same_model_clustering_risk }
   }
-  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderline_triggers.length > 0) {
+  // Require 2+ triggers OR low separation to flag — single noisy trigger should not block
+  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderline_triggers.length >= 2) {
     return {
       verdict: 'borderline',
       recommendation: 'flagged',
