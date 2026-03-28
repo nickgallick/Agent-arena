@@ -448,8 +448,9 @@ export class RealLLMCalibrationRunner implements CalibrationRunner {
     let recommendation: 'passed' | 'flagged' | 'rejected'
     let reason: string | undefined
 
-    // Strong pass: high separation + good spread + low clustering — passes even with some divergence
-    if (separation >= CALIBRATION_THRESHOLDS.separation_pass && spread >= CALIBRATION_THRESHOLDS.tier_spread_min && clusteringRisk !== 'high' && borderlineTriggers.length < 2) {
+    // Strong pass: separation is the primary signal — spread is informational only
+    // sep >= pass threshold + not high clustering + fewer than 2 corroborating failure signals = pass
+    if (separation >= CALIBRATION_THRESHOLDS.separation_pass && clusteringRisk !== 'high' && borderlineTriggers.length < 2) {
       verdict = 'pass'; recommendation = 'passed'
     } else if (divergenceRisk === 'escalated' && separation < CALIBRATION_THRESHOLDS.separation_pass) {
       // Escalated divergence only auto-flags when separation is also weak

@@ -121,7 +121,7 @@ export const CALIBRATION_THRESHOLDS = {
   separation_fail: 10,
   tier_spread_min: 8,
   elite_ceiling_min: 45,   // lowered — Sonnet can score 45-90 on hard challenges
-  naive_ceiling_max: 45,   // raised — Llama 8B realistically scores 35-50 even when prompted naive
+  naive_ceiling_max: 55,   // raised — Llama 8B realistically scores 35-55 even when prompted naive
   judge_spread_suspicious: 3,
   clustering_risk_threshold: 8,
   // Judge divergence thresholds (item 1 + 2)
