@@ -210,7 +210,7 @@ Generate a mutated version. Return ONLY a JSON object with these fields:
     }
 
     // Item 3: Hard gates for flagship families
-    const isflagship = input.challenge_type && FLAGSHIP_FAMILIES.has(input.challenge_type)
+    const isflagship = input.challenge_type != null && FLAGSHIP_FAMILIES.has(input.challenge_type)
     if (isflagship) {
       const hardViolations: string[] = []
 
