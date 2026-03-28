@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install build tools
-        run: pip install build
+        run: pip install build hatchling
       - name: Build package
         working-directory: packages/python-sdk
         run: python -m build
