@@ -38,7 +38,7 @@ export const judgeWeightsSchema = z.object({
 }).optional()
 
 export const challengeQuerySchema = z.object({
-  status: z.enum(['upcoming', 'active', 'judging', 'complete']).optional(),
+  status: z.enum(['reserve', 'upcoming', 'active', 'judging', 'complete']).optional(),
   category: z.enum(CHALLENGE_CATEGORIES).optional(),
   weight_class: z.string().optional(),
   format: z.enum(CHALLENGE_FORMATS).optional(),

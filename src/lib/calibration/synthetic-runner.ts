@@ -69,40 +69,129 @@ const TIER_PROFILES: Record<CalibrationTier, {
   },
 }
 
-// Difficulty modifiers — harder challenges compress scores toward lower end
+/**
+ * Prompt complexity analysis — reads actual prompt characteristics to estimate difficulty.
+ * Replaces the old difficulty_profile-only approach which was prompt-agnostic.
+ */
+interface PromptSignals {
+  complexity: number        // 1-10: estimated task complexity
+  ambiguity: number         // 1-10: how underspecified the requirements are
+  hidden_invariants: number // 1-10: likely number of unstated constraints
+  trivial_score: number     // 0-1: how solvable by a naive agent (high = easy)
+}
+
+function analyzePrompt(
+  prompt: string,
+  difficulty_profile: Record<string, number> | null | undefined,
+  format: string,
+  has_objective_tests: boolean
+): PromptSignals {
+  const p = prompt.toLowerCase()
+  const wordCount = prompt.split(/\s+/).length
+
+  // Complexity signals from prompt text
+  let complexity = 5
+  const complexityBoosters = [
+    'concurren', 'race condition', 'thread', 'async', 'deadlock',
+    'distributed', 'eventual consistency', 'idempotent', 'transaction',
+    'rollback', 'invariant', 'constraint', 'edge case', 'security',
+    'auth', 'rate limit', 'retry', 'circuit breaker', 'failover',
+    'memory leak', 'overflow', 'injection', 'sanitiz',
+  ]
+  const complexityReducers = [
+    'simple', 'basic', 'easy', 'beginner', 'straightforward',
+    'just', 'only', 'trivial', 'hello world',
+  ]
+  complexity += complexityBoosters.filter(k => p.includes(k)).length * 0.8
+  complexity -= complexityReducers.filter(k => p.includes(k)).length * 1.5
+  // Longer prompts = more requirements = harder
+  if (wordCount > 300) complexity += 1.5
+  else if (wordCount > 150) complexity += 0.8
+  else if (wordCount < 60) complexity -= 1.5
+  // Multiple explicit bugs = good discriminator
+  const bugCountMatch = p.match(/(\d+)\s*bug/)
+  if (bugCountMatch) {
+    const bugCount = parseInt(bugCountMatch[1])
+    complexity += Math.min(bugCount * 0.6, 3)
+  }
+  // Use difficulty_profile if provided
+  if (difficulty_profile) {
+    const vals = Object.values(difficulty_profile).filter(v => typeof v === 'number')
+    if (vals.length > 0) {
+      const profileDifficulty = vals.reduce((a, b) => a + b, 0) / vals.length
+      complexity = (complexity + profileDifficulty) / 2
+    }
+  }
+  complexity = Math.max(1, Math.min(10, complexity))
+
+  // Ambiguity: underspecified prompts are harder for weak agents but elite handles them
+  let ambiguity = 4
+  if (!has_objective_tests) ambiguity += 2
+  if (p.includes('your choice') || p.includes('as you see fit') || p.includes('appropriate')) ambiguity += 1.5
+  if (p.includes('must') || p.includes('required') || p.includes('exactly')) ambiguity -= 1.5
+  ambiguity = Math.max(1, Math.min(10, ambiguity))
+
+  // Hidden invariants: how many unstated requirements likely exist
+  let hidden_invariants = 4
+  if (p.includes('production') || p.includes('real world')) hidden_invariants += 2
+  if (p.includes('concurrent') || p.includes('parallel')) hidden_invariants += 2
+  if (format === 'agentic' || format === 'systems') hidden_invariants += 1.5
+  if (p.includes('fix') || p.includes('debug') || p.includes('bug')) hidden_invariants += 1
+  hidden_invariants = Math.max(1, Math.min(10, hidden_invariants))
+
+  // Trivial score: how easily a naive agent can score points
+  // High = naive agent can copy example output; Low = requires deep understanding
+  let trivial_score = 0.5
+  if (p.includes('serialize') || p.includes('parse') || p.includes('format')) trivial_score += 0.2
+  if (p.includes('sort') || p.includes('filter') || p.includes('map')) trivial_score += 0.15
+  if (complexity > 7) trivial_score -= 0.3
+  if (hidden_invariants > 7) trivial_score -= 0.25
+  if (wordCount < 80) trivial_score += 0.2  // short/vague prompts easier to fake
+  trivial_score = Math.max(0.05, Math.min(0.95, trivial_score))
+
+  return { complexity, ambiguity, hidden_invariants, trivial_score }
+}
+
+// Difficulty modifiers — uses prompt signals + difficulty_profile
 function applyDifficultyModifier(
   baseRange: [number, number],
   difficulty_profile: Record<string, number> | null | undefined,
-  tier: CalibrationTier
+  tier: CalibrationTier,
+  signals: PromptSignals
 ): number {
   const [min, max] = baseRange
-
-  // Calculate composite difficulty (1-10 scale)
-  let difficulty = 5
-  if (difficulty_profile) {
-    const values = Object.values(difficulty_profile).filter(v => typeof v === 'number')
-    if (values.length > 0) {
-      difficulty = values.reduce((a, b) => a + b, 0) / values.length
-    }
-  }
-
-  // Harder challenges push scores toward lower end of range
-  // Elite agents are less affected, naive agents are more affected
-  const tierDifficultyResistance: Record<CalibrationTier, number> = {
-    naive: 0.1,    // very susceptible to difficulty
-    standard: 0.3,
-    strong: 0.6,
-    elite: 0.85,   // mostly resistant
-  }
-
-  const resistance = tierDifficultyResistance[tier]
-  const difficultyPenalty = ((difficulty - 5) / 5) * (1 - resistance) * (max - min) * 0.4
-
-  // Score = midpoint of range, adjusted for difficulty, with small variance
   const midpoint = (min + max) / 2
-  const variance = (max - min) * 0.15
+
+  // Tier-specific response to difficulty
+  const tierResistance: Record<CalibrationTier, number> = {
+    naive: 0.1,     // very susceptible — complexity tanks naive scores
+    standard: 0.35,
+    strong: 0.65,
+    elite: 0.88,    // mostly resistant to complexity
+  }
+
+  // Naive tier also gets boosted by trivial_score — if task is easy to fake, naive scores higher
+  const trivialBoost = tier === 'naive'
+    ? signals.trivial_score * (max - min) * 0.4
+    : tier === 'standard'
+      ? signals.trivial_score * (max - min) * 0.2
+      : 0
+
+  // Complexity penalty — normalized to 0-1 range from 1-10 scale
+  const normalizedComplexity = (signals.complexity - 1) / 9
+  const penalty = normalizedComplexity * (1 - tierResistance[tier]) * (max - min) * 0.5
+
+  // Hidden invariants specifically hurt standard more than naive (naive doesn't attempt them anyway)
+  const invariantPenalty = tier === 'standard'
+    ? ((signals.hidden_invariants - 1) / 9) * (max - min) * 0.2
+    : tier === 'strong'
+      ? ((signals.hidden_invariants - 1) / 9) * (max - min) * 0.1
+      : 0
+
+  const variance = (max - min) * 0.12
   const jitter = (Math.random() - 0.5) * variance
-  return Math.max(min, Math.min(max, midpoint - difficultyPenalty + jitter))
+
+  return Math.max(min, Math.min(max, midpoint - penalty - invariantPenalty + trivialBoost + jitter))
 }
 
 function computeSeparation(tiers: TierCalibrationResult[]): number {
@@ -199,12 +288,20 @@ export class SyntheticCalibrationRunner implements CalibrationRunner {
     const tiers: CalibrationTier[] = ['naive', 'standard', 'strong', 'elite']
     const results: TierCalibrationResult[] = []
 
+    // Analyze prompt characteristics — this is what makes synthetic prompt-aware
+    const signals = analyzePrompt(
+      input.prompt,
+      input.difficulty_profile,
+      input.format,
+      input.has_objective_tests
+    )
+
     for (const tier of tiers) {
       const profile = TIER_PROFILES[tier]
 
-      const objective = Math.round(applyDifficultyModifier(profile.objective, input.difficulty_profile, tier))
-      const process = Math.round(applyDifficultyModifier(profile.process, input.difficulty_profile, tier))
-      const strategy = Math.round(applyDifficultyModifier(profile.strategy, input.difficulty_profile, tier))
+      const objective = Math.round(applyDifficultyModifier(profile.objective, input.difficulty_profile, tier, signals))
+      const process = Math.round(applyDifficultyModifier(profile.process, input.difficulty_profile, tier, signals))
+      const strategy = Math.round(applyDifficultyModifier(profile.strategy, input.difficulty_profile, tier, signals))
       const integrity = profile.integrity
       const passed = Math.random() < profile.pass_rate
 
@@ -257,6 +354,9 @@ export class SyntheticCalibrationRunner implements CalibrationRunner {
       same_model_clustering_risk,
       judge_divergence_risk: 'low', // synthetic always low — single deterministic path
       borderline_triggers,
+      // Store prompt signals for debugging
+      cost_tokens: 0,
+      cache_key: `synthetic:complexity=${signals.complexity.toFixed(1)}:trivial=${signals.trivial_score.toFixed(2)}`,
       run_at: new Date().toISOString(),
     }
   }

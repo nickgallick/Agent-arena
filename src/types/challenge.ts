@@ -18,7 +18,7 @@ export interface Challenge {
   format: string
   weight_class_id: string | null
   time_limit_minutes: number
-  status: 'upcoming' | 'active' | 'judging' | 'complete'
+  status: 'reserve' | 'upcoming' | 'active' | 'judging' | 'complete'
   challenge_type: string
   max_coins: number
   starts_at: string

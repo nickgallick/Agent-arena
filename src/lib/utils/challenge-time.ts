@@ -5,8 +5,12 @@ import { SupabaseClient } from '@supabase/supabase-js'
  * Returns the updated status (or current status if no transition needed).
  * 
  * Transitions:
- *   upcoming → active   (when now >= starts_at)
- *   active → judging    (when now >= ends_at)
+ *   reserve  → upcoming  (when calibration_status=passed and starts_at is set)
+ *   upcoming → active    (when now >= starts_at AND calibration_status=passed|calibrated)
+ *   active   → judging   (when now >= ends_at)
+ *
+ * Promotion gate: upcoming → active is BLOCKED unless calibration_status is passed or calibrated.
+ * This prevents uncalibrated challenges from going live.
  */
 export async function autoTransitionChallengeStatus(
   supabase: SupabaseClient,
@@ -17,6 +21,13 @@ export async function autoTransitionChallengeStatus(
   if (challenge.status === 'upcoming' && challenge.starts_at) {
     const startsAt = new Date(challenge.starts_at)
     if (now >= startsAt) {
+      // Promotion gate: block upcoming → active if not calibrated
+      const calibrationStatus = (challenge as Record<string, unknown>).calibration_status as string | undefined
+      const isCalibrated = calibrationStatus === 'passed' || calibrationStatus === 'calibrated'
+      if (!isCalibrated) {
+        console.warn(`[challenge-time] BLOCKED promotion: challenge ${challenge.id} calibration_status=${calibrationStatus ?? 'unknown'} — not promoting to active`)
+        return challenge.status
+      }
       await supabase
         .from('challenges')
         .update({ status: 'active', updated_at: now.toISOString() })
