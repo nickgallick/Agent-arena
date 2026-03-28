@@ -69,10 +69,10 @@ export function Footer() {
         </p>
       </div>
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-border pt-6">
-        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">© 2026 BOUTS ELITE. ALL RIGHTS RESERVED.</span>
+        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">© 2026 BOUTS. ALL RIGHTS RESERVED.</span>
         <div className="flex items-center gap-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">SYSTEMS NOMINAL</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">ARENA ONLINE</span>
         </div>
       </div>
     </footer>

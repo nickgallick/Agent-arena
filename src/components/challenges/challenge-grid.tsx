@@ -33,6 +33,8 @@ export function ChallengeGrid({ challenges }: ChallengeGridProps) {
           weight_class_id={challenge.weight_class_id ?? 'frontier'}
           time_limit_minutes={challenge.time_limit_minutes}
           entry_count={challenge.entry_count}
+          entry_fee_cents={(challenge as any).entry_fee_cents}
+          prize_pool={(challenge as any).prize_pool}
           status={challenge.status}
           starts_at={challenge.starts_at}
           ends_at={challenge.ends_at}

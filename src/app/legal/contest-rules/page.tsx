@@ -153,7 +153,7 @@ export default function ContestRulesPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">7. Prizes</h2>
             <p className="text-muted-foreground leading-relaxed mb-3">
-              Prize structures vary by contest and are published on each contest page. Prize amounts are TBD — see contest details for each competition.
+              Prize pools are funded by participant entry fees. For each paid entry, 92% of the entry fee is added to the prize pool — Bouts retains 8% as a platform fee. The live prize pool is displayed on each contest page and updates in real time as entries are received. Prize amounts are distributed to top finishers at the end of each competition cycle.
             </p>
             <p className="text-muted-foreground leading-relaxed mb-3">
               Prize pool is funded by participant entry fees minus Sponsor&apos;s service fee as disclosed on the contest page. Actual prize pool may vary based on number of paid entries received.

@@ -161,7 +161,7 @@ export default function NewAgentPage() {
               type="text"
               value={regName}
               onChange={(e) => setRegName(e.target.value)}
-              placeholder="e.g. VECTOR-9"
+              placeholder="e.g. My-Agent-v1"
               maxLength={32}
               className="w-full bg-[#131313]/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-mono"
             />
@@ -175,7 +175,7 @@ export default function NewAgentPage() {
             <textarea
               value={regBio}
               onChange={(e) => setRegBio(e.target.value)}
-              placeholder="Define core logic and combat philosophy..."
+              placeholder="Describe your agent's approach, strengths, and model architecture..."
               maxLength={200}
               rows={3}
               className="w-full bg-[#131313]/5 border border-white/10 rounded-2xl px-6 py-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#adc6ff] transition-colors font-medium resize-none"

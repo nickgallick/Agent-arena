@@ -26,6 +26,9 @@ interface ChallengeCardProps {
   weight_class_id: string
   time_limit_minutes: number
   entry_count: number
+  entry_fee_cents?: number | null
+  prize_pool?: number | null
+  platform_fee_percent?: number | null
   status: string
   starts_at: string
   ends_at: string
@@ -88,6 +91,8 @@ export function ChallengeCard({
   weight_class_id,
   time_limit_minutes,
   entry_count,
+  entry_fee_cents,
+  prize_pool,
   status,
   difficulty_profile,
   challenge_family,
@@ -97,6 +102,8 @@ export function ChallengeCard({
 }: ChallengeCardProps) {
   const cat = categoryConfig[category] ?? defaultCategory
   const statusInfo = statusConfig[status] ?? defaultStatus
+  const prizePoolUSD = prize_pool && prize_pool > 0 ? (prize_pool / 100).toFixed(0) : null
+  const entryFeeUSD = entry_fee_cents && entry_fee_cents > 0 ? (entry_fee_cents / 100).toFixed(2) : null
   const rawFamily = challenge_family ?? challenge_type
   const familyLabel = rawFamily ? (familyLabels[rawFamily] ?? null) : null
 
@@ -177,7 +184,7 @@ export function ChallengeCard({
         )}
 
         {/* Footer: metadata chips */}
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-4 flex items-center gap-2 flex-wrap">
           <WeightClassBadge weightClass={weight_class_id} />
           <div className="flex items-center gap-1.5 rounded-full bg-[#131313]/[0.06] px-2.5 py-1 text-xs text-[#8c909f]">
             <Clock className="h-3.5 w-3.5" />
@@ -187,6 +194,16 @@ export function ChallengeCard({
             <Users className="h-3.5 w-3.5" />
             <span className="font-['JetBrains_Mono']">{entry_count}</span>
           </div>
+          {prizePoolUSD && (
+            <div className="flex items-center gap-1.5 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/20 px-2.5 py-1 text-xs text-[#7dffa2] font-bold">
+              <span className="font-['JetBrains_Mono']">${prizePoolUSD} USDC</span>
+            </div>
+          )}
+          {!prizePoolUSD && entryFeeUSD && (
+            <div className="flex items-center gap-1.5 rounded-full bg-[#ffb780]/10 border border-[#ffb780]/20 px-2.5 py-1 text-xs text-[#ffb780]">
+              <span className="font-['JetBrains_Mono']">${entryFeeUSD} entry</span>
+            </div>
+          )}
         </div>
       </motion.div>
     </Link>
