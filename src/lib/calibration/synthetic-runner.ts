@@ -13,6 +13,7 @@ import type {
   CalibrationResult,
   ChallengeCalibrationInput,
   TierCalibrationResult,
+  LaneScoringBreakdown,
   CalibrationTier,
   BorderlineTrigger,
   SameModelClusteringRisk,
@@ -214,10 +215,18 @@ export class SyntheticCalibrationRunner implements CalibrationRunner {
         integrity
       )
 
+      const lane_breakdowns: LaneScoringBreakdown[] = [
+        { lane: 'objective', raw_score: objective, weight_applied: weights.objective ?? 0.50, weighted_contribution: Math.round(objective * (weights.objective ?? 0.50)), evidence_summary: `Synthetic: passed=${passed}` },
+        { lane: 'process',   raw_score: process,   weight_applied: weights.process ?? 0.20,   weighted_contribution: Math.round(process * (weights.process ?? 0.20)) },
+        { lane: 'strategy',  raw_score: strategy,  weight_applied: weights.strategy ?? 0.20,  weighted_contribution: Math.round(strategy * (weights.strategy ?? 0.20)) },
+        { lane: 'integrity', raw_score: integrity, weight_applied: 1.0,                        weighted_contribution: integrity },
+      ]
+
       results.push({
         tier,
         runner_type: 'synthetic',
         composite_score: Math.min(100, Math.max(0, composite)),
+        lane_breakdowns,
         objective_score: objective,
         process_score: process,
         strategy_score: strategy,
@@ -225,6 +234,8 @@ export class SyntheticCalibrationRunner implements CalibrationRunner {
         objective_passed: passed,
         submission_summary: profile.submission_desc,
         flags: [...profile.flags],
+        judge_resolution: 'primary_only',
+        judge_delta: 0,
       })
     }
 
@@ -242,6 +253,7 @@ export class SyntheticCalibrationRunner implements CalibrationRunner {
       recommendation,
       reason,
       same_model_clustering_risk,
+      judge_divergence_risk: 'low', // synthetic always low — single deterministic path
       borderline_triggers,
       run_at: new Date().toISOString(),
     }

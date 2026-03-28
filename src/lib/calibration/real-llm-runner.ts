@@ -1,19 +1,12 @@
 /**
- * Real LLM Calibration Runner — Hardened
- * 
- * Submission generation: 4 different model families (diverse, not same-family)
- * Calibration scoring: Claude Sonnet 4.6 primary + GPT-4.1 cross-check
- *   NOT Haiku — Haiku may compress differences or introduce single-judge bias
- * 
- * Model family assignments:
- * - naive:    mistral-7b (Family: Mistral)
- * - standard: llama-3-8b (Family: Meta)
- * - strong:   gemini-flash-1.5 (Family: Google)
- * - elite:    claude-3-5-sonnet (Family: Anthropic)
- * 
- * Scoring judges:
- * - Primary:  claude-sonnet-4-6 (Anthropic)
- * - Audit:    openai/gpt-4.1 (OpenAI) — fires on borderline or spread > threshold
+ * Real LLM Calibration Runner — Hardened v2
+ *
+ * Item 1: Don't silently average when judge delta is large — escalate instead
+ * Item 2: judge_divergence_risk as first-class signal
+ * Item 4: Persist raw per-lane scoring breakdowns
+ *
+ * Scoring: Sonnet 4.6 primary + GPT-4.1 audit (NOT Haiku)
+ * Submissions: 4 different model families (diverse)
  */
 
 import type {
@@ -21,9 +14,11 @@ import type {
   CalibrationResult,
   ChallengeCalibrationInput,
   TierCalibrationResult,
+  LaneScoringBreakdown,
   CalibrationTier,
   BorderlineTrigger,
   SameModelClusteringRisk,
+  JudgeDivergenceRisk,
 } from './types'
 import { CALIBRATION_THRESHOLDS, COST_CONTROLS } from './types'
 
@@ -37,7 +32,6 @@ const TIER_MODELS: Record<CalibrationTier, { model: string; family: string }> = 
   elite:    { model: 'anthropic/claude-3-5-sonnet', family: 'anthropic' },
 }
 
-// Primary calibration scoring model — NOT Haiku
 const PRIMARY_JUDGE_MODEL = 'anthropic/claude-sonnet-4-6'
 const AUDIT_JUDGE_MODEL = 'openai/gpt-4.1'
 
@@ -48,6 +42,18 @@ const TIER_SYSTEM_PROMPTS: Record<CalibrationTier, string> = {
   elite:    `You are an expert software engineer. Solve this challenge with maximum rigor. Identify the real problem structure. Handle all edge cases, hidden invariants, and failure modes. Verify systematically. Flag any ambiguous or contradictory requirements explicitly.`,
 }
 
+interface RawJudgeScores {
+  objective_score: number
+  process_score: number
+  strategy_score: number
+  integrity_adjustment: number
+  objective_passed: boolean
+  flags: string[]
+  rationale: string
+  confidence: number
+  composite_score: number
+}
+
 async function callLLM(
   model: string,
   systemPrompt: string,
@@ -56,12 +62,10 @@ async function callLLM(
   timeoutMs = 45000
 ): Promise<{ content: string; latency_ms: number; tokens_used?: number } | null> {
   if (!OPENROUTER_API_KEY) return null
-
   const start = Date.now()
   try {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), timeoutMs)
-
     const res = await fetch(OPENROUTER_URL, {
       method: 'POST',
       headers: {
@@ -81,21 +85,11 @@ async function callLLM(
       }),
       signal: controller.signal,
     })
-
     clearTimeout(timeout)
-    if (!res.ok) {
-      console.error(`[calibration] ${model} returned ${res.status}`)
-      return null
-    }
-
+    if (!res.ok) return null
     const data = await res.json()
-    return {
-      content: data.choices?.[0]?.message?.content ?? '',
-      latency_ms: Date.now() - start,
-      tokens_used: data.usage?.total_tokens,
-    }
-  } catch (err) {
-    console.error(`[calibration] ${model} error:`, err)
+    return { content: data.choices?.[0]?.message?.content ?? '', latency_ms: Date.now() - start, tokens_used: data.usage?.total_tokens }
+  } catch {
     return null
   }
 }
@@ -104,24 +98,18 @@ async function scoreWithJudge(
   judgeModel: string,
   submission: string,
   challenge: ChallengeCalibrationInput,
-  tier: CalibrationTier
-): Promise<{ scores: Partial<TierCalibrationResult>; rationale: string } | null> {
-  const judgePrompt = `You are evaluating a calibration submission for a coding challenge.
-Your job is to score it accurately and calibrate your scores so that different quality tiers produce meaningfully different scores.
+): Promise<RawJudgeScores | null> {
+  const weights = challenge.judge_weights ?? { objective: 0.50, process: 0.20, strategy: 0.20 }
 
-Challenge: ${challenge.title}
-Format: ${challenge.format}
-Category: ${challenge.category}
+  const judgePrompt = `You are calibrating AI agent submissions. Score accurately — differentiate quality levels clearly.
 
-Challenge prompt:
-${challenge.prompt}
+Challenge: ${challenge.title} (${challenge.format}, ${challenge.category})
+Prompt: ${challenge.prompt}
 
-Submission to evaluate:
+Submission:
 ${submission}
 
-Score on 0-100 scale for each dimension. Be calibrated — differentiate quality levels clearly, do not compress scores.
-
-Return ONLY valid JSON:
+Return ONLY valid JSON with per-lane scores and evidence:
 {
   "objective_score": <0-100>,
   "process_score": <0-100>,
@@ -129,98 +117,190 @@ Return ONLY valid JSON:
   "integrity_adjustment": <-25 to 10>,
   "objective_passed": <true|false>,
   "flags": [<issue tags>],
-  "rationale": "<2-3 sentences explaining the scores>",
-  "confidence": <0-1>
+  "rationale": "<2-3 sentences>",
+  "confidence": <0-1>,
+  "objective_evidence": "<what specifically passed/failed>",
+  "process_evidence": "<how the agent worked>",
+  "strategy_evidence": "<quality of reasoning>"
 }`
 
   const result = await callLLM(
     judgeModel,
-    'You are a precise technical evaluator calibrating AI agent submissions. Return only valid JSON. Differentiate quality levels — do not compress scores toward the middle.',
+    'You are a precise technical calibration judge. Return only valid JSON. Do not compress scores toward the middle.',
     judgePrompt,
-    800,
+    900,
     20000
   )
-
   if (!result) return null
 
   try {
     const jsonMatch = result.content.match(/\{[\s\S]*\}/)
     if (!jsonMatch) return null
-    const parsed = JSON.parse(jsonMatch[0])
-
-    const weights = challenge.judge_weights ?? { objective: 0.50, process: 0.20, strategy: 0.20 }
+    const p = JSON.parse(jsonMatch[0])
     const composite = Math.round(
-      (parsed.objective_score ?? 0) * (weights.objective ?? 0.50) +
-      (parsed.process_score ?? 0) * (weights.process ?? 0.20) +
-      (parsed.strategy_score ?? 0) * (weights.strategy ?? 0.20) +
-      (parsed.integrity_adjustment ?? 0)
+      (p.objective_score ?? 0) * (weights.objective ?? 0.50) +
+      (p.process_score ?? 0) * (weights.process ?? 0.20) +
+      (p.strategy_score ?? 0) * (weights.strategy ?? 0.20) +
+      (p.integrity_adjustment ?? 0)
     )
-
     return {
-      scores: {
-        composite_score: Math.min(100, Math.max(0, composite)),
-        objective_score: Math.min(100, Math.max(0, parsed.objective_score ?? 0)),
-        process_score: Math.min(100, Math.max(0, parsed.process_score ?? 0)),
-        strategy_score: Math.min(100, Math.max(0, parsed.strategy_score ?? 0)),
-        integrity_adjustment: Math.min(10, Math.max(-25, parsed.integrity_adjustment ?? 0)),
-        objective_passed: Boolean(parsed.objective_passed),
-        flags: Array.isArray(parsed.flags) ? parsed.flags : [],
-        latency_ms: result.latency_ms,
-      },
-      rationale: parsed.rationale ?? '',
+      objective_score: Math.min(100, Math.max(0, p.objective_score ?? 0)),
+      process_score: Math.min(100, Math.max(0, p.process_score ?? 0)),
+      strategy_score: Math.min(100, Math.max(0, p.strategy_score ?? 0)),
+      integrity_adjustment: Math.min(10, Math.max(-25, p.integrity_adjustment ?? 0)),
+      objective_passed: Boolean(p.objective_passed),
+      flags: Array.isArray(p.flags) ? p.flags : [],
+      rationale: p.rationale ?? '',
+      confidence: p.confidence ?? 0.7,
+      composite_score: Math.min(100, Math.max(0, composite)),
     }
-  } catch {
-    return null
-  }
+  } catch { return null }
 }
 
-function getFallbackScores(tier: CalibrationTier): Partial<TierCalibrationResult> {
-  const profiles: Record<CalibrationTier, { obj: number; proc: number; strat: number; int: number; passed: boolean }> = {
-    naive:    { obj: 12, proc: 12, strat: 10, int: 0, passed: false },
-    standard: { obj: 40, proc: 40, strat: 35, int: 0, passed: false },
-    strong:   { obj: 65, proc: 68, strat: 65, int: 3, passed: true },
-    elite:    { obj: 85, proc: 85, strat: 87, int: 7, passed: true },
+function buildLaneBreakdowns(scores: RawJudgeScores, weights: Record<string, number>): LaneScoringBreakdown[] {
+  return [
+    {
+      lane: 'objective',
+      raw_score: scores.objective_score,
+      weight_applied: weights.objective ?? 0.50,
+      weighted_contribution: Math.round(scores.objective_score * (weights.objective ?? 0.50)),
+      evidence_summary: `Passed: ${scores.objective_passed}`,
+      flags: scores.flags.filter(f => f.includes('test') || f.includes('objective')),
+    },
+    {
+      lane: 'process',
+      raw_score: scores.process_score,
+      weight_applied: weights.process ?? 0.20,
+      weighted_contribution: Math.round(scores.process_score * (weights.process ?? 0.20)),
+      flags: scores.flags.filter(f => f.includes('tool') || f.includes('process')),
+    },
+    {
+      lane: 'strategy',
+      raw_score: scores.strategy_score,
+      weight_applied: weights.strategy ?? 0.20,
+      weighted_contribution: Math.round(scores.strategy_score * (weights.strategy ?? 0.20)),
+      flags: scores.flags.filter(f => f.includes('strategy') || f.includes('decomp')),
+    },
+    {
+      lane: 'integrity',
+      raw_score: scores.integrity_adjustment,
+      weight_applied: 1.0,
+      weighted_contribution: scores.integrity_adjustment,
+      flags: scores.flags.filter(f => f.includes('integrity') || f.includes('exploit')),
+    },
+  ]
+}
+
+function getFallbackScores(tier: CalibrationTier): RawJudgeScores {
+  const p: Record<CalibrationTier, RawJudgeScores> = {
+    naive:    { objective_score: 12, process_score: 12, strategy_score: 10, integrity_adjustment: 0, objective_passed: false, flags: ['judge_fallback'], rationale: 'Fallback', confidence: 0.5, composite_score: 10 },
+    standard: { objective_score: 40, process_score: 40, strategy_score: 35, integrity_adjustment: 0, objective_passed: false, flags: ['judge_fallback'], rationale: 'Fallback', confidence: 0.5, composite_score: 36 },
+    strong:   { objective_score: 65, process_score: 68, strategy_score: 65, integrity_adjustment: 3, objective_passed: true,  flags: ['judge_fallback'], rationale: 'Fallback', confidence: 0.5, composite_score: 59 },
+    elite:    { objective_score: 85, process_score: 85, strategy_score: 87, integrity_adjustment: 7, objective_passed: true,  flags: ['judge_fallback'], rationale: 'Fallback', confidence: 0.5, composite_score: 80 },
   }
-  const p = profiles[tier]
+  return p[tier]
+}
+
+// Item 1: Resolve primary vs audit — escalate if delta too large, don't silently blend
+function resolveJudgeScores(
+  primary: RawJudgeScores,
+  audit: RawJudgeScores | null,
+  tier: CalibrationTier
+): {
+  resolved: RawJudgeScores
+  resolution: 'averaged' | 'escalated' | 'primary_only' | 'fallback'
+  judge_delta: number
+  divergence_risk: JudgeDivergenceRisk
+} {
+  if (!audit) {
+    return { resolved: primary, resolution: 'primary_only', judge_delta: 0, divergence_risk: 'low' }
+  }
+
+  const delta = Math.abs(primary.composite_score - audit.composite_score)
+
+  let divergence_risk: JudgeDivergenceRisk
+  if (delta >= CALIBRATION_THRESHOLDS.judge_delta_escalate) {
+    divergence_risk = 'escalated'
+  } else if (delta >= CALIBRATION_THRESHOLDS.judge_divergence_high) {
+    divergence_risk = 'high'
+  } else if (delta >= CALIBRATION_THRESHOLDS.judge_divergence_medium) {
+    divergence_risk = 'medium'
+  } else {
+    divergence_risk = 'low'
+  }
+
+  // Item 1: If delta > threshold, escalate — don't blend
+  if (delta > CALIBRATION_THRESHOLDS.judge_delta_blend_max) {
+    // Escalated: return lower of the two (conservative) + flag for human review
+    const conservative = primary.composite_score <= audit.composite_score ? primary : audit
+    return {
+      resolved: {
+        ...conservative,
+        flags: [...conservative.flags, 'judge_divergence_escalated', `primary_${primary.composite_score}_audit_${audit.composite_score}`],
+        rationale: `ESCALATED (delta ${delta}pt): Primary=${primary.composite_score}, Audit=${audit.composite_score}. Using conservative. Manual review required.`,
+      },
+      resolution: 'escalated',
+      judge_delta: delta,
+      divergence_risk,
+    }
+  }
+
+  // Safe to blend
+  const avg = (a: number, b: number) => Math.round((a + b) / 2)
   return {
-    composite_score: Math.round(p.obj * 0.50 + p.proc * 0.20 + p.strat * 0.20 + p.int),
-    objective_score: p.obj, process_score: p.proc, strategy_score: p.strat,
-    integrity_adjustment: p.int, objective_passed: p.passed,
-    flags: ['judge_fallback'],
+    resolved: {
+      objective_score: avg(primary.objective_score, audit.objective_score),
+      process_score: avg(primary.process_score, audit.process_score),
+      strategy_score: avg(primary.strategy_score, audit.strategy_score),
+      integrity_adjustment: avg(primary.integrity_adjustment, audit.integrity_adjustment),
+      objective_passed: primary.objective_passed || audit.objective_passed,
+      flags: [...new Set([...primary.flags, ...audit.flags])],
+      rationale: `Averaged (delta ${delta}pt): Primary=${primary.composite_score}, Audit=${audit.composite_score}`,
+      confidence: (primary.confidence + audit.confidence) / 2,
+      composite_score: avg(primary.composite_score, audit.composite_score),
+    },
+    resolution: 'averaged',
+    judge_delta: delta,
+    divergence_risk,
   }
 }
 
-function computeSameModelClusteringRisk(tiers: TierCalibrationResult[]): SameModelClusteringRisk {
-  // Check adjacent tier score deltas — small deltas = clustering risk
+function computeClusteringRisk(tiers: TierCalibrationResult[]): SameModelClusteringRisk {
   const sorted = ['naive', 'standard', 'strong', 'elite'].map(t => tiers.find(r => r.tier === t)?.composite_score ?? 0)
   const deltas = [sorted[1] - sorted[0], sorted[2] - sorted[1], sorted[3] - sorted[2]]
   const minDelta = Math.min(...deltas)
-
   if (minDelta < CALIBRATION_THRESHOLDS.clustering_risk_threshold) return 'high'
   if (minDelta < CALIBRATION_THRESHOLDS.clustering_risk_threshold * 1.5) return 'medium'
+  return 'low'
+}
+
+// Item 2: compute overall judge divergence risk across all tiers
+function computeOverallDivergenceRisk(tierResults: TierCalibrationResult[]): JudgeDivergenceRisk {
+  const risks = tierResults.map(t => t.judge_resolution)
+  if (risks.includes('escalated')) return 'escalated'
+  const deltas = tierResults.map(t => t.judge_delta ?? 0)
+  const maxDelta = Math.max(...deltas)
+  if (maxDelta >= CALIBRATION_THRESHOLDS.judge_divergence_high) return 'high'
+  if (maxDelta >= CALIBRATION_THRESHOLDS.judge_divergence_medium) return 'medium'
   return 'low'
 }
 
 function detectBorderlineTriggers(
   tiers: TierCalibrationResult[],
   separation: number,
-  spread: number
+  spread: number,
+  divergenceRisk: JudgeDivergenceRisk
 ): BorderlineTrigger[] {
   const triggers: BorderlineTrigger[] = []
   const elite = tiers.find(t => t.tier === 'elite')
   const naive = tiers.find(t => t.tier === 'naive')
 
   if (spread < CALIBRATION_THRESHOLDS.tier_spread_min) triggers.push('tier_spread_below_threshold')
-  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline && separation < CALIBRATION_THRESHOLDS.separation_pass) {
-    triggers.push('separation_near_boundary')
-  }
+  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline && separation < CALIBRATION_THRESHOLDS.separation_pass) triggers.push('separation_near_boundary')
   if (elite && elite.composite_score < CALIBRATION_THRESHOLDS.elite_ceiling_min) triggers.push('synthetic_elite_below_ceiling')
   if (naive && naive.composite_score > CALIBRATION_THRESHOLDS.naive_ceiling_max) triggers.push('synthetic_naive_too_high')
-
-  // Check if all judge scores suspiciously close (judge spread low)
-  const scores = tiers.map(t => t.composite_score)
-  const scoreSpread = Math.max(...scores) - Math.min(...scores)
-  if (scoreSpread < CALIBRATION_THRESHOLDS.judge_spread_suspicious * 10) triggers.push('judge_spread_suspiciously_low')
+  if (divergenceRisk === 'high') triggers.push('judge_divergence_high')
+  if (divergenceRisk === 'escalated') triggers.push('judge_divergence_escalated')
 
   return triggers
 }
@@ -232,70 +312,57 @@ export class RealLLMCalibrationRunner implements CalibrationRunner {
     const tierOrder: CalibrationTier[] = ['naive', 'standard', 'strong', 'elite']
     const results: TierCalibrationResult[] = []
     let totalTokens = 0
+    const weights = input.judge_weights ?? { objective: 0.50, process: 0.20, strategy: 0.20 }
 
     await Promise.all(tierOrder.map(async (tier) => {
       const modelConfig = TIER_MODELS[tier]
 
-      // Step 1: Get submission from tier model
-      const submissionResult = await callLLM(
-        modelConfig.model,
-        TIER_SYSTEM_PROMPTS[tier],
-        `Challenge:\n\n${input.prompt}\n\nProvide your solution.`,
-        COST_CONTROLS.max_tokens_per_tier
-      )
-
-      const submission = submissionResult?.content ?? `[No submission — ${tier} model unavailable]`
+      // Step 1: Get submission
+      const submissionResult = await callLLM(modelConfig.model, TIER_SYSTEM_PROMPTS[tier],
+        `Challenge:\n\n${input.prompt}\n\nProvide your solution.`)
+      const submission = submissionResult?.content ?? `[No submission — ${tier} unavailable]`
       if (submissionResult?.tokens_used) totalTokens += submissionResult.tokens_used
 
-      // Step 2: Score with PRIMARY judge (Sonnet 4.6 — NOT Haiku)
-      const primaryScore = await scoreWithJudge(PRIMARY_JUDGE_MODEL, submission, input, tier)
-      if (primaryScore?.scores.latency_ms) totalTokens += 400 // approx
+      // Step 2: Primary judge (Sonnet 4.6)
+      const primaryScores = await scoreWithJudge(PRIMARY_JUDGE_MODEL, submission, input)
 
-      // Step 3: Audit judge (GPT-4.1) fires if primary score looks borderline
-      let finalScores = primaryScore?.scores ?? getFallbackScores(tier)
-      let judgeRationale = primaryScore?.rationale ?? 'Primary judge unavailable — fallback scores used'
-      const judgeModelsUsed = [PRIMARY_JUDGE_MODEL]
+      // Step 3: Audit judge (GPT-4.1) — fires on borderline primary or failover
+      const primary = primaryScores ?? getFallbackScores(tier)
+      const needsAudit = !primaryScores ||
+        (primary.composite_score > 35 && primary.composite_score < 65)  // borderline range
 
-      const needsAudit = !primaryScore ||
-        (finalScores.composite_score ?? 0) > 40 && (finalScores.composite_score ?? 0) < 60 // borderline range
-
+      let auditScores: RawJudgeScores | null = null
       if (needsAudit) {
-        const auditScore = await scoreWithJudge(AUDIT_JUDGE_MODEL, submission, input, tier)
-        if (auditScore) {
-          judgeModelsUsed.push(AUDIT_JUDGE_MODEL)
-          // Average primary and audit scores
-          const avg = (a?: number, b?: number) =>
-            a != null && b != null ? Math.round((a + b) / 2) : (a ?? b ?? 0)
-
-          finalScores = {
-            composite_score: avg(finalScores.composite_score, auditScore.scores.composite_score),
-            objective_score: avg(finalScores.objective_score, auditScore.scores.objective_score),
-            process_score: avg(finalScores.process_score, auditScore.scores.process_score),
-            strategy_score: avg(finalScores.strategy_score, auditScore.scores.strategy_score),
-            integrity_adjustment: avg(finalScores.integrity_adjustment, auditScore.scores.integrity_adjustment),
-            objective_passed: finalScores.objective_passed || (auditScore.scores.objective_passed ?? false),
-            flags: [...(finalScores.flags ?? []), ...(auditScore.scores.flags ?? [])],
-          }
-          judgeRationale = `Primary: ${primaryScore?.rationale ?? 'n/a'} | Audit: ${auditScore.rationale}`
-        }
+        auditScores = await scoreWithJudge(AUDIT_JUDGE_MODEL, submission, input)
       }
+
+      // Step 4: Item 1 — resolve (escalate if delta too large, blend if safe)
+      const { resolved, resolution, judge_delta, divergence_risk } = resolveJudgeScores(primary, auditScores, tier)
+
+      // Item 4: Build per-lane breakdowns
+      const lane_breakdowns = buildLaneBreakdowns(resolved, weights)
 
       results.push({
         tier,
         runner_type: 'real_llm',
-        composite_score: finalScores.composite_score ?? 0,
-        objective_score: finalScores.objective_score ?? 0,
-        process_score: finalScores.process_score ?? 0,
-        strategy_score: finalScores.strategy_score ?? 0,
-        integrity_adjustment: finalScores.integrity_adjustment ?? 0,
-        objective_passed: finalScores.objective_passed ?? false,
+        composite_score: resolved.composite_score,
+        lane_breakdowns,
+        objective_score: resolved.objective_score,
+        process_score: resolved.process_score,
+        strategy_score: resolved.strategy_score,
+        integrity_adjustment: resolved.integrity_adjustment,
+        objective_passed: resolved.objective_passed,
         submission_summary: submission.slice(0, 200),
-        flags: finalScores.flags ?? [],
+        flags: resolved.flags,
         latency_ms: submissionResult?.latency_ms,
         model_family: modelConfig.family,
         raw_submission: submission,
-        judge_rationale: judgeRationale,
-        judge_models_used: judgeModelsUsed,
+        judge_rationale: resolved.rationale,
+        judge_models_used: auditScores ? [PRIMARY_JUDGE_MODEL, AUDIT_JUDGE_MODEL] : [PRIMARY_JUDGE_MODEL],
+        primary_composite: primary.composite_score,
+        audit_composite: auditScores?.composite_score,
+        judge_delta,
+        judge_resolution: resolution,
       })
     }))
 
@@ -307,23 +374,26 @@ export class RealLLMCalibrationRunner implements CalibrationRunner {
     const mean = scores.reduce((a, b) => a + b, 0) / scores.length
     const spread = Math.sqrt(scores.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / scores.length)
 
-    const clusteringRisk = computeSameModelClusteringRisk(results)
-    const borderlineTriggers = detectBorderlineTriggers(results, separation, spread)
+    const clusteringRisk = computeClusteringRisk(results)
+    const divergenceRisk = computeOverallDivergenceRisk(results)  // item 2
+    const borderlineTriggers = detectBorderlineTriggers(results, separation, spread, divergenceRisk)
 
     let verdict: 'pass' | 'borderline' | 'fail'
     let recommendation: 'passed' | 'flagged' | 'rejected'
     let reason: string | undefined
 
-    if (separation >= CALIBRATION_THRESHOLDS.separation_pass && spread >= CALIBRATION_THRESHOLDS.tier_spread_min && clusteringRisk !== 'high') {
+    // Escalated divergence = automatic borderline regardless of separation
+    if (divergenceRisk === 'escalated') {
+      verdict = 'borderline'; recommendation = 'flagged'
+      reason = `Judge divergence escalated — one or more tiers had primary/audit delta > ${CALIBRATION_THRESHOLDS.judge_delta_escalate}pts. Manual review required.`
+    } else if (separation >= CALIBRATION_THRESHOLDS.separation_pass && spread >= CALIBRATION_THRESHOLDS.tier_spread_min && clusteringRisk !== 'high') {
       verdict = 'pass'; recommendation = 'passed'
     } else if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderlineTriggers.length > 0) {
       verdict = 'borderline'; recommendation = 'flagged'
-      reason = `Borderline: ${borderlineTriggers.join(', ') || `separation ${separation.toFixed(1)}pts`}. Manual review recommended.`
+      reason = `Borderline: ${borderlineTriggers.join(', ') || `sep ${separation.toFixed(1)}pts`}`
     } else {
       verdict = 'fail'; recommendation = 'rejected'
-      reason = clusteringRisk === 'high'
-        ? `High same-model clustering risk. Tiers not sufficiently differentiated (sep: ${separation.toFixed(1)}pts).`
-        : `Insufficient separation (${separation.toFixed(1)}pts). Challenge does not discriminate between model tiers.`
+      reason = `Insufficient separation (${separation.toFixed(1)}pts) or high clustering risk.`
     }
 
     return {
@@ -336,6 +406,7 @@ export class RealLLMCalibrationRunner implements CalibrationRunner {
       recommendation,
       reason,
       same_model_clustering_risk: clusteringRisk,
+      judge_divergence_risk: divergenceRisk,
       borderline_triggers: borderlineTriggers,
       cost_tokens: totalTokens,
       run_at: new Date().toISOString(),

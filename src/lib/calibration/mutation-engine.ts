@@ -11,6 +11,7 @@
  */
 
 import type { MutationType } from './types'
+import { FLAGSHIP_FAMILIES, FLAGSHIP_ANTI_DRIFT_GATES } from './types'
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
@@ -206,6 +207,34 @@ Generate a mutated version. Return ONLY a JSON object with these fields:
       family_identity_preserved: familyPreserved,
       freshness_delta: freshnessDelta,
       anti_drift_warnings: antiDriftWarnings,
+    }
+
+    // Item 3: Hard gates for flagship families
+    const isflagship = input.challenge_type && FLAGSHIP_FAMILIES.has(input.challenge_type)
+    if (isflagship) {
+      const hardViolations: string[] = []
+
+      if (FLAGSHIP_ANTI_DRIFT_GATES.require_family_identity_preserved && !familyPreserved) {
+        hardViolations.push('HARD GATE FAILED: family_identity_preserved=false — flagship mutations must preserve family identity')
+      }
+      if (FLAGSHIP_ANTI_DRIFT_GATES.require_freshness_increased && freshnessDelta !== 'increased') {
+        hardViolations.push(`HARD GATE FAILED: freshness_delta=${freshnessDelta} — flagship mutations must increase freshness`)
+      }
+      if (FLAGSHIP_ANTI_DRIFT_GATES.require_invariants_listed && invariantsPreserved.length === 0) {
+        hardViolations.push('HARD GATE FAILED: no invariants_preserved listed — flagship mutations must document what stayed the same')
+      }
+      if (generation > FLAGSHIP_ANTI_DRIFT_GATES.max_generation) {
+        hardViolations.push(`HARD GATE FAILED: generation ${generation} exceeds flagship max (${FLAGSHIP_ANTI_DRIFT_GATES.max_generation})`)
+      }
+
+      if (hardViolations.length > 0) {
+        // Return with hard_gate_blocked flag — caller must reject this mutation
+        return {
+          ...output,
+          anti_drift_warnings: [...antiDriftWarnings, ...hardViolations],
+          hard_gate_blocked: true,
+        } as MutationOutput & { hard_gate_blocked: true }
+      }
     }
   } catch (err) {
     console.error('[mutation-engine] JSON parse error:', err)

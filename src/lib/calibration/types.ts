@@ -1,19 +1,13 @@
 /**
  * Bouts Calibration System — Shared Types
- * 
- * Both synthetic and real LLM runners implement the CalibrationRunner interface.
- * Swap implementations without changing orchestrator code.
  */
 
 export type CalibrationTier = 'naive' | 'standard' | 'strong' | 'elite'
-
 export type CalibrationRunnerType = 'synthetic' | 'real_llm'
-
 export type MutationType = 'semantic' | 'structural' | 'adversarial'
-
 export type CalibrationPolicy = 'synthetic_only' | 'synthetic_required_real_optional' | 'synthetic_required_real_required'
-
 export type SameModelClusteringRisk = 'low' | 'medium' | 'high'
+export type JudgeDivergenceRisk = 'low' | 'medium' | 'high' | 'escalated'
 
 export type BorderlineTrigger =
   | 'tier_spread_below_threshold'
@@ -22,6 +16,8 @@ export type BorderlineTrigger =
   | 'synthetic_naive_too_high'
   | 'judge_spread_suspiciously_low'
   | 'score_compression_detected'
+  | 'judge_divergence_high'         // new: primary vs audit delta too large
+  | 'judge_divergence_escalated'    // new: escalated instead of blended
 
 export interface ChallengeCalibrationInput {
   challenge_id: string
@@ -31,15 +27,29 @@ export interface ChallengeCalibrationInput {
   category: string
   difficulty_profile?: Record<string, number> | null
   judge_weights?: Record<string, number> | null
+  judge_config_version?: string      // for cache key
+  model_version?: string             // for cache key
   time_limit_minutes: number
   has_objective_tests: boolean
   challenge_type?: string | null
+}
+
+// Per-lane raw scores — preserved for full audit trail
+export interface LaneScoringBreakdown {
+  lane: 'objective' | 'process' | 'strategy' | 'integrity'
+  raw_score: number
+  weighted_contribution: number
+  weight_applied: number
+  evidence_summary?: string
+  flags?: string[]
 }
 
 export interface TierCalibrationResult {
   tier: CalibrationTier
   runner_type: CalibrationRunnerType
   composite_score: number
+  // Raw per-lane breakdowns (item 4)
+  lane_breakdowns: LaneScoringBreakdown[]
   objective_score: number
   process_score: number
   strategy_score: number
@@ -49,10 +59,14 @@ export interface TierCalibrationResult {
   flags: string[]
   latency_ms?: number
   model_family?: string
-  // Raw artifacts for audit
   raw_submission?: string
   judge_rationale?: string
   judge_models_used?: string[]
+  // Judge divergence info (item 1 + 2)
+  primary_composite?: number
+  audit_composite?: number
+  judge_delta?: number
+  judge_resolution?: 'averaged' | 'escalated' | 'primary_only' | 'fallback'
 }
 
 export interface CalibrationResult {
@@ -64,10 +78,11 @@ export interface CalibrationResult {
   discrimination_verdict: 'pass' | 'borderline' | 'fail'
   recommendation: 'passed' | 'flagged' | 'rejected'
   reason?: string
-  // New fields
   same_model_clustering_risk: SameModelClusteringRisk
+  judge_divergence_risk: JudgeDivergenceRisk   // item 2: first-class signal
   borderline_triggers: BorderlineTrigger[]
   cost_tokens?: number
+  cache_key?: string                            // item 5: full cache key
   run_at: string
 }
 
@@ -76,7 +91,17 @@ export interface CalibrationRunner {
   run(input: ChallengeCalibrationInput): Promise<CalibrationResult>
 }
 
-// Policy mapping: what calibration is required per challenge class
+// Flagship families that require hard anti-drift gates (item 3)
+export const FLAGSHIP_FAMILIES = new Set(['boss', 'abyss', 'versus-stakes', 'featured'])
+
+// Hard anti-drift gates for flagship families
+export const FLAGSHIP_ANTI_DRIFT_GATES = {
+  require_family_identity_preserved: true,
+  require_freshness_increased: true,
+  max_generation: 5,
+  require_invariants_listed: true,
+}
+
 export const CALIBRATION_POLICY: Record<string, CalibrationPolicy> = {
   daily: 'synthetic_only',
   standard: 'synthetic_required_real_optional',
@@ -84,29 +109,31 @@ export const CALIBRATION_POLICY: Record<string, CalibrationPolicy> = {
   boss: 'synthetic_required_real_required',
   abyss: 'synthetic_required_real_required',
   prize: 'synthetic_required_real_required',
-  versus: 'synthetic_required_real_optional',          // unranked/casual
-  'versus-ranked': 'synthetic_required_real_required', // ranked versus
+  versus: 'synthetic_required_real_optional',
+  'versus-ranked': 'synthetic_required_real_required',
   'versus-stakes': 'synthetic_required_real_required',
   special: 'synthetic_only',
 }
 
-// Separation thresholds for verdict
 export const CALIBRATION_THRESHOLDS = {
   separation_pass: 20,
   separation_borderline: 10,
   separation_fail: 10,
   tier_spread_min: 8,
-  // Borderline trigger thresholds
-  elite_ceiling_min: 75,     // elite should score >= 75 or flag
-  naive_ceiling_max: 30,     // naive should score <= 30 or flag
-  judge_spread_suspicious: 3, // if all judges within 3pts of each other, flag
-  clustering_risk_threshold: 8, // adjacent tier score delta < 8 = clustering risk
+  elite_ceiling_min: 75,
+  naive_ceiling_max: 30,
+  judge_spread_suspicious: 3,
+  clustering_risk_threshold: 8,
+  // Judge divergence thresholds (item 1 + 2)
+  judge_delta_blend_max: 15,       // avg if delta <= 15
+  judge_delta_escalate: 16,        // escalate (don't blend) if delta > 15
+  judge_divergence_medium: 8,      // medium risk >= 8pt delta
+  judge_divergence_high: 15,       // high risk >= 15pt delta
 }
 
-// Token budget per calibration type
 export const COST_CONTROLS = {
   max_tokens_per_tier: 2000,
   max_total_tokens: 10000,
   max_real_retries: 2,
-  cache_ttl_hours: 24, // skip real rerun if prompt hash unchanged within 24h
+  cache_ttl_hours: 24,
 }

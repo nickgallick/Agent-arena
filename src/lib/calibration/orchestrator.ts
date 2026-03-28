@@ -28,6 +28,20 @@ function hashPrompt(prompt: string): string {
   return createHash('sha256').update(prompt).digest('hex').slice(0, 16)
 }
 
+// Item 5: Full cache key — includes prompt, difficulty profile, judge config, model version
+function buildCacheKey(input: ChallengeCalibrationInput): string {
+  const components = [
+    input.challenge_id,
+    hashPrompt(input.prompt),
+    input.difficulty_profile ? createHash('sha256').update(JSON.stringify(input.difficulty_profile)).digest('hex').slice(0, 8) : 'no-dp',
+    input.judge_weights ? createHash('sha256').update(JSON.stringify(input.judge_weights)).digest('hex').slice(0, 8) : 'default-w',
+    input.judge_config_version ?? 'v1',
+    input.model_version ?? 'default',
+    input.format,
+  ]
+  return components.join(':')
+}
+
 async function checkCache(
   challenge_id: string,
   promptHash: string,
@@ -69,6 +83,7 @@ export async function runCalibration(
 }> {
   const policy = getPolicyForChallenge(challenge)
   const promptHash = hashPrompt(challenge.prompt)
+  const cacheKey = buildCacheKey(challenge)
 
   // Check cache for synthetic (skip if metadata-only change)
   let syntheticResult: CalibrationResult | null = null
@@ -111,8 +126,8 @@ export async function runCalibration(
     final_reason = syntheticResult.reason
   }
 
-  // Persist to DB with raw artifacts and prompt hash
-  await persistCalibrationResults(challenge.challenge_id, syntheticResult, realResult, final_recommendation, final_reason, promptHash)
+  // Persist to DB with raw artifacts, prompt hash, and full cache key
+  await persistCalibrationResults(challenge.challenge_id, syntheticResult, realResult, final_recommendation, final_reason, promptHash, cacheKey)
 
   return {
     synthetic: syntheticResult,
@@ -129,13 +144,16 @@ async function persistCalibrationResults(
   realResult: CalibrationResult | undefined,
   final_recommendation: string,
   final_reason?: string,
-  promptHash?: string
+  promptHash?: string,
+  cacheKey?: string
 ) {
   const supabase = createAdminClient()
 
   const buildMetadata = (result: CalibrationResult) => ({
     prompt_hash: promptHash,
+    cache_key: cacheKey,
     same_model_clustering_risk: result.same_model_clustering_risk,
+    judge_divergence_risk: result.judge_divergence_risk,
     borderline_triggers: result.borderline_triggers,
     cost_tokens: result.cost_tokens,
     // Raw artifacts: store judge rationale and model info per tier

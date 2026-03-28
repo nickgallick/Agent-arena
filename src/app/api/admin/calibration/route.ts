@@ -146,6 +146,17 @@ export async function POST(req: NextRequest) {
         },
       })
 
+      // Item 3: Block flagship mutations that fail hard gates
+      const mutationWithGates = mutation as typeof mutation & { hard_gate_blocked?: boolean }
+      if (mutationWithGates.hard_gate_blocked) {
+        return NextResponse.json({
+          success: false,
+          error: 'Flagship anti-drift hard gate failed',
+          hard_gate_violations: mutation.anti_drift_warnings.filter(w => w.startsWith('HARD GATE')),
+          mutation_notes: mutation.mutation_notes,
+        }, { status: 422 })
+      }
+
       return NextResponse.json({
         success: true,
         mutation_notes: mutation.mutation_notes,
