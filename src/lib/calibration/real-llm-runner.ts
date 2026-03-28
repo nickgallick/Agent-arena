@@ -35,41 +35,61 @@ const TIER_MODELS: Record<CalibrationTier, { model: string; family: string }> = 
 const PRIMARY_JUDGE_MODEL = 'anthropic/claude-sonnet-4-6'
 const AUDIT_JUDGE_MODEL = 'openai/gpt-4.1'
 
+// Tier-specific temperatures — lower tiers get higher temp to increase variance/errors
+const TIER_TEMPERATURES: Record<CalibrationTier, number> = {
+  naive: 1.2,     // high variance — inconsistent, error-prone output
+  standard: 0.8,  // moderate variance
+  strong: 0.4,    // mostly consistent
+  elite: 0.2,     // precise and deterministic
+}
+
+// Tier-specific max_tokens — hard ceiling forces incomplete solutions at lower tiers
+const TIER_MAX_TOKENS: Record<CalibrationTier, number> = {
+  naive: 200,     // forces incomplete solutions — can't solve complex problems in 200 tokens
+  standard: 450,  // limited — will miss edge cases just from space constraints
+  strong: 900,    // enough for thorough solution
+  elite: 1800,    // full budget
+}
+
 const TIER_SYSTEM_PROMPTS: Record<CalibrationTier, string> = {
-  naive: `You are a junior developer who just started coding. You have basic knowledge but miss many important things.
-RULES YOU MUST FOLLOW:
-- Write the most obvious, naive solution only
-- Do NOT handle edge cases — only handle the happy path shown in the example
-- Do NOT add error handling
-- Do NOT think about concurrency, race conditions, or performance
-- Stop after writing the first solution that comes to mind
-- Maximum 30 lines of code
-- Do not add any tests or validation`,
+  naive: `You are a beginner coder. Output ONLY raw code. No explanations, no comments, no markdown.
 
-  standard: `You are an average developer with 2 years experience. You write functional code but miss subtle issues.
-RULES YOU MUST FOLLOW:
-- Handle the obvious cases but miss hidden edge cases
-- Add basic error handling (try/catch) but not thorough validation
-- Do NOT think about concurrency or race conditions
-- Do NOT consider performance at scale
-- Miss at least 1-2 of the harder requirements
-- Keep solution under 60 lines`,
+HARD RULES — violating these fails the task:
+- Solve only the first/simplest interpretation of the problem
+- Use the most basic data structures (arrays, simple loops only)
+- NO error handling of any kind
+- NO edge case handling — only the happy path in the example
+- NO recursion — use simple iteration only
+- Stop as soon as you have something that looks roughly correct
+- Output must be under 15 lines`,
 
-  strong: `You are a strong senior engineer. You write thorough, correct code and catch most edge cases.
-RULES YOU MUST FOLLOW:
-- Handle all visible edge cases
+  standard: `You are a developer who writes working but incomplete solutions. Output ONLY raw code. No explanations.
+
+HARD RULES:
+- Solve the obvious requirements only — skip anything that requires deep reading
+- Basic try/catch is fine but no specific error types
+- Ignore concurrency, thread safety, and race conditions entirely
+- Ignore performance — use O(n²) if it's simpler
+- Do NOT handle null/undefined inputs — assume happy path
+- Output must be under 30 lines`,
+
+  strong: `You are a senior engineer. Output working, well-structured code with proper error handling.
+
+APPROACH:
+- Handle all visible requirements including edge cases in the problem statement
 - Add proper error handling and input validation
-- Consider basic concurrency if relevant
-- Write clean, well-structured code
-- May miss the most subtle hidden invariants`,
+- Consider basic concurrency if the problem mentions it
+- Write clean, readable code
+- You may miss the most subtle hidden invariants that require deep domain knowledge`,
 
-  elite: `You are a principal engineer at a top tech company. You solve problems with maximum rigor and catch everything.
-RULES YOU MUST FOLLOW:
-- Identify and handle ALL edge cases including hidden invariants
-- Handle concurrency, race conditions, error propagation correctly
-- Consider performance, memory, and security implications
-- Write production-grade code with proper testing
-- Explicitly flag any ambiguous requirements`,
+  elite: `You are a principal engineer. Output production-grade code that handles everything.
+
+APPROACH:
+- Read the full problem carefully — identify ALL requirements including implicit ones
+- Handle every edge case: nulls, empty inputs, concurrency, resource cleanup, error propagation
+- Consider performance, memory efficiency, and security implications
+- Make your solution robust against adversarial inputs
+- Add brief inline comments only for non-obvious logic`,
 }
 
 interface RawJudgeScores {
@@ -89,7 +109,8 @@ async function callLLM(
   systemPrompt: string,
   userPrompt: string,
   maxTokens = COST_CONTROLS.max_tokens_per_tier,
-  timeoutMs = 45000
+  timeoutMs = 45000,
+  temperature = 0.3
 ): Promise<{ content: string; latency_ms: number; tokens_used?: number } | null> {
   if (!OPENROUTER_API_KEY) return null
   const start = Date.now()
@@ -111,7 +132,7 @@ async function callLLM(
           { role: 'user', content: userPrompt },
         ],
         max_tokens: maxTokens,
-        temperature: 0.3,
+        temperature,
       }),
       signal: controller.signal,
     })
@@ -347,15 +368,25 @@ export class RealLLMCalibrationRunner implements CalibrationRunner {
     await Promise.all(tierOrder.map(async (tier) => {
       const modelConfig = TIER_MODELS[tier]
 
-      // Step 1: Get submission
-      const submissionResult = await callLLM(modelConfig.model, TIER_SYSTEM_PROMPTS[tier],
-        `Challenge:\n\n${input.prompt}\n\nProvide your solution.`)
+      // Step 1: Get submission — use tier-specific token limits and temperature
+      const tierMaxTokens = TIER_MAX_TOKENS[tier]
+      const tierTemp = TIER_TEMPERATURES[tier]
+      const submissionResult = await callLLM(
+        modelConfig.model,
+        TIER_SYSTEM_PROMPTS[tier],
+        `Challenge:\n\n${input.prompt}\n\nProvide your solution.`,
+        tierMaxTokens,
+        45000,
+        tierTemp
+      )
       if (submissionResult?.tokens_used) totalTokens += submissionResult.tokens_used
 
       // If tier model failed to produce a submission, score as 0 — don't use fallback
       // This gives an accurate signal: the challenge separator between tiers still works
       // as long as at least naive and elite responded
-      const submissionFailed = !submissionResult?.content || submissionResult.content.trim().length < 50
+      // Naive/standard have lower token limits so shorter minimum threshold
+      const minLength = tier === 'naive' ? 20 : tier === 'standard' ? 30 : 50
+      const submissionFailed = !submissionResult?.content || submissionResult.content.trim().length < minLength
       const submission = submissionResult?.content ?? ''
 
       if (submissionFailed) {
