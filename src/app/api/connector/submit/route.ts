@@ -3,6 +3,10 @@ import { z } from 'zod'
 import { authenticateConnector } from '@/lib/auth/authenticate-connector'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/utils/rate-limit'
+import { validateSubmission } from '@/lib/submissions/validate-submission'
+import { hashContent, storeArtifact } from '@/lib/submissions/artifact-store'
+import { logSubmissionEvent } from '@/lib/submissions/event-logger'
+import { captureVersionSnapshot } from '@/lib/submissions/version-snapshot'
 
 const fileSchema = z.object({
   path: z.string().min(1),
@@ -67,7 +71,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No active entry for this challenge' }, { status: 404 })
     }
 
+    // Phase 1 runtime: validate submission
+    const validation = await validateSubmission(supabase, {
+      challenge_id,
+      agent_id: agent.id,
+      content,
+    })
+
+    if (!validation.valid) {
+      return NextResponse.json({ error: validation.rejection_reason ?? 'Submission rejected' }, { status: 400 })
+    }
+
     const submittedAt = new Date().toISOString()
+
+    // Capture version snapshot before insert
+    const version_snapshot = await captureVersionSnapshot(supabase, challenge_id)
 
     // Insert submission
     const { data: submission, error: submitError } = await supabase
@@ -80,14 +98,31 @@ export async function POST(request: Request) {
         content,
         files: files ?? null,
         submitted_at: submittedAt,
+        submission_status: 'received',
       })
       .select('id, submitted_at')
       .single()
 
     if (submitError) {
-      console.error('[api/connector/submit POST] Insert error:', submitError.message)
       return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 })
     }
+
+    // Log received event
+    await logSubmissionEvent(supabase, submission.id, 'received')
+
+    // Store immutable artifact
+    const { content_hash } = await storeArtifact(supabase, {
+      submission_id: submission.id,
+      content,
+      artifact_type: 'solution',
+      version_snapshot,
+    })
+
+    // Update artifact_hash on submission
+    await supabase
+      .from('submissions')
+      .update({ artifact_hash: content_hash })
+      .eq('id', submission.id)
 
     // Update entry status + sync submission_text for judge pipeline
     const { error: updateError } = await supabase
@@ -95,29 +130,45 @@ export async function POST(request: Request) {
       .update({
         status: 'submitted',
         submitted_at: submittedAt,
-        submission_text: content,  // sync for judge-entry edge function
+        submission_text: content,
         submission_files: files ?? null,
       })
       .eq('id', entry.id)
 
     if (updateError) {
-      // Critical — if entry status doesn't update, judge pipeline won't fire
-      console.error('[api/connector/submit POST] Entry update error:', updateError.message)
       return NextResponse.json({ error: 'Submission recorded but entry state update failed — contact support' }, { status: 500 })
     }
 
-    // Compute run metrics from telemetry (non-blocking — intentional fire-and-forget)
-    supabase.rpc('compute_run_metrics', { p_entry_id: entry.id })
-      .then(({ error }) => {
-        if (error) console.error('[api/connector/submit POST] compute_run_metrics error:', error.message)
+    // Enqueue judging job
+    const { error: enqueueError } = await supabase.rpc('enqueue_judging_job', {
+      p_submission_id: submission.id,
+      p_challenge_id: challenge_id,
+      p_agent_id: agent.id,
+      p_version_snapshot: version_snapshot as unknown as Record<string, unknown>,
+    })
+
+    if (enqueueError) {
+      // Non-fatal: submission is stored, but judging won't auto-start
+      await logSubmissionEvent(supabase, submission.id, 'failed', {
+        error: `Failed to enqueue judging job: ${enqueueError.message}`,
       })
+    } else {
+      await logSubmissionEvent(supabase, submission.id, 'queued')
+      await supabase
+        .from('submissions')
+        .update({ submission_status: 'queued' })
+        .eq('id', submission.id)
+    }
+
+    // Compute run metrics from telemetry (non-blocking)
+    supabase.rpc('compute_run_metrics', { p_entry_id: entry.id }).then()
 
     return NextResponse.json({
       submission_id: submission.id,
       submitted_at: submission.submitted_at,
+      status: enqueueError ? 'received' : 'queued',
     }, { status: 201 })
-  } catch (err) {
-    console.error('[api/connector/submit POST] Unexpected error:', err)
+  } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
