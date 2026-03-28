@@ -29,29 +29,56 @@ export async function GET(req: NextRequest) {
 
     console.log('[cron/challenge-quality] enforcement pass complete:', result)
 
-    // Check for newly quarantined challenges and log them
+    const twentyMinsAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString()
+
+    // Check for newly quarantined challenges (last 20 min)
     const { data: quarantined } = await supabase
       .from('challenges')
-      .select('id, title, quarantine_reason, quarantined_at')
+      .select('id, title, quarantine_reason, quarantined_at, cdi_score, solve_rate, score_stddev, dispute_rate, exploit_rate')
       .eq('calibration_status', 'quarantined')
       .not('quarantined_at', 'is', null)
-      .gte('quarantined_at', new Date(Date.now() - 20 * 60 * 1000).toISOString()) // Last 20 min
+      .gte('quarantined_at', twentyMinsAgo)
 
+    // Check for newly flagged challenges (last 20 min)
+    const { data: recentlyFlagged } = await supabase
+      .from('challenges')
+      .select('id, title, cdi_score, solve_rate, score_stddev, dispute_rate, exploit_rate, tier_separation')
+      .eq('calibration_status', 'flagged')
+      .gte('last_calculated_at', twentyMinsAgo)
+
+    const { data: totalFlagged } = await supabase
+      .from('challenges')
+      .select('id', { count: 'exact', head: true })
+      .eq('calibration_status', 'flagged')
+
+    // Build rich alert if anything was quarantined
     if (quarantined && quarantined.length > 0) {
-      console.warn('[cron/challenge-quality] newly quarantined:', quarantined.map(c => `${c.title} (${c.quarantine_reason})`))
+      const alertLines = quarantined.map(c =>
+        `⚠️ QUARANTINED: ${c.title}\n  Reason: ${c.quarantine_reason}\n  CDI: ${c.cdi_score ?? 'n/a'} | Solve: ${c.solve_rate ? (Number(c.solve_rate) * 100).toFixed(0) + '%' : 'n/a'} | Dispute: ${c.dispute_rate ? (Number(c.dispute_rate) * 100).toFixed(0) + '%' : 'n/a'} | Exploit: ${c.exploit_rate ? (Number(c.exploit_rate) * 100).toFixed(0) + '%' : 'n/a'}\n  Admin: https://agent-arena-roan.vercel.app/admin/challenges`
+      )
+      console.warn('[cron/challenge-quality] QUARANTINE ALERT:\n' + alertLines.join('\n'))
     }
 
-    // Check for newly flagged challenges
-    const { data: flagged } = await supabase
-      .from('challenges')
-      .select('id, title, cdi_score, solve_rate, score_stddev')
-      .eq('calibration_status', 'flagged')
+    if (recentlyFlagged && recentlyFlagged.length > 0) {
+      console.warn('[cron/challenge-quality] newly flagged:', recentlyFlagged.map(c => `${c.title} (CDI: ${c.cdi_score})`))
+    }
 
     return NextResponse.json({
       success: true,
       result,
       newly_quarantined: quarantined?.length ?? 0,
-      total_flagged: flagged?.length ?? 0,
+      newly_flagged: recentlyFlagged?.length ?? 0,
+      total_flagged: totalFlagged?.length ?? 0,
+      quarantined_details: quarantined?.map(c => ({
+        id: c.id,
+        title: c.title,
+        reason: c.quarantine_reason,
+        cdi_score: c.cdi_score,
+        solve_rate: c.solve_rate,
+        dispute_rate: c.dispute_rate,
+        exploit_rate: c.exploit_rate,
+        admin_url: `https://agent-arena-roan.vercel.app/admin/challenges`
+      })),
       run_at: new Date().toISOString()
     })
   } catch (err) {
