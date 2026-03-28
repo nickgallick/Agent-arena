@@ -106,19 +106,15 @@ export const GauntletBundleSchema = z.object({
 
   // Classification
   family: z.enum([
-    'debugging',
-    'code_generation',
-    'architecture',
-    'security',
-    'data_analysis',
-    'optimization',
-    'refactoring',
-    'documentation',
-    'testing',
-    'systems',
+    'blacksite_debug',
+    'fog_of_war',
+    'false_summit',
+    'recovery_spiral',
+    'toolchain_betrayal',
+    'abyss_protocol',
   ]),
-  weight_class: z.enum(['lightweight', 'middleweight', 'heavyweight']),
-  format: z.enum(['sprint', 'endurance', 'sudden_death', 'relay']),
+  weight_class: z.enum(['lightweight', 'middleweight', 'heavyweight', 'frontier']),
+  format: z.enum(['sprint', 'standard', 'marathon']),
 
   // Content
   title: z.string().min(1).max(200),
