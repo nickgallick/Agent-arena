@@ -13,6 +13,16 @@ export type MutationType = 'semantic' | 'structural' | 'adversarial'
 
 export type CalibrationPolicy = 'synthetic_only' | 'synthetic_required_real_optional' | 'synthetic_required_real_required'
 
+export type SameModelClusteringRisk = 'low' | 'medium' | 'high'
+
+export type BorderlineTrigger =
+  | 'tier_spread_below_threshold'
+  | 'separation_near_boundary'
+  | 'synthetic_elite_below_ceiling'
+  | 'synthetic_naive_too_high'
+  | 'judge_spread_suspiciously_low'
+  | 'score_compression_detected'
+
 export interface ChallengeCalibrationInput {
   challenge_id: string
   title: string
@@ -38,18 +48,26 @@ export interface TierCalibrationResult {
   submission_summary: string
   flags: string[]
   latency_ms?: number
-  model_family?: string // for real LLM runs only
+  model_family?: string
+  // Raw artifacts for audit
+  raw_submission?: string
+  judge_rationale?: string
+  judge_models_used?: string[]
 }
 
 export interface CalibrationResult {
   challenge_id: string
   runner_type: CalibrationRunnerType
   tiers: TierCalibrationResult[]
-  separation_score: number       // elite avg - naive avg
-  tier_spread: number            // stddev across all tier scores
+  separation_score: number
+  tier_spread: number
   discrimination_verdict: 'pass' | 'borderline' | 'fail'
   recommendation: 'passed' | 'flagged' | 'rejected'
   reason?: string
+  // New fields
+  same_model_clustering_risk: SameModelClusteringRisk
+  borderline_triggers: BorderlineTrigger[]
+  cost_tokens?: number
   run_at: string
 }
 
@@ -66,15 +84,29 @@ export const CALIBRATION_POLICY: Record<string, CalibrationPolicy> = {
   boss: 'synthetic_required_real_required',
   abyss: 'synthetic_required_real_required',
   prize: 'synthetic_required_real_required',
-  versus: 'synthetic_required_real_optional',
+  versus: 'synthetic_required_real_optional',          // unranked/casual
+  'versus-ranked': 'synthetic_required_real_required', // ranked versus
   'versus-stakes': 'synthetic_required_real_required',
   special: 'synthetic_only',
 }
 
 // Separation thresholds for verdict
 export const CALIBRATION_THRESHOLDS = {
-  separation_pass: 20,       // elite - naive >= 20 → pass
-  separation_borderline: 10, // 10-20 → borderline (trigger real LLM check)
-  separation_fail: 10,       // < 10 → fail (too flat)
-  tier_spread_min: 8,        // stddev of tier scores must be >= 8
+  separation_pass: 20,
+  separation_borderline: 10,
+  separation_fail: 10,
+  tier_spread_min: 8,
+  // Borderline trigger thresholds
+  elite_ceiling_min: 75,     // elite should score >= 75 or flag
+  naive_ceiling_max: 30,     // naive should score <= 30 or flag
+  judge_spread_suspicious: 3, // if all judges within 3pts of each other, flag
+  clustering_risk_threshold: 8, // adjacent tier score delta < 8 = clustering risk
+}
+
+// Token budget per calibration type
+export const COST_CONTROLS = {
+  max_tokens_per_tier: 2000,
+  max_total_tokens: 10000,
+  max_real_retries: 2,
+  cache_ttl_hours: 24, // skip real rerun if prompt hash unchanged within 24h
 }

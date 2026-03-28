@@ -13,7 +13,8 @@ import type {
   CalibrationResult,
   CalibrationPolicy,
 } from './types'
-import { CALIBRATION_POLICY } from './types'
+import { CALIBRATION_POLICY, COST_CONTROLS } from './types'
+import { createHash } from 'crypto'
 
 const synthetic = new SyntheticCalibrationRunner()
 const realLLM = new RealLLMCalibrationRunner()
@@ -23,9 +24,42 @@ function getPolicyForChallenge(challenge: ChallengeCalibrationInput): Calibratio
   return CALIBRATION_POLICY[type] ?? 'synthetic_required_real_optional'
 }
 
+function hashPrompt(prompt: string): string {
+  return createHash('sha256').update(prompt).digest('hex').slice(0, 16)
+}
+
+async function checkCache(
+  challenge_id: string,
+  promptHash: string,
+  runnerType: string
+): Promise<CalibrationResult | null> {
+  const supabase = createAdminClient()
+  const cutoff = new Date(Date.now() - COST_CONTROLS.cache_ttl_hours * 60 * 60 * 1000).toISOString()
+
+  const { data } = await supabase
+    .from('challenge_calibration_results')
+    .select('*')
+    .eq('challenge_id', challenge_id)
+    .eq('runner_type', runnerType)
+    .gte('run_at', cutoff)
+    .order('run_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  if (!data) return null
+
+  // Verify prompt hasn't changed
+  const cached = data as Record<string, unknown>
+  if ((cached.metadata as Record<string, unknown>)?.prompt_hash === promptHash) {
+    return cached as unknown as CalibrationResult
+  }
+  return null
+}
+
 export async function runCalibration(
   challenge: ChallengeCalibrationInput,
-  forceRealLLM = false
+  forceRealLLM = false,
+  skipCache = false
 ): Promise<{
   synthetic: CalibrationResult
   real_llm?: CalibrationResult
@@ -34,9 +68,16 @@ export async function runCalibration(
   policy: CalibrationPolicy
 }> {
   const policy = getPolicyForChallenge(challenge)
+  const promptHash = hashPrompt(challenge.prompt)
 
-  // Always run synthetic first
-  const syntheticResult = await synthetic.run(challenge)
+  // Check cache for synthetic (skip if metadata-only change)
+  let syntheticResult: CalibrationResult | null = null
+  if (!skipCache) {
+    syntheticResult = await checkCache(challenge.challenge_id, promptHash, 'synthetic')
+  }
+  if (!syntheticResult) {
+    syntheticResult = await synthetic.run(challenge)
+  }
 
   let realResult: CalibrationResult | undefined
 
@@ -70,8 +111,8 @@ export async function runCalibration(
     final_reason = syntheticResult.reason
   }
 
-  // Persist to DB
-  await persistCalibrationResults(challenge.challenge_id, syntheticResult, realResult, final_recommendation, final_reason)
+  // Persist to DB with raw artifacts and prompt hash
+  await persistCalibrationResults(challenge.challenge_id, syntheticResult, realResult, final_recommendation, final_reason, promptHash)
 
   return {
     synthetic: syntheticResult,
@@ -87,11 +128,27 @@ async function persistCalibrationResults(
   syntheticResult: CalibrationResult,
   realResult: CalibrationResult | undefined,
   final_recommendation: string,
-  final_reason?: string
+  final_reason?: string,
+  promptHash?: string
 ) {
   const supabase = createAdminClient()
 
-  // Store synthetic calibration result
+  const buildMetadata = (result: CalibrationResult) => ({
+    prompt_hash: promptHash,
+    same_model_clustering_risk: result.same_model_clustering_risk,
+    borderline_triggers: result.borderline_triggers,
+    cost_tokens: result.cost_tokens,
+    // Raw artifacts: store judge rationale and model info per tier
+    tier_artifacts: result.tiers.map(t => ({
+      tier: t.tier,
+      model_family: t.model_family,
+      judge_models_used: t.judge_models_used,
+      judge_rationale: t.judge_rationale,
+      flags: t.flags,
+    })),
+  })
+
+  // Store synthetic result with full artifacts
   await supabase.from('challenge_calibration_results').upsert({
     challenge_id,
     runner_type: 'synthetic',
@@ -102,9 +159,10 @@ async function persistCalibrationResults(
     reason: syntheticResult.reason,
     tier_results: syntheticResult.tiers,
     run_at: syntheticResult.run_at,
+    metadata: buildMetadata(syntheticResult),
   }, { onConflict: 'challenge_id,runner_type', ignoreDuplicates: false })
 
-  // Store real LLM result if present
+  // Store real LLM result with full artifacts
   if (realResult) {
     await supabase.from('challenge_calibration_results').upsert({
       challenge_id,
@@ -116,6 +174,7 @@ async function persistCalibrationResults(
       reason: realResult.reason,
       tier_results: realResult.tiers,
       run_at: realResult.run_at,
+      metadata: buildMetadata(realResult),
     }, { onConflict: 'challenge_id,runner_type', ignoreDuplicates: false })
   }
 

@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: createError.message }, { status: 500 })
       }
 
-      // Log mutation action
+      // Log mutation action with anti-drift data
       await supabase.from('challenge_admin_actions').insert({
         challenge_id: newChallenge.id,
         actor: 'mutation_engine',
@@ -138,12 +138,22 @@ export async function POST(req: NextRequest) {
           parent_challenge_id: challenge_id,
           mutation_type,
           generation: mutation.mutation_generation,
+          invariants_preserved: mutation.invariants_preserved,
+          invariants_changed: mutation.invariants_changed,
+          family_identity_preserved: mutation.family_identity_preserved,
+          freshness_delta: mutation.freshness_delta,
+          anti_drift_warnings: mutation.anti_drift_warnings,
         },
       })
 
       return NextResponse.json({
         success: true,
         mutation_notes: mutation.mutation_notes,
+        invariants_preserved: mutation.invariants_preserved,
+        invariants_changed: mutation.invariants_changed,
+        family_identity_preserved: mutation.family_identity_preserved,
+        freshness_delta: mutation.freshness_delta,
+        anti_drift_warnings: mutation.anti_drift_warnings,
         new_challenge: newChallenge,
       })
     }

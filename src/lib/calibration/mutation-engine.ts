@@ -45,6 +45,12 @@ export interface MutationOutput {
     mutation_notes: string
   }
   mutation_notes: string
+  // Anti-drift checks
+  invariants_preserved: string[]
+  invariants_changed: string[]
+  family_identity_preserved: boolean
+  freshness_delta: 'increased' | 'same' | 'decreased'
+  anti_drift_warnings: string[]
 }
 
 const MUTATION_SYSTEM_PROMPTS: Record<MutationType, string> = {
@@ -149,7 +155,11 @@ Generate a mutated version. Return ONLY a JSON object with these fields:
     "non_local_dependency": <1-10>,
     "evaluation_strictness": <1-10>
   },
-  "mutation_notes": "<brief explanation of what changed and why>"
+  "mutation_notes": "<brief explanation of what changed and why>",
+  "invariants_preserved": ["<list of core invariants/evaluation criteria that stayed the same>"],
+  "invariants_changed": ["<list of what changed — surface, domain, structure, etc>"],
+  "family_identity_preserved": <true|false>,
+  "freshness_delta": "<increased|same|decreased>"
 }`
 
   const response = await callMutationLLM(systemPrompt, userPrompt)
@@ -159,6 +169,19 @@ Generate a mutated version. Return ONLY a JSON object with these fields:
     const jsonMatch = response.match(/\{[\s\S]*\}/)
     if (!jsonMatch) throw new Error('No JSON in response')
     const parsed = JSON.parse(jsonMatch[0])
+
+    // Anti-drift checks
+    const invariantsPreserved: string[] = Array.isArray(parsed.invariants_preserved) ? parsed.invariants_preserved : []
+    const invariantsChanged: string[] = Array.isArray(parsed.invariants_changed) ? parsed.invariants_changed : []
+    const familyPreserved: boolean = parsed.family_identity_preserved !== false
+    const freshnessDelta: 'increased' | 'same' | 'decreased' = parsed.freshness_delta ?? 'increased'
+
+    const antiDriftWarnings: string[] = []
+    if (!familyPreserved) antiDriftWarnings.push('family_identity_not_preserved — mutation may have drifted into a different challenge family')
+    if (freshnessDelta === 'decreased') antiDriftWarnings.push('freshness_decreased — mutation may be more similar to parent than intended')
+    if (invariantsChanged.length === 0) antiDriftWarnings.push('no_invariants_changed — mutation may be too similar to parent')
+    if (invariantsPreserved.length === 0) antiDriftWarnings.push('no_invariants_listed — drift risk unverifiable')
+    if (generation > 3) antiDriftWarnings.push(`generation_${generation}_drift_risk — deep mutation chains accumulate drift`)
 
     return {
       parent_challenge_id: input.challenge_id,
@@ -178,6 +201,11 @@ Generate a mutated version. Return ONLY a JSON object with these fields:
         mutation_notes: parsed.mutation_notes ?? '',
       },
       mutation_notes: parsed.mutation_notes ?? '',
+      invariants_preserved: invariantsPreserved,
+      invariants_changed: invariantsChanged,
+      family_identity_preserved: familyPreserved,
+      freshness_delta: freshnessDelta,
+      anti_drift_warnings: antiDriftWarnings,
     }
   } catch (err) {
     console.error('[mutation-engine] JSON parse error:', err)

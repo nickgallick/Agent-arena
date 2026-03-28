@@ -14,6 +14,8 @@ import type {
   ChallengeCalibrationInput,
   TierCalibrationResult,
   CalibrationTier,
+  BorderlineTrigger,
+  SameModelClusteringRisk,
 } from './types'
 import { CALIBRATION_THRESHOLDS } from './types'
 
@@ -116,27 +118,74 @@ function computeTierSpread(tiers: TierCalibrationResult[]): number {
   return Math.sqrt(variance)
 }
 
-function getVerdict(separation: number, spread: number): {
+function computeClusteringRisk(tiers: TierCalibrationResult[]): SameModelClusteringRisk {
+  const sorted = ['naive', 'standard', 'strong', 'elite'].map(t => tiers.find(r => r.tier === t)?.composite_score ?? 0)
+  const deltas = [sorted[1] - sorted[0], sorted[2] - sorted[1], sorted[3] - sorted[2]]
+  const minDelta = Math.min(...deltas)
+  if (minDelta < CALIBRATION_THRESHOLDS.clustering_risk_threshold) return 'high'
+  if (minDelta < CALIBRATION_THRESHOLDS.clustering_risk_threshold * 1.5) return 'medium'
+  return 'low'
+}
+
+function detectBorderlineTriggers(
+  tiers: TierCalibrationResult[],
+  separation: number,
+  spread: number
+): BorderlineTrigger[] {
+  const triggers: BorderlineTrigger[] = []
+  const elite = tiers.find(t => t.tier === 'elite')
+  const naive = tiers.find(t => t.tier === 'naive')
+
+  if (spread < CALIBRATION_THRESHOLDS.tier_spread_min) triggers.push('tier_spread_below_threshold')
+  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline && separation < CALIBRATION_THRESHOLDS.separation_pass) {
+    triggers.push('separation_near_boundary')
+  }
+  if (elite && elite.composite_score < CALIBRATION_THRESHOLDS.elite_ceiling_min) triggers.push('synthetic_elite_below_ceiling')
+  if (naive && naive.composite_score > CALIBRATION_THRESHOLDS.naive_ceiling_max) triggers.push('synthetic_naive_too_high')
+
+  return triggers
+}
+
+function getVerdict(
+  separation: number,
+  spread: number,
+  tiers: TierCalibrationResult[]
+): {
   verdict: 'pass' | 'borderline' | 'fail'
   recommendation: 'passed' | 'flagged' | 'rejected'
   reason?: string
+  borderline_triggers: BorderlineTrigger[]
+  same_model_clustering_risk: SameModelClusteringRisk
 } {
-  if (separation >= CALIBRATION_THRESHOLDS.separation_pass && spread >= CALIBRATION_THRESHOLDS.tier_spread_min) {
-    return { verdict: 'pass', recommendation: 'passed' }
+  const borderline_triggers = detectBorderlineTriggers(tiers, separation, spread)
+  const same_model_clustering_risk = computeClusteringRisk(tiers)
+
+  if (
+    separation >= CALIBRATION_THRESHOLDS.separation_pass &&
+    spread >= CALIBRATION_THRESHOLDS.tier_spread_min &&
+    same_model_clustering_risk !== 'high'
+  ) {
+    return { verdict: 'pass', recommendation: 'passed', borderline_triggers, same_model_clustering_risk }
   }
-  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline) {
+  if (separation >= CALIBRATION_THRESHOLDS.separation_borderline || borderline_triggers.length > 0) {
     return {
       verdict: 'borderline',
       recommendation: 'flagged',
-      reason: `Borderline separation (${separation.toFixed(1)}pts). Real LLM calibration recommended.`,
+      reason: `Borderline: ${borderline_triggers.join(', ') || `separation ${separation.toFixed(1)}pts`}. Real LLM calibration recommended.`,
+      borderline_triggers,
+      same_model_clustering_risk,
     }
   }
   return {
     verdict: 'fail',
     recommendation: 'rejected',
-    reason: spread < CALIBRATION_THRESHOLDS.tier_spread_min
-      ? `Score distribution too flat (spread: ${spread.toFixed(1)}). Challenge does not discriminate.`
-      : `Insufficient tier separation (${separation.toFixed(1)}pts < ${CALIBRATION_THRESHOLDS.separation_pass}pts required).`,
+    reason: same_model_clustering_risk === 'high'
+      ? `High clustering risk — adjacent tiers scoring too similarly.`
+      : spread < CALIBRATION_THRESHOLDS.tier_spread_min
+        ? `Score distribution too flat (spread: ${spread.toFixed(1)}). Challenge does not discriminate.`
+        : `Insufficient tier separation (${separation.toFixed(1)}pts < ${CALIBRATION_THRESHOLDS.separation_pass}pts required).`,
+    borderline_triggers,
+    same_model_clustering_risk,
   }
 }
 
@@ -181,7 +230,7 @@ export class SyntheticCalibrationRunner implements CalibrationRunner {
 
     const separation = computeSeparation(results)
     const spread = computeTierSpread(results)
-    const { verdict, recommendation, reason } = getVerdict(separation, spread)
+    const { verdict, recommendation, reason, borderline_triggers, same_model_clustering_risk } = getVerdict(separation, spread, results)
 
     return {
       challenge_id: input.challenge_id,
@@ -192,6 +241,8 @@ export class SyntheticCalibrationRunner implements CalibrationRunner {
       discrimination_verdict: verdict,
       recommendation,
       reason,
+      same_model_clustering_risk,
+      borderline_triggers,
       run_at: new Date().toISOString(),
     }
   }
