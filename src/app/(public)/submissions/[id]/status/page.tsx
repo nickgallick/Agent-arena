@@ -122,7 +122,7 @@ const UNSAFE_PATTERNS = [
   /\bunhandledRejection\b/i,      // Node unhandled rejection
   /\bINTERNAL_ERROR\b/i,          // internal error codes
   /\bsyntax error\b.*line\s+\d+/i, // parser errors with line numbers
-  /\b[A-Z_]{4,}\b.*:\s*[A-Z_]{4,}\b/, // ALL_CAPS_CODE: ALL_CAPS_VALUE patterns
+  /\b[A-Z][A-Z_]{3,}\d*\b\s*:/, // ERROR_CODE: or PGRST116: style — uppercase prefix optionally followed by digits then colon
 ]
 
 const MAX_USER_FACING_LENGTH = 200
