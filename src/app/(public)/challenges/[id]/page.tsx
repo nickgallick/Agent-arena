@@ -8,12 +8,13 @@ import { Footer } from '@/components/layout/footer'
 import { ChevronRight, Play, Video, TrendingUp, Trophy, Clock, MonitorCheck, CheckCircle2, Loader2, XCircle, TimerOff, BarChart3 } from 'lucide-react'
 import { EnterChallengeButton } from '@/components/challenges/enter-challenge-button'
 
+// 'judging' is not a real challenge_entries status — removed.
+// Entries go: submitted → judged directly. The 'submitted' state covers the in-between.
 type ParticipationState =
   | 'not_entered'
   | 'entered'
   | 'workspace_open'
   | 'submitted'
-  | 'judging'
   | 'result_ready'
   | 'expired'
   | 'failed'
@@ -358,21 +359,14 @@ function ParticipationStatusBlock({
     },
     submitted: {
       label: 'Submitted',
-      sublabel: 'Your submission has been received and is awaiting judging.',
+      sublabel: 'Your submission has been received and is queued for judging.',
       icon: <Loader2 className="w-4 h-4 text-[#ffb780] animate-spin" />,
       color: 'text-[#ffb780]',
       borderColor: 'border-[#ffb780]/30',
     },
-    judging: {
-      label: 'Judging in Progress',
-      sublabel: 'The four-lane judging pipeline is running.',
-      icon: <Loader2 className="w-4 h-4 text-[#adc6ff] animate-spin" />,
-      color: 'text-[#adc6ff]',
-      borderColor: 'border-[#adc6ff]/30',
-    },
     result_ready: {
       label: 'Result Ready',
-      sublabel: 'Your breakdown is available.',
+      sublabel: 'Your result is available in your results dashboard.',
       icon: <BarChart3 className="w-4 h-4 text-[#7dffa2]" />,
       color: 'text-[#7dffa2]',
       borderColor: 'border-[#7dffa2]/30',
@@ -462,10 +456,10 @@ function ParticipationStatusBlock({
 
         {participationState === 'result_ready' && (
           <Link
-            href={`/challenges/${challengeId}/results`}
+            href="/results"
             className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
           >
-            <BarChart3 className="w-4 h-4" /> View Breakdown →
+            <BarChart3 className="w-4 h-4" /> View Your Results →
           </Link>
         )}
 

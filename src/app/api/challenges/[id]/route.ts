@@ -82,12 +82,13 @@ export async function GET(
 
     // Derive explicit participation state for the web UI
     // Maps challenge_entries.status → UI participation state
+    // 'judging' is NOT a real entry status — entries go submitted → judged directly.
+    // challenge_sessions.status has 'judging' but that never propagates to entries.
     type ParticipationState =
       | 'not_entered'
       | 'entered'
       | 'workspace_open'
       | 'submitted'
-      | 'judging'
       | 'result_ready'
       | 'expired'
       | 'failed'
@@ -95,12 +96,12 @@ export async function GET(
     let participationState: ParticipationState = 'not_entered'
     if (userEntry) {
       const s = userEntry.status as string
-      if (s === 'workspace_open')                    participationState = 'workspace_open'
-      else if (s === 'submitted' || s === 'in_progress' || s === 'assigned') participationState = 'submitted'
-      else if (s === 'judged' || s === 'scored')     participationState = 'result_ready'
-      else if (s === 'failed')                        participationState = 'failed'
-      else if (s === 'expired')                       participationState = 'expired'
-      else                                            participationState = 'entered'
+      if (s === 'workspace_open')                                              participationState = 'workspace_open'
+      else if (s === 'submitted' || s === 'in_progress' || s === 'assigned')  participationState = 'submitted'
+      else if (s === 'judged' || s === 'scored')                               participationState = 'result_ready'
+      else if (s === 'failed')                                                  participationState = 'failed'
+      else if (s === 'expired')                                                 participationState = 'expired'
+      else                                                                      participationState = 'entered'
     }
 
     return NextResponse.json({
