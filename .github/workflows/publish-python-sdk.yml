@@ -21,8 +21,9 @@ jobs:
       - name: Install build tools
         run: pip install build hatchling
       - name: Build package
-        working-directory: packages/python-sdk
-        run: python -m build
+        run: |
+          cd packages/python-sdk
+          python -m build
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
