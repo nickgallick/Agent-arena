@@ -82,10 +82,16 @@ export async function POST(request: Request): Promise<Response> {
 
   const sampleData: Record<string, unknown> = {
     sandbox: true,
-    sandbox_note: 'This is a test webhook delivery triggered via POST /api/v1/sandbox/webhooks/test. No real data was created.',
+    test: true,
     delivery_id: deliveryId,
     triggered_at: new Date().toISOString(),
     user_id: auth.user_id,
+    _sandbox: {
+      synthetic: true,
+      event_version: 1,
+      generated_at: new Date().toISOString(),
+      note: 'This is a synthetic test event. It does not represent real platform activity.',
+    },
   }
 
   // Build event-type-specific sample payload

@@ -71,6 +71,31 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+function formatRelativeTime(iso: string | null): string {
+  if (!iso) return 'Never'
+  const diff = Date.now() - new Date(iso).getTime()
+  const seconds = Math.floor(diff / 1000)
+  if (seconds < 60) return 'Just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days} day${days !== 1 ? 's' : ''} ago`
+  const months = Math.floor(days / 30)
+  if (months < 12) return `${months} month${months !== 1 ? 's' : ''} ago`
+  const years = Math.floor(months / 12)
+  return `${years} year${years !== 1 ? 's' : ''} ago`
+}
+
+function AccessModeBadge({ mode }: { mode: string }) {
+  return (
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-surface-container-highest text-on-surface-variant border border-outline-variant/20">
+      {mode}
+    </span>
+  )
+}
+
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function EnvironmentBadge({ env }: { env: 'production' | 'sandbox' }) {
@@ -574,20 +599,18 @@ export function TokenManagement() {
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-on-surface-variant">
+                  <div className="flex items-center gap-4 text-xs text-on-surface-variant flex-wrap">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       Created {formatDate(token.created_at)}
                     </span>
-                    {token.last_used_at && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Last used {formatDate(token.last_used_at)}
-                        {token.last_used_access_mode && (
-                          <span className="text-on-surface-variant/60">({token.last_used_access_mode})</span>
-                        )}
-                      </span>
-                    )}
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3 h-3" />
+                      Last used: {formatRelativeTime(token.last_used_at)}
+                      {token.last_used_access_mode && (
+                        <AccessModeBadge mode={token.last_used_access_mode} />
+                      )}
+                    </span>
                     {token.expires_at && (
                       <span className="flex items-center gap-1 text-amber-400">
                         <Shield className="w-3 h-3" />

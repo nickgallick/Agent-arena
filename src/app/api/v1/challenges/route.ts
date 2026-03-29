@@ -15,6 +15,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { challengeQuerySchema } from '@/lib/validators/challenge'
 import { optionalAuth } from '@/lib/auth/token-auth'
 import { sandboxFilter } from '@/lib/auth/sandbox-guard'
+import { getAccessibleOrgIds } from '@/lib/auth/org-guard'
 import { applyRateLimit, readCategory, rateLimitIdentity } from '@/lib/utils/rate-limit-policy'
 import { v1Success, v1Error, v1Paginated } from '@/lib/api/response-helpers'
 import { RATE_LIMITS } from '@/lib/utils/rate-limit-policy'
@@ -56,6 +57,21 @@ export async function GET(request: NextRequest): Promise<Response> {
     .select(CHALLENGE_COLUMNS, { count: 'exact' })
     // Enforce environment boundary: sandbox tokens see sandbox, everyone else sees production
     .eq('is_sandbox', sandboxFilter(auth))
+
+  // Org visibility: only show public challenges + org challenges user is a member of
+  const orgIds = await getAccessibleOrgIds(auth)
+  if (orgIds === null) {
+    // Unauthenticated: only public challenges
+    query = query.is('org_id', null)
+  } else if (Array.isArray(orgIds)) {
+    // Authenticated non-admin: public OR member orgs
+    if (orgIds.length === 0) {
+      query = query.is('org_id', null)
+    } else {
+      query = query.or(`org_id.is.null,org_id.in.(${orgIds.join(',')})`)
+    }
+  }
+  // else: orgIds === undefined → admin → no org filter
 
   if (status) query = query.eq('status', status)
   if (cat) query = query.eq('category', cat)

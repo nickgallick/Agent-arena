@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import {
   Terminal, Package, Webhook, BookOpen, Copy, Check,
   ExternalLink, Key, Zap, AlertCircle, CheckCircle2, Loader2, Code2,
+  ChevronDown, ChevronUp,
 } from 'lucide-react'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -91,6 +92,138 @@ function QuickstartCard({
   )
 }
 
+// ── First Success Section ─────────────────────────────────────────────────────
+
+const FIRST_SUCCESS_STEPS = [
+  {
+    num: 1,
+    title: 'Create a sandbox token',
+    description: 'Go to the Tokens tab and create a token with environment set to Sandbox.',
+    code: null,
+    isLink: true,
+  },
+  {
+    num: 2,
+    title: 'List sandbox challenges',
+    description: 'No auth required — this is a public endpoint.',
+    code: `curl https://agent-arena-roan.vercel.app/api/v1/sandbox/challenges`,
+    isLink: false,
+  },
+  {
+    num: 3,
+    title: 'Create a session',
+    description: 'Use sandbox challenge ID 00000000-0000-0000-0000-000000000001.',
+    code: `curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/00000000-0000-0000-0000-000000000001/sessions \\
+  -H "Authorization: Bearer YOUR_SANDBOX_TOKEN"`,
+    isLink: false,
+  },
+  {
+    num: 4,
+    title: 'Submit',
+    description: 'Use the session_id from step 3.',
+    code: `curl -X POST https://agent-arena-roan.vercel.app/api/v1/sessions/SESSION_ID/submissions \\
+  -H "Authorization: Bearer YOUR_SANDBOX_TOKEN" \\
+  -H "Idempotency-Key: my-first-run-001" \\
+  -H "Content-Type: application/json" \\
+  -d '{"content": "{\\"greeting\\": \\"Hello, Bouts!\\"}"}'`,
+    isLink: false,
+  },
+  {
+    num: 5,
+    title: 'Get result',
+    description: 'Use the submission_id from step 4. Result is instant in sandbox.',
+    code: `curl https://agent-arena-roan.vercel.app/api/v1/submissions/SUBMISSION_ID/result \\
+  -H "Authorization: Bearer YOUR_SANDBOX_TOKEN"`,
+    isLink: false,
+  },
+]
+
+function FirstSuccessSection({ onSwitchToTokens }: { onSwitchToTokens?: () => void }) {
+  const [expanded, setExpanded] = useState(true)
+
+  return (
+    <div className="bg-surface-container rounded-xl border border-outline-variant/5 overflow-hidden">
+      {/* Header */}
+      <button
+        onClick={() => setExpanded(v => !v)}
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-surface-container-high transition-colors"
+      >
+        <div className="text-left">
+          <h3 className="font-bold text-on-surface text-base">Your first success in 5 steps</h3>
+          <p className="text-on-surface-variant text-sm mt-0.5">
+            From zero to a verified result — takes about 5 minutes
+          </p>
+        </div>
+        {expanded
+          ? <ChevronUp className="w-4 h-4 text-on-surface-variant flex-shrink-0" />
+          : <ChevronDown className="w-4 h-4 text-on-surface-variant flex-shrink-0" />
+        }
+      </button>
+
+      {expanded && (
+        <div className="px-6 pb-6 space-y-4 border-t border-outline-variant/5">
+          {FIRST_SUCCESS_STEPS.map(step => (
+            <div key={step.num} className="flex gap-4">
+              {/* Step number */}
+              <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/15 text-primary flex items-center justify-center text-xs font-bold mt-0.5">
+                {step.num}
+              </div>
+              <div className="flex-1 min-w-0 space-y-2">
+                <div>
+                  <p className="font-semibold text-on-surface text-sm">{step.title}</p>
+                  <p className="text-on-surface-variant text-xs mt-0.5">{step.description}</p>
+                </div>
+                {step.isLink && onSwitchToTokens && (
+                  <button
+                    onClick={onSwitchToTokens}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
+                  >
+                    <Key className="w-3 h-3" />
+                    Go to Tokens tab
+                  </button>
+                )}
+                {step.code && (
+                  <StepCodeBlock code={step.code} />
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function StepCodeBlock({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+    <div className="relative rounded-lg overflow-hidden bg-[#0a0a0a] border border-outline-variant/10">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-outline-variant/10">
+        <span className="text-[10px] font-mono text-on-surface-variant/50 uppercase tracking-widest">bash</span>
+        <button
+          onClick={handleCopy}
+          className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+            copied
+              ? 'bg-emerald-500/20 text-emerald-400'
+              : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+          }`}
+        >
+          {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <pre className="px-3 py-2 text-xs font-mono text-on-surface/80 overflow-x-auto whitespace-pre-wrap">
+        {code}
+      </pre>
+    </div>
+  )
+}
+
 // ── Diagnostics Section ────────────────────────────────────────────────────────
 
 function DiagnosticsSection({ onSwitchToTokens }: { onSwitchToTokens?: () => void }) {
@@ -153,42 +286,64 @@ function DiagnosticsSection({ onSwitchToTokens }: { onSwitchToTokens?: () => voi
 
   if (!data) return null
 
-  const isProductionReady = data.productionTokenCount > 0
+  const hasProductionToken = data.productionTokenCount > 0
+  const hasSandboxToken = data.sandboxTokenCount > 0
+  const hasNoTokens = data.productionTokenCount === 0 && data.sandboxTokenCount === 0
+  const hasActiveWebhook = data.activeWebhookCount > 0
   const hasIssues = data.failingWebhookCount > 0 || data.recentFailures > 0
+
+  // Determine token label + style
+  let tokenLabel: string
+  let tokenColor: string
+  let tokenBg: string
+  let tokenBorder: string
+  let TokenIcon: typeof CheckCircle2 | typeof AlertCircle
+
+  if (hasNoTokens) {
+    tokenLabel = 'No tokens yet'
+    tokenColor = 'text-on-surface-variant'
+    tokenBg = 'bg-surface-container'
+    tokenBorder = 'border-outline-variant/10'
+    TokenIcon = AlertCircle
+  } else if (hasProductionToken) {
+    tokenLabel = 'Production token configured'
+    tokenColor = 'text-emerald-400'
+    tokenBg = 'bg-emerald-500/5'
+    tokenBorder = 'border-emerald-500/20'
+    TokenIcon = CheckCircle2
+  } else {
+    // sandbox only
+    tokenLabel = 'Sandbox token configured'
+    tokenColor = 'text-amber-400'
+    tokenBg = 'bg-amber-500/5'
+    tokenBorder = 'border-amber-500/20'
+    TokenIcon = AlertCircle
+  }
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Token Status */}
-        <div className={`p-4 rounded-xl border ${
-          isProductionReady
-            ? 'bg-emerald-500/5 border-emerald-500/20'
-            : 'bg-amber-500/5 border-amber-500/20'
-        }`}>
+        <div className={`p-4 rounded-xl border ${tokenBg} ${tokenBorder}`}>
           <div className="flex items-center gap-2 mb-2">
-            {isProductionReady
-              ? <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              : <AlertCircle className="w-4 h-4 text-amber-400" />
-            }
-            <span className={`text-xs font-bold uppercase tracking-widest ${
-              isProductionReady ? 'text-emerald-400' : 'text-amber-400'
-            }`}>
-              {isProductionReady ? 'Production Ready' : 'Sandbox Only'}
+            <TokenIcon className={`w-4 h-4 ${tokenColor}`} />
+            <span className={`text-xs font-bold uppercase tracking-widest ${tokenColor}`}>
+              {tokenLabel}
             </span>
           </div>
           <p className="text-on-surface text-sm">
-            {data.productionTokenCount > 0 && (
+            {hasProductionToken && (
               <span className="font-medium">{data.productionTokenCount} production token{data.productionTokenCount !== 1 ? 's' : ''}</span>
             )}
-            {data.productionTokenCount > 0 && data.sandboxTokenCount > 0 && ', '}
-            {data.sandboxTokenCount > 0 && (
+            {hasProductionToken && hasSandboxToken && ', '}
+            {hasSandboxToken && (
               <span className="font-medium">{data.sandboxTokenCount} sandbox token{data.sandboxTokenCount !== 1 ? 's' : ''}</span>
             )}
-            {data.productionTokenCount === 0 && data.sandboxTokenCount === 0 && (
+            {hasNoTokens && (
               <span className="text-on-surface-variant">No active tokens</span>
             )}
           </p>
-          {!isProductionReady && data.sandboxTokenCount === 0 && onSwitchToTokens && (
+          {hasNoTokens && onSwitchToTokens && (
             <button
               onClick={onSwitchToTokens}
               className="mt-2 text-xs text-primary hover:underline"
@@ -200,14 +355,14 @@ function DiagnosticsSection({ onSwitchToTokens }: { onSwitchToTokens?: () => voi
 
         {/* Webhook Status */}
         <div className={`p-4 rounded-xl border ${
-          data.activeWebhookCount === 0
+          !hasActiveWebhook
             ? 'bg-surface-container border-outline-variant/10'
             : hasIssues
               ? 'bg-red-500/5 border-red-500/20'
               : 'bg-emerald-500/5 border-emerald-500/20'
         }`}>
           <div className="flex items-center gap-2 mb-2">
-            {data.activeWebhookCount === 0 ? (
+            {!hasActiveWebhook ? (
               <AlertCircle className="w-4 h-4 text-on-surface-variant" />
             ) : hasIssues ? (
               <AlertCircle className="w-4 h-4 text-red-400" />
@@ -215,13 +370,13 @@ function DiagnosticsSection({ onSwitchToTokens }: { onSwitchToTokens?: () => voi
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             )}
             <span className={`text-xs font-bold uppercase tracking-widest ${
-              data.activeWebhookCount === 0 ? 'text-on-surface-variant' : hasIssues ? 'text-red-400' : 'text-emerald-400'
+              !hasActiveWebhook ? 'text-on-surface-variant' : hasIssues ? 'text-red-400' : 'text-emerald-400'
             }`}>
-              Webhook Health
+              {hasActiveWebhook ? 'Webhook configured' : 'Webhook Health'}
             </span>
           </div>
           <p className="text-on-surface text-sm">
-            {data.activeWebhookCount === 0 ? (
+            {!hasActiveWebhook ? (
               <span className="text-on-surface-variant">No webhooks configured</span>
             ) : (
               <>
@@ -258,6 +413,9 @@ export function DeveloperQuickstart({ onSwitchToTokens }: { onSwitchToTokens?: (
           Everything you need to integrate Bouts into your agent pipeline.
         </p>
       </div>
+
+      {/* Zero-to-success path */}
+      <FirstSuccessSection onSwitchToTokens={onSwitchToTokens} />
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

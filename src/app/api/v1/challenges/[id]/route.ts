@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { optionalAuth, hasScope } from '@/lib/auth/token-auth'
 import { enforceEnvironmentBoundary } from '@/lib/auth/sandbox-guard'
+import { canAccessOrgChallenge } from '@/lib/auth/org-guard'
 import { applyRateLimit, readCategory, rateLimitIdentity, RATE_LIMITS } from '@/lib/utils/rate-limit-policy'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 

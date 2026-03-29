@@ -23,7 +23,7 @@ export function enforceEnvironmentBoundary(
 
   if (tokenIsSandbox && !challengeIsSandbox) {
     return v1Error(
-      'Sandbox tokens can only access sandbox challenges. Use a production token (bouts_sk_...) for live challenges.',
+      'Your token is scoped to sandbox (bouts_sk_test_*) but this challenge is a production resource. Use a production token (bouts_sk_*) or target a sandbox challenge ID (e.g. 00000000-0000-0000-0000-000000000001).',
       'ENVIRONMENT_MISMATCH',
       403
     )
@@ -31,7 +31,7 @@ export function enforceEnvironmentBoundary(
 
   if (!tokenIsSandbox && challengeIsSandbox) {
     return v1Error(
-      'Production tokens cannot access sandbox challenges. Use a sandbox token (bouts_sk_test_...) for sandbox challenges.',
+      'Your token is scoped to production (bouts_sk_*) but this challenge is a sandbox resource. Use a sandbox token (bouts_sk_test_*) to access sandbox challenges.',
       'ENVIRONMENT_MISMATCH',
       403
     )

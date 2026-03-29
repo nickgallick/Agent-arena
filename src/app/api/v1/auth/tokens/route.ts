@@ -49,7 +49,7 @@ export async function GET(request: Request): Promise<Response> {
 
   const { data: tokens, error } = await supabase
     .from('api_tokens')
-    .select('id, name, token_prefix, scopes, environment, last_used_at, expires_at, created_at')
+    .select('id, name, token_prefix, scopes, environment, last_used_at, last_used_access_mode, expires_at, created_at')
     .eq('user_id', user_id)
     .is('revoked_at', null)
     .order('created_at', { ascending: false })

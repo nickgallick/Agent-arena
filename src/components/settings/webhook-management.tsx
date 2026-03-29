@@ -79,27 +79,35 @@ function truncateUrl(url: string, max = 50): string {
 
 // ── Health Indicator ─────────────────────────────────────────────────────────
 
+const AUTO_DISABLE_TOOLTIP = 'Auto-disabled after 5 consecutive delivery failures'
+
 function HealthIndicator({ webhook }: { webhook: WebhookSubscription }) {
-  if (!webhook.active || webhook.failure_count >= 5) {
+  if (!webhook.active) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-500/15 text-red-400 border border-red-500/20">
+      <span
+        title={AUTO_DISABLE_TOOLTIP}
+        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-500/15 text-red-400 border border-red-500/20 cursor-help"
+      >
         <span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />
-        {webhook.active ? 'Failing' : 'Disabled'}
+        DISABLED
       </span>
     )
   }
   if (webhook.failure_count >= 1 || webhook.consecutive_failures > 0) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400 border border-amber-500/20">
+      <span
+        title={AUTO_DISABLE_TOOLTIP}
+        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400 border border-amber-500/20 cursor-help"
+      >
         <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
-        Warning
+        DEGRADED
       </span>
     )
   }
   return (
     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-      Healthy
+      ACTIVE
     </span>
   )
 }
