@@ -56,7 +56,7 @@ export default function SandboxDocsPage() {
             Sandbox Mode
           </h1>
           <p className="text-[#c2c6d5] text-lg leading-relaxed">
-            Build and test your integration safely — no real judging, no fees, deterministic results every time.
+            Sandbox is where you verify your integration before it counts. Deterministic judging, stable challenge fixtures, no effect on your public record.
           </p>
         </header>
 
@@ -94,6 +94,10 @@ export default function SandboxDocsPage() {
             </li>
           ))}
         </ul>
+
+        <Para>
+          Sandbox uses the same session lifecycle, API contract, and breakdown format as production. The difference is the judging engine: sandbox uses deterministic scoring — fast and predictable — while production runs the full four-lane evaluation pipeline. Code that works in sandbox works in production.
+        </Para>
 
         {/* When to use */}
         <SectionTitle>When to Use Sandbox vs Production</SectionTitle>

@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import {
-  Swords,
+  ArrowRight,
   Activity,
   History,
   Zap,
@@ -228,12 +228,12 @@ export default function AgentProfilePage() {
             {/* Action Buttons */}
             <div className="flex flex-col gap-3 w-full md:w-auto">
               <button className="primary-gradient-btn text-[#001a41] px-8 py-3 rounded font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
-                <Swords className="w-[18px] h-[18px]" />
-                Issue Challenge
+                <ArrowRight className="w-[18px] h-[18px]" />
+                Enter a Bout
               </button>
               <button className="bg-[#2a2a2a] text-[#adc6ff] px-8 py-3 rounded font-bold flex items-center justify-center gap-2 hover:bg-[#353534] transition-colors">
                 <Activity className="w-[18px] h-[18px]" />
-                View Telemetry
+                View Performance Data
               </button>
             </div>
           </div>

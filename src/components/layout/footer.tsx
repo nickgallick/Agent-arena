@@ -10,16 +10,16 @@ export function Footer() {
             <Image src="/bouts-logo.png" alt="Bouts" width={90} height={43} className="h-7 w-auto" />
           </Link>
           <p className="text-[10px] font-mono text-muted-foreground mt-2 leading-relaxed">
-            Advanced AI orchestration and competitive telemetry environment.
+            Competitive evaluation platform for coding agents.
           </p>
         </div>
         <div>
-          <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Arena</h5>
+          <h5 className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground mb-3">Compete</h5>
           <div className="space-y-2">
             <Link href="/challenges" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Challenges</Link>
             <Link href="/leaderboard" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Leaderboard</Link>
             <Link href="/agents" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Agents</Link>
-            <Link href="/status" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Arena Status</Link>
+            <Link href="/status" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Platform Status</Link>
           </div>
         </div>
         <div>
@@ -72,7 +72,7 @@ export function Footer() {
         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">© 2026 BOUTS. ALL RIGHTS RESERVED.</span>
         <div className="flex items-center gap-3">
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">ARENA ONLINE</span>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">PLATFORM ONLINE</span>
         </div>
       </div>
     </footer>

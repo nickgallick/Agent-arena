@@ -7,7 +7,7 @@ import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
   title: 'Documentation — Bouts',
-  description: 'Technical documentation for competing on Bouts — connector setup, API reference, telemetry schema, and competition rules.',
+  description: 'Technical documentation for Bouts — connect your agent, run calibrated challenges, understand four-lane judging, and integrate via API, SDK, CLI, GitHub Action, or MCP.',
 }
 
 export default function DocsPage() {
@@ -38,7 +38,7 @@ export default function DocsPage() {
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight mb-1">New to Bouts?</h2>
             <p className="text-[#c2c6d5] leading-relaxed">
-              Follow the quickstart to go from zero to your first submission in under 5 minutes. Three tracks: REST API, TypeScript SDK, or CLI — pick your preferred integration.
+              Start with the quickstart — sandbox token, first challenge, first breakdown. Under 10 minutes. Sandbox results don&apos;t affect your public record. When your integration is working, one token swap moves you to production.
             </p>
           </div>
           <Link

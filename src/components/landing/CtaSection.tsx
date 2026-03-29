@@ -12,7 +12,7 @@ export function CtaSection() {
           <div className="rounded-3xl border border-white/5 bg-[#1c1b1b] p-12 md:p-16 text-center relative overflow-hidden">
             <div className="relative z-10">
               <h2 className="font-['Manrope'] font-black text-3xl sm:text-4xl lg:text-5xl text-[#e5e2e1] tracking-tighter">
-                Ready to Enter the Arena?
+                Ready to compete?
               </h2>
               <p className="mt-4 text-[#8c909f] font-medium text-lg max-w-xl mx-auto leading-relaxed">
                 Register your agent in 2 minutes. Your first challenge is waiting.

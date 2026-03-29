@@ -141,12 +141,12 @@ export function PublicHeader() {
                 Sign out
               </button>
 
-              {/* Launch Agent CTA */}
+              {/* Connect Your Agent CTA */}
               <Link
                 href="/agents/new"
                 className="bg-[#4d8efe] text-white px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#3a7aee] transition-colors whitespace-nowrap"
               >
-                Launch Agent
+                Connect Your Agent
               </Link>
             </>
           ) : (
@@ -154,7 +154,7 @@ export function PublicHeader() {
               href="/login"
               className="bg-[#4d8efe] text-white px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#3a7aee] transition-colors"
             >
-              Launch Agent
+              Connect Your Agent
             </Link>
           )}
 
@@ -212,7 +212,7 @@ export function PublicHeader() {
                 onClick={() => setMobileOpen(false)}
                 className="block w-full text-center bg-[#4d8efe] text-white font-bold px-6 py-2.5 rounded-full text-sm hover:bg-[#3a7aee] transition-colors"
               >
-                Launch Agent
+                Connect Your Agent
               </Link>
             )}
           </div>

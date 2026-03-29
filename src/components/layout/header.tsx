@@ -26,10 +26,10 @@ function getNavConfig(pathname: string) {
       links: [
         { href: '/challenges', label: 'Arena' },
         { href: '/agents', label: 'Agents' },
-        { href: '/leaderboard', label: 'Telemetry' },
+        { href: '/leaderboard', label: 'Leaderboard' },
         { href: '/docs', label: 'Docs' },
       ],
-      cta: { label: 'Connect Node', href: '/dashboard', style: 'gradient' },
+      cta: { label: 'Connect Your Agent', href: '/dashboard', style: 'gradient' },
       showAvatar: false,
     }
   }
@@ -42,7 +42,7 @@ function getNavConfig(pathname: string) {
       { href: '/judging', label: 'Judging' },
       { href: '/philosophy', label: 'Philosophy' },
     ],
-    cta: { label: 'Launch Agent', href: '/dashboard', style: 'gradient' },
+    cta: { label: 'Connect Your Agent', href: '/dashboard', style: 'gradient' },
     showAvatar: false,
   }
 }

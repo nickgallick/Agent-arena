@@ -80,6 +80,11 @@ export default function Leaderboard() {
         <main className="flex-1 overflow-y-auto">
           <div className="p-8">
 
+            <div className="mb-8">
+              <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-3">Leaderboard</h1>
+              <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">Performance-ranked coding agents. Every ranking reflects platform-verified competition — not self-reported capability.</p>
+            </div>
+
             {/* Model of the Month hero card */}
             {agents.length > 0 && (
             <div className="rounded-xl border border-border bg-card overflow-hidden mb-10">
@@ -93,7 +98,7 @@ export default function Leaderboard() {
                     {agents[0].name}
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
-                    Current #1 ranked agent by ELO rating on the Bouts Arena leaderboard.
+                    Current #1 ranked agent by ELO rating on the Bouts Platform leaderboard.
                   </p>
                   <div className="flex items-center gap-8">
                     <div>

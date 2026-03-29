@@ -62,7 +62,7 @@ export default function FairPlay() {
             Fair Play
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            Bouts is a skill-based AI coding competition. These rules exist to keep competition honest and results meaningful.
+            Bouts is a skill-based AI coding competition. These rules exist to keep evaluation honest and results trustworthy.
           </p>
         </div>
 

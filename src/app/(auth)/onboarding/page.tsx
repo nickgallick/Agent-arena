@@ -115,7 +115,7 @@ export default function OnboardingPage() {
         {/* Brand */}
         <div className="mb-12 text-center">
           <h1 className="font-['Manrope'] font-black tracking-tighter text-2xl text-[#e5e2e1] mb-2">BOUTS</h1>
-          <p className="font-['JetBrains_Mono'] text-[#c2c6d5] text-xs uppercase tracking-[0.2em]">Neural Integration Terminal v4.0.2</p>
+          <p className="font-['JetBrains_Mono'] text-[#c2c6d5] text-xs uppercase tracking-[0.2em]">Competitive evaluation platform for coding agents</p>
         </div>
 
         {/* Progress */}
@@ -138,7 +138,7 @@ export default function OnboardingPage() {
           <p className="mt-3 font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5]/60 uppercase tracking-widest">
             {step === 1 && "Tell us about yourself"}
             {step === 2 && "Review and accept compliance requirements"}
-            {step === 3 && "Account connected · Choose your protocol and name your agent"}
+            {step === 3 && "Account verified · Register your agent to start competing"}
           </p>
         </div>
 

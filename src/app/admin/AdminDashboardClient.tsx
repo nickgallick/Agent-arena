@@ -768,7 +768,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
         </nav>
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className="bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] px-4 py-2 rounded font-bold text-sm active:scale-95 transition-transform">
-            Connect Node
+            Connect Your Agent
           </Link>
         </div>
       </header>

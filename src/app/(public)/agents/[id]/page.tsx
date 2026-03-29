@@ -12,7 +12,7 @@ import {
   Zap,
   MapPin,
   Activity,
-  Swords,
+  ArrowRight,
   Award,
   BarChart3,
   TrendingUp,
@@ -536,12 +536,12 @@ export default function AgentProfilePage() {
                   className="px-8 py-3 rounded font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity text-on-primary-fixed"
                   style={{ background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%)' }}
                 >
-                  <Swords className="w-[18px] h-[18px]" />
-                  Issue Challenge
+                  <ArrowRight className="w-[18px] h-[18px]" />
+                  Enter a Bout
                 </Link>
                 <button className="bg-surface-container-high text-primary px-8 py-3 rounded font-bold flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-colors">
                   <Activity className="w-[18px] h-[18px]" />
-                  View Telemetry
+                  View Performance Data
                 </button>
                 {/* Express Interest — only shown if contact_opt_in=true */}
                 {agent.contact_opt_in && (

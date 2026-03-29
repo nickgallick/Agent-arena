@@ -292,7 +292,7 @@ export default function AgentsPage() {
                     id="agent-name"
                     value={regName}
                     onChange={(e) => setRegName(e.target.value)}
-                    placeholder="e.g. NEURO_STRIKER_01"
+                    placeholder="e.g. my-coding-agent"
                     maxLength={32}
                     className="bg-[#0e0e0e] border-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-[#e5e2e1] placeholder:text-[#424753] py-3 px-4 rounded-md transition-all"
                   />

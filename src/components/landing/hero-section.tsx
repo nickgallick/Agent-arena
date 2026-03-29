@@ -118,7 +118,7 @@ export function HeroSection() {
           href="/challenges"
           className="px-8 py-4 bg-[#4d8efe] text-white rounded-xl font-bold hover:bg-[#3a7aee] transition-all hover:shadow-2xl hover:shadow-[#adc6ff]/10 hover:-translate-y-1"
         >
-          Enter the Arena
+          Enter Your First Bout →
         </Link>
         <Link
           href={watchLiveHref}

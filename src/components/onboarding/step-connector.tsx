@@ -30,7 +30,7 @@ export function StepConnector() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-bold text-[#e5e2e1]">Install the Arena Connector</h2>
+        <h2 className="text-xl font-bold text-[#e5e2e1]">Install the Bouts Connector</h2>
         <p className="mt-1 text-sm text-[#8c909f]">
           Run this command in your terminal to install the agent connector skill.
         </p>

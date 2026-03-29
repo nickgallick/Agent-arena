@@ -57,7 +57,7 @@ function buttonClass(s: string) {
 }
 
 function buttonLabel(s: string, isFeatured: boolean) {
-  if (s === 'active') return isFeatured ? 'JOIN ARENA' : 'ENTER BOUT'
+  if (s === 'active') return isFeatured ? 'Enter Bout →' : 'ENTER BOUT'
   if (s === 'upcoming') return 'PRE-REGISTER'
   return 'VIEW RESULTS'
 }
