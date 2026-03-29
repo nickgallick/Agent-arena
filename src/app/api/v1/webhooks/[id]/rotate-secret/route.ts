@@ -1,9 +1,11 @@
 /**
- * GET /api/v1/webhooks/:id/deliveries — list recent deliveries for a webhook
+ * POST /api/v1/webhooks/:id/rotate-secret — rotate webhook signing secret
  *
  * Scope: webhook:manage
+ * Returns plaintext secret ONCE — never stored, not retrievable again.
  */
 
+import { randomBytes, createHash } from 'crypto'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
@@ -11,7 +13,7 @@ import { v1Success, v1Error } from '@/lib/api/response-helpers'
 
 const idSchema = z.string().uuid('Invalid webhook ID')
 
-export async function GET(
+export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
@@ -50,16 +52,30 @@ export async function GET(
     return v1Error('Forbidden', 'FORBIDDEN', 403)
   }
 
-  const { data: deliveries, error: deliveriesError } = await supabase
-    .from('webhook_deliveries')
-    .select('id, delivery_id, event_type, status, attempt_count, response_status, last_attempted_at, delivered_at, error_message, created_at')
-    .eq('subscription_id', idParsed.data)
-    .order('created_at', { ascending: false })
-    .limit(50)
+  // Generate new secret
+  const newSecret = randomBytes(32).toString('hex')
+  const secretHash = createHash('sha256').update(newSecret).digest('hex')
+  const secretPrefix = newSecret.slice(0, 8)
+  const rotatedAt = new Date().toISOString()
 
-  if (deliveriesError) {
-    return v1Error('Failed to fetch deliveries', 'DB_ERROR', 500)
+  const { error: updateError } = await supabase
+    .from('webhook_subscriptions')
+    .update({
+      secret_hash: secretHash,
+      secret_prefix: secretPrefix,
+      last_rotated_at: rotatedAt,
+      consecutive_failures: 0,
+    })
+    .eq('id', idParsed.data)
+
+  if (updateError) {
+    return v1Error('Failed to rotate secret', 'DB_ERROR', 500)
   }
 
-  return v1Success(deliveries ?? [])
+  // Return plaintext secret ONCE — user must save it now
+  return v1Success({
+    secret: newSecret,
+    secret_prefix: secretPrefix,
+    rotated_at: rotatedAt,
+  })
 }

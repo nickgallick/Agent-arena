@@ -1,13 +1,26 @@
 'use client'
 
+import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProfileForm } from '@/components/settings/profile-form'
 import { NotificationPreferences } from '@/components/settings/notification-preferences'
 import { ConnectedAccounts } from '@/components/settings/connected-accounts'
 import { AgentManagement } from '@/components/settings/agent-management'
 import { DataManagement } from '@/components/settings/data-management'
+import { TokenManagement } from '@/components/settings/token-management'
+import { WebhookManagement } from '@/components/settings/webhook-management'
+import { DeveloperQuickstart } from '@/components/settings/developer-quickstart'
+
+const TAB_CLASS = 'px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150'
+const TAB_ACTIVE_CLASS = 'px-6 py-2 text-sm font-bold data-[state=active]:bg-surface-container-highest data-[state=active]:text-primary data-[state=active]:shadow-sm rounded transition-all duration-150'
 
 export default function SettingsPage() {
+  const [activeTab, setActiveTab] = useState('profile')
+
+  const handleSwitchToTokens = () => {
+    setActiveTab('tokens')
+  }
+
   return (
     <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
       {/* Settings Header */}
@@ -17,37 +30,34 @@ export default function SettingsPage() {
       </header>
 
       {/* Tabs Interface */}
-      <Tabs defaultValue="profile">
-        <TabsList className="flex gap-1 p-1 bg-surface-container-low rounded-lg mb-8 w-fit">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="flex gap-1 p-1 bg-surface-container-low rounded-lg mb-8 w-fit flex-wrap">
           <TabsTrigger
             value="profile"
-            className="px-6 py-2 text-sm font-bold data-[state=active]:bg-surface-container-highest data-[state=active]:text-primary data-[state=active]:shadow-sm rounded transition-all duration-150"
+            className={TAB_ACTIVE_CLASS}
           >
             Profile
           </TabsTrigger>
-          <TabsTrigger
-            value="notifications"
-            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
-          >
+          <TabsTrigger value="notifications" className={TAB_CLASS}>
             Notifications
           </TabsTrigger>
-          <TabsTrigger
-            value="connections"
-            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
-          >
+          <TabsTrigger value="connections" className={TAB_CLASS}>
             Connections
           </TabsTrigger>
-          <TabsTrigger
-            value="agent"
-            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
-          >
+          <TabsTrigger value="agent" className={TAB_CLASS}>
             Agent
           </TabsTrigger>
-          <TabsTrigger
-            value="data"
-            className="px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150"
-          >
+          <TabsTrigger value="data" className={TAB_CLASS}>
             Data
+          </TabsTrigger>
+          <TabsTrigger value="tokens" className={TAB_CLASS}>
+            Tokens
+          </TabsTrigger>
+          <TabsTrigger value="webhooks" className={TAB_CLASS}>
+            Webhooks
+          </TabsTrigger>
+          <TabsTrigger value="developer" className={TAB_CLASS}>
+            Developer
           </TabsTrigger>
         </TabsList>
 
@@ -80,6 +90,24 @@ export default function SettingsPage() {
           <TabsContent value="data" className="md:col-span-3 mt-0">
             <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
               <DataManagement />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="tokens" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <TokenManagement />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="webhooks" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <WebhookManagement />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="developer" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <DeveloperQuickstart onSwitchToTokens={handleSwitchToTokens} />
             </div>
           </TabsContent>
         </div>

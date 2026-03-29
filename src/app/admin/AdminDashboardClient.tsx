@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   LayoutDashboard, Swords, Terminal, Bot, Flag, Activity, TrendingUp,
   Network, Zap, Shield, PlusCircle, X, Loader2, Inbox, FlaskConical,
-  Package, BarChart3, ChevronDown, ChevronRight,
+  Package, BarChart3, ChevronDown, ChevronRight, Key,
 } from 'lucide-react'
 
 interface AdminDashboardClientProps {
@@ -238,6 +238,15 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
   const [healthLoading, setHealthLoading] = useState(false)
   const [healthActionLoading, setHealthActionLoading] = useState<string | null>(null)
 
+  // Developer Metrics
+  const [devMetrics, setDevMetrics] = useState<{
+    token_creation_by_day: Array<{ day: string; production: number; sandbox: number; total: number }>
+    token_env_split: { production: number; sandbox: number; total: number }
+    webhook_stats: { total: number; active: number; disabled: number; failing: number; failure_rate: number }
+    recent_failures_24h: number
+  } | null>(null)
+  const [devMetricsLoading, setDevMetricsLoading] = useState(false)
+
   useEffect(() => {
     fetch('/api/admin/challenge-families')
       .then(r => r.ok ? r.json() : { families: [] })
@@ -386,6 +395,20 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     }
   }, [])
 
+  const fetchDevMetrics = useCallback(async () => {
+    setDevMetricsLoading(true)
+    try {
+      const res = await fetch('/api/admin/developer-metrics')
+      if (!res.ok) return
+      const data = await res.json()
+      setDevMetrics(data)
+    } catch {
+      // non-critical
+    } finally {
+      setDevMetricsLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     fetchJudgingQueue()
     if (activeTab === 'Dashboard') fetchStats()
@@ -395,7 +418,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     if (activeTab === 'Calibration') fetchCalibration()
     if (activeTab === 'Inventory') fetchInventory()
     if (activeTab === 'Challenge Health') fetchHealth()
-  }, [activeTab, fetchStats, fetchChallenges, fetchIntakeQueue, fetchForgeReviews, fetchCalibration, fetchInventory, fetchHealth, fetchJudgingQueue])
+    if (activeTab === 'Developer Metrics') fetchDevMetrics()
+  }, [activeTab, fetchStats, fetchChallenges, fetchIntakeQueue, fetchForgeReviews, fetchCalibration, fetchInventory, fetchHealth, fetchJudgingQueue, fetchDevMetrics])
 
   async function handleCreateChallenge(e: React.FormEvent) {
     e.preventDefault()
@@ -541,6 +565,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     { label: 'Agents', icon: <Bot className="w-5 h-5" /> },
     { label: 'Features', icon: <Flag className="w-5 h-5" /> },
     { label: 'Health', icon: <Shield className="w-5 h-5" /> },
+    { label: 'Developer Metrics', icon: <Key className="w-5 h-5" /> },
   ]
 
   return (
@@ -1455,6 +1480,109 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* ── DEVELOPER METRICS TAB ── */}
+          {activeTab === 'Developer Metrics' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Developer Metrics</h2>
+
+              {devMetricsLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : !devMetrics ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <Key className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No metrics available</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-[#1c1b1b] p-5 rounded-xl">
+                      <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest mb-1">Production Tokens</div>
+                      <div className="text-3xl font-black text-[#adc6ff]">{devMetrics.token_env_split.production}</div>
+                    </div>
+                    <div className="bg-[#1c1b1b] p-5 rounded-xl">
+                      <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest mb-1">Sandbox Tokens</div>
+                      <div className="text-3xl font-black text-[#ffb780]">{devMetrics.token_env_split.sandbox}</div>
+                    </div>
+                    <div className="bg-[#1c1b1b] p-5 rounded-xl">
+                      <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest mb-1">Active Webhooks</div>
+                      <div className="text-3xl font-black text-[#7dffa2]">{devMetrics.webhook_stats.active}</div>
+                    </div>
+                    <div className={`bg-[#1c1b1b] p-5 rounded-xl ${devMetrics.webhook_stats.failing > 0 ? 'border border-[#ffb4ab]/30' : ''}`}>
+                      <div className="text-[10px] font-['JetBrains_Mono'] text-[#c2c6d5] uppercase tracking-widest mb-1">Failing Webhooks</div>
+                      <div className={`text-3xl font-black ${devMetrics.webhook_stats.failing > 0 ? 'text-[#ffb4ab]' : 'text-[#7dffa2]'}`}>
+                        {devMetrics.webhook_stats.failing}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Webhook Health Stats */}
+                  <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                    <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Webhook Health</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-['JetBrains_Mono']">
+                      <div>
+                        <div className="text-[#8c909f] text-[10px] uppercase tracking-widest mb-1">Total</div>
+                        <div className="text-[#e5e2e1] font-bold">{devMetrics.webhook_stats.total}</div>
+                      </div>
+                      <div>
+                        <div className="text-[#8c909f] text-[10px] uppercase tracking-widest mb-1">Active</div>
+                        <div className="text-[#7dffa2] font-bold">{devMetrics.webhook_stats.active}</div>
+                      </div>
+                      <div>
+                        <div className="text-[#8c909f] text-[10px] uppercase tracking-widest mb-1">Disabled</div>
+                        <div className="text-[#ffb4ab] font-bold">{devMetrics.webhook_stats.disabled}</div>
+                      </div>
+                      <div>
+                        <div className="text-[#8c909f] text-[10px] uppercase tracking-widest mb-1">Failure Rate</div>
+                        <div className={`font-bold ${devMetrics.webhook_stats.failure_rate > 20 ? 'text-[#ffb4ab]' : 'text-[#7dffa2]'}`}>
+                          {devMetrics.webhook_stats.failure_rate}%
+                        </div>
+                      </div>
+                    </div>
+                    {devMetrics.recent_failures_24h > 0 && (
+                      <div className="mt-4 px-4 py-3 bg-[#ffb4ab]/10 border border-[#ffb4ab]/20 rounded-lg">
+                        <span className="text-[#ffb4ab] text-sm font-['JetBrains_Mono']">
+                          ⚠ {devMetrics.recent_failures_24h} webhook delivery failure{devMetrics.recent_failures_24h !== 1 ? 's' : ''} in last 24h
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Token Creation Timeline */}
+                  <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                    <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Token Creation — Last 30 Days</h3>
+                    {devMetrics.token_creation_by_day.length === 0 ? (
+                      <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">No tokens created in last 30 days</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs font-['JetBrains_Mono']">
+                          <thead>
+                            <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                              <th className="py-2 pr-6 text-left uppercase tracking-widest">Date</th>
+                              <th className="py-2 pr-6 text-right uppercase tracking-widest text-[#adc6ff]">Production</th>
+                              <th className="py-2 pr-6 text-right uppercase tracking-widest text-[#ffb780]">Sandbox</th>
+                              <th className="py-2 text-right uppercase tracking-widest">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[#424753]/10">
+                            {devMetrics.token_creation_by_day.slice(-14).reverse().map(row => (
+                              <tr key={row.day} className="hover:bg-[#201f1f]">
+                                <td className="py-2 pr-6 text-[#e5e2e1]">{row.day}</td>
+                                <td className="py-2 pr-6 text-right text-[#adc6ff]">{row.production}</td>
+                                <td className="py-2 pr-6 text-right text-[#ffb780]">{row.sandbox}</td>
+                                <td className="py-2 text-right text-[#e5e2e1] font-bold">{row.total}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
