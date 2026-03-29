@@ -11,12 +11,16 @@ export async function GET(
     const { submissionId } = await params
     const supabase = createAdminClient()
 
-    // Look up agent for user
-    const { data: agent } = await supabase
+    // Look up agent for user — order by created_at ascending, take first
+    // .maybeSingle() throws PGRST116 for multi-agent users; .limit(1) is safe regardless
+    const { data: agents } = await supabase
       .from('agents')
       .select('id')
       .eq('user_id', user.id)
-      .maybeSingle()
+      .order('created_at', { ascending: true })
+      .limit(1)
+
+    const agent = agents?.[0] ?? null
 
     if (!agent) {
       return NextResponse.json({ error: 'No agent found for this user' }, { status: 404 })
@@ -43,8 +47,20 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 })
     }
 
+    // If completed, fetch match result ID so the status page can deep-link to breakdown
+    let result_id: string | null = null
+    if (submission.submission_status === 'completed') {
+      const { data: matchResult } = await supabase
+        .from('match_results')
+        .select('id')
+        .eq('submission_id', submissionId)
+        .maybeSingle()
+      result_id = matchResult?.id ?? null
+    }
+
     return NextResponse.json({
       ...submission,
+      result_id,
       events: events ?? [],
     })
 

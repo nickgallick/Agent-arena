@@ -338,16 +338,6 @@ export default function WorkspacePage() {
                 </div>
               </div>
 
-              {/* Submitting as — agent identity */}
-              <div className="rounded-xl border border-border bg-card px-5 py-3 flex items-center gap-3">
-                <Bot className="w-4 h-4 text-[#adc6ff] flex-shrink-0" />
-                <div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">Submitting as</span>
-                  <span className="text-sm font-bold text-foreground">{agent.name}</span>
-                  {agent.model_name && <span className="text-xs text-muted-foreground ml-2">· {String(agent.model_name)}</span>}
-                </div>
-              </div>
-
               {/* Challenge prompt */}
               <div className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center gap-2 mb-4">
@@ -369,12 +359,23 @@ export default function WorkspacePage() {
             {/* ── RIGHT: Submission area ── */}
             <div className="space-y-4">
 
-              {/* Timer + status */}
-              <div className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-center justify-between">
-                  <div>
+              {/* Timer + Submitting As — merged identity card */}
+              <div className={`rounded-xl border bg-card p-5 ${
+                isExpired    ? 'border-[#8c909f]/30' :
+                isWarning    ? 'border-[#ffb780]/40' :
+                submitting   ? 'border-[#adc6ff]/40' :
+                               'border-border'
+              }`}>
+                <div className="flex items-center justify-between gap-4">
+                  {/* Timer */}
+                  <div className="min-w-0">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Session Timer</span>
-                    {timeLeftMs !== null ? (
+                    {submitting ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-5 h-5 text-[#adc6ff] animate-spin" />
+                        <span className="font-mono text-base font-bold text-[#adc6ff]">Submitting…</span>
+                      </div>
+                    ) : timeLeftMs !== null ? (
                       <div className={`font-mono text-3xl font-black tabular-nums ${
                         isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780]' : 'text-foreground'
                       }`}>
@@ -384,12 +385,30 @@ export default function WorkspacePage() {
                       <div className="font-mono text-3xl font-black text-[#8c909f]">No limit</div>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className={`w-5 h-5 ${isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780] animate-pulse' : 'text-muted-foreground'}`} />
+
+                  {/* Divider */}
+                  <div className="w-px self-stretch bg-border flex-shrink-0" />
+
+                  {/* Submitting as */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Bot className={`w-4 h-4 flex-shrink-0 ${submitting ? 'text-[#adc6ff]' : 'text-muted-foreground'}`} />
+                    <div className="min-w-0">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">Submitting as</span>
+                      <span className="text-sm font-bold text-foreground truncate block">{agent.name}</span>
+                      {agent.model_name && <span className="text-[10px] text-muted-foreground font-mono truncate block">{String(agent.model_name)}</span>}
+                    </div>
+                  </div>
+
+                  {/* Status indicator */}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <Clock className={`w-4 h-4 ${isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780] animate-pulse' : 'text-muted-foreground'}`} />
                     <span className={`text-[10px] font-mono uppercase font-bold tracking-wider ${
-                      isExpired ? 'text-[#8c909f]' : 'text-[#7dffa2]'
+                      isExpired  ? 'text-[#8c909f]' :
+                      isWarning  ? 'text-[#ffb780]' :
+                      submitting ? 'text-[#adc6ff]' :
+                                   'text-[#7dffa2]'
                     }`}>
-                      {isExpired ? 'Expired' : 'Active'}
+                      {isExpired ? 'Expired' : submitting ? 'Sending' : 'Active'}
                     </span>
                   </div>
                 </div>

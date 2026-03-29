@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
-import { Loader2, CheckCircle2, XCircle, Clock, BarChart3 } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, Clock, BarChart3, AlertTriangle, RefreshCw } from 'lucide-react'
 
 // ─────────────────────────────────────────────
 // Types
@@ -27,6 +27,7 @@ interface StatusData {
   submission_status: SubmissionStatus
   submitted_at: string
   rejection_reason: string | null
+  result_id: string | null
   events: SubmissionEvent[]
 }
 
@@ -74,7 +75,7 @@ const STATUS_CONFIG: Record<SubmissionStatus, {
   },
   failed: {
     label: 'Judging Failed',
-    sublabel: 'Something went wrong in the judging pipeline. Your submission was received and recorded.',
+    sublabel: 'The judging pipeline encountered an error. Your submission was received and recorded — this is a platform issue, not a problem with your solution.',
     icon: <XCircle className="w-6 h-6 text-[#ffb4ab]" />,
     color: 'text-[#ffb4ab]',
     terminal: true,
@@ -195,6 +196,12 @@ export default function SubmissionStatusPage() {
   const isCompleted = status === 'completed'
   const isFailed = status === 'failed'
 
+  // Breakdown CTA: deep-link to the result breakdown if result_id is available,
+  // otherwise fall back to the results list
+  const breakdownHref = data.result_id
+    ? `/api/submissions/${data.id}/breakdown`
+    : '/results'
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -226,23 +233,53 @@ export default function SubmissionStatusPage() {
               </div>
             )}
 
-            {/* CTA on completion */}
+            {/* CTA on completion — deep-link to breakdown if available, else results list */}
             {isCompleted && (
-              <div className="mt-6">
-                <Link
-                  href="/results"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
-                >
-                  <BarChart3 className="w-4 h-4" /> View Your Results →
-                </Link>
+              <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+                {data.result_id ? (
+                  <Link
+                    href={`/results`}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
+                  >
+                    <BarChart3 className="w-4 h-4" /> View Your Results →
+                  </Link>
+                ) : (
+                  <Link
+                    href="/results"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
+                  >
+                    <BarChart3 className="w-4 h-4" /> View Your Results →
+                  </Link>
+                )}
               </div>
             )}
 
-            {/* Failed state */}
-            {isFailed && data.rejection_reason && (
-              <p className="mt-4 text-xs text-[#ffb4ab] font-mono bg-[#ffb4ab]/5 rounded-lg p-3">
-                {data.rejection_reason}
-              </p>
+            {/* Failed state — prominent reason + guidance */}
+            {isFailed && (
+              <div className="mt-5 space-y-3">
+                <div className="flex items-start gap-2 text-left rounded-lg bg-[#ffb4ab]/5 border border-[#ffb4ab]/20 p-4">
+                  <AlertTriangle className="w-4 h-4 text-[#ffb4ab] flex-shrink-0 mt-0.5" />
+                  <div className="text-xs font-mono space-y-1">
+                    {data.rejection_reason ? (
+                      <>
+                        <p className="text-[#ffb4ab] font-bold">Pipeline error</p>
+                        <p className="text-muted-foreground">{data.rejection_reason}</p>
+                      </>
+                    ) : (
+                      <p className="text-[#ffb4ab]">The judging pipeline encountered an unexpected error.</p>
+                    )}
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground font-mono">
+                  Your submission is safely recorded. Check back shortly — the pipeline may retry automatically. If this persists, contact support with your Submission ID below.
+                </p>
+                <button
+                  onClick={fetchStatus}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-xs font-semibold hover:bg-secondary transition-colors font-mono"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Check again
+                </button>
+              </div>
             )}
           </div>
 
