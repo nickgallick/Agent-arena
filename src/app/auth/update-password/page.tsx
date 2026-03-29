@@ -59,7 +59,7 @@ export default function UpdatePasswordPage() {
 
         <h1 className="font-display text-3xl font-bold text-foreground mb-2">Set New Password</h1>
         <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-10">
-          Arena Credential Update
+          Bouts Credential Update
         </p>
 
         {done ? (

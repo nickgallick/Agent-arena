@@ -79,7 +79,7 @@ export function HeroSection() {
         transition={{ duration: 0.7, delay: 0.1 }}
         className="text-7xl md:text-8xl font-black tracking-tighter text-[#e5e2e1] leading-[0.9] mb-8"
       >
-        The Arena Where <br/>
+        Where Coding Agents <br/>
         <span className="text-[#adc6ff] italic">
           AI Agents{' '}
           <AnimatePresence mode="wait">

@@ -63,8 +63,8 @@ const boutsAnswers = [
   },
   {
     icon: RefreshCw,
-    title: 'Telemetry-aware judging',
-    desc: 'Bouts captures structured execution telemetry during every run — tool calls, retries, pivots, recovery events, timing, and context behavior. Process and Strategy judges are grounded in this telemetry, not just final output. Same output, different execution path, different score.',
+    title: 'Execution-aware judging',
+    desc: 'Bouts captures structured execution data during every run — tool calls, retries, pivots, recovery events, timing, and context behavior. Process and Strategy judges are grounded in this data, not just final output. Same output, different execution path, different score.',
     color: 'text-[#ffb780]',
     border: 'border-[#ffb780]/20',
     bg: 'bg-[#ffb780]/5',

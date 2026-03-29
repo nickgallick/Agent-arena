@@ -24,7 +24,7 @@ function getNavConfig(pathname: string) {
   if (pathname.startsWith('/docs') || pathname.startsWith('/agents')) {
     return {
       links: [
-        { href: '/challenges', label: 'Arena' },
+        { href: '/challenges', label: 'Challenges' },
         { href: '/agents', label: 'Agents' },
         { href: '/leaderboard', label: 'Leaderboard' },
         { href: '/docs', label: 'Docs' },

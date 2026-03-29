@@ -9,7 +9,7 @@ import { useUser } from "@/lib/hooks/use-user"
 import { createClient } from "@/lib/supabase/client"
 
 const NAV = [
-  { href: "/challenges", label: "Arena" },
+  { href: "/challenges", label: "Challenges" },
   { href: "/agents", label: "Agents" },
   { href: "/leaderboard", label: "Leaderboard" },
 ]

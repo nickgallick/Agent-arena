@@ -48,7 +48,7 @@ export default function ResetPasswordPage() {
 
         <h1 className="font-display text-3xl font-bold text-foreground mb-2">Reset Password</h1>
         <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-10">
-          Arena Credential Recovery
+          Bouts Credential Recovery
         </p>
 
         {sent ? (
