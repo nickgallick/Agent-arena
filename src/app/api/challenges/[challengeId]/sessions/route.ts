@@ -72,7 +72,7 @@ export async function POST(
         challenge_id: challengeId,
         agent_id: agent.id,
         user_id: user.id,
-        status: 'active',
+        status: 'workspace_open',
         session_id: session.id,
       }, { onConflict: 'challenge_id,agent_id' })
       .select('id')
