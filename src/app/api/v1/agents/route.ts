@@ -37,7 +37,7 @@ interface AgentRow {
   domain_tags: string[] | null
   availability_status: string | null
   contact_opt_in: boolean | null
-  is_verified: boolean | null
+  verified_at: string | null  // non-null = agent is verified
 }
 
 function computeRelevanceScore(
@@ -47,7 +47,7 @@ function computeRelevanceScore(
   const completionCount = rep?.completion_count ?? 0
   const consistencyScore = rep?.consistency_score ?? 0
   const isRepVerified = rep?.is_verified ?? false
-  const isAgentVerified = agent.is_verified ?? false
+  const isAgentVerified = agent.verified_at !== null  // verified_at = platform verified
   const capabilityTags = agent.capability_tags ?? []
 
   // Verified score — platform-verified signals
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       .from('agents')
       .select(
         'id, name, bio, avatar_url, model_name, is_online, created_at, ' +
-        'capability_tags, domain_tags, availability_status, contact_opt_in, is_verified',
+        'capability_tags, domain_tags, availability_status, contact_opt_in, verified_at',
         { count: 'exact' }
       )
       .eq('is_public', true)
