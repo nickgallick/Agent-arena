@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import {
   Clock, MonitorCheck, ChevronRight, AlertTriangle, Info,
-  ChevronDown, ChevronUp, Loader2, CheckCircle2, XCircle, TimerOff, ArrowLeft
+  ChevronDown, ChevronUp, Loader2, CheckCircle2, XCircle, TimerOff, ArrowLeft, Bot
 } from 'lucide-react'
 
 // ─────────────────────────────────────────────
@@ -318,7 +318,7 @@ export default function WorkspacePage() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#adc6ff]/10 text-[#adc6ff] border border-[#adc6ff]/20">
-                        Manual Browser Submission
+                        Web Submission
                       </span>
                     </div>
                     <h1 className="font-display text-xl font-bold text-foreground mt-2">{challenge.title}</h1>
@@ -338,9 +338,9 @@ export default function WorkspacePage() {
                 </div>
               </div>
 
-              {/* Submitting as */}
+              {/* Submitting as — agent identity */}
               <div className="rounded-xl border border-border bg-card px-5 py-3 flex items-center gap-3">
-                <MonitorCheck className="w-4 h-4 text-[#adc6ff] flex-shrink-0" />
+                <Bot className="w-4 h-4 text-[#adc6ff] flex-shrink-0" />
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">Submitting as</span>
                   <span className="text-sm font-bold text-foreground">{agent.name}</span>
@@ -404,7 +404,7 @@ export default function WorkspacePage() {
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Info className="w-3.5 h-3.5" />
                     <span className="font-mono uppercase tracking-wider">
-                      Text only · Max 100KB · 1 submission · No draft save · Session timer active
+                      Text only · Max 100KB · 1 submission · ⚠ No draft save · ⚠ No auto-resume
                     </span>
                   </div>
                   {constraintsOpen
@@ -413,13 +413,14 @@ export default function WorkspacePage() {
                 </button>
                 {constraintsOpen && (
                   <div className="px-5 pb-4 border-t border-border">
-                    <ul className="mt-3 space-y-2 text-xs text-muted-foreground font-mono">
-                      <li className="flex items-start gap-2"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">Text only</strong> — paste code or prose. No file upload in V1.</span></li>
-                      <li className="flex items-start gap-2"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">100KB maximum</strong> — byte counter shown below the textarea.</span></li>
-                      <li className="flex items-start gap-2"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">One submission per entry</strong> — final and cannot be revised or recalled.</span></li>
-                      <li className="flex items-start gap-2"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">No draft save</strong> — if you close this tab, your work is lost.</span></li>
-                      <li className="flex items-start gap-2"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">No auto-resume</strong> — if your session expires, this entry can no longer accept a submission.</span></li>
-                      <li className="flex items-start gap-2"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">Submission is final</strong> — the moment you click Submit, your entry is locked.</span></li>
+                    <ul className="mt-3 space-y-2 text-xs font-mono">
+                      <li className="flex items-start gap-2 text-muted-foreground"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">Text only</strong> — paste code or prose. No file upload.</span></li>
+                      <li className="flex items-start gap-2 text-muted-foreground"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">100KB maximum</strong> — byte counter shown below.</span></li>
+                      <li className="flex items-start gap-2 text-muted-foreground"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">One submission per entry</strong> — cannot be revised or recalled after submit.</span></li>
+                      {/* Dangerous constraints — highlighted in warning color */}
+                      <li className="flex items-start gap-2 text-[#ffb780]"><span className="mt-0.5">⚠</span><span><strong>No draft save</strong> — if you close or refresh this tab, your work is lost.</span></li>
+                      <li className="flex items-start gap-2 text-[#ffb780]"><span className="mt-0.5">⚠</span><span><strong>No auto-resume</strong> — if your session expires, this entry can no longer accept a submission.</span></li>
+                      <li className="flex items-start gap-2 text-muted-foreground"><span className="text-[#adc6ff] mt-0.5">·</span><span><strong className="text-foreground">Submission is final</strong> — locked the moment you confirm.</span></li>
                     </ul>
                   </div>
                 )}
@@ -428,7 +429,7 @@ export default function WorkspacePage() {
               {/* Textarea */}
               <div className="rounded-xl border border-border bg-card p-4 space-y-3">
                 <label className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
-                  Your Solution — Manual Browser Submission
+                  Your Solution — Web Submission
                 </label>
                 <textarea
                   value={content}
@@ -461,12 +462,7 @@ export default function WorkspacePage() {
                   </div>
                 </div>
 
-                {/* Short content warning */}
-                {content.trim().length > 0 && content.trim().length < 50 && (
-                  <p className="text-[11px] text-[#ffb780] font-mono flex items-center gap-1.5">
-                    <AlertTriangle className="w-3 h-3" /> Very short submission — are you sure this is complete?
-                  </p>
-                )}
+                {/* No short-content warning — too naive, removed per Polaris */}
 
                 {/* Submit error */}
                 {submitError && (
@@ -486,22 +482,22 @@ export default function WorkspacePage() {
                   </button>
                 ) : (
                   <div className="rounded-lg border border-[#ffb780]/30 bg-[#ffb780]/5 p-4 space-y-3">
-                    <p className="text-sm text-foreground font-semibold">This is your one submission. It cannot be revised or recalled.</p>
-                    <p className="text-xs text-muted-foreground">Are you ready to submit?</p>
+                    <p className="text-sm text-foreground font-semibold">Submit your solution?</p>
+                    <p className="text-xs text-muted-foreground">This is your one submission for this challenge. Once submitted it cannot be changed or recalled.</p>
                     <div className="flex gap-3">
                       <button
                         onClick={handleSubmit}
                         disabled={submitting}
                         className="flex items-center gap-2 flex-1 justify-center py-2.5 rounded-lg bg-[#adc6ff] text-[#0a0a0a] text-sm font-bold hover:bg-[#adc6ff]/80 transition-colors disabled:opacity-60"
                       >
-                        {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</> : 'Yes, Submit Now'}
+                        {submitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting…</> : 'Confirm Submission'}
                       </button>
                       <button
                         onClick={() => setSubmitConfirmOpen(false)}
                         disabled={submitting}
                         className="flex-1 py-2.5 rounded-lg border border-border text-sm font-semibold hover:bg-secondary transition-colors disabled:opacity-60"
                       >
-                        Go Back
+                        Cancel
                       </button>
                     </div>
                   </div>
