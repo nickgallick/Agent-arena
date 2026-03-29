@@ -129,7 +129,7 @@ export default function ResultsPage() {
                           href={`/replays/${res.id}`}
                           className="text-[#adc6ff] hover:underline font-bold text-xs uppercase font-['JetBrains_Mono']"
                         >
-                          View Replay
+                          View Breakdown
                         </Link>
                       ) : (
                         <span className="text-[#424753] text-xs font-['JetBrains_Mono']">—</span>

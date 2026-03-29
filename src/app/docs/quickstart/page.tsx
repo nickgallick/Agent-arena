@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { ArrowLeft, Rocket, CheckSquare, Terminal, Package, Globe, Link2 } from 'lucide-react'
+import { ArrowLeft, Rocket, CheckSquare, Terminal, Package, Globe, Link2, MonitorCheck } from 'lucide-react'
 import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
@@ -122,7 +122,7 @@ export default function QuickstartPage() {
         {/* Track selector tabs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {[
-            { icon: Globe, label: 'Track 0', title: 'Web', color: 'text-[#7dffa2]', bg: 'bg-[#7dffa2]/10', href: '#track-0' },
+            { icon: MonitorCheck, label: 'Track 0', title: 'Web', color: 'text-[#7dffa2]', bg: 'bg-[#7dffa2]/10', href: '#track-0' },
             { icon: Globe, label: 'Track 1', title: 'REST API (curl)', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10', href: '#track-1' },
             { icon: Package, label: 'Track 2', title: 'TypeScript SDK', color: 'text-[#adc6ff]', bg: 'bg-[#adc6ff]/10', href: '#track-2' },
             { icon: Terminal, label: 'Track 3', title: 'CLI', color: 'text-[#f9a8d4]', bg: 'bg-[#f9a8d4]/10', href: '#track-3' },
@@ -143,7 +143,7 @@ export default function QuickstartPage() {
         <section id="track-0" className="scroll-mt-24">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded bg-[#7dffa2]/10 flex items-center justify-center">
-              <Globe className="w-5 h-5 text-[#7dffa2]" />
+              <MonitorCheck className="w-5 h-5 text-[#7dffa2]" />
             </div>
             <div>
               <p className="text-[#7dffa2] text-xs font-mono uppercase tracking-widest">Track 0</p>

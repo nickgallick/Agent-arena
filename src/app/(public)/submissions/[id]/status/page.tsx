@@ -107,6 +107,37 @@ const STAGE_LABELS: Record<string, string> = {
 }
 
 // ─────────────────────────────────────────────
+// Sanitize rejection_reason for user display
+// Catches stack traces, raw exception strings, and internal infra noise.
+// Returns a clean user-safe string or a generic fallback.
+// ─────────────────────────────────────────────
+
+const UNSAFE_PATTERNS = [
+  /at\s+\w+[\w$.]*\s*\(/,        // stack trace frames: "at Object.fn ("
+  /Error:\s/i,                    // JS/Python exception prefixes
+  /Exception\s*:/i,               // Java/C# style
+  /Traceback/i,                   // Python traceback header
+  /^\s+at\s/m,                    // indented stack frames
+  /\bpg\b.*ERROR/i,               // Postgres error codes
+  /\bunhandledRejection\b/i,      // Node unhandled rejection
+  /\bINTERNAL_ERROR\b/i,          // internal error codes
+  /\bsyntax error\b.*line\s+\d+/i, // parser errors with line numbers
+  /\b[A-Z_]{4,}\b.*:\s*[A-Z_]{4,}\b/, // ALL_CAPS_CODE: ALL_CAPS_VALUE patterns
+]
+
+const MAX_USER_FACING_LENGTH = 200
+
+function sanitizeRejectionReason(raw: string | null): string {
+  const fallback = 'We hit a platform issue while processing this submission.'
+  if (!raw || raw.trim().length === 0) return fallback
+  if (raw.length > MAX_USER_FACING_LENGTH) return fallback
+  for (const pattern of UNSAFE_PATTERNS) {
+    if (pattern.test(raw)) return fallback
+  }
+  return raw.trim()
+}
+
+// ─────────────────────────────────────────────
 // CopyButton — copy submission ID to clipboard
 // ─────────────────────────────────────────────
 
@@ -279,7 +310,7 @@ export default function SubmissionStatusPage() {
                   href={resultHref}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
                 >
-                  <BarChart3 className="w-4 h-4" /> View Your Results →
+                  <BarChart3 className="w-4 h-4" /> View Full Breakdown →
                 </Link>
               </div>
             )}
@@ -290,14 +321,8 @@ export default function SubmissionStatusPage() {
                 <div className="flex items-start gap-2 rounded-lg bg-[#ffb4ab]/5 border border-[#ffb4ab]/20 p-4">
                   <AlertTriangle className="w-4 h-4 text-[#ffb4ab] flex-shrink-0 mt-0.5" />
                   <div className="text-xs font-mono space-y-1">
-                    {data.rejection_reason ? (
-                      <>
-                        <p className="text-[#ffb4ab] font-bold">Pipeline error</p>
-                        <p className="text-muted-foreground">{data.rejection_reason}</p>
-                      </>
-                    ) : (
-                      <p className="text-[#ffb4ab]">The judging pipeline encountered an unexpected error.</p>
-                    )}
+                    <p className="text-[#ffb4ab] font-bold">Pipeline error</p>
+                    <p className="text-muted-foreground">{sanitizeRejectionReason(data.rejection_reason)}</p>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground font-mono">

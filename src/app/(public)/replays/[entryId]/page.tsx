@@ -13,7 +13,6 @@ import {
   FileCode,
   Brain,
   CheckCircle,
-  Terminal,
   FileText,
   Copy,
   Folder,
@@ -24,6 +23,10 @@ import {
   ClipboardCheck,
   Play,
   Pause,
+  Bot,
+  CalendarDays,
+  Trophy,
+  ChevronLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PostMatchBreakdown } from '@/components/replay/post-match-breakdown'
@@ -274,26 +277,54 @@ export default function ReplayPage() {
 
         {/* Main Content Canvas */}
         <main className="mt-16 flex-grow p-6 lg:p-8 max-w-[1600px] mx-auto w-full grid grid-cols-12 gap-6">
-          {/* ── Replay Header Section ── */}
-          <header className="col-span-12 flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Terminal className="size-3.5 text-primary" />
-                <span className="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant">
-                  Bouts // Replay System
-                </span>
+          {/* ── Result Header ── */}
+          <header className="col-span-12 mb-2">
+            {/* Back nav */}
+            <a
+              href="/results"
+              className="inline-flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-on-surface transition-colors font-label mb-4"
+            >
+              <ChevronLeft className="size-3.5" /> Back to results
+            </a>
+
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+              <div>
+                {/* Eyebrow */}
+                <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">
+                  Submission Breakdown
+                </p>
+                {/* Challenge title */}
+                <h1 className="text-3xl font-extrabold tracking-tight text-on-surface mb-3">
+                  {replay.challenge?.title ?? 'Submission Breakdown'}
+                </h1>
+                {/* Meta row */}
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-on-surface-variant font-label">
+                  {replay.agent && (
+                    <span className="flex items-center gap-1.5">
+                      <Bot className="size-3.5 text-secondary" />
+                      {replay.agent.name}
+                    </span>
+                  )}
+                  {replay.all_revealed_at && (
+                    <span className="flex items-center gap-1.5">
+                      <CalendarDays className="size-3.5" />
+                      {new Date(replay.all_revealed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  )}
+                  {replay.placement != null && (
+                    <span className="flex items-center gap-1.5">
+                      <Trophy className="size-3.5 text-secondary" />
+                      {replay.placement === 1 ? '1st Place' : replay.placement === 2 ? '2nd Place' : replay.placement === 3 ? '3rd Place' : `#${replay.placement}`}
+                    </span>
+                  )}
+                  {replay.challenge?.format && (
+                    <span className="px-2 py-0.5 rounded bg-surface-container text-xs font-label capitalize">
+                      {replay.challenge.format}
+                    </span>
+                  )}
+                </div>
               </div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-on-surface">
-                {replay.challenge?.title ?? `Entry ${entryId}`}
-              </h1>
-              <p className="font-label text-sm text-outline mt-1">
-                ENTRY_ID: <span className="text-primary">#{entryId}</span>
-                {replay.agent && (
-                  <> &bull; AGENT_SIG: <span className="text-secondary">{replay.agent.name}</span></>
-                )}
-              </p>
             </div>
-            {/* EXPORT DATA + LOGS removed — not yet implemented */}
           </header>
 
           {/* ── Left Column: Visual Output & Code ── */}
@@ -304,7 +335,7 @@ export default function ReplayPage() {
                 <div className="bg-surface-container flex items-center justify-between px-4 py-2 rounded-t-lg">
                   <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-                    Visual Output Rendering
+                    Visual Output
                   </span>
                   <div className="flex gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-outline-variant/30" />
@@ -579,7 +610,7 @@ export default function ReplayPage() {
             <section className="bg-surface-container-low p-6 rounded-xl">
               <h3 className="font-headline font-bold text-sm mb-6 flex items-center gap-2">
                 <Clock className="size-[18px] text-primary" />
-                Replay Timeline
+                Execution Timeline
               </h3>
 
               {events.length > 0 ? (
