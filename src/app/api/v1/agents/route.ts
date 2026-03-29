@@ -18,7 +18,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
-interface AgentWithReputation {
+interface ReputationSnapshot {
+  agent_id: string
+  completion_count: number | null
+  consistency_score: number | null
+  is_verified: boolean | null
+}
+
+interface AgentRow {
   id: string
   name: string
   bio: string | null
@@ -30,35 +37,29 @@ interface AgentWithReputation {
   domain_tags: string[] | null
   availability_status: string | null
   contact_opt_in: boolean | null
-  is_verified?: boolean | null
-  // Reputation snapshot (from LEFT JOIN — raw Supabase shape)
-  agent_reputation_snapshots?: { completion_count?: number | null; consistency_score?: number | null; is_verified?: boolean | null } | null
-  // Enriched reputation fields (flattened for scoring)
-  rep_completion_count?: number | null
-  rep_consistency_score?: number | null
-  rep_is_verified?: boolean | null
-  // Computed
-  relevance_score?: number
+  is_verified: boolean | null
 }
 
-function computeRelevanceScore(agent: AgentWithReputation): number {
-  const completionCount = agent.rep_completion_count ?? 0
-  const consistencyScore = agent.rep_consistency_score ?? 0
-  const isRepVerified = agent.rep_is_verified ?? false
+function computeRelevanceScore(
+  agent: AgentRow,
+  rep: ReputationSnapshot | null
+): number {
+  const completionCount = rep?.completion_count ?? 0
+  const consistencyScore = rep?.consistency_score ?? 0
+  const isRepVerified = rep?.is_verified ?? false
   const isAgentVerified = agent.is_verified ?? false
   const capabilityTags = agent.capability_tags ?? []
-  const availabilityStatus = agent.availability_status
 
   // Verified score — platform-verified signals
-  // Only count if agent has verified reputation (rep_is_verified=true means >=3 completions, production, public)
+  // Only count completion-based score if rep shows verified (>=3 prod completions)
   const verifiedScore = isRepVerified
     ? completionCount * 2 + consistencyScore * 0.1 + (isAgentVerified ? 20 : 0)
-    : (isAgentVerified ? 20 : 0) // unverified rep agents: only badge counts
+    : (isAgentVerified ? 20 : 0)
 
   // Self-claimed score — self-reported signals
   const selfClaimedScore =
     capabilityTags.length * 0.5 +
-    (availabilityStatus === 'available' ? 5 : 0)
+    (agent.availability_status === 'available' ? 5 : 0)
 
   return verifiedScore + selfClaimedScore
 }
@@ -92,19 +93,11 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     const supabase = createAdminClient()
 
-    // For relevance and completions sort, we need reputation data
-    // Fetch agents with LEFT JOIN to agent_reputation_snapshots
-    const needsReputation = sort === 'relevance' || sort === 'completions'
-
     let query = supabase
       .from('agents')
       .select(
-        needsReputation
-          ? 'id, name, bio, avatar_url, model_name, is_online, created_at, ' +
-            'capability_tags, domain_tags, availability_status, contact_opt_in, is_verified, ' +
-            'agent_reputation_snapshots(completion_count, consistency_score, is_verified)'
-          : 'id, name, bio, avatar_url, model_name, is_online, created_at, ' +
-            'capability_tags, domain_tags, availability_status, contact_opt_in, is_verified',
+        'id, name, bio, avatar_url, model_name, is_online, created_at, ' +
+        'capability_tags, domain_tags, availability_status, contact_opt_in, is_verified',
         { count: 'exact' }
       )
       .eq('is_public', true)
@@ -128,7 +121,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       query = query.eq('contact_opt_in', true)
     }
 
-    // For non-relevance sorts, apply DB ordering and pagination directly
+    // For recent sort — simple DB ordering + pagination
     if (sort === 'recent') {
       const { data: agents, count, error } = await query
         .order('created_at', { ascending: false })
@@ -148,31 +141,48 @@ export async function GET(request: NextRequest): Promise<Response> {
       })
     }
 
+    // For relevance and completions — fetch all matching (up to 1000), enrich with reputation
+    const { data: rawAgents, count, error } = await query
+      .order('created_at', { ascending: false })
+      .limit(1000)
+
+    if (error) {
+      console.error('[GET /api/v1/agents] DB error:', error.message)
+      return NextResponse.json({ error: 'Failed to load agents' }, { status: 500 })
+    }
+
+    const agents = ((rawAgents ?? []) as unknown) as AgentRow[]
+
+    if (agents.length === 0) {
+      return NextResponse.json({
+        agents: [],
+        total: count ?? 0,
+        limit,
+        offset,
+        sort,
+      })
+    }
+
+    // Fetch reputation snapshots for all matching agents in one query
+    const agentIds = agents.map(a => a.id)
+    const { data: repData } = await supabase
+      .from('agent_reputation_snapshots')
+      .select('agent_id, completion_count, consistency_score, is_verified')
+      .in('agent_id', agentIds)
+
+    const repMap = new Map<string, ReputationSnapshot>()
+    for (const r of (repData ?? []) as ReputationSnapshot[]) {
+      repMap.set(r.agent_id, r)
+    }
+
     if (sort === 'completions') {
-      // Fetch all matching agents (up to 1000), sort in-memory by completion_count
-      const { data: rawAgents, count, error } = await query
-        .order('created_at', { ascending: false })
-        .limit(1000)
-
-      if (error) {
-        console.error('[GET /api/v1/agents] DB error:', error.message)
-        return NextResponse.json({ error: 'Failed to load agents' }, { status: 500 })
-      }
-
-      interface AgentRow {
-        agent_reputation_snapshots?: { completion_count?: number | null; consistency_score?: number | null; is_verified?: boolean | null } | null
-        [key: string]: unknown
-      }
-
-      const sorted = ((rawAgents as unknown) as AgentRow[] ?? [])
-        .map(a => ({
-          ...a,
-          _completion_count: (a.agent_reputation_snapshots as { completion_count?: number | null } | null)?.completion_count ?? 0,
-        }))
-        .sort((a, b) => (b._completion_count as number) - (a._completion_count as number))
+      const sorted = [...agents]
+        .sort((a, b) => {
+          const aCount = repMap.get(a.id)?.completion_count ?? 0
+          const bCount = repMap.get(b.id)?.completion_count ?? 0
+          return (bCount ?? 0) - (aCount ?? 0)
+        })
         .slice(offset, offset + limit)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .map(({ _completion_count: _cc, agent_reputation_snapshots: _rep, ...rest }) => rest)
 
       return NextResponse.json({
         agents: sorted,
@@ -184,41 +194,16 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
 
     // sort === 'relevance' (default)
-    // Fetch all matching agents (up to 1000 for scoring), score in TS, paginate
-    const { data: rawAgents, count, error } = await query
-      .order('created_at', { ascending: false })
-      .limit(1000)
-
-    if (error) {
-      console.error('[GET /api/v1/agents] DB error:', error.message)
-      return NextResponse.json({ error: 'Failed to load agents' }, { status: 500 })
-    }
-
-    interface AgentRow {
-      agent_reputation_snapshots?: { completion_count?: number | null; consistency_score?: number | null; is_verified?: boolean | null } | null
-      [key: string]: unknown
-    }
-
-    const scored: (AgentWithReputation & { relevance_score: number })[] = ((rawAgents as unknown) as AgentRow[] ?? [])
-      .map(a => {
-        const rep = a.agent_reputation_snapshots as { completion_count?: number | null; consistency_score?: number | null; is_verified?: boolean | null } | null
-        const enriched: AgentWithReputation = {
-          ...(a as unknown as AgentWithReputation),
-          rep_completion_count: rep?.completion_count ?? null,
-          rep_consistency_score: rep?.consistency_score ?? null,
-          rep_is_verified: rep?.is_verified ?? null,
-        }
-        return {
-          ...enriched,
-          relevance_score: computeRelevanceScore(enriched),
-        }
-      })
-      .sort((a, b) => b.relevance_score - a.relevance_score)
+    const scored = agents
+      .map(a => ({
+        agent: a,
+        score: computeRelevanceScore(a, repMap.get(a.id) ?? null),
+      }))
+      .sort((a, b) => b.score - a.score)
 
     const paginated = scored
       .slice(offset, offset + limit)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .map(({ rep_completion_count: _rc, rep_consistency_score: _rcs, rep_is_verified: _ri, relevance_score: _rs, agent_reputation_snapshots: _aRep, ...rest }) => rest)
+      .map(({ agent }) => agent)
 
     return NextResponse.json({
       agents: paginated,
