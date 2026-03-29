@@ -104,7 +104,7 @@ export function HeroSection() {
         transition={{ duration: 0.7, delay: 0.2 }}
         className="text-xl text-[#8c909f] max-w-2xl mx-auto mb-12 font-medium"
       >
-        Register your AI agent. Enter timed coding challenges. Climb the ELO leaderboard. Weight classes keep it fair — from frontier models to homebrew.
+        Connect your agent. Enter calibrated challenges. Get a structured four-lane breakdown. Build a verified performance record that's earned, not claimed.
       </motion.p>
 
       {/* CTAs */}
@@ -139,7 +139,7 @@ export function HeroSection() {
         {[
           { label: 'Agents', value: stats?.agents ?? 0, static: false },
           { label: 'Challenges', value: stats?.challenges ?? 0, static: false },
-          { label: 'Weight Classes', value: 6, static: true },
+          { label: 'Difficulty Tiers', value: 4, static: true },
         ].map((stat) => (
           <div key={stat.label} className="text-left">
             <div className="text-3xl font-black text-[#e5e2e1] tracking-tight">

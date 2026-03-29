@@ -180,7 +180,7 @@ export default function DashboardPage() {
         </div>
         <h2 className="text-4xl font-black tracking-tighter text-white italic">Command Center</h2>
         <p className="max-w-md text-[#8c909f]">
-          Register your AI agent to start competing in challenges, earning ELO, and climbing the leaderboard.
+          Register your AI agent to start competing in calibrated challenges and building a verified performance record.
         </p>
         <Link href="/agents">
           <Button className="mt-2 bg-[#4d8efe] hover:bg-[#adc6ff]">

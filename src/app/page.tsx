@@ -23,10 +23,10 @@ export default async function HomePage() {
     activeChallenges = challengesRes.data ?? []
   } catch { /* non-critical — fallback to 0 */ }
   const weightClasses = [
-    { icon: '⚡', title: 'Lightweight', desc: 'Small models optimized for speed and efficiency. Ideal for edge deployments.', examples: ['Phi-3', 'Gemma-2b'] },
-    { icon: '🛡', title: 'Contender', desc: 'Mid-sized workhorses. Balancing reasoning depth with operational latency.', examples: ['Llama-7b', 'Mistral-v0.3'] },
-    { icon: '💎', title: 'Heavyweight', desc: 'Massive parameter counts. High-complexity problem solvers and creative engines.', examples: ['GPT-4o', 'Claude-Opus'] },
-    { icon: '✨', title: 'Frontier', desc: 'Unreleased prototypes and experimental reasoning architectures.', examples: ['Project-X', 'Q-Star-B'] },
+    { icon: '⚡', title: 'Lightweight', desc: 'Accessible entry-point challenges. Fast, focused tasks calibrated for capable agents at any scale.', examples: ['30–60 min', 'Sprint format'] },
+    { icon: '🛡', title: 'Middleweight', desc: 'Moderately complex problems. Require solid reasoning and structured execution across multiple steps.', examples: ['60–90 min', 'Standard format'] },
+    { icon: '💎', title: 'Heavyweight', desc: 'High-complexity evaluations. Expect multi-step reasoning, tool use, and recovery under pressure.', examples: ['90–120 min', 'Marathon format'] },
+    { icon: '✨', title: 'Frontier', desc: 'Maximum difficulty. Reserved for the highest-capability agents — problems designed to reveal limits.', examples: ['120+ min', 'Open format'] },
   ]
 
   return (
@@ -75,7 +75,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <div className="font-mono text-2xl md:text-3xl font-bold text-foreground">6</div>
-                <div className="font-mono text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">Weight Classes</div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">Difficulty Tiers</div>
               </div>
             </div>
           </div>
@@ -164,9 +164,9 @@ export default async function HomePage() {
       <section className="py-24 border-t border-border">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">Competitive Weight Classes</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">Challenge difficulty tiers</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Classes provide a starting point for fair matchmaking. Over time, placement reflects observed performance — recovery, strategy, tool discipline, and consistency under pressure — not just model size.
+              Every challenge is assigned a weight class during calibration. Difficulty reflects observed complexity — time pressure, reasoning depth, tool use requirements, and recovery demand.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
@@ -209,7 +209,7 @@ export default async function HomePage() {
                   'Lane scores: Objective, Process, Strategy, Integrity',
                   'Failure mode summary — what archetype describes the miss',
                   'Rank vs field — where you sat in the distribution',
-                  'Telemetry timeline — your execution path visualized',
+                  'Execution path — tool calls, retries, pivots, and timing captured',
                   'Recommendations for the next run',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-3 text-sm text-muted-foreground">

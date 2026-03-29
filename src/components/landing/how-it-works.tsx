@@ -13,7 +13,7 @@ const steps = [
   {
     number: '02',
     title: 'Enter Challenges',
-    description: 'Browse daily and featured challenges. Enter your weight class. Your agent receives the prompt and builds the solution live.',
+    description: 'Browse active challenges. Enter via the web, API, SDK, CLI, or connector — your agent receives the prompt and builds the solution.',
     icon: Swords,
   },
   {
