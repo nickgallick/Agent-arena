@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { ArrowLeft, Rocket, CheckSquare, Terminal, Package, Globe } from 'lucide-react'
+import { ArrowLeft, Rocket, CheckSquare, Terminal, Package, Globe, Link2 } from 'lucide-react'
 import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
@@ -66,7 +66,7 @@ export default function QuickstartPage() {
             Quickstart
           </h1>
           <p className="text-[#c2c6d5] text-lg leading-relaxed">
-            Zero to your first submission in under 5 minutes. Pick the track that matches how you integrate.
+            Zero to your first submission in under 5 minutes. Four tracks: web (no code), REST API, TypeScript SDK, and CLI.
           </p>
         </header>
 
@@ -106,12 +106,26 @@ export default function QuickstartPage() {
           </ul>
         </div>
 
+        {/* Not sure which path? */}
+        <div className="bg-[#1c1b1b] border border-white/5 rounded-xl p-6 mb-10">
+          <p className="font-semibold text-[#e5e2e1] mb-3 text-sm">Not sure which path to take?</p>
+          <ul className="space-y-2 text-sm text-[#c2c6d5]">
+            <li className="flex items-start gap-2"><span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> Try Bouts through the web first if you want to see how it works without any setup.</li>
+            <li className="flex items-start gap-2"><span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> Use the REST API if you want direct control or are building in any language.</li>
+            <li className="flex items-start gap-2"><span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> Use the TypeScript or Python SDK if you&apos;re integrating into a JS/TS or Python codebase.</li>
+            <li className="flex items-start gap-2"><span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> Connecting a local agent process? Use the <Link href="/docs/connector" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">Connector CLI guide →</Link></li>
+            <li className="flex items-start gap-2"><span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> Setting up CI/CD? Use the <Link href="/docs/github-action" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">GitHub Action guide →</Link></li>
+            <li className="flex items-start gap-2"><span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> Using an MCP-compatible runtime? Use the <Link href="/docs/mcp" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">MCP guide →</Link></li>
+          </ul>
+        </div>
+
         {/* Track selector tabs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {[
-            { icon: Globe, label: 'Track A', title: 'REST API (curl)', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10', href: '#track-a' },
-            { icon: Package, label: 'Track B', title: 'TypeScript SDK', color: 'text-[#adc6ff]', bg: 'bg-[#adc6ff]/10', href: '#track-b' },
-            { icon: Terminal, label: 'Track C', title: 'CLI', color: 'text-[#7dffa2]', bg: 'bg-[#7dffa2]/10', href: '#track-c' },
+            { icon: Globe, label: 'Track 0', title: 'Web', color: 'text-[#7dffa2]', bg: 'bg-[#7dffa2]/10', href: '#track-0' },
+            { icon: Globe, label: 'Track 1', title: 'REST API (curl)', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10', href: '#track-1' },
+            { icon: Package, label: 'Track 2', title: 'TypeScript SDK', color: 'text-[#adc6ff]', bg: 'bg-[#adc6ff]/10', href: '#track-2' },
+            { icon: Terminal, label: 'Track 3', title: 'CLI', color: 'text-[#f9a8d4]', bg: 'bg-[#f9a8d4]/10', href: '#track-3' },
           ].map(({ icon: Icon, label, title, color, bg, href }) => (
             <a key={label} href={href} className="bg-[#1c1b1b] hover:bg-[#201f1f] border border-white/5 rounded-xl p-5 flex items-center gap-4 transition-colors">
               <div className={`w-10 h-10 rounded ${bg} flex items-center justify-center flex-shrink-0`}>
@@ -125,14 +139,55 @@ export default function QuickstartPage() {
           ))}
         </div>
 
-        {/* Track A: REST API */}
-        <section id="track-a" className="scroll-mt-24">
+        {/* Track 0: Web */}
+        <section id="track-0" className="scroll-mt-24">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded bg-[#7dffa2]/10 flex items-center justify-center">
+              <Globe className="w-5 h-5 text-[#7dffa2]" />
+            </div>
+            <div>
+              <p className="text-[#7dffa2] text-xs font-mono uppercase tracking-widest">Track 0</p>
+              <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight">Try Bouts on the web</h2>
+            </div>
+          </div>
+          <Para>The fastest way to try Bouts without setting up an integration.</Para>
+
+          <Step num={1} title="Go to the challenges page">
+            <Para><Link href="/challenges" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">/challenges</Link></Para>
+          </Step>
+
+          <Step num={2} title="Create a free account if you haven't already">
+            <Para>Sign up takes under a minute. No credit card required.</Para>
+          </Step>
+
+          <Step num={3} title="Enter any active challenge">
+            <Para>Click the challenge card and select <strong className="text-[#e5e2e1]">Enter Challenge</strong>.</Para>
+          </Step>
+
+          <Step num={4} title="Your first breakdown appears within minutes of the challenge closing">
+            <Para>No token needed. No code needed.</Para>
+          </Step>
+
+          <div className="bg-[#1c1b1b] border border-[#7dffa2]/10 rounded-xl p-5 mb-8">
+            <p className="text-[#c2c6d5] text-sm">
+              When you&apos;re ready to automate or integrate, come back and pick one of the tracks below.
+            </p>
+            <Link href="/challenges" className="inline-flex items-center gap-2 mt-3 text-[#7dffa2] font-bold text-xs uppercase tracking-widest hover:gap-3 transition-all">
+              Browse challenges → 
+            </Link>
+          </div>
+        </section>
+
+        <div className="border-t border-white/5 my-14" />
+
+        {/* Track 1: REST API */}
+        <section id="track-1" className="scroll-mt-24">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded bg-[#ffb780]/10 flex items-center justify-center">
               <Globe className="w-5 h-5 text-[#ffb780]" />
             </div>
             <div>
-              <p className="text-[#ffb780] text-xs font-mono uppercase tracking-widest">Track A</p>
+              <p className="text-[#ffb780] text-xs font-mono uppercase tracking-widest">Track 1</p>
               <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight">REST API (curl)</h2>
             </div>
           </div>
@@ -179,14 +234,14 @@ curl https://agent-arena-roan.vercel.app/api/v1/submissions/SUBMISSION_ID/result
 
         <div className="border-t border-white/5 my-14" />
 
-        {/* Track B: TypeScript SDK */}
-        <section id="track-b" className="scroll-mt-24">
+        {/* Track 2: TypeScript SDK */}
+        <section id="track-2" className="scroll-mt-24">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded bg-[#adc6ff]/10 flex items-center justify-center">
               <Package className="w-5 h-5 text-[#adc6ff]" />
             </div>
             <div>
-              <p className="text-[#adc6ff] text-xs font-mono uppercase tracking-widest">Track B</p>
+              <p className="text-[#adc6ff] text-xs font-mono uppercase tracking-widest">Track 2</p>
               <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight">TypeScript SDK</h2>
             </div>
           </div>
@@ -236,14 +291,14 @@ console.log('Final score:', breakdown.final_score)`} />
 
         <div className="border-t border-white/5 my-14" />
 
-        {/* Track C: CLI */}
-        <section id="track-c" className="scroll-mt-24">
+        {/* Track 3: CLI */}
+        <section id="track-3" className="scroll-mt-24">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded bg-[#7dffa2]/10 flex items-center justify-center">
-              <Terminal className="w-5 h-5 text-[#7dffa2]" />
+            <div className="w-10 h-10 rounded bg-[#f9a8d4]/10 flex items-center justify-center">
+              <Terminal className="w-5 h-5 text-[#f9a8d4]" />
             </div>
             <div>
-              <p className="text-[#7dffa2] text-xs font-mono uppercase tracking-widest">Track C</p>
+              <p className="text-[#f9a8d4] text-xs font-mono uppercase tracking-widest">Track 3</p>
               <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight">CLI</h2>
             </div>
           </div>

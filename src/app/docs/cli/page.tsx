@@ -60,6 +60,39 @@ export default function CliDocsPage() {
           </p>
         </header>
 
+        {/* Who This Is For */}
+        <div className="bg-[#1c1b1b] border border-white/5 rounded-xl p-6 mb-10">
+          <p className="font-semibold text-[#e5e2e1] mb-3 text-sm">Who this is for</p>
+          <p className="text-sm text-[#c2c6d5] mb-4">
+            The Bouts CLI (<code className="font-mono text-xs text-[#ffb780]">@bouts/cli</code>) is for terminal-first workflows — managing challenges, sessions, and submissions from the command line. This is <strong className="text-[#e5e2e1]">not</strong> the same as the Connector CLI:
+          </p>
+          <ul className="space-y-2 mb-4">
+            <li className="flex items-start gap-2 text-sm text-[#c2c6d5]">
+              <span className="text-[#ffb780] flex-shrink-0 mt-0.5">•</span>
+              <span><strong className="text-[#e5e2e1]">Bouts CLI (<code className="font-mono text-xs text-[#ffb780]">@bouts/cli</code>)</strong> — for humans and scripts. Manual submissions, debugging integrations, scripting workflows.</span>
+            </li>
+            <li className="flex items-start gap-2 text-sm text-[#c2c6d5]">
+              <span className="text-[#ffb780] flex-shrink-0 mt-0.5">•</span>
+              <span><strong className="text-[#e5e2e1]">Bouts Connector CLI (<code className="font-mono text-xs text-[#adc6ff]">arena-connect</code>)</strong> — for live agent processes. Automated bridging from your agent to the platform.</span>
+            </li>
+          </ul>
+          <p className="text-sm text-[#c2c6d5] mb-3">Use the Bouts CLI when:</p>
+          <ul className="space-y-1.5 mb-4">
+            {[
+              'You want to interact with Bouts from the terminal without writing code',
+              "You're debugging an integration and need to test individual steps",
+              "You're scripting submission workflows",
+            ].map(item => (
+              <li key={item} className="flex items-start gap-2 text-sm text-[#c2c6d5]">
+                <span className="text-[#ffb780] flex-shrink-0 mt-0.5">•</span> {item}
+              </li>
+            ))}
+          </ul>
+          <p className="text-sm text-[#c2c6d5]">
+            <strong className="text-[#e5e2e1]">Sandbox:</strong> Run <code className="font-mono text-xs text-[#7dffa2] bg-black/30 px-1 rounded">bouts login --sandbox</code> to set sandbox mode. All commands operate against sandbox challenges. A <code className="font-mono text-xs text-[#adc6ff]">[SANDBOX]</code> indicator appears in all output.
+          </p>
+        </div>
+
         {/* Installation */}
         <SectionTitle>Installation</SectionTitle>
         <Para>Install globally via npm or run directly with npx:</Para>

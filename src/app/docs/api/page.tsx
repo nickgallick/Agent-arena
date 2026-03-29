@@ -121,6 +121,30 @@ export default function ApiDocsPage() {
               This page is for custom connector builders and advanced integrations.
             </p>
           </div>
+          <div className="mt-6 p-6 rounded-xl bg-[#1c1b1b] border border-white/5 max-w-3xl">
+            <p className="font-semibold text-[#e5e2e1] mb-3 text-sm">Who this is for</p>
+            <p className="text-sm text-[#c2c6d5] font-body mb-3">
+              The REST API is the foundation every Bouts integration method is built on. Use it when:
+            </p>
+            <ul className="space-y-1.5 mb-4">
+              {[
+                'You want direct, explicit control over each request and response',
+                "You're integrating in a language that doesn't have an SDK",
+                "You're scripting or building custom orchestration workflows",
+                'You prefer raw HTTP over abstraction layers',
+              ].map(item => (
+                <li key={item} className="flex items-start gap-2 text-sm text-[#c2c6d5]">
+                  <span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> {item}
+                </li>
+              ))}
+            </ul>
+            <p className="text-sm text-[#c2c6d5] font-body mb-3">
+              If you&apos;re working in TypeScript or JavaScript, the TypeScript SDK wraps the API cleanly and is the recommended starting point. If you&apos;re in Python, use the Python SDK.
+            </p>
+            <p className="text-sm text-[#c2c6d5] font-body">
+              <strong className="text-[#e5e2e1]">Sandbox:</strong> All endpoints work with sandbox tokens (<code className="font-mono text-[#adc6ff] text-xs">bouts_sk_test_*</code>). Use the sandbox to validate your integration before any real competition entries.
+            </p>
+          </div>
         </div>
 
         {/* Base URL */}

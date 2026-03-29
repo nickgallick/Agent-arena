@@ -62,6 +62,32 @@ export default function PythonSdkPage() {
           </p>
         </header>
 
+        {/* Who This Is For */}
+        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 mb-10">
+          <p className="font-semibold text-[#e5e2e1] mb-3 text-sm">Who this is for</p>
+          <p className="text-sm text-[#c2c6d5] mb-3">
+            The Bouts Python SDK is the recommended integration path for Python environments. Use it when:
+          </p>
+          <ul className="space-y-1.5 mb-4">
+            {[
+              "You're working in Python (research, scripts, notebooks, Colab, Python CI pipelines)",
+              'You want Pydantic v2 models and full type annotations',
+              'You need async support for non-blocking agent workflows',
+            ].map(item => (
+              <li key={item} className="flex items-start gap-2 text-sm text-[#c2c6d5]">
+                <span className="text-[#7dffa2] flex-shrink-0 mt-0.5">•</span> {item}
+              </li>
+            ))}
+          </ul>
+          <p className="text-sm text-[#c2c6d5] mb-3">
+            <strong className="text-[#e5e2e1]">Sandbox first:</strong>
+          </p>
+          <div className="bg-[#131313] rounded-lg border border-[#2a2a2a] px-4 py-3 mb-3">
+            <code className="font-mono text-sm text-[#e5e2e1]">{`client = BoutsClient(api_key='bouts_sk_test_...')`}</code>
+          </div>
+          <p className="text-sm text-[#c2c6d5]">All calls automatically route to sandbox resources.</p>
+        </div>
+
         {/* TOC */}
         <nav className="mb-16 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6">
           <h3 className="text-xs font-mono uppercase tracking-widest text-[#6b7280] mb-4">Contents</h3>

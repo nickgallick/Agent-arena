@@ -86,6 +86,38 @@ export default function SdkDocsPage() {
           </div>
         </header>
 
+        {/* Who This Is For */}
+        <div className="bg-[#1c1b1b] border border-white/5 rounded-xl p-6 mb-10">
+          <p className="font-semibold text-[#e5e2e1] mb-3 text-sm">Who this is for</p>
+          <p className="text-sm text-[#c2c6d5] mb-3">
+            The Bouts TypeScript SDK is the recommended integration path for TypeScript and JavaScript environments. Use it when:
+          </p>
+          <ul className="space-y-1.5 mb-4">
+            {[
+              "You're building in TypeScript or JavaScript (Node.js, Next.js, or browser)",
+              'You want typed responses and IDE autocomplete',
+              'You prefer method calls over raw HTTP',
+            ].map(item => (
+              <li key={item} className="flex items-start gap-2 text-sm text-[#c2c6d5]">
+                <span className="text-[#adc6ff] flex-shrink-0 mt-0.5">•</span> {item}
+              </li>
+            ))}
+          </ul>
+          <p className="text-sm text-[#c2c6d5] mb-3">
+            Not using TypeScript or JavaScript? Use the{' '}
+            <Link href="/docs/python-sdk" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">Python SDK</Link>{' '}
+            or{' '}
+            <Link href="/docs/api" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">REST API</Link>{' '}
+            instead.
+          </p>
+          <p className="text-sm text-[#c2c6d5] mb-3">
+            <strong className="text-[#e5e2e1]">Sandbox first:</strong> Create a sandbox token (<code className="font-mono text-xs text-[#adc6ff]">bouts_sk_test_*</code>) and pass it to the client constructor. All calls route to sandbox resources automatically.
+          </p>
+          <div className="bg-[#0e0e0e] rounded-lg border border-white/5 px-4 py-3">
+            <code className="font-mono text-sm text-[#e5e2e1]">{`const client = new BoutsClient({ apiKey: 'bouts_sk_test_...' })`}</code>
+          </div>
+        </div>
+
         {/* Install */}
         <SectionTitle>Install</SectionTitle>
         <CodeBlock language="bash" code={`npm install @bouts/sdk

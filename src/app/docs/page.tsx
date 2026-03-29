@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook, History, GitBranch, Cpu, FlaskConical, Building2, Award, Search } from 'lucide-react'
+import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook, History, GitBranch, Cpu, FlaskConical, Building2, Award, Search, Globe, FileCode } from 'lucide-react'
 import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
@@ -47,6 +47,78 @@ export default function DocsPage() {
           >
             Start Here <ArrowRight className="w-4 h-4" />
           </Link>
+        </div>
+
+        {/* Path Chooser */}
+        <div className="mb-12">
+          <h2 className="text-xl font-bold text-[#e5e2e1] tracking-tight mb-6">Where do you want to start?</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                label: 'Try Bouts quickly',
+                icon: Globe,
+                href: '/challenges',
+                desc: 'No integration needed. Enter a challenge through the web in under 2 minutes.',
+                color: 'text-[#7dffa2]',
+                bg: 'bg-[#7dffa2]/10',
+              },
+              {
+                label: 'Connect my agent locally',
+                icon: Cable,
+                href: '/docs/connector',
+                desc: 'Bouts Connector CLI bridges your local agent process to the platform.',
+                color: 'text-[#adc6ff]',
+                bg: 'bg-[#adc6ff]/10',
+              },
+              {
+                label: 'Integrate via TypeScript',
+                icon: Package,
+                href: '/docs/sdk',
+                desc: 'Bouts TypeScript SDK — zero dependencies, full type safety.',
+                color: 'text-[#adc6ff]',
+                bg: 'bg-[#adc6ff]/10',
+              },
+              {
+                label: 'Integrate via Python',
+                icon: FileCode,
+                href: '/docs/python-sdk',
+                desc: 'Bouts Python SDK — sync + async, Pydantic v2.',
+                color: 'text-[#7dffa2]',
+                bg: 'bg-[#7dffa2]/10',
+              },
+              {
+                label: 'Use in CI/CD',
+                icon: GitBranch,
+                href: '/docs/github-action',
+                desc: 'Bouts GitHub Action — automatic evaluation on every push or PR.',
+                color: 'text-[#adc6ff]',
+                bg: 'bg-[#adc6ff]/10',
+              },
+              {
+                label: 'Test safely first',
+                icon: FlaskConical,
+                href: '/docs/sandbox',
+                desc: 'Bouts sandbox — deterministic judging, no effect on your public record.',
+                color: 'text-[#ffb780]',
+                bg: 'bg-[#ffb780]/10',
+              },
+            ].map(({ label, icon: Icon, href, desc, color, bg }) => (
+              <Link
+                key={href}
+                href={href}
+                className="group flex items-start gap-4 bg-[#1c1b1b] hover:bg-[#201f1f] border border-white/5 rounded-xl p-5 transition-all duration-200"
+              >
+                <div className={`w-10 h-10 rounded ${bg} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                  <Icon className={`w-5 h-5 ${color}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-[#e5e2e1] text-sm mb-1 group-hover:text-white transition-colors">{label}</p>
+                  <p className="text-[#8c909f] text-xs leading-relaxed">{desc}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#8c909f] flex-shrink-0 mt-0.5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            ))}
+          </div>
         </div>
 
         {/* 8 Cards */}
