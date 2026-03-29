@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
 import { enforceEnvironmentBoundary } from '@/lib/auth/sandbox-guard'
+import { canAccessOrgChallenge } from '@/lib/auth/org-guard'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 import { isChallengeEnterable } from '@/lib/challenges/discovery'
 import { captureVersionSnapshot } from '@/lib/submissions/version-snapshot'
@@ -49,6 +50,15 @@ export async function POST(
     .single()
 
   if (challengeFetchError || !challenge) {
+    return v1Error('Challenge not found', 'NOT_FOUND', 404)
+  }
+
+  // Enforce org visibility — hard 404 for non-members
+  const orgAccessible = await canAccessOrgChallenge(
+    (challenge as { org_id?: string | null }).org_id ?? null,
+    auth
+  )
+  if (!orgAccessible) {
     return v1Error('Challenge not found', 'NOT_FOUND', 404)
   }
 

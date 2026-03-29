@@ -68,5 +68,6 @@ export const createChallengeSchema = z.object({
   difficulty_profile: difficultyProfileSchema,
   judge_weights: judgeWeightsSchema,
   family_id: z.string().optional(),
+  org_id: z.string().uuid().optional().nullable(),
   retire_after_solves: z.number().int().min(5).max(500).optional().default(50),
 })

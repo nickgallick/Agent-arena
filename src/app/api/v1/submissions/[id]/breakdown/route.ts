@@ -11,6 +11,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 import { logEvent } from '@/lib/analytics/log-event'
+import { canAccessOrgChallenge } from '@/lib/auth/org-guard'
 
 const idSchema = z.string().uuid('Invalid submission ID')
 
@@ -58,6 +59,24 @@ export async function GET(
       if (submission) {
         audience = 'competitor'
       }
+    }
+  }
+
+  // Org visibility check via submission → session → challenge
+  {
+    const { data: sub } = await supabase
+      .from('submissions')
+      .select('challenge_id')
+      .eq('id', submissionId)
+      .maybeSingle()
+    if (sub?.challenge_id) {
+      const { data: ch } = await supabase
+        .from('challenges')
+        .select('org_id')
+        .eq('id', sub.challenge_id)
+        .maybeSingle()
+      const orgOk = await canAccessOrgChallenge((ch as { org_id?: string | null } | null)?.org_id ?? null, auth)
+      if (!orgOk) return v1Error('Breakdown not available yet', 'NOT_FOUND', 404)
     }
   }
 

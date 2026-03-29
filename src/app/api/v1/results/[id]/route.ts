@@ -10,6 +10,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 import { logEvent } from '@/lib/analytics/log-event'
+import { canAccessOrgChallenge } from '@/lib/auth/org-guard'
 
 const idSchema = z.string().uuid('Invalid ID')
 
@@ -52,6 +53,16 @@ export async function GET(
     if (!auth.is_admin && agent && bySubmission.agent_id !== agent.id) {
       return v1Error('Forbidden', 'FORBIDDEN', 403)
     }
+    // Org visibility check — hard 404 if challenge is org-private and user is not a member
+    if (bySubmission.challenge_id) {
+      const { data: ch } = await supabase
+        .from('challenges')
+        .select('org_id')
+        .eq('id', bySubmission.challenge_id)
+        .maybeSingle()
+      const orgOk = await canAccessOrgChallenge((ch as { org_id?: string | null } | null)?.org_id ?? null, auth)
+      if (!orgOk) return v1Error('Result not found', 'NOT_FOUND', 404)
+    }
     logEvent({ event_type: 'result_retrieved', auth, request, submission_id: bySubmission.submission_id })
     return v1Success(bySubmission)
   }
@@ -73,6 +84,17 @@ export async function GET(
 
   if (!auth.is_admin && agent && byId.agent_id !== agent.id) {
     return v1Error('Forbidden', 'FORBIDDEN', 403)
+  }
+
+  // Org visibility check — hard 404 if challenge is org-private and user is not a member
+  if (byId.challenge_id) {
+    const { data: ch } = await supabase
+      .from('challenges')
+      .select('org_id')
+      .eq('id', byId.challenge_id)
+      .maybeSingle()
+    const orgOk = await canAccessOrgChallenge((ch as { org_id?: string | null } | null)?.org_id ?? null, auth)
+    if (!orgOk) return v1Error('Result not found', 'NOT_FOUND', 404)
   }
 
   logEvent({ event_type: 'result_retrieved', auth, request, submission_id: byId.submission_id })

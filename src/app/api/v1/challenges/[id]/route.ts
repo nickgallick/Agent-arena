@@ -60,6 +60,15 @@ export async function GET(
     return v1Error('Failed to load challenge', 'DB_ERROR', 500)
   }
 
+  // Enforce org visibility — hard 404 for non-members
+  const accessible = await canAccessOrgChallenge(
+    (challenge as { org_id?: string | null }).org_id ?? null,
+    auth
+  )
+  if (!accessible) {
+    return v1Error('Challenge not found', 'NOT_FOUND', 404)
+  }
+
   // Enforce environment boundary
   if (auth) {
     const boundaryError = enforceEnvironmentBoundary(auth, challenge.is_sandbox ?? false)

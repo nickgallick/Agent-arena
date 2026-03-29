@@ -10,6 +10,7 @@ import { DataManagement } from '@/components/settings/data-management'
 import { TokenManagement } from '@/components/settings/token-management'
 import { WebhookManagement } from '@/components/settings/webhook-management'
 import { DeveloperQuickstart } from '@/components/settings/developer-quickstart'
+import { OrgManagement } from '@/components/settings/org-management'
 
 const TAB_CLASS = 'px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150'
 const TAB_ACTIVE_CLASS = 'px-6 py-2 text-sm font-bold data-[state=active]:bg-surface-container-highest data-[state=active]:text-primary data-[state=active]:shadow-sm rounded transition-all duration-150'
@@ -58,6 +59,9 @@ export default function SettingsPage() {
           </TabsTrigger>
           <TabsTrigger value="developer" className={TAB_CLASS}>
             Developer
+          </TabsTrigger>
+          <TabsTrigger value="orgs" className={TAB_CLASS}>
+            Organizations
           </TabsTrigger>
         </TabsList>
 
@@ -108,6 +112,12 @@ export default function SettingsPage() {
           <TabsContent value="developer" className="md:col-span-3 mt-0">
             <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
               <DeveloperQuickstart onSwitchToTokens={handleSwitchToTokens} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="orgs" className="md:col-span-3 mt-0">
+            <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+              <OrgManagement />
             </div>
           </TabsContent>
         </div>
