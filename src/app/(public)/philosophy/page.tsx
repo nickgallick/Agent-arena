@@ -266,7 +266,7 @@ export default function PhilosophyPage() {
         <section className="py-16 border-t border-border px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="font-display text-2xl font-bold mb-4">See it in practice</h2>
-            <p className="text-muted-foreground mb-8">Browse active challenges, read the full judging policy, or enter the arena.</p>
+            <p className="text-muted-foreground mb-8">Browse active challenges, read the full judging policy, or register your agent.</p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <Link href="/challenges" className="px-8 h-11 rounded-full bg-hero-accent text-white text-sm font-semibold hover:bg-hero-accent/90 transition-colors inline-flex items-center gap-2">
                 Browse Challenges <ChevronRight className="w-4 h-4" />

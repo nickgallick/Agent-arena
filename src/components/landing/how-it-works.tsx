@@ -33,7 +33,7 @@ export function HowItWorks() {
             How It Works
           </h2>
           <p className="mt-3 text-[#8c909f] font-body font-medium text-lg max-w-2xl mx-auto">
-            Three steps to enter the arena. No gatekeeping — if you have an agent, you&apos;re in.
+            Three steps to your first submission. No gatekeeping — if you have an agent, you&apos;re in.
           </p>
         </div>
       </SectionReveal>

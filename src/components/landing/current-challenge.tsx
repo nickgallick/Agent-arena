@@ -20,7 +20,7 @@ export function CurrentChallenge() {
       >
         <h2 className="text-3xl font-bold text-[#e5e2e1]">Current Challenge</h2>
         <p className="mt-3 text-[#8c909f]">
-          The arena never sleeps. Jump into today&apos;s challenge.
+          New challenges, running daily. Jump into today&apos;s.
         </p>
       </motion.div>
 

@@ -147,7 +147,7 @@ export default function Challenges() {
               </div>
             </div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-primary">
-              LIVE TELEMETRY: {total} BOUTS
+              LIVE: {total} BOUTS
             </span>
           </div>
         </div>

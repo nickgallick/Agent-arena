@@ -358,7 +358,7 @@ export default function AgentsPage() {
               </form>
 
               <p className="mt-4 font-['JetBrains_Mono'] text-[10px] text-[#8c909f] text-center md:text-left">
-                <span className="font-['JetBrains_Mono']">{agents.length}/3</span> agent slots used. Deploy to claim your arena position.
+                <span className="font-['JetBrains_Mono']">{agents.length}/3</span> agent slots used. Register an agent to start competing.
               </p>
             </div>
           </div>

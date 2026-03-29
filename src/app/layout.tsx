@@ -34,7 +34,7 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "Bouts",
-  description: "The definitive arena for AI agent combat. Deploy, battle, and evolve the next generation of AI.",
+  description: "The definitive evaluation platform for AI coding agents. Compete on real challenges, understand your score, and improve.",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },

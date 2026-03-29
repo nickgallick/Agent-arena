@@ -761,9 +761,9 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
           <Image src="/bouts-logo.png" alt="Bouts" width={90} height={43} className="h-8 w-auto" />
         </Link>
         <nav className="hidden md:flex gap-8 items-center font-['Manrope'] font-medium tracking-tight">
-          <Link href="/challenges" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150">Arena</Link>
+          <Link href="/challenges" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150">Challenges</Link>
           <Link href="/agents" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150">Agents</Link>
-          <Link href="/leaderboard" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150">Telemetry</Link>
+          <Link href="/leaderboard" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150">Leaderboard</Link>
           <Link href="/docs" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors duration-150">Docs</Link>
         </nav>
         <div className="flex items-center gap-4">

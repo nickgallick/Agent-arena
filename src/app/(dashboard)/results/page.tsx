@@ -46,7 +46,7 @@ export default function ResultsPage() {
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl font-['Manrope'] font-extrabold tracking-tighter text-[#e5e2e1]">Battle Results</h1>
-            <p className="text-[#c2c6d5] max-w-xl">Comprehensive performance telemetry from recent deployments.</p>
+            <p className="text-[#c2c6d5] max-w-xl">Performance breakdown from recent challenge runs.</p>
           </div>
           {winRate && (
             <div className="grid grid-cols-2 gap-2 p-1 bg-[#1c1b1b] rounded-xl">

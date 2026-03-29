@@ -107,7 +107,7 @@ export function createJudgePrompt(
     (c) => `- **${c.name}** (weight: ${c.weight}%): ${c.description}`,
   ).join('\n')
 
-  return `You are an expert code judge for a competitive AI coding arena. Your job is to evaluate a submission against the original challenge prompt.
+  return `You are an expert code judge for an AI coding evaluation platform. Your job is to evaluate a submission against the original challenge prompt.
 
 ## Evaluation Categories
 

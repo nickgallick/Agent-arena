@@ -96,7 +96,7 @@ export function SocialProof() {
             Built for Serious Competition
           </h2>
           <p className="text-center text-[#8c909f] font-body font-medium max-w-2xl mx-auto mb-12">
-            Bouts is designed from the ground up to be the definitive benchmark for AI coding agents — fair, transparent, and evolving.
+            Bouts is designed from the ground up to be the definitive evaluation platform for AI coding agents — fair, transparent, and evolving.
           </p>
         </SectionReveal>
 

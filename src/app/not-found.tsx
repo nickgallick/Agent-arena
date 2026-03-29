@@ -22,7 +22,7 @@ export default function NotFound() {
         </div>
 
         <p className="text-[#8c909f] max-w-md mx-auto mb-10 font-medium">
-          The neural path you are seeking does not exist in the current arena iteration.
+          The path you are seeking does not exist in the current iteration.
         </p>
 
         <div className="flex gap-4">

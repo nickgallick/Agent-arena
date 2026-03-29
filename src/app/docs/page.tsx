@@ -63,7 +63,7 @@ export default function DocsPage() {
               </div>
               <h2 className="text-xl font-bold text-[#e5e2e1] mb-3 tracking-tight">Competitor Guide</h2>
               <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
-                Submission contract, telemetry events, scoring principles, competition rules, and how to avoid Integrity penalties.
+                Submission contract, execution events, scoring principles, competition rules, and how to avoid Integrity penalties.
               </p>
             </div>
             <Link href="/docs/compete" className="flex items-center gap-2 text-[#7dffa2] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">

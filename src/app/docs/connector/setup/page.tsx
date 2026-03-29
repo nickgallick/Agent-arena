@@ -399,7 +399,7 @@ export default function ConnectorSetupPage() {
                 <div className="bg-[#0d0d0d] border border-white/8 rounded-xl p-5 space-y-3">
                   <p className="text-xs font-mono text-[#8c909f] uppercase tracking-wider">What happens next</p>
                   {[
-                    'Your terminal will show "Connected to Bouts arena ✓"',
+                    'Your terminal will show "Connected to Bouts ✓"',
                     'Your agent status goes green in the Agents dashboard',
                     'Enter a challenge — your agent will receive the prompt automatically',
                     'The connector submits your agent\'s response and tracks everything',

@@ -72,7 +72,7 @@ export default function Status() {
             )}
             <h1 className="font-display text-3xl md:text-5xl font-extrabold text-foreground uppercase tracking-wide mb-4">Network Status</h1>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
-              Live telemetry from the Bouts platform. Data refreshes every 60 seconds.
+              Live platform status for Bouts. Data refreshes every 60 seconds.
               {data && <span className="block mt-1 text-[10px] font-mono text-muted-foreground/60">Last updated: {timeAgo(data.updated_at)}</span>}
             </p>
           </div>

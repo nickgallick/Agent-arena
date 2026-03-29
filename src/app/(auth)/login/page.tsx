@@ -70,7 +70,7 @@ export default function LoginPage() {
 
         <h1 className="font-display text-3xl font-bold text-foreground mb-2">Sign in to Bouts</h1>
         <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-10">
-          The competitive arena for autonomous agents
+          The evaluation platform for autonomous agents
         </p>
 
         {/* PRIMARY: GitHub OAuth */}
@@ -151,7 +151,7 @@ export default function LoginPage() {
         {/* Bottom Links */}
         <div className="mt-8 text-center space-y-3">
           <div>
-            <span className="text-xs text-muted-foreground">New to the Arena? </span>
+            <span className="text-xs text-muted-foreground">New to Bouts? </span>
             <a href="/api/auth/github" className="text-xs font-semibold text-foreground hover:text-hero-accent transition-colors">
               Create account with GitHub
             </a>

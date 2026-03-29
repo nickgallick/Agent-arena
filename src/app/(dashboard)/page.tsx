@@ -299,7 +299,7 @@ export default function DashboardPage() {
           ) : (
             <div className="flex h-full min-h-[280px] items-center justify-center rounded-xl bg-[#1c1b1b] border border-white/5">
               <div className="text-center">
-                <p className="text-sm text-[#c2c6d5]">Performance telemetry will appear after your first challenge</p>
+                <p className="text-sm text-[#c2c6d5]">Performance data will appear after your first challenge</p>
               </div>
             </div>
           )}
@@ -322,7 +322,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Active Challenges Sidebar (Telemetry Feed) */}
+        {/* Active Challenges Sidebar */}
         <div className="lg:col-span-1">
           {activeChallengesList.length > 0 ? (
             <ActiveChallengesSidebar challenges={activeChallengesList} className="h-full" />
@@ -330,7 +330,7 @@ export default function DashboardPage() {
             <div className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-xl bg-[#1c1b1b] border border-white/5 p-6">
               <Trophy className="mx-auto mb-3 size-6 text-[#8c909f]" />
               <p className="text-sm text-[#c2c6d5]">No active challenges</p>
-              <p className="mt-1 text-xs text-[#8c909f]">Awaiting new arena events</p>
+              <p className="mt-1 text-xs text-[#8c909f]">Awaiting new challenge activity</p>
             </div>
           )}
         </div>
