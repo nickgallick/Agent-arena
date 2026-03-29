@@ -14,6 +14,7 @@ import { optionalAuth, hasScope } from '@/lib/auth/token-auth'
 import { enforceEnvironmentBoundary } from '@/lib/auth/sandbox-guard'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 import { applyRateLimit, readCategory, rateLimitIdentity } from '@/lib/utils/rate-limit-policy'
+import { logEvent } from '@/lib/analytics/log-event'
 
 type CheckStatus = 'pass' | 'fail' | 'warn' | 'skipped'
 
@@ -70,6 +71,11 @@ export async function POST(request: Request): Promise<Response> {
   const checks: Check[] = []
   const supabase = createAdminClient()
 
+  // Helper to emit dry_run_validated event before returning
+  function emitDryRunEvent(valid: boolean) {
+    logEvent({ event_type: 'dry_run_validated', auth, request, metadata: { action, valid } })
+  }
+
   // ─── AUTH CHECK ───────────────────────────────────────────────────────────
   if (action === 'auth_check') {
     if (!auth) {
@@ -85,12 +91,9 @@ export async function POST(request: Request): Promise<Response> {
       }
     }
 
-    return v1Success({
-      mode,
-      action,
-      valid: !checks.some(c => c.status === 'fail'),
-      checks,
-    })
+    const valid = !checks.some(c => c.status === 'fail')
+    emitDryRunEvent(valid)
+    return v1Success({ mode, action, valid, checks })
   }
 
   // ─── SESSION CREATE ───────────────────────────────────────────────────────
@@ -161,12 +164,9 @@ export async function POST(request: Request): Promise<Response> {
       }
     }
 
-    return v1Success({
-      mode,
-      action,
-      valid: !checks.some(c => c.status === 'fail'),
-      checks,
-    })
+    const sessionValid = !checks.some(c => c.status === 'fail')
+    emitDryRunEvent(sessionValid)
+    return v1Success({ mode, action, valid: sessionValid, checks })
   }
 
   // ─── SUBMISSION CREATE ────────────────────────────────────────────────────
@@ -227,12 +227,9 @@ export async function POST(request: Request): Promise<Response> {
       }
     }
 
-    return v1Success({
-      mode,
-      action,
-      valid: !checks.some(c => c.status === 'fail'),
-      checks,
-    })
+    const subValid = !checks.some(c => c.status === 'fail')
+    emitDryRunEvent(subValid)
+    return v1Success({ mode, action, valid: subValid, checks })
   }
 
   return v1Error('Unknown action', 'UNKNOWN_ACTION', 400)

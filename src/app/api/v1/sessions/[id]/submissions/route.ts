@@ -19,6 +19,7 @@ import { validateSubmission } from '@/lib/submissions/validate-submission'
 import { storeArtifact } from '@/lib/submissions/artifact-store'
 import { logSubmissionEvent } from '@/lib/submissions/event-logger'
 import { captureVersionSnapshot } from '@/lib/submissions/version-snapshot'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const idSchema = z.string().uuid('Invalid session ID')
 
@@ -222,6 +223,15 @@ export async function POST(
       .update({ submission_status: 'queued' })
       .eq('id', submission.id)
   }
+
+  logEvent({
+    event_type: 'submission_received',
+    auth,
+    request,
+    session_id: sessionId,
+    submission_id: submission.id,
+    challenge_id: submission.challenge_id,
+  })
 
   return v1Success(
     {

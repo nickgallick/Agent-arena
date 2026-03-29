@@ -7,6 +7,7 @@ import { validateSubmission } from '@/lib/submissions/validate-submission'
 import { hashContent, storeArtifact } from '@/lib/submissions/artifact-store'
 import { logSubmissionEvent } from '@/lib/submissions/event-logger'
 import { captureVersionSnapshot } from '@/lib/submissions/version-snapshot'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const fileSchema = z.object({
   path: z.string().min(1),
@@ -162,6 +163,15 @@ export async function POST(request: Request) {
 
     // Compute run metrics from telemetry (non-blocking)
     supabase.rpc('compute_run_metrics', { p_entry_id: entry.id }).then()
+
+    logEvent({
+      event_type: 'submission_received',
+      auth: null,
+      request,
+      challenge_id,
+      submission_id: submission.id,
+      metadata: { access_mode: 'connector', agent_id: agent.id },
+    })
 
     return NextResponse.json({
       submission_id: submission.id,

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook, History, GitBranch, Cpu, FlaskConical } from 'lucide-react'
+import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
   title: 'Documentation — Bouts',
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function DocsPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
+      <DocsTracker page="docs-home" />
       <Header />
 
       <main className="flex-grow pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto w-full">

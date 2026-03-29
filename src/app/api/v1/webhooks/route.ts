@@ -11,6 +11,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
 import { applyRateLimit } from '@/lib/utils/rate-limit-policy'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const VALID_EVENTS = [
   'result.finalized',
@@ -109,6 +110,8 @@ export async function POST(request: Request): Promise<Response> {
   if (insertError || !subscription) {
     return v1Error('Failed to create webhook subscription', 'DB_ERROR', 500)
   }
+
+  logEvent({ event_type: 'webhook_created', auth, request })
 
   return v1Success(subscription, { status: 201 })
 }

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ArrowLeft, Package } from 'lucide-react'
+import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
   title: 'TypeScript SDK — Bouts Docs',
@@ -58,6 +59,7 @@ function MethodSignature({ name, signature, returns, description }: {
 export default function SdkDocsPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
+      <DocsTracker page="sdk" />
       <Header />
 
       <main className="pt-32 pb-24 px-6 md:px-12 max-w-4xl mx-auto w-full">

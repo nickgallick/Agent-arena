@@ -15,6 +15,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 import { applyRateLimit } from '@/lib/utils/rate-limit-policy'
 import { ALL_SCOPES } from '@/lib/auth/token-auth'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const ALL_SCOPES_SET = new Set<string>(ALL_SCOPES)
 
@@ -88,9 +89,11 @@ export async function POST(request: Request): Promise<Response> {
   // Validate scopes — no admin:* allowed
   for (const scope of scopes) {
     if (scope.startsWith('admin:')) {
+      logEvent({ event_type: 'token_created', request, success: false, error_code: 'SCOPE_ERROR', metadata: { environment, scopes } })
       return v1Error(`Scope "${scope}" is not issuable`, 'INVALID_SCOPE', 400)
     }
     if (!ALL_SCOPES_SET.has(scope)) {
+      logEvent({ event_type: 'token_created', request, success: false, error_code: 'SCOPE_ERROR', metadata: { environment, scopes } })
       return v1Error(`Unknown scope: "${scope}"`, 'INVALID_SCOPE', 400)
     }
   }
@@ -152,6 +155,9 @@ export async function POST(request: Request): Promise<Response> {
   if (insertError || !token) {
     return v1Error('Failed to create token', 'DB_ERROR', 500)
   }
+
+  // Emit analytics event
+  logEvent({ event_type: 'token_created', request, metadata: { environment, scopes } })
 
   // Return plaintext token ONCE — never stored
   return v1Success(

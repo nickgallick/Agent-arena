@@ -12,6 +12,7 @@
 import { createHash } from 'crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { logEvent } from '@/lib/analytics/log-event'
 
 export type TokenType = 'jwt' | 'api_token' | 'connector' | 'service'
 
@@ -176,10 +177,12 @@ export async function requireScope(request: Request, scope: Scope): Promise<Auth
   const auth = await resolveAuth(request)
 
   if (!auth) {
+    logEvent({ event_type: 'auth_failed', request, success: false, error_code: 'UNAUTHORIZED' })
     throw Object.assign(new Error('Unauthorized'), { status: 401 })
   }
 
   if (!hasScope(auth, scope)) {
+    logEvent({ event_type: 'scope_error', auth, request, success: false, error_code: 'SCOPE_ERROR' })
     throw Object.assign(new Error('Insufficient scope'), { status: 403 })
   }
 

@@ -247,6 +247,23 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
   } | null>(null)
   const [devMetricsLoading, setDevMetricsLoading] = useState(false)
 
+  // Analytics Tab
+  const [analyticsData, setAnalyticsData] = useState<{
+    access_mode_breakdown: Array<{ mode: string; count: number }>
+    friction_hotspots: Array<{ error_code: string; count: number }>
+    environment_split: Array<{ environment: string; count: number }>
+    recent_errors: Array<{ id: string; event_type: string; error_code: string | null; access_mode: string | null; environment: string; created_at: string }>
+  } | null>(null)
+  const [analyticsFunnel, setAnalyticsFunnel] = useState<Array<{
+    stage: number; label: string; event_type: string; distinct_users: number; total_events: number
+    drop_off_pct: number | null; retention_from_prev: number | null
+  }> | null>(null)
+  const [analyticsAccessModes, setAnalyticsAccessModes] = useState<{
+    by_mode: Array<{ mode: string; total: number; success: number; failures: number; failure_rate: number; last_seen: string }>
+    daily_breakdown: Array<Record<string, unknown>>
+  } | null>(null)
+  const [analyticsLoading, setAnalyticsLoading] = useState(false)
+
   useEffect(() => {
     fetch('/api/admin/challenge-families')
       .then(r => r.ok ? r.json() : { families: [] })
@@ -409,6 +426,33 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     }
   }, [])
 
+  const fetchAnalytics = useCallback(async () => {
+    setAnalyticsLoading(true)
+    try {
+      const [mainRes, funnelRes, modesRes] = await Promise.all([
+        fetch('/api/admin/analytics?days=30'),
+        fetch('/api/admin/analytics/funnel?days=30'),
+        fetch('/api/admin/analytics/access-modes?days=30'),
+      ])
+      if (mainRes.ok) {
+        const data = await mainRes.json()
+        setAnalyticsData(data)
+      }
+      if (funnelRes.ok) {
+        const data = await funnelRes.json()
+        setAnalyticsFunnel(data.funnel ?? [])
+      }
+      if (modesRes.ok) {
+        const data = await modesRes.json()
+        setAnalyticsAccessModes(data)
+      }
+    } catch {
+      // non-critical
+    } finally {
+      setAnalyticsLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     fetchJudgingQueue()
     if (activeTab === 'Dashboard') fetchStats()
@@ -419,7 +463,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     if (activeTab === 'Inventory') fetchInventory()
     if (activeTab === 'Challenge Health') fetchHealth()
     if (activeTab === 'Developer Metrics') fetchDevMetrics()
-  }, [activeTab, fetchStats, fetchChallenges, fetchIntakeQueue, fetchForgeReviews, fetchCalibration, fetchInventory, fetchHealth, fetchJudgingQueue, fetchDevMetrics])
+    if (activeTab === 'Analytics') fetchAnalytics()
+  }, [activeTab, fetchStats, fetchChallenges, fetchIntakeQueue, fetchForgeReviews, fetchCalibration, fetchInventory, fetchHealth, fetchJudgingQueue, fetchDevMetrics, fetchAnalytics])
 
   async function handleCreateChallenge(e: React.FormEvent) {
     e.preventDefault()
@@ -566,6 +611,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     { label: 'Features', icon: <Flag className="w-5 h-5" /> },
     { label: 'Health', icon: <Shield className="w-5 h-5" /> },
     { label: 'Developer Metrics', icon: <Key className="w-5 h-5" /> },
+    { label: 'Analytics', icon: <TrendingUp className="w-5 h-5" /> },
   ]
 
   return (
@@ -1581,6 +1627,205 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       </div>
                     )}
                   </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── ANALYTICS TAB ── */}
+          {activeTab === 'Analytics' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Adoption Analytics</h2>
+                <button
+                  onClick={fetchAnalytics}
+                  className="text-xs font-['JetBrains_Mono'] text-[#adc6ff] hover:text-[#e5e2e1] transition-colors uppercase tracking-widest"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              {analyticsLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : (!analyticsData && !analyticsFunnel && !analyticsAccessModes) ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <TrendingUp className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No data yet. Events will appear as the platform is used.</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+
+                  {/* Access Mode Breakdown */}
+                  {analyticsAccessModes && (
+                    <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                      <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Access Mode Breakdown</h3>
+                      {analyticsAccessModes.by_mode.length === 0 ? (
+                        <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">No events yet.</p>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-xs font-['JetBrains_Mono']">
+                            <thead>
+                              <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                                <th className="py-2 pr-6 text-left uppercase tracking-widest">Mode</th>
+                                <th className="py-2 pr-6 text-right uppercase tracking-widest">Events</th>
+                                <th className="py-2 pr-6 text-right uppercase tracking-widest text-[#7dffa2]">Success</th>
+                                <th className="py-2 pr-6 text-right uppercase tracking-widest text-[#ffb4ab]">Failures</th>
+                                <th className="py-2 text-right uppercase tracking-widest">Failure %</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#424753]/10">
+                              {analyticsAccessModes.by_mode.map(row => (
+                                <tr key={row.mode} className="hover:bg-[#201f1f]">
+                                  <td className="py-2 pr-6 text-[#adc6ff] font-bold">{row.mode}</td>
+                                  <td className="py-2 pr-6 text-right text-[#e5e2e1]">{row.total}</td>
+                                  <td className="py-2 pr-6 text-right text-[#7dffa2]">{row.success}</td>
+                                  <td className="py-2 pr-6 text-right text-[#ffb4ab]">{row.failures}</td>
+                                  <td className={`py-2 text-right font-bold ${row.failure_rate > 20 ? 'text-[#ffb4ab]' : 'text-[#7dffa2]'}`}>
+                                    {row.failure_rate}%
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Onboarding Funnel */}
+                  {analyticsFunnel && (
+                    <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                      <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Onboarding Funnel</h3>
+                      {analyticsFunnel.every(s => s.distinct_users === 0) ? (
+                        <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">No funnel events yet. Events will appear as developers explore the platform.</p>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-xs font-['JetBrains_Mono']">
+                            <thead>
+                              <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                                <th className="py-2 pr-4 text-left uppercase tracking-widest">#</th>
+                                <th className="py-2 pr-6 text-left uppercase tracking-widest">Stage</th>
+                                <th className="py-2 pr-6 text-right uppercase tracking-widest">Users</th>
+                                <th className="py-2 pr-6 text-right uppercase tracking-widest">Events</th>
+                                <th className="py-2 pr-6 text-right uppercase tracking-widest">Retention</th>
+                                <th className="py-2 text-right uppercase tracking-widest">Drop-off</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#424753]/10">
+                              {analyticsFunnel.map(row => (
+                                <tr key={row.stage} className="hover:bg-[#201f1f]">
+                                  <td className="py-2 pr-4 text-[#8c909f]">{row.stage}</td>
+                                  <td className="py-2 pr-6 text-[#e5e2e1] font-bold">{row.label}</td>
+                                  <td className="py-2 pr-6 text-right text-[#adc6ff]">{row.distinct_users}</td>
+                                  <td className="py-2 pr-6 text-right text-[#c2c6d5]">{row.total_events}</td>
+                                  <td className="py-2 pr-6 text-right">
+                                    {row.retention_from_prev !== null ? (
+                                      <span className={row.retention_from_prev >= 50 ? 'text-[#7dffa2]' : row.retention_from_prev >= 25 ? 'text-[#ffb780]' : 'text-[#ffb4ab]'}>
+                                        {row.retention_from_prev}%
+                                      </span>
+                                    ) : <span className="text-[#8c909f]">—</span>}
+                                  </td>
+                                  <td className="py-2 text-right">
+                                    {row.drop_off_pct !== null ? (
+                                      <span className={row.drop_off_pct > 75 ? 'text-[#ffb4ab] font-bold' : 'text-[#c2c6d5]'}>
+                                        -{row.drop_off_pct}%
+                                      </span>
+                                    ) : <span className="text-[#8c909f]">—</span>}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {analyticsData && (
+                    <>
+                      {/* Env Split + Friction side by side */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Sandbox vs Production Split */}
+                        <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                          <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Environment Split</h3>
+                          {analyticsData.environment_split.length === 0 ? (
+                            <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">No data yet.</p>
+                          ) : (
+                            <div className="space-y-3">
+                              {analyticsData.environment_split.map(row => {
+                                const total = analyticsData.environment_split.reduce((s, r) => s + r.count, 0)
+                                const pct = total > 0 ? Math.round((row.count / total) * 100) : 0
+                                return (
+                                  <div key={row.environment}>
+                                    <div className="flex justify-between text-xs font-['JetBrains_Mono'] mb-1">
+                                      <span className="text-[#c2c6d5] uppercase tracking-widest">{row.environment}</span>
+                                      <span className="text-[#e5e2e1] font-bold">{row.count} <span className="text-[#8c909f]">({pct}%)</span></span>
+                                    </div>
+                                    <div className="h-2 w-full bg-[#353534] rounded-full overflow-hidden">
+                                      <div
+                                        className={`h-full rounded-full ${row.environment === 'sandbox' ? 'bg-[#ffb780]' : 'bg-[#adc6ff]'}`}
+                                        style={{ width: `${pct}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Friction Hotspots */}
+                        <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                          <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Friction Hotspots</h3>
+                          {analyticsData.friction_hotspots.length === 0 ? (
+                            <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">No errors recorded. 🎉</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {analyticsData.friction_hotspots.slice(0, 8).map(row => (
+                                <div key={row.error_code} className="flex justify-between items-center text-xs font-['JetBrains_Mono']">
+                                  <span className="text-[#ffb4ab] uppercase tracking-widest">{row.error_code}</span>
+                                  <span className="text-[#e5e2e1] font-bold bg-[#ffb4ab]/10 px-2 py-0.5 rounded">{row.count}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Recent Error Feed */}
+                      <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                        <h3 className="text-lg font-bold text-[#e5e2e1] mb-4 font-['Manrope']">Recent Errors</h3>
+                        {analyticsData.recent_errors.length === 0 ? (
+                          <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">No errors in the last 30 days.</p>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-xs font-['JetBrains_Mono']">
+                              <thead>
+                                <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                                  <th className="py-2 pr-6 text-left uppercase tracking-widest">Event</th>
+                                  <th className="py-2 pr-6 text-left uppercase tracking-widest">Error</th>
+                                  <th className="py-2 pr-6 text-left uppercase tracking-widest">Mode</th>
+                                  <th className="py-2 text-right uppercase tracking-widest">Time</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-[#424753]/10">
+                                {analyticsData.recent_errors.slice(0, 20).map(row => (
+                                  <tr key={row.id} className="hover:bg-[#201f1f]">
+                                    <td className="py-2 pr-6 text-[#e5e2e1]">{row.event_type}</td>
+                                    <td className="py-2 pr-6 text-[#ffb4ab] font-bold">{row.error_code ?? '—'}</td>
+                                    <td className="py-2 pr-6 text-[#c2c6d5]">{row.access_mode ?? '—'}</td>
+                                    <td className="py-2 text-right text-[#8c909f]">
+                                      {new Date(row.created_at).toLocaleString()}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>

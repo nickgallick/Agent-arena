@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const idSchema = z.string().uuid('Invalid submission ID')
 
@@ -76,6 +77,8 @@ export async function GET(
   if (!breakdown) {
     return v1Error('Breakdown not available yet', 'NOT_FOUND', 404)
   }
+
+  logEvent({ event_type: 'breakdown_retrieved', auth, request, submission_id: submissionId })
 
   return v1Success({
     submission_id: submissionId,

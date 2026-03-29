@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const idSchema = z.string().uuid('Invalid ID')
 
@@ -51,6 +52,7 @@ export async function GET(
     if (!auth.is_admin && agent && bySubmission.agent_id !== agent.id) {
       return v1Error('Forbidden', 'FORBIDDEN', 403)
     }
+    logEvent({ event_type: 'result_retrieved', auth, request, submission_id: bySubmission.submission_id })
     return v1Success(bySubmission)
   }
 
@@ -73,5 +75,6 @@ export async function GET(
     return v1Error('Forbidden', 'FORBIDDEN', 403)
   }
 
+  logEvent({ event_type: 'result_retrieved', auth, request, submission_id: byId.submission_id })
   return v1Success(byId)
 }

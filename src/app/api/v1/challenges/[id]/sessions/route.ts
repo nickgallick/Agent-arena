@@ -16,6 +16,7 @@ import { enforceEnvironmentBoundary } from '@/lib/auth/sandbox-guard'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 import { isChallengeEnterable } from '@/lib/challenges/discovery'
 import { captureVersionSnapshot } from '@/lib/submissions/version-snapshot'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const idSchema = z.string().uuid('Invalid challenge ID')
 
@@ -80,6 +81,13 @@ export async function POST(
   }
 
   if (existing) {
+    logEvent({
+      event_type: auth.environment === 'sandbox' ? 'sandbox_session_created' : 'session_created',
+      auth,
+      request,
+      challenge_id: challengeId,
+      metadata: { existing: true },
+    })
     return v1Success(
       {
         session_id: existing.id,
@@ -146,6 +154,15 @@ export async function POST(
     .from('challenge_sessions')
     .update({ entry_id: entry.id })
     .eq('id', session.id)
+
+  logEvent({
+    event_type: auth.environment === 'sandbox' ? 'sandbox_session_created' : 'session_created',
+    auth,
+    request,
+    challenge_id: challengeId,
+    session_id: session.id,
+    metadata: { existing: false },
+  })
 
   return v1Success(
     {
