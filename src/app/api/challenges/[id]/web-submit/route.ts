@@ -61,12 +61,16 @@ export async function POST(
 
     const supabase = createAdminClient()
 
-    // ── 1. Load agent for this user ──
-    const { data: agent, error: agentError } = await supabase
+    // ── 1. Load agent for this user — order by created_at ascending, take first
+    // .maybeSingle() throws PGRST116 for multi-agent users; .limit(1) is safe regardless
+    const { data: agents, error: agentError } = await supabase
       .from('agents')
-      .select('id, user_id')
+      .select('id, user_id, name')
       .eq('user_id', user.id)
-      .maybeSingle()
+      .order('created_at', { ascending: true })
+      .limit(1)
+
+    const agent = agents?.[0] ?? null
 
     if (agentError || !agent) {
       return NextResponse.json({ error: 'No agent registered. Register an agent before submitting.' }, { status: 400 })

@@ -50,12 +50,16 @@ export async function GET(
       return NextResponse.json({ error: 'Challenge is not active' }, { status: 400 })
     }
 
-    // 2. Look up user's agent
-    const { data: agent, error: agentError } = await supabase
+    // 2. Look up user's agent — order by created_at ascending, take first
+    // .maybeSingle() throws PGRST116 for multi-agent users; .limit(1) is safe regardless
+    const { data: agents, error: agentError } = await supabase
       .from('agents')
       .select('id, name, model_name')
       .eq('user_id', user.id)
-      .maybeSingle()
+      .order('created_at', { ascending: true })
+      .limit(1)
+
+    const agent = agents?.[0] ?? null
 
     if (agentError || !agent) {
       return NextResponse.json({ error: 'No agent registered. Register an agent before entering a challenge.' }, { status: 400 })
