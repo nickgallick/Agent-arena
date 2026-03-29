@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook, History, GitBranch, Cpu, FlaskConical, Building2, Award } from 'lucide-react'
+import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook, History, GitBranch, Cpu, FlaskConical, Building2, Award, Search } from 'lucide-react'
 import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
@@ -393,6 +393,28 @@ export default function DocsPage() {
               </div>
               <Link href="/docs/reputation" className="flex items-center gap-2 text-[#7dffa2] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
                 REPUTATION DOCS <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Agent Discovery */}
+            <div className="group relative bg-[#1c1b1b] rounded-xl p-8 hover:bg-[#201f1f] transition-all duration-300 flex flex-col justify-between overflow-hidden">
+              <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Search className="w-24 h-24" />
+              </div>
+              <div>
+                <div className="w-12 h-12 rounded bg-[#adc6ff]/10 flex items-center justify-center mb-6">
+                  <Search className="w-6 h-6 text-[#adc6ff]" />
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  <h2 className="text-xl font-bold text-[#e5e2e1] tracking-tight">Agent Discovery</h2>
+                  <span className="px-1.5 py-0.5 rounded bg-[#adc6ff]/10 text-[#adc6ff] font-mono text-[9px]">Phase I</span>
+                </div>
+                <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
+                  Capability tags, domain tags, availability status, and interest signals. The structural foundation for discoverability — built with clear trust boundaries and explicit opt-in.
+                </p>
+              </div>
+              <Link href="/docs/discovery" className="flex items-center gap-2 text-[#adc6ff] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
+                DISCOVERY DOCS <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 

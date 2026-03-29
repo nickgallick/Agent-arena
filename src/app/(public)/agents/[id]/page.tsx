@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
@@ -18,6 +18,11 @@ import {
   TrendingUp,
   Users,
   CheckCircle2,
+  X,
+  Loader2,
+  Globe,
+  Tag,
+  MessageSquarePlus,
 } from 'lucide-react'
 import { formatElo, formatWinRate, formatDate, formatNumber, timeAgo } from '@/lib/utils/format'
 import { CapabilityRadar } from '@/components/leaderboard/capability-radar'
@@ -55,8 +60,16 @@ interface AgentData {
   bio: string | null
   avatar_url: string | null
   model_name: string | null
-  is_active: boolean
+  is_active?: boolean
+  is_online?: boolean
   created_at: string
+  // Discovery fields (self-reported)
+  capability_tags: string[] | null
+  domain_tags: string[] | null
+  availability_status: 'available' | 'unavailable' | 'unknown' | null
+  contact_opt_in: boolean
+  website_url: string | null
+  runtime_metadata: { model_name?: string; framework?: string; version?: string } | null
   ratings: {
     weight_class_id: string
     rating: number
@@ -119,12 +132,191 @@ function ConsistencyBar({ score }: { score: number }) {
   )
 }
 
+function AvailabilityBadge({ status }: { status: string | null }) {
+  const map: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    available:   { label: 'Available',   color: '#7dffa2', bg: 'bg-[#7dffa2]/10',  border: 'border-[#7dffa2]/30' },
+    unavailable: { label: 'Unavailable', color: '#ffb4ab', bg: 'bg-[#ffb4ab]/10',  border: 'border-[#ffb4ab]/30' },
+    unknown:     { label: 'Unknown',     color: '#8c909f', bg: 'bg-[#353534]',      border: 'border-[#8c909f]/20' },
+  }
+  const s = status ?? 'unknown'
+  const cfg = map[s] ?? map.unknown
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full ${cfg.bg} border ${cfg.border} font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-widest`}
+      style={{ color: cfg.color }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cfg.color }} />
+      {cfg.label}
+    </span>
+  )
+}
+
+// ─── Express Interest Modal ────────────────────────────────────────────────────
+
+interface InterestModalProps {
+  agentId: string
+  agentName: string
+  isAuthenticated: boolean
+  onClose: () => void
+}
+
+function InterestModal({ agentId, agentName, isAuthenticated, onClose }: InterestModalProps) {
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    textareaRef.current?.focus()
+  }, [])
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!isAuthenticated) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const res = await fetch(`/api/v1/agents/${agentId}/interest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message.trim() || undefined }),
+      })
+
+      const data = (await res.json()) as { status?: string; error?: string; cooldown_until?: string }
+
+      if (!res.ok) {
+        setError(data.error ?? 'Failed to send interest signal')
+        return
+      }
+
+      setSuccess(true)
+    } catch {
+      setError('Network error — please try again')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div className="bg-[#1c1b1b] border border-[#353534] rounded-2xl w-full max-w-md p-6 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-[#8c909f] hover:text-[#e5e2e1] transition-colors"
+          aria-label="Close"
+        >
+          <X className="size-5" />
+        </button>
+
+        {success ? (
+          <div className="py-6 text-center">
+            <div className="w-14 h-14 rounded-full bg-[#7dffa2]/10 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="size-7 text-[#7dffa2]" />
+            </div>
+            <h3 className="text-lg font-bold text-[#e5e2e1] mb-2 font-['Manrope']">Signal Sent</h3>
+            <p className="text-[#8c909f] text-sm leading-relaxed max-w-xs mx-auto">
+              Your interest signal has been sent. The agent owner has been notified and will follow up if interested.
+            </p>
+            <button
+              onClick={onClose}
+              className="mt-6 px-6 py-2.5 rounded-lg bg-[#353534] text-[#e5e2e1] font-bold text-sm hover:bg-[#454443] transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-[#e5e2e1] mb-1 font-['Manrope']">
+                Express Interest
+              </h3>
+              <p className="text-[#8c909f] text-sm">
+                Send an interest signal to <span className="text-[#c2c6d5] font-medium">{agentName}</span>.
+                The agent owner will be notified. Your message is optional.
+              </p>
+            </div>
+
+            {!isAuthenticated ? (
+              <div className="py-4 text-center">
+                <p className="text-[#8c909f] text-sm mb-4">Sign in to express interest in this agent.</p>
+                <Link
+                  href="/login"
+                  className="px-6 py-2.5 rounded-lg bg-[#adc6ff] text-[#131313] font-bold text-sm hover:bg-[#c2d8ff] transition-colors inline-block"
+                >
+                  Sign In
+                </Link>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#8c909f] mb-2">
+                    Message <span className="text-[#454443]">(optional, max 500 chars)</span>
+                  </label>
+                  <textarea
+                    ref={textareaRef}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    maxLength={500}
+                    rows={4}
+                    placeholder="What are you looking for? What's the use case?"
+                    className="w-full bg-[#131313] border border-[#353534] rounded-lg px-4 py-3 text-sm text-[#e5e2e1] placeholder-[#454443] focus:outline-none focus:border-[#adc6ff]/50 resize-none font-['JetBrains_Mono']"
+                  />
+                  <div className="flex justify-end mt-1">
+                    <span className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f]">
+                      {message.length}/500
+                    </span>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="rounded-lg bg-[#ffb4ab]/10 border border-[#ffb4ab]/20 px-4 py-3">
+                    <p className="text-[#ffb4ab] text-sm">{error}</p>
+                  </div>
+                )}
+
+                <div className="bg-[#131313] border border-[#353534] rounded-lg px-4 py-3">
+                  <p className="font-['JetBrains_Mono'] text-[10px] text-[#8c909f] leading-relaxed">
+                    🔒 Your contact info is never shared publicly. The agent owner will see your signal but no personal details beyond your platform profile.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 rounded-lg bg-[#adc6ff] text-[#131313] font-bold text-sm hover:bg-[#c2d8ff] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <MessageSquarePlus className="size-4" />
+                  )}
+                  {loading ? 'Sending…' : 'Send Interest Signal'}
+                </button>
+              </form>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Page ─────────────────────────────────────────────────────────────────
+
 export default function AgentProfilePage() {
   const params = useParams<{ id: string }>()
   const [agent, setAgent] = useState<AgentData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reputation, setReputation] = useState<ReputationData | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [showInterestModal, setShowInterestModal] = useState(false)
 
   useEffect(() => {
     async function fetchAgent() {
@@ -160,8 +352,18 @@ export default function AgentProfilePage() {
       }
     }
 
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/me')
+        setIsAuthenticated(res.ok)
+      } catch {
+        setIsAuthenticated(false)
+      }
+    }
+
     fetchAgent()
     fetchReputation()
+    checkAuth()
   }, [params.id])
 
   if (loading) {
@@ -211,6 +413,11 @@ export default function AgentProfilePage() {
   const winRate = totalMatches > 0 ? ((totalWins / totalMatches) * 100).toFixed(1) : '0'
   const currentStreak = primaryRating?.current_streak ?? 0
 
+  const hasCapabilityTags = agent.capability_tags && agent.capability_tags.length > 0
+  const hasDomainTags = agent.domain_tags && agent.domain_tags.length > 0
+  const hasAnyTags = hasCapabilityTags || hasDomainTags
+  const showAvailability = agent.availability_status && agent.availability_status !== 'unknown'
+
   return (
     <PageWithSidebar>
       <div
@@ -244,9 +451,9 @@ export default function AgentProfilePage() {
                     </div>
                   )}
                 </div>
-                <div className={`absolute -bottom-2 -right-2 ${agent.is_active ? 'bg-secondary text-on-secondary' : 'bg-surface-container-highest text-outline'} px-3 py-1 rounded text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5 shadow-lg`}>
-                  {agent.is_active && <span className="w-2 h-2 bg-on-secondary rounded-full animate-pulse" />}
-                  {agent.is_active ? 'Ready' : 'Inactive'}
+                <div className={`absolute -bottom-2 -right-2 ${(agent.is_active ?? agent.is_online) ? 'bg-secondary text-on-secondary' : 'bg-surface-container-highest text-outline'} px-3 py-1 rounded text-[10px] font-bold tracking-widest uppercase flex items-center gap-1.5 shadow-lg`}>
+                  {(agent.is_active ?? agent.is_online) && <span className="w-2 h-2 bg-on-secondary rounded-full animate-pulse" />}
+                  {(agent.is_active ?? agent.is_online) ? 'Ready' : 'Inactive'}
                 </div>
               </div>
 
@@ -264,6 +471,14 @@ export default function AgentProfilePage() {
                       ? `${primaryRating.weight_class_id.charAt(0).toUpperCase() + primaryRating.weight_class_id.slice(1)} Class`
                       : 'Open Class'}
                   </p>
+
+                  {/* Availability badge — self-reported */}
+                  {showAvailability && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <AvailabilityBadge status={agent.availability_status} />
+                      <ClaimBadge verified={false} compact label="Self-Reported" />
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-surface-container p-4 rounded border-b-2 border-primary">
@@ -303,9 +518,109 @@ export default function AgentProfilePage() {
                   <Activity className="w-[18px] h-[18px]" />
                   View Telemetry
                 </button>
+                {/* Express Interest — only shown if contact_opt_in=true */}
+                {agent.contact_opt_in && (
+                  <button
+                    onClick={() => setShowInterestModal(true)}
+                    className="bg-[#adc6ff]/10 border border-[#adc6ff]/30 text-[#adc6ff] px-8 py-3 rounded font-bold flex items-center justify-center gap-2 hover:bg-[#adc6ff]/20 transition-colors"
+                  >
+                    <MessageSquarePlus className="w-[18px] h-[18px]" />
+                    Express Interest
+                  </button>
+                )}
               </div>
             </div>
           </section>
+
+          {/* Self-Reported Discovery Section */}
+          {(hasAnyTags || agent.bio || agent.website_url || agent.runtime_metadata) && (
+            <section className="mb-6 rounded-xl border border-[#353534] bg-[#131313] p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-sm font-mono uppercase tracking-wider text-[#8c909f] flex items-center gap-2">
+                  <Tag className="size-4" />
+                  Self-Reported Capabilities
+                </h2>
+                <ClaimBadge verified={false} />
+              </div>
+
+              <div className="space-y-5">
+                {/* Bio / Description */}
+                {agent.bio && (
+                  <div>
+                    <p className="text-[#c2c6d5] text-sm leading-relaxed">{agent.bio}</p>
+                  </div>
+                )}
+
+                {/* Capability tags */}
+                {hasCapabilityTags && (
+                  <div>
+                    <p className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#8c909f] mb-2">Capabilities</p>
+                    <div className="flex flex-wrap gap-2">
+                      {agent.capability_tags!.map(tag => (
+                        <span
+                          key={tag}
+                          className="px-2.5 py-1 rounded-full bg-[#adc6ff]/10 border border-[#adc6ff]/20 text-[#adc6ff] font-['JetBrains_Mono'] text-xs"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Domain tags */}
+                {hasDomainTags && (
+                  <div>
+                    <p className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#8c909f] mb-2">Domains</p>
+                    <div className="flex flex-wrap gap-2">
+                      {agent.domain_tags!.map(tag => (
+                        <span
+                          key={tag}
+                          className="px-2.5 py-1 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/20 text-[#7dffa2] font-['JetBrains_Mono'] text-xs"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Website + Runtime metadata */}
+                <div className="flex flex-wrap gap-4">
+                  {agent.website_url && (
+                    <a
+                      href={agent.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-[#adc6ff] text-xs hover:underline font-['JetBrains_Mono']"
+                    >
+                      <Globe className="size-3" />
+                      {agent.website_url.replace(/^https?:\/\//, '')}
+                    </a>
+                  )}
+                  {agent.runtime_metadata && (
+                    <div className="flex flex-wrap gap-3">
+                      {agent.runtime_metadata.model_name && (
+                        <span className="font-['JetBrains_Mono'] text-xs text-[#8c909f]">
+                          Model: <span className="text-[#c2c6d5]">{agent.runtime_metadata.model_name}</span>
+                        </span>
+                      )}
+                      {agent.runtime_metadata.framework && (
+                        <span className="font-['JetBrains_Mono'] text-xs text-[#8c909f]">
+                          Framework: <span className="text-[#c2c6d5]">{agent.runtime_metadata.framework}</span>
+                        </span>
+                      )}
+                      {agent.runtime_metadata.version && (
+                        <span className="font-['JetBrains_Mono'] text-xs text-[#8c909f]">
+                          Version: <span className="text-[#c2c6d5]">{agent.runtime_metadata.version}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Capability Profile */}
           {agent.capability_profile && (
@@ -654,6 +969,16 @@ export default function AgentProfilePage() {
         </main>
         <Footer />
       </div>
+
+      {/* Express Interest Modal */}
+      {showInterestModal && agent.contact_opt_in && (
+        <InterestModal
+          agentId={agent.id}
+          agentName={agent.name}
+          isAuthenticated={isAuthenticated}
+          onClose={() => setShowInterestModal(false)}
+        />
+      )}
     </PageWithSidebar>
   )
 }

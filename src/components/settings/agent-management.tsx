@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Bot, Key, RefreshCw, Loader2 } from 'lucide-react'
+import { Bot, Key, RefreshCw, Loader2, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { useUser } from '@/lib/hooks/use-user'
 
@@ -17,13 +17,24 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { StatusIndicator } from '@/components/shared/status-indicator'
+import { AgentDiscoverySettings } from '@/components/settings/agent-discovery-settings'
 
 interface AgentData {
   id: string
   name: string
   model_name: string | null
   is_active: boolean
+  // Discovery fields (self-reported)
+  bio?: string | null
+  capability_tags?: string[] | null
+  domain_tags?: string[] | null
+  availability_status?: 'available' | 'unavailable' | 'unknown' | null
+  contact_opt_in?: boolean
+  website_url?: string | null
+  runtime_metadata?: { model_name?: string; framework?: string; version?: string } | null
 }
+
+type ActiveTab = 'agent' | 'discovery'
 
 export function AgentManagement() {
   const { user, loading: userLoading } = useUser()
@@ -31,6 +42,7 @@ export function AgentManagement() {
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [rotating, setRotating] = useState(false)
+  const [activeTab, setActiveTab] = useState<ActiveTab>('agent')
 
   useEffect(() => {
     if (userLoading) return
@@ -46,9 +58,16 @@ export function AgentManagement() {
           setLoading(false)
           return
         }
-        const data = await res.json()
+        const data = await res.json() as { agent?: AgentData }
         if (data.agent) {
-          setAgent(data.agent)
+          // Fetch full agent data including discovery fields
+          const agentRes = await fetch(`/api/agents/${data.agent.id}`)
+          if (agentRes.ok) {
+            const agentData = await agentRes.json() as { agent?: AgentData }
+            setAgent(agentData.agent ?? data.agent)
+          } else {
+            setAgent(data.agent)
+          }
         }
       } catch (err) {
         console.error('[AgentManagement] Failed to load:', err)
@@ -127,65 +146,116 @@ export function AgentManagement() {
           Agent
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="rounded-lg border border-white/5 bg-[#1c1b1b]/50 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-[#e5e2e1]">{agent.name}</p>
-              {agent.model_name && (
-                <p className="text-xs text-[#8c909f]">{agent.model_name}</p>
-              )}
-            </div>
-            <StatusIndicator isOnline={agent.is_active} label={agent.is_active ? 'Active' : 'Inactive'} />
-          </div>
+      <CardContent className="space-y-0 p-0">
 
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs text-[#8c909f]">API Key</p>
-              <p className="font-mono text-sm text-[#8c909f]">****-****-****-****</p>
-            </div>
+        {/* Tab Navigation */}
+        <div className="flex border-b border-white/5 px-6">
+          <button
+            type="button"
+            onClick={() => setActiveTab('agent')}
+            className={`px-4 py-3 font-['JetBrains_Mono'] text-xs uppercase tracking-widest transition-colors border-b-2 -mb-px ${
+              activeTab === 'agent'
+                ? 'border-[#adc6ff] text-[#adc6ff]'
+                : 'border-transparent text-[#8c909f] hover:text-[#c2c6d5]'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('discovery')}
+            className={`px-4 py-3 font-['JetBrains_Mono'] text-xs uppercase tracking-widest transition-colors border-b-2 -mb-px flex items-center gap-1.5 ${
+              activeTab === 'discovery'
+                ? 'border-[#7dffa2] text-[#7dffa2]'
+                : 'border-transparent text-[#8c909f] hover:text-[#c2c6d5]'
+            }`}
+          >
+            <Search className="size-3" />
+            Discovery
+          </button>
+        </div>
 
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger
-                render={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-2 border-white/5 text-[#c2c6d5]"
-                  />
-                }
-              >
-                <Key className="h-3.5 w-3.5" />
-                Rotate API Key
-              </DialogTrigger>
-              <DialogContent className="border-white/5 bg-[#1c1b1b]">
-                <DialogHeader>
-                  <DialogTitle className="text-[#e5e2e1]">Rotate API Key</DialogTitle>
-                  <DialogDescription className="text-[#8c909f]">
-                    Are you sure? This will invalidate your current key. Any active integrations
-                    using the old key will stop working immediately.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="gap-2 sm:gap-0">
-                  <Button
-                    variant="outline"
-                    onClick={() => setDialogOpen(false)}
-                    className="border-white/5 text-[#c2c6d5]"
+        {/* Tab Content */}
+        <div className="p-6">
+          {activeTab === 'agent' ? (
+            <div className="rounded-lg border border-white/5 bg-[#1c1b1b]/50 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-[#e5e2e1]">{agent.name}</p>
+                  {agent.model_name && (
+                    <p className="text-xs text-[#8c909f]">{agent.model_name}</p>
+                  )}
+                </div>
+                <StatusIndicator isOnline={agent.is_active} label={agent.is_active ? 'Active' : 'Inactive'} />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-[#8c909f]">API Key</p>
+                  <p className="font-mono text-sm text-[#8c909f]">****-****-****-****</p>
+                </div>
+
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 border-white/5 text-[#c2c6d5]"
+                      />
+                    }
                   >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleRotate}
-                    disabled={rotating}
-                    className="bg-[#4d8efe] text-white hover:bg-[#adc6ff]"
-                  >
-                    {rotating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Rotate
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+                    <Key className="h-3.5 w-3.5" />
+                    Rotate API Key
+                  </DialogTrigger>
+                  <DialogContent className="border-white/5 bg-[#1c1b1b]">
+                    <DialogHeader>
+                      <DialogTitle className="text-[#e5e2e1]">Rotate API Key</DialogTitle>
+                      <DialogDescription className="text-[#8c909f]">
+                        Are you sure? This will invalidate your current key. Any active integrations
+                        using the old key will stop working immediately.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2 sm:gap-0">
+                      <Button
+                        variant="outline"
+                        onClick={() => setDialogOpen(false)}
+                        className="border-white/5 text-[#c2c6d5]"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleRotate}
+                        disabled={rotating}
+                        className="bg-[#4d8efe] text-white hover:bg-[#adc6ff]"
+                      >
+                        {rotating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Rotate
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          ) : (
+            <AgentDiscoverySettings
+              agentId={agent.id}
+              agentName={agent.name}
+              initialSettings={{
+                capability_tags: agent.capability_tags ?? [],
+                domain_tags: agent.domain_tags ?? [],
+                availability_status: agent.availability_status ?? 'unknown',
+                contact_opt_in: agent.contact_opt_in ?? false,
+                description: agent.bio ?? '',
+                website_url: agent.website_url ?? '',
+                runtime_metadata: {
+                    model_name: agent.runtime_metadata?.model_name ?? '',
+                    framework: agent.runtime_metadata?.framework ?? '',
+                    version: agent.runtime_metadata?.version ?? '',
+                  },
+              }}
+            />
+          )}
         </div>
       </CardContent>
     </Card>

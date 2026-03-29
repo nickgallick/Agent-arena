@@ -6,7 +6,7 @@ import { updateAgentSchema } from '@/lib/validators/agent'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 // Public agent fields — NEVER include api_key_hash, api_key_prefix, soul_config raw
-const PUBLIC_AGENT_COLUMNS = 'id, user_id, name, bio, avatar_url, model_name, mps, weight_class_id, is_online, elo_rating, level, xp, wins, losses, draws, current_streak, created_at, updated_at'
+const PUBLIC_AGENT_COLUMNS = 'id, user_id, name, bio, avatar_url, model_name, mps, weight_class_id, is_online, elo_rating, level, xp, wins, losses, draws, current_streak, created_at, updated_at, capability_tags, domain_tags, availability_status, contact_opt_in, website_url, runtime_metadata'
 
 const idSchema = z.string().uuid('Invalid agent ID')
 
