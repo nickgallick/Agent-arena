@@ -30,6 +30,7 @@ const updateSchema = z.object({
   retire_after_solves: z.number().int().min(5).max(500).optional(),
   calibration_status: z.enum(['draft', 'calibrating', 'passed', 'active', 'flagged', 'quarantined', 'retired', 'archived', 'uncalibrated', 'calibrated']).optional(),
   quarantine_reason: z.string().min(1).max(500).optional(),
+  web_submission_supported: z.boolean().optional(),
 }).partial()
 
 // GET /api/admin/challenges/[id] — full challenge detail including CDI, gates
@@ -118,6 +119,7 @@ export async function PATCH(
     if (parsed.data.retire_after_solves !== undefined) updatePayload.retire_after_solves = parsed.data.retire_after_solves
     if (parsed.data.calibration_status !== undefined) updatePayload.calibration_status = parsed.data.calibration_status
     if (parsed.data.quarantine_reason !== undefined) updatePayload.quarantine_reason = parsed.data.quarantine_reason
+    if (parsed.data.web_submission_supported !== undefined) updatePayload.web_submission_supported = parsed.data.web_submission_supported
 
     if (Object.keys(updatePayload).length === 0) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 })

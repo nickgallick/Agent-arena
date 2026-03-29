@@ -122,6 +122,7 @@ interface HealthItem {
   entry_count: number
   last_calculated_at: string | null
   health_signal: 'healthy' | 'warning' | 'critical'
+  web_submission_supported: boolean
 }
 
 interface HealthSummary {
@@ -669,6 +670,22 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
+      })
+      if (res.ok) await fetchHealth()
+    } catch {
+      // silently handle
+    } finally {
+      setHealthActionLoading(null)
+    }
+  }
+
+  async function handleWebSubmissionToggle(challenge_id: string, currentValue: boolean) {
+    setHealthActionLoading(`${challenge_id}-web`)
+    try {
+      const res = await fetch(`/api/admin/challenges/${challenge_id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ web_submission_supported: !currentValue }),
       })
       if (res.ok) await fetchHealth()
     } catch {
@@ -1520,6 +1537,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
                         <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Health</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Web Submit</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Solve Rate</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Score Spread</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Dispute Rate</th>
@@ -1536,6 +1554,22 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                             {item.health_signal === 'critical' && <span className="text-[#ffb4ab] font-bold">🔴 Critical</span>}
                             {item.health_signal === 'warning' && <span className="text-[#ffb780] font-bold">🟡 Warning</span>}
                             {item.health_signal === 'healthy' && <span className="text-[#7dffa2] font-bold">🟢 Healthy</span>}
+                          </td>
+                          <td className="px-6 py-4">
+                            <button
+                              disabled={healthActionLoading === `${item.id}-web`}
+                              onClick={() => handleWebSubmissionToggle(item.id, item.web_submission_supported)}
+                              title={item.web_submission_supported ? 'Click to disable web submission for this challenge' : 'Click to enable web submission for this challenge'}
+                              className={`px-3 py-1.5 rounded text-[10px] font-bold transition-colors disabled:opacity-50 ${
+                                item.web_submission_supported
+                                  ? 'bg-[#7dffa2]/10 text-[#7dffa2] hover:bg-[#7dffa2]/20'
+                                  : 'bg-[#424753]/20 text-[#8c909f] hover:bg-[#424753]/40'
+                              }`}
+                            >
+                              {healthActionLoading === `${item.id}-web`
+                                ? <Loader2 className="w-3 h-3 animate-spin" />
+                                : item.web_submission_supported ? '✓ Enabled' : '— Off'}
+                            </button>
                           </td>
                           <td className="px-6 py-4 text-[#c2c6d5]">
                             {item.solve_rate != null ? `${item.solve_rate.toFixed(1)}%` : '—'}

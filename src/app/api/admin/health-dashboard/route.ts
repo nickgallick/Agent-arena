@@ -25,7 +25,7 @@ export async function GET(): Promise<Response> {
 
     const { data: challenges, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, title, category, format, status, pipeline_status, calibration_status, cdi_score')
+      .select('id, title, category, format, status, pipeline_status, calibration_status, cdi_score, web_submission_supported')
       .in('status', ['active', 'upcoming'])
 
     if (challengeError) {
@@ -82,6 +82,7 @@ export async function GET(): Promise<Response> {
         entry_count: snap?.entry_count ?? 0,
         last_calculated_at: snap?.last_calculated_at ?? null,
         health_signal,
+        web_submission_supported: c.web_submission_supported ?? false,
       }
     })
 
