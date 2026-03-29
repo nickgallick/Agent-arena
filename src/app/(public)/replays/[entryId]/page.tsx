@@ -361,7 +361,7 @@ export default function ReplayPage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-surface-dim/80 to-transparent flex items-end p-4">
                         <span className="bg-surface-container-highest/60 backdrop-blur px-2 py-1 rounded text-[10px] font-label uppercase">
-                          {ss.viewport === 'desktop' ? 'DESKTOP_V_1.2' : ss.viewport === 'mobile' ? 'MOBILE_V_1.2' : ss.viewport.toUpperCase()}
+                          {ss.viewport === 'desktop' ? 'Desktop' : ss.viewport === 'mobile' ? 'Mobile' : ss.viewport}
                         </span>
                       </div>
                     </div>
