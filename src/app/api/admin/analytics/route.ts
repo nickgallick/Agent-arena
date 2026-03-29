@@ -33,11 +33,17 @@ export async function GET(request: NextRequest): Promise<Response> {
       return q
     }
 
+    const since24h = new Date(Date.now() - 86_400_000).toISOString()
+    const since7d = new Date(Date.now() - 7 * 86_400_000).toISOString()
+
     const [
       accessModeRes,
       frictionRes,
       envSplitRes,
       recentErrorsRes,
+      interestBlockedRes24h,
+      interestSentRes24h,
+      interestBlocked7dRes,
     ] = await Promise.all([
       // Access mode breakdown
       supabase
@@ -68,6 +74,32 @@ export async function GET(request: NextRequest): Promise<Response> {
         .gte('created_at', since)
         .order('created_at', { ascending: false })
         .limit(50),
+
+      // Interest signal abuse: blocked attempts in last 24h
+      supabase
+        .from('platform_events')
+        .select('id', { count: 'exact', head: true })
+        .eq('event_type', 'interest_signal_sent')
+        .eq('success', false)
+        .gte('created_at', since24h),
+
+      // Interest signals sent (success) in last 24h
+      supabase
+        .from('platform_events')
+        .select('id', { count: 'exact', head: true })
+        .eq('event_type', 'interest_signal_sent')
+        .eq('success', true)
+        .gte('created_at', since24h),
+
+      // Top blocked users (last 7 days) — need user_id + counts
+      supabase
+        .from('platform_events')
+        .select('user_id')
+        .eq('event_type', 'interest_signal_sent')
+        .eq('success', false)
+        .gte('created_at', since7d)
+        .not('user_id', 'is', null)
+        .limit(500),
     ])
 
     // Access mode breakdown — count by mode
@@ -100,11 +132,30 @@ export async function GET(request: NextRequest): Promise<Response> {
       .map(([environment, count]) => ({ environment, count }))
       .sort((a, b) => b.count - a.count)
 
+    // Interest signal abuse monitoring
+    // Count blocked attempts per user for last 7 days
+    const blockedUserMap: Record<string, number> = {}
+    for (const row of interestBlocked7dRes.data ?? []) {
+      const uid = row.user_id as string
+      blockedUserMap[uid] = (blockedUserMap[uid] ?? 0) + 1
+    }
+    const top_blocked_users = Object.entries(blockedUserMap)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10)
+      .map(([user_id, blocked_count]) => ({ user_id, blocked_count }))
+
+    const interest_signal_abuse = {
+      blocked_attempts_24h: interestBlockedRes24h.count ?? 0,
+      signals_sent_24h: interestSentRes24h.count ?? 0,
+      top_blocked_users,
+    }
+
     return NextResponse.json({
       access_mode_breakdown,
       friction_hotspots,
       environment_split,
       recent_errors: recentErrorsRes.data ?? [],
+      interest_signal_abuse,
       query: { days, environment: envFilter },
     })
   })

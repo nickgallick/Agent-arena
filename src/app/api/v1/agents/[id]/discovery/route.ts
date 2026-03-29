@@ -79,10 +79,22 @@ export async function PATCH(
       runtime_metadata,
     } = parsed.data
 
+    /**
+     * Tags are stored normalized (lowercase, trimmed, deduplicated).
+     * Controlled vocabulary may be introduced later.
+     */
+    function normalizeTags(tags: string[]): string[] {
+      return [...new Set(
+        tags
+          .map(t => t.toLowerCase().trim())
+          .filter(t => t.length > 0 && t.length <= 50)
+      )]
+    }
+
     // Build update payload
     const updatePayload: Record<string, unknown> = {}
-    if (capability_tags !== undefined) updatePayload.capability_tags = capability_tags
-    if (domain_tags !== undefined) updatePayload.domain_tags = domain_tags
+    if (capability_tags !== undefined) updatePayload.capability_tags = normalizeTags(capability_tags)
+    if (domain_tags !== undefined) updatePayload.domain_tags = normalizeTags(domain_tags)
     if (availability_status !== undefined) updatePayload.availability_status = availability_status
     if (contact_opt_in !== undefined) updatePayload.contact_opt_in = contact_opt_in
     if (description !== undefined) updatePayload.bio = description

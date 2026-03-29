@@ -66,6 +66,14 @@ export async function DELETE(
   }
 
   const supabase = createAdminClient()
+
+  // Fetch org name/slug for audit log
+  const { data: orgInfo } = await supabase
+    .from('organizations')
+    .select('name, slug')
+    .eq('id', orgId)
+    .single()
+
   const { error } = await supabase
     .from('org_members')
     .delete()
@@ -75,6 +83,22 @@ export async function DELETE(
   if (error) {
     return v1Error('Failed to remove member', 'DB_ERROR', 500)
   }
+
+  // Audit log: record member removal (org_audit_log preserved even if org later deleted)
+  void Promise.resolve(
+    supabase.from('org_audit_log').insert({
+      org_id: orgId,
+      org_name: orgInfo?.name ?? '',
+      org_slug: orgInfo?.slug ?? '',
+      action: 'member_removed',
+      actor_id: user_id,
+      metadata: { removed_user_id: targetUserId, removed_role: target.role },
+    })
+  ).catch(() => {})
+
+  // Note: if this membership was established via an invitation token, that token is
+  // now consumed (accepted_at is set). Future invites to the same email address will
+  // require generating a new invitation token — the old one cannot be reused.
 
   return v1Success({ removed: true })
 }
@@ -127,6 +151,14 @@ export async function PATCH(
   }
 
   const supabase = createAdminClient()
+
+  // Fetch org name/slug for audit log
+  const { data: patchOrgInfo } = await supabase
+    .from('organizations')
+    .select('name, slug')
+    .eq('id', orgId)
+    .single()
+
   const { data: updated, error } = await supabase
     .from('org_members')
     .update({ role: parsed.data.role })
@@ -138,6 +170,18 @@ export async function PATCH(
   if (error || !updated) {
     return v1Error('Failed to update member role', 'DB_ERROR', 500)
   }
+
+  // Audit log: record role change (org_audit_log preserved even if org later deleted)
+  void Promise.resolve(
+    supabase.from('org_audit_log').insert({
+      org_id: orgId,
+      org_name: patchOrgInfo?.name ?? '',
+      org_slug: patchOrgInfo?.slug ?? '',
+      action: 'role_changed',
+      actor_id: user_id,
+      metadata: { target_user_id: targetUserId, old_role: target.role, new_role: parsed.data.role },
+    })
+  ).catch(() => {})
 
   return v1Success(updated)
 }

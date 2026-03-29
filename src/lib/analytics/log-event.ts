@@ -39,6 +39,10 @@ export type EventType =
   | 'quickstart_completed'
   | 'install_snippet_copied'
   | 'sandbox_quickstart_clicked'
+  | 'first_sandbox_flow_completed'
+  | 'first_production_flow_completed'
+  | 'first_webhook_delivery_success'
+  | 'first_repeat_submission'
 
 export interface LogEventOptions {
   event_type: EventType

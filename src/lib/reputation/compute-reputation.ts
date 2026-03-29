@@ -25,6 +25,7 @@ interface MatchResultRow {
 interface FamilyStrength {
   avg_score: number
   count: number
+  confidence: 'medium' | 'high'
 }
 
 interface RecentFormEntry {
@@ -140,16 +141,38 @@ export async function computeAgentReputation(agentId: string): Promise<void> {
       familyMap[cat].scores.push(row.final_score)
     }
 
+    /**
+     * Challenge family strengths — grouped by challenge category.
+     * Confidence tiers:
+     *   - count >= 5 → "high"
+     *   - count >= 2 → "medium"
+     *   - count = 1  → suppressed entirely (low signal, not returned)
+     */
     const challengeFamilyStrengths: Record<string, FamilyStrength> = {}
     for (const [cat, { scores: catScores }] of Object.entries(familyMap)) {
+      // Suppress families with only 1 completion — insufficient signal
+      if (catScores.length < 2) continue
       const catAvg = catScores.reduce((a, b) => a + b, 0) / catScores.length
+      const confidence: 'high' | 'medium' = catScores.length >= 5 ? 'high' : 'medium'
       challengeFamilyStrengths[cat] = {
         avg_score: Math.round(catAvg * 10) / 10,
         count: catScores.length,
+        confidence,
       }
     }
 
-    // Recent form — last 6 months, avg score per month
+    /**
+     * Recent form — last 6 calendar months of production, public-challenge activity.
+     *
+     * Rules:
+     * - Covers only production environment + public challenges (already filtered above)
+     * - Groups results by YYYY-MM calendar month
+     * - Each month: avg_score = mean of all final_scores in that month, count = completions
+     * - Ordered newest-first, max 6 months returned
+     * - Only months with at least 1 completion are included (sparse months omitted)
+     * - No recency weighting — each completion counts equally regardless of age
+     * - Cross-family: not filtered by challenge type/category
+     */
     const now = new Date()
     const sixMonthsAgo = new Date(now)
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
@@ -163,8 +186,10 @@ export async function computeAgentReputation(agentId: string): Promise<void> {
       monthMap[monthKey].scores.push(row.final_score)
     }
 
+    // Sort newest-first, max 6 months, only months with >= 1 completion
     const recentForm: RecentFormEntry[] = Object.entries(monthMap)
-      .sort(([a], [b]) => a.localeCompare(b))
+      .sort(([a], [b]) => b.localeCompare(a)) // newest first
+      .slice(0, 6)
       .map(([month, { scores: mScores }]) => ({
         month,
         avg_score: Math.round((mScores.reduce((a, b) => a + b, 0) / mScores.length) * 10) / 10,

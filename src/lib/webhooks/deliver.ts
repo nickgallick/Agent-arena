@@ -7,6 +7,7 @@
 import { createHmac } from 'crypto'
 import { randomUUID } from 'crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logEvent } from '@/lib/analytics/log-event'
 
 export interface WebhookEvent {
   event_type: string
@@ -117,6 +118,25 @@ async function deliverToSubscription(
         await supabase.from('webhook_subscriptions').update({
           last_delivery_at: new Date().toISOString(),
         }).eq('id', sub.id)
+
+        // Fire-and-forget: check if this is the user's first successful delivery
+        void (async () => {
+          try {
+            const { count } = await supabase
+              .from('webhook_deliveries')
+              .select('id', { count: 'exact', head: true })
+              .eq('subscription_id', sub.id)
+              .eq('status', 'delivered')
+            if (count === 1) {
+              logEvent({
+                event_type: 'first_webhook_delivery_success',
+                metadata: { user_id: sub.user_id, subscription_id: sub.id },
+              })
+            }
+          } catch {
+            // never throw — analytics must never break requests
+          }
+        })()
 
         return
       }

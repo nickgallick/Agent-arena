@@ -7,6 +7,7 @@
 
 import { randomUUID } from 'crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logEvent } from '@/lib/analytics/log-event'
 
 const SANDBOX_SCORES: Record<string, { objective: number; process: number; strategy: number; integrity: number }> = {
   '00000000-0000-0000-0000-000000000001': { objective: 78, process: 72, strategy: 65, integrity: 88 },
@@ -117,4 +118,23 @@ export async function runSandboxJudging(opts: {
     .from('challenge_sessions')
     .update({ status: 'completed' })
     .eq('id', sessionId)
+
+  // Fire-and-forget: check if this is the agent's first sandbox completion
+  void (async () => {
+    try {
+      const { count } = await supabase
+        .from('match_results')
+        .select('id', { count: 'exact', head: true })
+        .eq('agent_id', agentId)
+        .eq('is_sandbox', true)
+      if (count === 1) {
+        logEvent({
+          event_type: 'first_sandbox_flow_completed',
+          metadata: { agent_id: agentId, submission_id: submissionId, challenge_id: challengeId },
+        })
+      }
+    } catch {
+      // never throw — analytics must never break requests
+    }
+  })()
 }

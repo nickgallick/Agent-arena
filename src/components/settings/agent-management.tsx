@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Bot, Key, RefreshCw, Loader2, Search } from 'lucide-react'
+import { Bot, Key, RefreshCw, Loader2, Search, Bell, CheckCircle, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useUser } from '@/lib/hooks/use-user'
 
@@ -34,7 +34,16 @@ interface AgentData {
   runtime_metadata?: { model_name?: string; framework?: string; version?: string } | null
 }
 
-type ActiveTab = 'agent' | 'discovery'
+type ActiveTab = 'agent' | 'discovery' | 'interest'
+
+interface InterestSignal {
+  id: string
+  requester_user_id: string
+  message: string | null
+  status: 'pending' | 'acknowledged' | 'declined'
+  created_at: string
+  updated_at: string
+}
 
 export function AgentManagement() {
   const { user, loading: userLoading } = useUser()
@@ -43,6 +52,9 @@ export function AgentManagement() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [rotating, setRotating] = useState(false)
   const [activeTab, setActiveTab] = useState<ActiveTab>('agent')
+  const [interestSignals, setInterestSignals] = useState<InterestSignal[]>([])
+  const [interestLoading, setInterestLoading] = useState(false)
+  const [interestLoaded, setInterestLoaded] = useState(false)
 
   useEffect(() => {
     if (userLoading) return
@@ -78,6 +90,44 @@ export function AgentManagement() {
 
     fetchAgent()
   }, [user, userLoading])
+
+  async function fetchInterestSignals() {
+    if (!agent || interestLoaded) return
+    setInterestLoading(true)
+    try {
+      const res = await fetch(`/api/v1/agents/${agent.id}/interest`)
+      if (res.ok) {
+        const data = await res.json() as { signals?: InterestSignal[] }
+        setInterestSignals(data.signals ?? [])
+        setInterestLoaded(true)
+      }
+    } catch (err) {
+      console.error('[AgentManagement] Failed to load interest signals:', err)
+    } finally {
+      setInterestLoading(false)
+    }
+  }
+
+  async function handleSignalAction(signalId: string, status: 'acknowledged' | 'declined') {
+    if (!agent) return
+    try {
+      const res = await fetch(`/api/v1/agents/${agent.id}/interest/${signalId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+      if (res.ok) {
+        setInterestSignals(prev =>
+          prev.map(s => s.id === signalId ? { ...s, status } : s)
+        )
+        toast.success(status === 'acknowledged' ? 'Signal acknowledged' : 'Signal declined')
+      } else {
+        toast.error('Failed to update signal')
+      }
+    } catch {
+      toast.error('Network error — please try again')
+    }
+  }
 
   async function handleRotate() {
     if (!agent) return
@@ -173,6 +223,26 @@ export function AgentManagement() {
             <Search className="size-3" />
             Discovery
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('interest')
+              void fetchInterestSignals()
+            }}
+            className={`px-4 py-3 font-['JetBrains_Mono'] text-xs uppercase tracking-widest transition-colors border-b-2 -mb-px flex items-center gap-1.5 ${
+              activeTab === 'interest'
+                ? 'border-[#f9a8d4] text-[#f9a8d4]'
+                : 'border-transparent text-[#8c909f] hover:text-[#c2c6d5]'
+            }`}
+          >
+            <Bell className="size-3" />
+            Interest
+            {interestSignals.filter(s => s.status === 'pending').length > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center rounded-full bg-[#f9a8d4] text-[#131313] text-[10px] font-bold w-4 h-4">
+                {interestSignals.filter(s => s.status === 'pending').length}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -237,7 +307,7 @@ export function AgentManagement() {
                 </Dialog>
               </div>
             </div>
-          ) : (
+          ) : activeTab === 'discovery' ? (
             <AgentDiscoverySettings
               agentId={agent.id}
               agentName={agent.name}
@@ -255,6 +325,80 @@ export function AgentManagement() {
                   },
               }}
             />
+          ) : (
+            /* Interest Signals — only visible to agent owner */
+            <div className="space-y-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-[#8c909f] uppercase tracking-widest font-['JetBrains_Mono']">
+                  Interest Signals
+                </p>
+                {interestSignals.filter(s => s.status === 'pending').length > 0 && (
+                  <span className="text-xs text-[#f9a8d4]">
+                    {interestSignals.filter(s => s.status === 'pending').length} pending
+                  </span>
+                )}
+              </div>
+              {interestLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="size-5 animate-spin text-[#8c909f]" />
+                </div>
+              ) : interestSignals.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <Bell className="size-8 text-[#3a3a3a] mb-2" />
+                  <p className="text-sm text-[#8c909f]">No interest signals yet</p>
+                  <p className="text-xs text-[#8c909f] mt-1">Enable contact opt-in in Discovery to receive signals</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {interestSignals.map((signal) => (
+                    <div
+                      key={signal.id}
+                      className="rounded-lg border border-white/5 bg-[#1c1b1b]/50 p-3 space-y-2"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-['JetBrains_Mono'] uppercase tracking-wide ${
+                          signal.status === 'pending'
+                            ? 'bg-[#f9a8d4]/10 text-[#f9a8d4]'
+                            : signal.status === 'acknowledged'
+                            ? 'bg-[#7dffa2]/10 text-[#7dffa2]'
+                            : 'bg-[#8c909f]/10 text-[#8c909f]'
+                        }`}>
+                          {signal.status}
+                        </span>
+                        <span className="text-xs text-[#8c909f]">
+                          {new Date(signal.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      {signal.message && (
+                        <p className="text-sm text-[#c2c6d5] line-clamp-2">
+                          {signal.message.length > 120 ? signal.message.slice(0, 120) + '…' : signal.message}
+                        </p>
+                      )}
+                      {signal.status === 'pending' && (
+                        <div className="flex items-center gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => void handleSignalAction(signal.id, 'acknowledged')}
+                            className="flex items-center gap-1 text-xs text-[#7dffa2] hover:text-[#7dffa2]/80 transition-colors"
+                          >
+                            <CheckCircle className="size-3" />
+                            Acknowledge
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleSignalAction(signal.id, 'declined')}
+                            className="flex items-center gap-1 text-xs text-[#8c909f] hover:text-[#c2c6d5] transition-colors"
+                          >
+                            <XCircle className="size-3" />
+                            Decline
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </CardContent>

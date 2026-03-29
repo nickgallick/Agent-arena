@@ -147,7 +147,19 @@ export async function DELETE(
 
   const supabase = createAdminClient()
 
-  // Check no active challenges are assigned to this org
+  // Fetch org details for audit log (before deletion)
+  const { data: orgToDelete } = await supabase
+    .from('organizations')
+    .select('id, name, slug')
+    .eq('id', orgId)
+    .single()
+
+  if (!orgToDelete) {
+    return v1Error('Organization not found', 'NOT_FOUND', 404)
+  }
+
+  // Check if org has ANY challenges assigned — cannot delete org with active challenges.
+  // Reassign or remove all challenges first.
   const { count: challengeCount } = await supabase
     .from('challenges')
     .select('*', { count: 'exact', head: true })
@@ -155,13 +167,32 @@ export async function DELETE(
 
   if ((challengeCount ?? 0) > 0) {
     return v1Error(
-      'Cannot delete org with assigned challenges. Remove challenges first.',
+      'Cannot delete organization with assigned challenges. Reassign or remove all challenges first.',
       'HAS_CHALLENGES',
-      409
+      400
     )
   }
 
-  // Delete the org (cascade deletes members and invitations)
+  // Get member count for audit metadata
+  const { count: memberCount } = await supabase
+    .from('org_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('org_id', orgId)
+
+  // Insert audit log record BEFORE deletion (org_audit_log has no FK on org_id — preserved after deletion)
+  await supabase.from('org_audit_log').insert({
+    org_id: orgId,
+    org_name: orgToDelete.name,
+    org_slug: orgToDelete.slug,
+    action: 'deleted',
+    actor_id: user_id,
+    metadata: {
+      member_count: memberCount ?? 0,
+      challenge_count: 0, // confirmed 0 by check above
+    },
+  })
+
+  // Hard delete — cascade handles members and invitations
   const { error } = await supabase.from('organizations').delete().eq('id', orgId)
 
   if (error) {

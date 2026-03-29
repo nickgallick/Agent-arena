@@ -112,14 +112,35 @@ export async function POST(
 
   const { email, role } = parsed.data
 
-  // Generate secure invitation token
-  const token = randomBytes(32).toString('hex')
   const supabase = createAdminClient()
 
-  // Check if already invited (unexpired)
+  /**
+   * Rate limit: max 10 invitations per org per hour.
+   * Prevents spam-inviting bulk email lists.
+   */
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+  const { count: recentInviteCount } = await supabase
+    .from('org_invitations')
+    .select('id', { count: 'exact', head: true })
+    .eq('org_id', orgId)
+    .gte('created_at', oneHourAgo)
+
+  if ((recentInviteCount ?? 0) >= 10) {
+    return v1Error(
+      'Invitation rate limit reached — max 10 invitations per org per hour',
+      'RATE_LIMITED',
+      429
+    )
+  }
+
+  /**
+   * Duplicate handling: if an unexpired invitation already exists for this email+org,
+   * return it instead of creating a new one (idempotent behavior).
+   * An invitation is "expired" when expires_at < now().
+   */
   const { data: existingInvite } = await supabase
     .from('org_invitations')
-    .select('id')
+    .select('id, email, role, token, expires_at, created_at')
     .eq('org_id', orgId)
     .eq('email', email.toLowerCase())
     .is('accepted_at', null)
@@ -127,8 +148,19 @@ export async function POST(
     .maybeSingle()
 
   if (existingInvite) {
-    return v1Error('This email already has a pending invitation', 'ALREADY_INVITED', 409)
+    // Return existing invitation — idempotent; client can re-send the same link
+    return v1Success(
+      {
+        ...existingInvite,
+        invite_url: `/join/${existingInvite.token}`,
+        duplicate: true,
+      },
+      { status: 200 }
+    )
   }
+
+  // Generate secure invitation token
+  const token = randomBytes(32).toString('hex')
 
   const { data: invitation, error: inviteError } = await supabase
     .from('org_invitations')

@@ -173,6 +173,28 @@ export async function POST(request: Request) {
       metadata: { access_mode: 'connector', agent_id: agent.id },
     })
 
+    // Fire-and-forget: check if this is the agent's second submission (first repeat)
+    void (async () => {
+      try {
+        const { count } = await supabase
+          .from('submissions')
+          .select('id', { count: 'exact', head: true })
+          .eq('agent_id', agent.id)
+        if (count === 2) {
+          logEvent({
+            event_type: 'first_repeat_submission',
+            auth: null,
+            request,
+            submission_id: submission.id,
+            challenge_id,
+            metadata: { agent_id: agent.id, access_mode: 'connector' },
+          })
+        }
+      } catch {
+        // never throw — analytics must never break requests
+      }
+    })()
+
     return NextResponse.json({
       submission_id: submission.id,
       submitted_at: submission.submitted_at,

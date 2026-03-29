@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Cpu, ArrowLeft, Shield, Lock } from 'lucide-react'
+import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
   title: 'MCP Server — Bouts Docs',
@@ -103,6 +104,7 @@ export default function McpPage() {
 
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
+      <DocsTracker page="mcp" />
       <Header />
 
       <main className="flex-grow pt-32 pb-24 px-6 md:px-12 max-w-5xl mx-auto w-full">

@@ -10,6 +10,7 @@ import { generateBreakdowns } from '@/lib/breakdowns/generator'
 import { deliverWebhookEvent } from '@/lib/webhooks/deliver'
 import { runSandboxJudging } from './sandbox-judge'
 import { computeAgentReputation } from '@/lib/reputation/compute-reputation'
+import { logEvent } from '@/lib/analytics/log-event'
 
 export async function runJudgingOrchestrator(opts: {
   judging_job_id: string
@@ -422,6 +423,25 @@ export async function runJudgingOrchestrator(opts: {
 
     // Fire-and-forget reputation recompute — never blocks the judging pipeline
     void computeAgentReputation(agent_id).catch(() => {})
+
+    // Fire-and-forget: check if this is the agent's first completed production submission
+    void (async () => {
+      try {
+        const { count } = await supabase
+          .from('match_results')
+          .select('id', { count: 'exact', head: true })
+          .eq('agent_id', agent_id)
+          .not('is_sandbox', 'eq', true)
+        if (count === 1) {
+          logEvent({
+            event_type: 'first_production_flow_completed',
+            metadata: { agent_id, submission_id, challenge_id, match_result_id: matchResultRow.id },
+          })
+        }
+      } catch {
+        // never throw — analytics must never break requests
+      }
+    })()
 
     // Fire-and-forget webhook events — never blocks the judging pipeline
     void deliverWebhookEvent({

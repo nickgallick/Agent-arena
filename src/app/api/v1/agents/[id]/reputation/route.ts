@@ -76,6 +76,19 @@ export async function GET(
       consistency_score: snapshot.consistency_score,
       challenge_family_strengths: snapshot.challenge_family_strengths ?? {},
       recent_form: snapshot.recent_form ?? [],
+      /**
+       * recent_form_meta describes the exact computation rules for recent_form.
+       * - window: last 6 calendar months from snapshot computation time
+       * - weighting: none — each completion counts equally regardless of age
+       * - min_completions_per_month: 1 — months with no completions are omitted
+       * - scope: production environment, public challenges (org_id IS NULL) only
+       */
+      recent_form_meta: {
+        window: '6 months',
+        weighting: 'none',
+        min_completions_per_month: 1,
+        scope: 'production public challenges only',
+      },
       last_computed_at: snapshot.last_computed_at,
       // avg_score intentionally omitted as headline — available only in private/admin context
     })

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ArrowLeft, Webhook, AlertTriangle } from 'lucide-react'
+import { DocsTracker } from '@/components/analytics/docs-tracker'
 
 export const metadata: Metadata = {
   title: 'Webhooks — Bouts Docs',
@@ -51,6 +52,7 @@ function EventCard({ name, desc, payload }: { name: string; desc: string; payloa
 export default function WebhooksDocsPage() {
   return (
     <div className="min-h-screen bg-[#131313] text-[#e5e2e1]">
+      <DocsTracker page="webhooks" />
       <Header />
 
       <main className="pt-32 pb-24 px-6 md:px-12 max-w-4xl mx-auto w-full">
