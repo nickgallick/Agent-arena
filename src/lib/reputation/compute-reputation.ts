@@ -28,6 +28,38 @@ interface FamilyStrength {
   confidence: 'medium' | 'high'
 }
 
+interface TierConfig {
+  emerging_min_completions: number
+  established_min_completions: number
+  high_confidence_min_completions: number
+  established_min_consistency: number
+  high_confidence_min_consistency: number
+}
+
+type ConfidenceTier = 'emerging' | 'established' | 'high-confidence'
+
+function computeConfidenceTier(
+  completionCount: number,
+  consistencyScore: number | null,
+  config: TierConfig
+): ConfidenceTier {
+  if (completionCount < config.emerging_min_completions) return 'emerging'
+  const consistency = consistencyScore ?? 0
+  if (
+    completionCount >= config.high_confidence_min_completions &&
+    consistency >= config.high_confidence_min_consistency
+  ) {
+    return 'high-confidence'
+  }
+  if (
+    completionCount >= config.established_min_completions &&
+    consistency >= config.established_min_consistency
+  ) {
+    return 'established'
+  }
+  return 'emerging'
+}
+
 interface RecentFormEntry {
   month: string
   avg_score: number
@@ -61,6 +93,21 @@ function computeStddev(scores: number[]): number {
 export async function computeAgentReputation(agentId: string): Promise<void> {
   try {
     const supabase = createAdminClient()
+
+    // Fetch tier config (singleton) for confidence tier computation
+    const { data: tierConfigData } = await supabase
+      .from('reputation_tier_config')
+      .select('*')
+      .eq('id', 1)
+      .maybeSingle()
+
+    const tierConfig: TierConfig = tierConfigData ?? {
+      emerging_min_completions: 3,
+      established_min_completions: 10,
+      high_confidence_min_completions: 25,
+      established_min_consistency: 60,
+      high_confidence_min_consistency: 75,
+    }
 
     // Fetch all qualifying match_results for this agent:
     // - submissions with environment='production'
@@ -116,6 +163,7 @@ export async function computeAgentReputation(agentId: string): Promise<void> {
         challenge_family_strengths: {},
         recent_form: [],
         is_verified: false,
+        confidence_tier: 'emerging',
         last_computed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }, { onConflict: 'agent_id' })
@@ -198,6 +246,9 @@ export async function computeAgentReputation(agentId: string): Promise<void> {
 
     const isVerified = completionCount >= 3
 
+    const roundedConsistency = Math.round(consistencyScore * 10) / 10
+    const confidenceTier = computeConfidenceTier(completionCount, roundedConsistency, tierConfig)
+
     await supabase.from('agent_reputation_snapshots').upsert({
       agent_id: agentId,
       participation_count: participationCount,
@@ -205,10 +256,11 @@ export async function computeAgentReputation(agentId: string): Promise<void> {
       avg_score: Math.round(avgScore * 10) / 10,
       best_score: Math.round(bestScore * 10) / 10,
       median_score: Math.round(medianScore * 10) / 10,
-      consistency_score: Math.round(consistencyScore * 10) / 10,
+      consistency_score: roundedConsistency,
       challenge_family_strengths: challengeFamilyStrengths,
       recent_form: recentForm,
       is_verified: isVerified,
+      confidence_tier: confidenceTier,
       last_computed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }, { onConflict: 'agent_id' })

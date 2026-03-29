@@ -66,6 +66,40 @@ export async function GET(
       })
     }
 
+    // Confidence tier — only expose at established (>=10 completions) or above
+    const ESTABLISHED_MIN = 10
+    const HIGH_CONFIDENCE_MIN = 25
+    const HIGH_CONFIDENCE_MIN_CONSISTENCY = 75
+    let confidenceTierData: Record<string, unknown> = {}
+
+    if (snapshot.completion_count >= ESTABLISHED_MIN && snapshot.confidence_tier && snapshot.confidence_tier !== 'emerging') {
+      const tier = snapshot.confidence_tier as string
+      let nextTier: string | null = null
+      let completionsNeeded: number | null = null
+
+      if (tier === 'established') {
+        nextTier = 'high-confidence'
+        completionsNeeded = Math.max(0, HIGH_CONFIDENCE_MIN - snapshot.completion_count)
+      }
+
+      const description = tier === 'high-confidence'
+        ? `Based on ${snapshot.completion_count} verified completions with consistently high performance.`
+        : `Based on ${snapshot.completion_count} verified completions with consistent performance.`
+
+      const tierMeta: Record<string, unknown> = { description }
+      if (nextTier) tierMeta.next_tier = nextTier
+      if (completionsNeeded !== null) tierMeta.completions_needed = completionsNeeded
+      // If high-confidence but consistency not at threshold, note that
+      if (tier === 'established' && snapshot.consistency_score !== null && snapshot.consistency_score < HIGH_CONFIDENCE_MIN_CONSISTENCY) {
+        tierMeta.consistency_needed = `Consistency score must reach ${HIGH_CONFIDENCE_MIN_CONSISTENCY} (currently ${snapshot.consistency_score})`
+      }
+
+      confidenceTierData = {
+        confidence_tier: tier,
+        confidence_tier_meta: tierMeta,
+      }
+    }
+
     // Return verified reputation — never include per-submission breakdown
     return NextResponse.json({
       agent_id: id,
@@ -89,6 +123,7 @@ export async function GET(
         min_completions_per_month: 1,
         scope: 'production public challenges only',
       },
+      ...confidenceTierData,
       last_computed_at: snapshot.last_computed_at,
       // avg_score intentionally omitted as headline — available only in private/admin context
     })

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   LayoutDashboard, Swords, Terminal, Bot, Flag, Activity, TrendingUp,
   Network, Zap, Shield, PlusCircle, X, Loader2, Inbox, FlaskConical,
-  Package, BarChart3, ChevronDown, ChevronRight, Key,
+  Package, BarChart3, ChevronDown, ChevronRight, Key, Tag, Users,
 } from 'lucide-react'
 
 interface AdminDashboardClientProps {
@@ -249,6 +249,42 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
   } | null>(null)
   const [devMetricsLoading, setDevMetricsLoading] = useState(false)
 
+  // Tags Tab
+  const [tagQueue, setTagQueue] = useState<Array<{
+    id: string; tag: string; category: string; submitted_count: number; status: string; created_at: string
+  }>>([])
+  const [tagQueueLoading, setTagQueueLoading] = useState(false)
+  const [tagPendingCount, setTagPendingCount] = useState(0)
+  const [canonicalTags, setCanonicalTags] = useState<Array<{
+    id: string; tag: string; category: string; status: string; description: string | null; aliases: string[]
+  }>>([])
+  const [canonicalTagsLoading, setCanonicalTagsLoading] = useState(false)
+  const [canonicalSearch, setCanonicalSearch] = useState('')
+  const [tagActionLoading, setTagActionLoading] = useState<string | null>(null)
+  const [mergeInput, setMergeInput] = useState<Record<string, string>>({})
+
+  // Retention Tab
+  const [retentionData, setRetentionData] = useState<{
+    period_days: number
+    sandbox_to_production_conversion: {
+      users_with_sandbox_only: number
+      users_converted_to_production: number
+      conversion_rate_pct: number
+      median_days_to_convert: number
+    }
+    first_to_second_submission: {
+      agents_with_one_submission: number
+      agents_with_two_plus: number
+      conversion_rate_pct: number
+      median_days_to_second: number
+    }
+    repeat_usage_by_access_mode: Record<string, { total_users: number; repeat_users: number; repeat_rate_pct: number }>
+    webhook_subscription_retention: { created_30d: number; still_active: number; retention_rate_pct: number }
+    token_churn: { created_30d: number; revoked_30d: number; churn_rate_pct: number }
+  } | null>(null)
+  const [retentionLoading, setRetentionLoading] = useState(false)
+  const [retentionDays, setRetentionDays] = useState<30 | 60 | 90>(30)
+
   // Analytics Tab
   const [analyticsData, setAnalyticsData] = useState<{
     access_mode_breakdown: Array<{ mode: string; count: number }>
@@ -433,6 +469,51 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     }
   }, [])
 
+  const fetchTagQueue = useCallback(async () => {
+    setTagQueueLoading(true)
+    try {
+      const res = await fetch('/api/admin/tags?limit=200')
+      if (!res.ok) return
+      const data = await res.json()
+      setTagQueue(data.tags ?? [])
+      setTagPendingCount(data.pending_count ?? 0)
+    } catch {
+      // non-critical
+    } finally {
+      setTagQueueLoading(false)
+    }
+  }, [])
+
+  const fetchCanonicalTags = useCallback(async (search?: string) => {
+    setCanonicalTagsLoading(true)
+    try {
+      const params = new URLSearchParams({ limit: '200' })
+      if (search) params.set('search', search)
+      const res = await fetch(`/api/admin/tags/canonical?${params}`)
+      if (!res.ok) return
+      const data = await res.json()
+      setCanonicalTags(data.tags ?? [])
+    } catch {
+      // non-critical
+    } finally {
+      setCanonicalTagsLoading(false)
+    }
+  }, [])
+
+  const fetchRetention = useCallback(async (days: number = 30) => {
+    setRetentionLoading(true)
+    try {
+      const res = await fetch(`/api/admin/analytics/retention?days=${days}`)
+      if (!res.ok) return
+      const data = await res.json()
+      setRetentionData(data)
+    } catch {
+      // non-critical
+    } finally {
+      setRetentionLoading(false)
+    }
+  }, [])
+
   const fetchAnalytics = useCallback(async () => {
     setAnalyticsLoading(true)
     try {
@@ -471,7 +552,9 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     if (activeTab === 'Challenge Health') fetchHealth()
     if (activeTab === 'Developer Metrics') fetchDevMetrics()
     if (activeTab === 'Analytics') fetchAnalytics()
-  }, [activeTab, fetchStats, fetchChallenges, fetchIntakeQueue, fetchForgeReviews, fetchCalibration, fetchInventory, fetchHealth, fetchJudgingQueue, fetchDevMetrics, fetchAnalytics])
+    if (activeTab === 'Tags') { fetchTagQueue(); fetchCanonicalTags() }
+    if (activeTab === 'Retention') fetchRetention(retentionDays)
+  }, [activeTab, fetchStats, fetchChallenges, fetchIntakeQueue, fetchForgeReviews, fetchCalibration, fetchInventory, fetchHealth, fetchJudgingQueue, fetchDevMetrics, fetchAnalytics, fetchTagQueue, fetchCanonicalTags, fetchRetention, retentionDays])
 
   async function handleCreateChallenge(e: React.FormEvent) {
     e.preventDefault()
@@ -595,6 +678,40 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     }
   }
 
+  async function handleTagAction(id: string, action: 'approve' | 'reject' | 'merge', mergeInto?: string) {
+    setTagActionLoading(id)
+    try {
+      const body: Record<string, unknown> = { action }
+      if (action === 'merge' && mergeInto) body.merge_into = mergeInto
+      const res = await fetch(`/api/admin/tags/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (res.ok) {
+        await fetchTagQueue()
+        await fetchCanonicalTags()
+        setMergeInput(prev => { const next = { ...prev }; delete next[id]; return next })
+      }
+    } catch {
+      // silently handle
+    } finally {
+      setTagActionLoading(null)
+    }
+  }
+
+  async function handleDeleteTag(id: string) {
+    setTagActionLoading(id)
+    try {
+      const res = await fetch(`/api/admin/tags/${id}`, { method: 'DELETE' })
+      if (res.ok) await fetchTagQueue()
+    } catch {
+      // silently handle
+    } finally {
+      setTagActionLoading(null)
+    }
+  }
+
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-[#131313] flex items-center justify-center">
@@ -620,6 +737,20 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     { label: 'Health', icon: <Shield className="w-5 h-5" /> },
     { label: 'Developer Metrics', icon: <Key className="w-5 h-5" /> },
     { label: 'Analytics', icon: <TrendingUp className="w-5 h-5" /> },
+    {
+      label: 'Tags',
+      icon: (
+        <span className="relative">
+          <Tag className="w-5 h-5" />
+          {tagPendingCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#ffb780] text-[#1a0e00] text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              {tagPendingCount > 9 ? '9+' : tagPendingCount}
+            </span>
+          )}
+        </span>
+      ),
+    },
+    { label: 'Retention', icon: <Users className="w-5 h-5" /> },
   ]
 
   return (
@@ -1843,6 +1974,320 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       </div>
                     </>
                   )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── TAGS TAB ── */}
+          {activeTab === 'Tags' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope'] flex items-center gap-3">
+                  Tag Moderation
+                  {tagPendingCount > 0 && (
+                    <span className="bg-[#ffb780] text-[#1a0e00] text-xs font-bold rounded-full px-2 py-0.5">
+                      {tagPendingCount} pending
+                    </span>
+                  )}
+                </h2>
+                <button
+                  onClick={() => { fetchTagQueue(); fetchCanonicalTags() }}
+                  className="text-xs font-['JetBrains_Mono'] text-[#adc6ff] hover:text-[#e5e2e1] transition-colors uppercase tracking-widest"
+                >
+                  Refresh
+                </button>
+              </div>
+
+              {/* Moderation Queue */}
+              <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#424753]/20">
+                  <h3 className="text-base font-bold text-[#e5e2e1] font-['Manrope']">Moderation Queue</h3>
+                </div>
+                {tagQueueLoading ? (
+                  <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+                ) : tagQueue.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <Tag className="w-10 h-10 text-[#424753] mx-auto mb-3" />
+                    <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No tags in queue</p>
+                  </div>
+                ) : (
+                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
+                    <thead>
+                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                        <th className="px-6 py-4 uppercase tracking-widest">Tag</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Category</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Count</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Status</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#424753]/10">
+                      {tagQueue.map(tag => (
+                        <tr key={tag.id} className="hover:bg-[#201f1f] transition-colors">
+                          <td className="px-6 py-4 text-[#e5e2e1] font-bold">{tag.tag}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${tag.category === 'capability' ? 'bg-[#adc6ff]/15 text-[#adc6ff]' : 'bg-[#7dffa2]/15 text-[#7dffa2]'}`}>
+                              {tag.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-[#c2c6d5] font-bold">{tag.submitted_count}</td>
+                          <td className="px-6 py-4"><StatusBadge status={tag.status} /></td>
+                          <td className="px-6 py-4">
+                            {tag.status === 'pending' ? (
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <button
+                                  disabled={tagActionLoading === tag.id}
+                                  onClick={() => handleTagAction(tag.id, 'approve')}
+                                  className="px-3 py-1.5 bg-[#7dffa2]/10 text-[#7dffa2] rounded text-[10px] font-bold hover:bg-[#7dffa2]/20 transition-colors disabled:opacity-50"
+                                >
+                                  {tagActionLoading === tag.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Approve'}
+                                </button>
+                                <button
+                                  disabled={tagActionLoading === tag.id}
+                                  onClick={() => handleTagAction(tag.id, 'reject')}
+                                  className="px-3 py-1.5 bg-[#ffb4ab]/10 text-[#ffb4ab] rounded text-[10px] font-bold hover:bg-[#ffb4ab]/20 transition-colors disabled:opacity-50"
+                                >
+                                  Reject
+                                </button>
+                                <div className="flex items-center gap-1">
+                                  <input
+                                    value={mergeInput[tag.id] ?? ''}
+                                    onChange={e => setMergeInput(prev => ({ ...prev, [tag.id]: e.target.value }))}
+                                    placeholder="Merge into..."
+                                    className="bg-[#0e0e0e] text-[#e5e2e1] px-2 py-1 rounded text-[10px] w-28 outline-none focus:ring-1 focus:ring-[#adc6ff]/30"
+                                  />
+                                  <button
+                                    disabled={tagActionLoading === tag.id || !mergeInput[tag.id]?.trim()}
+                                    onClick={() => handleTagAction(tag.id, 'merge', mergeInput[tag.id])}
+                                    className="px-2 py-1.5 bg-[#ffb780]/10 text-[#ffb780] rounded text-[10px] font-bold hover:bg-[#ffb780]/20 transition-colors disabled:opacity-50"
+                                  >
+                                    Merge
+                                  </button>
+                                </div>
+                                <button
+                                  disabled={tagActionLoading === tag.id}
+                                  onClick={() => handleDeleteTag(tag.id)}
+                                  className="px-3 py-1.5 bg-[#424753]/20 text-[#8c909f] rounded text-[10px] font-bold hover:bg-[#424753]/40 transition-colors disabled:opacity-50"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-[#8c909f]">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+
+              {/* Canonical Tags List */}
+              <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-[#424753]/20 flex items-center justify-between">
+                  <h3 className="text-base font-bold text-[#e5e2e1] font-['Manrope']">Canonical Tags</h3>
+                  <input
+                    value={canonicalSearch}
+                    onChange={e => { setCanonicalSearch(e.target.value); fetchCanonicalTags(e.target.value) }}
+                    placeholder="Search tags..."
+                    className="bg-[#0e0e0e] text-[#e5e2e1] px-3 py-1.5 rounded text-xs w-48 outline-none focus:ring-1 focus:ring-[#adc6ff]/30 font-['JetBrains_Mono']"
+                  />
+                </div>
+                {canonicalTagsLoading ? (
+                  <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+                ) : canonicalTags.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono']">No canonical tags yet. Approve tags from the queue above to populate.</p>
+                  </div>
+                ) : (
+                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
+                    <thead>
+                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                        <th className="px-6 py-4 uppercase tracking-widest">Tag</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Category</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Status</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Aliases</th>
+                        <th className="px-6 py-4 uppercase tracking-widest">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#424753]/10">
+                      {canonicalTags.map(ct => (
+                        <tr key={ct.id} className="hover:bg-[#201f1f] transition-colors">
+                          <td className="px-6 py-4 text-[#e5e2e1] font-bold">{ct.tag}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${ct.category === 'capability' ? 'bg-[#adc6ff]/15 text-[#adc6ff]' : 'bg-[#7dffa2]/15 text-[#7dffa2]'}`}>
+                              {ct.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4"><StatusBadge status={ct.status} /></td>
+                          <td className="px-6 py-4 text-[#8c909f]">{ct.aliases?.join(', ') || '—'}</td>
+                          <td className="px-6 py-4 text-[#c2c6d5] max-w-[200px] truncate" title={ct.description ?? ''}>{ct.description || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── RETENTION TAB ── */}
+          {activeTab === 'Retention' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Retention Analytics</h2>
+                <div className="flex items-center gap-3">
+                  {([30, 60, 90] as const).map(d => (
+                    <button
+                      key={d}
+                      onClick={() => { setRetentionDays(d); fetchRetention(d) }}
+                      className={`px-3 py-1.5 rounded text-xs font-['JetBrains_Mono'] font-bold transition-colors ${retentionDays === d ? 'bg-[#adc6ff]/20 text-[#adc6ff]' : 'bg-[#201f1f] text-[#c2c6d5] hover:bg-[#2a2a2a]'}`}
+                    >
+                      {d}d
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {retentionLoading ? (
+                <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
+              ) : !retentionData ? (
+                <div className="bg-[#1c1b1b] p-12 rounded-xl text-center">
+                  <Users className="w-12 h-12 text-[#424753] mx-auto mb-4" />
+                  <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">Not enough data yet</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Sandbox → Production Funnel */}
+                  <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                    <h3 className="text-base font-bold text-[#e5e2e1] font-['Manrope'] mb-4 flex items-center gap-2">
+                      Sandbox → Production Conversion
+                    </h3>
+                    {retentionData.sandbox_to_production_conversion.users_with_sandbox_only === 0 && retentionData.sandbox_to_production_conversion.users_converted_to_production === 0 ? (
+                      <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">Not enough data yet.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Sandbox Only</div>
+                          <div className="text-3xl font-black text-[#ffb780]">{retentionData.sandbox_to_production_conversion.users_with_sandbox_only}</div>
+                        </div>
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Converted to Prod</div>
+                          <div className="text-3xl font-black text-[#7dffa2]">{retentionData.sandbox_to_production_conversion.users_converted_to_production}</div>
+                        </div>
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Conversion Rate</div>
+                          <div className="text-3xl font-black text-[#adc6ff]">{retentionData.sandbox_to_production_conversion.conversion_rate_pct}%</div>
+                        </div>
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Median Days</div>
+                          <div className="text-3xl font-black text-[#c2c6d5]">{retentionData.sandbox_to_production_conversion.median_days_to_convert}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* First → Second Submission */}
+                  <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                    <h3 className="text-base font-bold text-[#e5e2e1] font-['Manrope'] mb-4">First → Second Submission</h3>
+                    {retentionData.first_to_second_submission.agents_with_one_submission === 0 && retentionData.first_to_second_submission.agents_with_two_plus === 0 ? (
+                      <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">Not enough data yet.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">One Submission</div>
+                          <div className="text-3xl font-black text-[#ffb780]">{retentionData.first_to_second_submission.agents_with_one_submission}</div>
+                        </div>
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Two or More</div>
+                          <div className="text-3xl font-black text-[#7dffa2]">{retentionData.first_to_second_submission.agents_with_two_plus}</div>
+                        </div>
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Repeat Rate</div>
+                          <div className="text-3xl font-black text-[#adc6ff]">{retentionData.first_to_second_submission.conversion_rate_pct}%</div>
+                        </div>
+                        <div className="bg-[#201f1f] p-4 rounded-lg">
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Median Days</div>
+                          <div className="text-3xl font-black text-[#c2c6d5]">{retentionData.first_to_second_submission.median_days_to_second}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Repeat Usage by Access Mode */}
+                  <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                    <h3 className="text-base font-bold text-[#e5e2e1] font-['Manrope'] mb-4">Repeat Usage by Access Mode</h3>
+                    {Object.keys(retentionData.repeat_usage_by_access_mode).length === 0 ? (
+                      <p className="text-[#8c909f] text-sm font-['JetBrains_Mono']">Not enough data yet.</p>
+                    ) : (
+                      <table className="w-full text-xs font-['JetBrains_Mono']">
+                        <thead>
+                          <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
+                            <th className="py-2 pr-6 text-left uppercase tracking-widest">Mode</th>
+                            <th className="py-2 pr-6 text-right uppercase tracking-widest">Total Users</th>
+                            <th className="py-2 pr-6 text-right uppercase tracking-widest">Repeat Users</th>
+                            <th className="py-2 text-right uppercase tracking-widest">Repeat Rate</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#424753]/10">
+                          {Object.entries(retentionData.repeat_usage_by_access_mode).map(([mode, stats]) => (
+                            <tr key={mode} className="hover:bg-[#201f1f]">
+                              <td className="py-3 pr-6 text-[#adc6ff] font-bold">{mode}</td>
+                              <td className="py-3 pr-6 text-right text-[#e5e2e1]">{stats.total_users}</td>
+                              <td className="py-3 pr-6 text-right text-[#7dffa2]">{stats.repeat_users}</td>
+                              <td className={`py-3 text-right font-bold ${stats.repeat_rate_pct >= 50 ? 'text-[#7dffa2]' : stats.repeat_rate_pct >= 25 ? 'text-[#ffb780]' : 'text-[#ffb4ab]'}`}>
+                                {stats.repeat_rate_pct}%
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+
+                  {/* Webhook + Token Stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                      <h3 className="text-base font-bold text-[#e5e2e1] font-['Manrope'] mb-4">Webhook Retention</h3>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Created</div>
+                          <div className="text-2xl font-black text-[#c2c6d5]">{retentionData.webhook_subscription_retention.created_30d}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Still Active</div>
+                          <div className="text-2xl font-black text-[#7dffa2]">{retentionData.webhook_subscription_retention.still_active}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Retention</div>
+                          <div className={`text-2xl font-black ${retentionData.webhook_subscription_retention.retention_rate_pct >= 70 ? 'text-[#7dffa2]' : 'text-[#ffb780]'}`}>
+                            {retentionData.webhook_subscription_retention.retention_rate_pct}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-[#1c1b1b] p-6 rounded-xl">
+                      <h3 className="text-base font-bold text-[#e5e2e1] font-['Manrope'] mb-4">Token Churn</h3>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Created</div>
+                          <div className="text-2xl font-black text-[#c2c6d5]">{retentionData.token_churn.created_30d}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Revoked</div>
+                          <div className="text-2xl font-black text-[#ffb4ab]">{retentionData.token_churn.revoked_30d}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] uppercase tracking-widest mb-1">Churn Rate</div>
+                          <div className={`text-2xl font-black ${retentionData.token_churn.churn_rate_pct <= 20 ? 'text-[#7dffa2]' : 'text-[#ffb4ab]'}`}>
+                            {retentionData.token_churn.churn_rate_pct}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

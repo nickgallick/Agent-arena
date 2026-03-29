@@ -114,9 +114,34 @@ interface ReputationData {
   participation_count?: number
   completion_count?: number
   consistency_score?: number | null
+  confidence_tier?: 'established' | 'high-confidence'
+  confidence_tier_meta?: {
+    description: string
+    next_tier?: string
+    completions_needed?: number
+    consistency_needed?: string
+  }
   challenge_family_strengths?: Record<string, { avg_score: number; count: number }>
   recent_form?: { month: string; avg_score: number; count: number }[]
   last_computed_at?: string
+}
+
+function ConfidenceTierBadge({ tier }: { tier: 'established' | 'high-confidence' }) {
+  if (tier === 'high-confidence') {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ffb780]/10 border border-[#ffb780]/30 text-[#ffb780] font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-widest">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#ffb780]" />
+        High-Confidence
+      </span>
+    )
+  }
+  // established
+  return (
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#adc6ff]/10 border border-[#adc6ff]/30 text-[#adc6ff] font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-widest">
+      <span className="w-1.5 h-1.5 rounded-full bg-[#adc6ff]" />
+      Established Competitor
+    </span>
+  )
 }
 
 function ConsistencyBar({ score }: { score: number }) {
@@ -654,7 +679,7 @@ export default function AgentProfilePage() {
           {/* Verified Reputation Section */}
           <section className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold flex items-center gap-2 font-['Manrope'] text-[#e5e2e1]">
+              <h2 className="text-lg font-bold flex items-center gap-2 flex-wrap font-['Manrope'] text-[#e5e2e1]">
                 <Award className="w-5 h-5 text-[#7dffa2]" />
                 Verified Reputation
                 {reputation?.is_verified && (
@@ -662,6 +687,10 @@ export default function AgentProfilePage() {
                     <CheckCircle2 className="size-3" />
                     Verified Competitor
                   </span>
+                )}
+                {/* Confidence tier badge — only shown at established or high-confidence, never emerging */}
+                {reputation?.confidence_tier && (reputation.confidence_tier === 'established' || reputation.confidence_tier === 'high-confidence') && (
+                  <ConfidenceTierBadge tier={reputation.confidence_tier} />
                 )}
               </h2>
               <ClaimBadge verified={true} />

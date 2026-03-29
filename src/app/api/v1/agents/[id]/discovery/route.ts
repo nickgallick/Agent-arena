@@ -6,6 +6,13 @@
  *
  * All data updated here is self-reported — it will be labeled
  * with ClaimBadge(verified=false) on the public profile.
+ *
+ * Tags are checked against canonical_tags:
+ * - Canonical tags are resolved to their canonical form (alias resolution)
+ * - Non-canonical tags are queued in tag_moderation_queue for review
+ * - All tags are saved regardless (freeform allowed)
+ *
+ * Response includes tag_status: { canonical: string[], pending_review: string[] }
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -28,6 +35,95 @@ const discoverySchema = z.object({
     version: z.string().max(50).optional(),
   }).optional(),
 })
+
+function normalizeTags(tags: string[]): string[] {
+  return [...new Set(
+    tags
+      .map(t => t.toLowerCase().trim())
+      .filter(t => t.length > 0 && t.length <= 50)
+  )]
+}
+
+interface CanonicalTag {
+  tag: string
+  aliases: string[]
+  category: string
+}
+
+/**
+ * Resolve tags against canonical vocabulary.
+ * Returns { canonical, pending, resolvedTags }
+ * - canonical: tags that exist in canonical_tags
+ * - pending: tags queued for review
+ * - resolvedTags: final tag list (canonical form or original)
+ */
+async function resolveTagsAgainstCanonical(
+  tags: string[],
+  category: 'capability' | 'domain',
+  agentId: string
+): Promise<{ canonical: string[]; pending: string[]; resolvedTags: string[] }> {
+  if (tags.length === 0) return { canonical: [], pending: [], resolvedTags: [] }
+
+  const supabase = createAdminClient()
+
+  // Fetch all active canonical tags for this category
+  const { data: canonicalTags } = await supabase
+    .from('canonical_tags')
+    .select('tag, aliases, category')
+    .eq('category', category)
+    .eq('status', 'active')
+
+  const canonicalMap = new Map<string, string>() // alias/tag → canonical tag
+  for (const ct of (canonicalTags ?? []) as CanonicalTag[]) {
+    canonicalMap.set(ct.tag, ct.tag)
+    for (const alias of ct.aliases ?? []) {
+      canonicalMap.set(alias.toLowerCase().trim(), ct.tag)
+    }
+  }
+
+  const canonical: string[] = []
+  const pending: string[] = []
+  const resolvedTags: string[] = []
+
+  for (const tag of tags) {
+    const canonicalForm = canonicalMap.get(tag)
+    if (canonicalForm) {
+      canonical.push(canonicalForm)
+      resolvedTags.push(canonicalForm)
+    } else {
+      pending.push(tag)
+      resolvedTags.push(tag)
+      // Upsert into moderation queue — increment count if exists
+      await supabase
+        .from('tag_moderation_queue')
+        .upsert(
+          {
+            tag,
+            category,
+            submitted_by_agent_id: agentId,
+            submitted_count: 1,
+            status: 'pending',
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'tag,category',
+            // Use SQL to increment submitted_count
+            ignoreDuplicates: false,
+          }
+        )
+
+      // Increment submitted_count via separate update for existing entries
+      // Ignore errors — upsert already handles the insert case
+      try {
+        await supabase.rpc('increment_tag_submitted_count', { p_tag: tag, p_category: category }).maybeSingle()
+      } catch {
+        // RPC may not exist; upsert already handles insert case
+      }
+    }
+  }
+
+  return { canonical, pending, resolvedTags }
+}
 
 export async function PATCH(
   request: NextRequest,
@@ -79,22 +175,31 @@ export async function PATCH(
       runtime_metadata,
     } = parsed.data
 
-    /**
-     * Tags are stored normalized (lowercase, trimmed, deduplicated).
-     * Controlled vocabulary may be introduced later.
-     */
-    function normalizeTags(tags: string[]): string[] {
-      return [...new Set(
-        tags
-          .map(t => t.toLowerCase().trim())
-          .filter(t => t.length > 0 && t.length <= 50)
-      )]
+    // Build update payload — normalize and resolve tags against canonical
+    const updatePayload: Record<string, unknown> = {}
+
+    // Tag status tracking for response
+    const tagStatus: { canonical: string[]; pending_review: string[] } = {
+      canonical: [],
+      pending_review: [],
     }
 
-    // Build update payload
-    const updatePayload: Record<string, unknown> = {}
-    if (capability_tags !== undefined) updatePayload.capability_tags = normalizeTags(capability_tags)
-    if (domain_tags !== undefined) updatePayload.domain_tags = normalizeTags(domain_tags)
+    if (capability_tags !== undefined) {
+      const normalized = normalizeTags(capability_tags)
+      const { canonical, pending, resolvedTags } = await resolveTagsAgainstCanonical(normalized, 'capability', agentId)
+      updatePayload.capability_tags = resolvedTags
+      tagStatus.canonical.push(...canonical)
+      tagStatus.pending_review.push(...pending)
+    }
+
+    if (domain_tags !== undefined) {
+      const normalized = normalizeTags(domain_tags)
+      const { canonical, pending, resolvedTags } = await resolveTagsAgainstCanonical(normalized, 'domain', agentId)
+      updatePayload.domain_tags = resolvedTags
+      tagStatus.canonical.push(...canonical)
+      tagStatus.pending_review.push(...pending)
+    }
+
     if (availability_status !== undefined) updatePayload.availability_status = availability_status
     if (contact_opt_in !== undefined) updatePayload.contact_opt_in = contact_opt_in
     if (description !== undefined) updatePayload.bio = description
@@ -130,7 +235,10 @@ export async function PATCH(
       })
     }
 
-    return NextResponse.json({ agent: updated })
+    return NextResponse.json({
+      agent: updated,
+      tag_status: tagStatus,
+    })
   } catch (err) {
     console.error('[PATCH /api/v1/agents/[id]/discovery] Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
