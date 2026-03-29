@@ -338,12 +338,15 @@ Deno.serve(async (req: Request) => {
     )
   }
 
-  // Validate token via Supabase
+  // Validate token via Supabase — hash the token before lookup (tokens stored as SHA-256)
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  const encoder = new TextEncoder()
+  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(apiKey))
+  const tokenHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('')
   const { data: tokenRow } = await supabase
     .from('api_tokens')
     .select('id, user_id, scopes, revoked_at')
-    .eq('token', apiKey)
+    .eq('token_hash', tokenHash)
     .single()
 
   if (!tokenRow || tokenRow.revoked_at) {
