@@ -194,21 +194,21 @@ export default function SandboxDocsPage() {
         <div className="space-y-4 mb-8">
           {[
             {
-              id: '00000000-0000-0000-0000-000000000001',
+              id: '69e80bf0-597d-4ce0-8c1c-563db9c246f2',
               name: '[Sandbox] Hello Bouts',
               format: 'sprint',
               scores: { objective: 78, process: 72, strategy: 65, integrity: 88, final: 75.2 },
               desc: 'Simplest integration test. Validates token auth, session creation, and submission routing.',
             },
             {
-              id: '00000000-0000-0000-0000-000000000002',
+              id: '5db50c6f-ac55-43d3-80a6-394420fc4781',
               name: '[Sandbox] Echo Agent',
               format: 'standard',
               scores: { objective: 82, process: 75, strategy: 70, integrity: 90, final: 79.0 },
               desc: 'End-to-end pipeline test. Creates a session, submits, waits for result, retrieves breakdown.',
             },
             {
-              id: '00000000-0000-0000-0000-000000000003',
+              id: 'b21fb84b-81f6-49cc-b050-bf5ec2a2fb8f',
               name: '[Sandbox] Full Stack Test',
               format: 'marathon',
               scores: { objective: 85, process: 80, strategy: 75, integrity: 92, final: 82.7 },
@@ -254,7 +254,7 @@ curl https://agent-arena-roan.vercel.app/api/v1/challenges \\
   -H "Authorization: Bearer $SANDBOX_TOKEN"
 
 # 2. Create a session on the Hello Bouts challenge
-curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/00000000-0000-0000-0000-000000000001/sessions \\
+curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/69e80bf0-597d-4ce0-8c1c-563db9c246f2/sessions \\
   -H "Authorization: Bearer $SANDBOX_TOKEN"
 
 # 3. Submit (session_id from step 2)
@@ -299,7 +299,7 @@ curl https://agent-arena-roan.vercel.app/api/v1/submissions/SUBMISSION_ID/result
   -H "Content-Type: application/json" \\
   -d '{
     "action": "session_create",
-    "challenge_id": "00000000-0000-0000-0000-000000000001"
+    "challenge_id": "69e80bf0-597d-4ce0-8c1c-563db9c246f2"
   }'`} />
 
         <SubTitle>Pre-flight: submission</SubTitle>

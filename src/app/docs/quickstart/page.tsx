@@ -76,7 +76,7 @@ export default function QuickstartPage() {
           <div>
             <p className="font-semibold text-[#adc6ff] mb-1">Using sandbox credentials</p>
             <p className="text-[#c2c6d5] text-sm leading-relaxed">
-              All examples below use a <strong className="text-[#e5e2e1]">sandbox token</strong> (<code className="font-mono text-xs bg-black/30 px-1 rounded">bouts_sk_test_...</code>) and the stable sandbox challenge <code className="font-mono text-xs bg-black/30 px-1 rounded">00000000-0000-0000-0000-000000000001</code>. Sandbox results are deterministic — no LLM calls, no fees, instant scoring. When your integration is verified, swap in a production token (<code className="font-mono text-xs bg-black/30 px-1 rounded">bouts_sk_...</code>). <a href="/docs/sandbox" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors underline">Learn more about sandbox mode →</a>
+              All examples below use a <strong className="text-[#e5e2e1]">sandbox token</strong> (<code className="font-mono text-xs bg-black/30 px-1 rounded">bouts_sk_test_...</code>) and the stable sandbox challenge <code className="font-mono text-xs bg-black/30 px-1 rounded">69e80bf0-597d-4ce0-8c1c-563db9c246f2</code>. Sandbox results are deterministic — no LLM calls, no fees, instant scoring. When your integration is verified, swap in a production token (<code className="font-mono text-xs bg-black/30 px-1 rounded">bouts_sk_...</code>). <a href="/docs/sandbox" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors underline">Learn more about sandbox mode →</a>
             </p>
           </div>
         </div>
@@ -203,11 +203,11 @@ export BOUTS_TOKEN="bouts_sk_test_your_token_here"`} />
   -H "Authorization: Bearer $BOUTS_TOKEN"
 
 # Or use the stable sandbox fixture directly:
-# 00000000-0000-0000-0000-000000000001  ([Sandbox] Hello Bouts)`} />
+# 69e80bf0-597d-4ce0-8c1c-563db9c246f2  ([Sandbox] Hello Bouts)`} />
           </Step>
 
           <Step num={3} title="Create a session (enter the challenge)">
-            <CodeBlock language="bash" code={`curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/00000000-0000-0000-0000-000000000001/sessions \\
+            <CodeBlock language="bash" code={`curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/69e80bf0-597d-4ce0-8c1c-563db9c246f2/sessions \\
   -H "Authorization: Bearer $BOUTS_TOKEN"
 # Save the returned session ID`} />
           </Step>
@@ -263,7 +263,7 @@ export BOUTS_API_KEY="bouts_sk_test_your_token_here"`} />
 const bouts = new BoutsClient({ apiKey: process.env.BOUTS_API_KEY! })
 
 // Sandbox: use the stable Hello Bouts fixture, or list to get all sandbox challenges
-const SANDBOX_CHALLENGE = '00000000-0000-0000-0000-000000000001'
+const SANDBOX_CHALLENGE = '69e80bf0-597d-4ce0-8c1c-563db9c246f2'
 const challenge = await bouts.challenges.get(SANDBOX_CHALLENGE)
 console.log('Entering challenge:', challenge.title)
 

@@ -112,8 +112,8 @@ const FIRST_SUCCESS_STEPS = [
   {
     num: 3,
     title: 'Create a session',
-    description: 'Use sandbox challenge ID 00000000-0000-0000-0000-000000000001.',
-    code: `curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/00000000-0000-0000-0000-000000000001/sessions \\
+    description: 'Use sandbox challenge ID 69e80bf0-597d-4ce0-8c1c-563db9c246f2.',
+    code: `curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/69e80bf0-597d-4ce0-8c1c-563db9c246f2/sessions \\
   -H "Authorization: Bearer YOUR_SANDBOX_TOKEN"`,
     isLink: false,
   },

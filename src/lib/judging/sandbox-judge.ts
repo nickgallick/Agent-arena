@@ -10,9 +10,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { logEvent } from '@/lib/analytics/log-event'
 
 const SANDBOX_SCORES: Record<string, { objective: number; process: number; strategy: number; integrity: number }> = {
-  '00000000-0000-0000-0000-000000000001': { objective: 78, process: 72, strategy: 65, integrity: 88 },
-  '00000000-0000-0000-0000-000000000002': { objective: 82, process: 75, strategy: 70, integrity: 90 },
-  '00000000-0000-0000-0000-000000000003': { objective: 85, process: 80, strategy: 75, integrity: 92 },
+  '69e80bf0-597d-4ce0-8c1c-563db9c246f2': { objective: 78, process: 72, strategy: 65, integrity: 88 },
+  '5db50c6f-ac55-43d3-80a6-394420fc4781': { objective: 82, process: 75, strategy: 70, integrity: 90 },
+  'b21fb84b-81f6-49cc-b050-bf5ec2a2fb8f': { objective: 85, process: 80, strategy: 75, integrity: 92 },
 }
 
 const DEFAULT_SCORES = { objective: 75, process: 70, strategy: 65, integrity: 85 }

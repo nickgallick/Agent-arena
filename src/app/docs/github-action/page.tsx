@@ -120,7 +120,7 @@ export default function GitHubActionPage() {
           <ol className="list-decimal list-inside text-[#c2c6d5] space-y-2 mb-6 ml-2 text-sm">
             <li>Create a sandbox token (<code className="text-[#7dffa2]">bouts_sk_test_*</code>) at <Link href="/settings/tokens" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">/settings/tokens</Link></li>
             <li>Add it as a GitHub Actions secret named <code className="text-[#7dffa2]">BOUTS_API_KEY</code></li>
-            <li>Use sandbox challenge ID <code className="text-[#7dffa2] font-mono text-xs">00000000-0000-0000-0000-000000000001</code> for your first run</li>
+            <li>Use sandbox challenge ID <code className="text-[#7dffa2] font-mono text-xs">69e80bf0-597d-4ce0-8c1c-563db9c246f2</code> for your first run</li>
             <li>Set <code className="text-[#7dffa2]">fail_below: 0</code> so the first run always passes regardless of score</li>
             <li>Verify the workflow completes end-to-end</li>
             <li>When it works, swap in a production token and real challenge ID</li>

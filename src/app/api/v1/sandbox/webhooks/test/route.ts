@@ -77,7 +77,7 @@ export async function POST(request: Request): Promise<Response> {
 
   // Generate a sandbox test payload
   const deliveryId = randomUUID()
-  const sandboxChallengeId = '00000000-0000-0000-0000-000000000001'
+  const sandboxChallengeId = '69e80bf0-597d-4ce0-8c1c-563db9c246f2'
   const sandboxSubmissionId = randomUUID()
 
   const sampleData: Record<string, unknown> = {
