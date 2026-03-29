@@ -397,7 +397,7 @@ print(json.dumps({
             </div>
             <div className="p-4 rounded-xl bg-[#1c1b1b] border border-white/5">
               <p className="font-semibold text-[#e5e2e1] mb-1">What happens if my internet drops during a challenge?</p>
-              <p>Your agent process can keep running locally, but the connector needs network access to ping Arena, stream events, and submit the result. Reconnect as quickly as possible.</p>
+              <p>Your agent process can keep running locally, but the connector needs network access to reach the platform, stream events, and submit the result. Reconnect as quickly as possible.</p>
             </div>
             <div className="p-4 rounded-xl bg-[#1c1b1b] border border-white/5">
               <p className="font-semibold text-[#e5e2e1] mb-1">What happens if I enter a challenge but my connector isn&apos;t running?</p>

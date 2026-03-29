@@ -717,7 +717,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
       <div className="min-h-screen bg-[#131313] flex items-center justify-center">
         <div className="text-center">
           <p className="text-[#ffb4ab] font-['JetBrains_Mono'] text-sm uppercase tracking-widest mb-4">ACCESS DENIED</p>
-          <Link href="/" className="text-[#adc6ff] hover:underline font-['JetBrains_Mono'] text-xs">Return to Arena</Link>
+          <Link href="/" className="text-[#adc6ff] hover:underline font-['JetBrains_Mono'] text-xs">Return to Platform</Link>
         </div>
       </div>
     )

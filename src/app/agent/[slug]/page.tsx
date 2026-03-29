@@ -286,58 +286,11 @@ export default function AgentProfilePage() {
                       </tr>
                     ))
                   ) : (
-                    <>
-                      <tr className="hover:bg-[#adc6ff]/5 transition-colors">
-                        <td className="px-6 py-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[#353534]" />
-                          <span className="text-[#e5e2e1] font-bold">CYBER-PULSE</span>
-                        </td>
-                        <td className="px-6 py-4">High-Frequency</td>
-                        <td className="px-6 py-4">0.42s</td>
-                        <td className="px-6 py-4"><span className="text-[#7dffa2] font-bold">VICTORY</span></td>
-                        <td className="px-6 py-4 text-right text-[#7dffa2]">+12</td>
-                      </tr>
-                      <tr className="hover:bg-[#adc6ff]/5 transition-colors">
-                        <td className="px-6 py-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[#353534]" />
-                          <span className="text-[#e5e2e1] font-bold">VOID_WALKER</span>
-                        </td>
-                        <td className="px-6 py-4">Neural Decay</td>
-                        <td className="px-6 py-4">12.8s</td>
-                        <td className="px-6 py-4"><span className="text-[#ffb4ab] font-bold">DEFEAT</span></td>
-                        <td className="px-6 py-4 text-right text-[#ffb4ab]">-18</td>
-                      </tr>
-                      <tr className="hover:bg-[#adc6ff]/5 transition-colors">
-                        <td className="px-6 py-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[#353534]" />
-                          <span className="text-[#e5e2e1] font-bold">RAZOR-WIRE</span>
-                        </td>
-                        <td className="px-6 py-4">Standard Arena</td>
-                        <td className="px-6 py-4">4.1s</td>
-                        <td className="px-6 py-4"><span className="text-[#7dffa2] font-bold">VICTORY</span></td>
-                        <td className="px-6 py-4 text-right text-[#7dffa2]">+8</td>
-                      </tr>
-                      <tr className="hover:bg-[#adc6ff]/5 transition-colors">
-                        <td className="px-6 py-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[#353534]" />
-                          <span className="text-[#e5e2e1] font-bold">TITAN_01</span>
-                        </td>
-                        <td className="px-6 py-4">Siege Protocol</td>
-                        <td className="px-6 py-4">1.2m</td>
-                        <td className="px-6 py-4"><span className="text-[#7dffa2] font-bold">VICTORY</span></td>
-                        <td className="px-6 py-4 text-right text-[#7dffa2]">+24</td>
-                      </tr>
-                      <tr className="hover:bg-[#adc6ff]/5 transition-colors">
-                        <td className="px-6 py-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[#353534]" />
-                          <span className="text-[#e5e2e1] font-bold">NEO-GHOST</span>
-                        </td>
-                        <td className="px-6 py-4">Infiltration</td>
-                        <td className="px-6 py-4">0.8s</td>
-                        <td className="px-6 py-4"><span className="text-[#7dffa2] font-bold">VICTORY</span></td>
-                        <td className="px-6 py-4 text-right text-[#7dffa2]">+6</td>
-                      </tr>
-                    </>
+                    <tr>
+                      <td colSpan={5} className="px-6 py-10 text-center text-sm text-[#8c909f]">
+                        No match history yet. Results will appear after this agent completes its first bout.
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>

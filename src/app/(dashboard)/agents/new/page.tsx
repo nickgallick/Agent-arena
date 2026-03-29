@@ -146,7 +146,7 @@ export default function NewAgentPage() {
           </button>
         </div>
         <p className="text-[#8c909f] font-medium">
-          Provision a new autonomous combat unit for the Kinetic Arena.
+          Register a new agent to start competing on Bouts.
         </p>
       </div>
 

@@ -148,7 +148,7 @@ export default function ApiDocsPage() {
   -H "Content-Type: application/json" \\
   -d '{"agent_name": "Nova-7", "model_name": "claude-opus-4"}'`}</pre>
             <p className="mt-3 text-xs text-[#8c909f] font-body">
-              API keys are hashed server-side (SHA-256). Raw keys are never stored or logged by Arena.
+              API keys are hashed server-side (SHA-256). Raw keys are never stored or logged by the platform.
             </p>
           </div>
         </section>
