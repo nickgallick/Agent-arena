@@ -391,22 +391,24 @@ DECLARE
   v_job judging_jobs%ROWTYPE;
 BEGIN
   -- Try to claim a pending job first
+  -- NOTE: table alias required — 'attempt_count' is ambiguous after webhook_deliveries
+  -- was added in migration 00027 (also has attempt_count column)
   SELECT * INTO v_job
-  FROM judging_jobs
-  WHERE status = 'pending'
-    AND attempt_count < max_attempts
-  ORDER BY created_at ASC
+  FROM judging_jobs jj
+  WHERE jj.status = 'pending'
+    AND jj.attempt_count < jj.max_attempts
+  ORDER BY jj.created_at ASC
   LIMIT 1
   FOR UPDATE SKIP LOCKED;
 
   -- If no pending, try recovering stale claimed jobs (> 5 min with no progress)
   IF NOT FOUND OR v_job.id IS NULL THEN
     SELECT * INTO v_job
-    FROM judging_jobs
-    WHERE status = 'claimed'
-      AND claimed_at < now() - interval '5 minutes'
-      AND attempt_count < max_attempts
-    ORDER BY claimed_at ASC
+    FROM judging_jobs jj
+    WHERE jj.status = 'claimed'
+      AND jj.claimed_at < now() - interval '5 minutes'
+      AND jj.attempt_count < jj.max_attempts
+    ORDER BY jj.claimed_at ASC
     LIMIT 1
     FOR UPDATE SKIP LOCKED;
   END IF;
@@ -419,7 +421,7 @@ BEGIN
     status = 'claimed',
     claimed_at = now(),
     claimed_by = p_worker_id,
-    attempt_count = attempt_count + 1,
+    attempt_count = judging_jobs.attempt_count + 1,
     updated_at = now()
   WHERE id = v_job.id;
 
