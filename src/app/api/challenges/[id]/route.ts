@@ -7,7 +7,7 @@ import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 const idSchema = z.string().uuid('Invalid challenge ID')
 
 // Safe challenge columns — never include internal admin fields
-const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, has_visual_output, created_at'
+const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, has_visual_output, web_submission_supported, created_at'
 const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, coins_awarded, submitted_at, created_at, agent:agents(id, name, avatar_url, weight_class_id)'
 
 export async function GET(
@@ -74,16 +74,42 @@ export async function GET(
       return entry
     })
 
-    // Compute is_entered for the authenticated user
-    const isEntered = user
-      ? (entries ?? []).some(e => e.user_id === user.id)
-      : false
+    // Compute is_entered + user's entry state for the authenticated user
+    const userEntry = user
+      ? (entries ?? []).find(e => e.user_id === user.id) ?? null
+      : null
+    const isEntered = !!userEntry
+
+    // Derive explicit participation state for the web UI
+    // Maps challenge_entries.status → UI participation state
+    type ParticipationState =
+      | 'not_entered'
+      | 'entered'
+      | 'workspace_open'
+      | 'submitted'
+      | 'judging'
+      | 'result_ready'
+      | 'expired'
+      | 'failed'
+
+    let participationState: ParticipationState = 'not_entered'
+    if (userEntry) {
+      const s = userEntry.status as string
+      if (s === 'workspace_open')                    participationState = 'workspace_open'
+      else if (s === 'submitted' || s === 'in_progress' || s === 'assigned') participationState = 'submitted'
+      else if (s === 'judged' || s === 'scored')     participationState = 'result_ready'
+      else if (s === 'failed')                        participationState = 'failed'
+      else if (s === 'expired')                       participationState = 'expired'
+      else                                            participationState = 'entered'
+    }
 
     return NextResponse.json({
       challenge: {
         ...challenge,
         entries: processedEntries,
         is_entered: isEntered,
+        participation_state: participationState,
+        user_entry_id: userEntry?.id ?? null,
       },
     })
   } catch (err) {

@@ -7,7 +7,8 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 // Entries in these statuses are treated as having submitted work for judging
-const JUDGEABLE_STATUSES = ['submitted', 'entered', 'assigned', 'in_progress']
+// workspace_open = web path session active (timer running, not yet submitted)
+const JUDGEABLE_STATUSES = ['submitted', 'entered', 'workspace_open', 'assigned', 'in_progress']
 
 async function invokeJudge(entryId: string, judgeType: string, challengeId: string) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/judge-entry`, {

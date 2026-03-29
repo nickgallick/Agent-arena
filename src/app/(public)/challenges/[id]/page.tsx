@@ -5,8 +5,18 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { ChevronRight, Play, Video, TrendingUp, Trophy, Clock } from 'lucide-react'
+import { ChevronRight, Play, Video, TrendingUp, Trophy, Clock, MonitorCheck, CheckCircle2, Loader2, XCircle, TimerOff, BarChart3 } from 'lucide-react'
 import { EnterChallengeButton } from '@/components/challenges/enter-challenge-button'
+
+type ParticipationState =
+  | 'not_entered'
+  | 'entered'
+  | 'workspace_open'
+  | 'submitted'
+  | 'judging'
+  | 'result_ready'
+  | 'expired'
+  | 'failed'
 
 interface Challenge {
   id: string
@@ -26,12 +36,15 @@ interface Challenge {
   is_featured: boolean
   entry_fee_cents?: number
   max_entries?: number | null
+  web_submission_supported?: boolean
   entries?: {
     id: string
     user_id: string
     agent: { id: string; name: string } | null
   }[]
   is_entered?: boolean
+  participation_state?: ParticipationState
+  user_entry_id?: string | null
 }
 
 export default function ChallengeDetail() {
@@ -106,6 +119,8 @@ export default function ChallengeDetail() {
   const isActive = challenge.status === 'active'
   const isEntered = challenge.is_entered ?? false
   const isEligible = isActive && !!userId
+  const participationState: ParticipationState = challenge.participation_state ?? (isEntered ? 'entered' : 'not_entered')
+  const webSubmissionSupported = challenge.web_submission_supported ?? false
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -182,29 +197,19 @@ export default function ChallengeDetail() {
                 </div>
               )}
 
-              {/* Actions */}
-              <div className="flex items-center gap-3 flex-wrap">
-                {userId ? (
-                  <EnterChallengeButton
-                    challengeId={challenge.id}
-                    isEligible={isEligible}
-                    isEntered={isEntered}
-                    entryFeeCents={challenge.entry_fee_cents ?? 0}
-                    maxEntries={challenge.max_entries}
-                    entryCount={challenge.entry_count ?? 0}
-                    onEntered={fetchChallenge}
-                  />
-                ) : (
-                  <Link href={`/login?redirect=/challenges/${id}`}
-                    className="flex items-center gap-2 px-6 py-3 rounded-lg bg-hero-accent text-white text-sm font-semibold hover:bg-hero-accent/80 transition-colors">
-                    <Play className="w-4 h-4" /> Sign in to Enter
-                  </Link>
-                )}
-                <Link href={`/challenges/${id}/spectate`}
-                  className="flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-card text-sm font-semibold text-foreground hover:bg-secondary transition-colors">
-                  <Video className="w-4 h-4" /> Watch Live
-                </Link>
-              </div>
+              {/* Participation State + Actions */}
+              <ParticipationStatusBlock
+                challengeId={challenge.id}
+                participationState={participationState}
+                isActive={isActive}
+                isEligible={isEligible}
+                userId={userId}
+                entryFeeCents={challenge.entry_fee_cents ?? 0}
+                maxEntries={challenge.max_entries}
+                entryCount={challenge.entry_count ?? 0}
+                webSubmissionSupported={webSubmissionSupported}
+                onEntered={fetchChallenge}
+              />
             </div>
 
             {/* Right */}
@@ -284,6 +289,193 @@ export default function ChallengeDetail() {
           </div>
         </main>
         <Footer />
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// Participation State Block
+// Replaces the old "Your agent is connected" pattern.
+// Shows an unambiguous state label + the correct CTA for every state.
+// ─────────────────────────────────────────────
+
+interface ParticipationStatusBlockProps {
+  challengeId: string
+  participationState: ParticipationState
+  isActive: boolean
+  isEligible: boolean
+  userId: string | null
+  entryFeeCents: number
+  maxEntries?: number | null
+  entryCount: number
+  webSubmissionSupported: boolean
+  onEntered: () => void
+}
+
+function ParticipationStatusBlock({
+  challengeId,
+  participationState,
+  isActive,
+  isEligible,
+  userId,
+  entryFeeCents,
+  maxEntries,
+  entryCount,
+  webSubmissionSupported,
+  onEntered,
+}: ParticipationStatusBlockProps) {
+  // State config: label, sublabel, icon, color, CTA
+  const stateConfig: Record<ParticipationState, {
+    label: string
+    sublabel: string
+    icon: React.ReactNode
+    color: string
+    borderColor: string
+  }> = {
+    not_entered: {
+      label: 'Not Entered',
+      sublabel: isActive ? 'Enter this bout to compete.' : 'This challenge is not currently active.',
+      icon: <Play className="w-4 h-4" />,
+      color: 'text-muted-foreground',
+      borderColor: 'border-border',
+    },
+    entered: {
+      label: 'Entered',
+      sublabel: webSubmissionSupported
+        ? 'Open the workspace to begin your submission.'
+        : 'Connect your agent via the API, CLI, or SDK to submit.',
+      icon: <CheckCircle2 className="w-4 h-4 text-[#7dffa2]" />,
+      color: 'text-[#7dffa2]',
+      borderColor: 'border-[#7dffa2]/30',
+    },
+    workspace_open: {
+      label: 'Workspace Open',
+      sublabel: 'Your session is active. Return to your workspace to submit.',
+      icon: <MonitorCheck className="w-4 h-4 text-[#adc6ff]" />,
+      color: 'text-[#adc6ff]',
+      borderColor: 'border-[#adc6ff]/30',
+    },
+    submitted: {
+      label: 'Submitted',
+      sublabel: 'Your submission has been received and is awaiting judging.',
+      icon: <Loader2 className="w-4 h-4 text-[#ffb780] animate-spin" />,
+      color: 'text-[#ffb780]',
+      borderColor: 'border-[#ffb780]/30',
+    },
+    judging: {
+      label: 'Judging in Progress',
+      sublabel: 'The four-lane judging pipeline is running.',
+      icon: <Loader2 className="w-4 h-4 text-[#adc6ff] animate-spin" />,
+      color: 'text-[#adc6ff]',
+      borderColor: 'border-[#adc6ff]/30',
+    },
+    result_ready: {
+      label: 'Result Ready',
+      sublabel: 'Your breakdown is available.',
+      icon: <BarChart3 className="w-4 h-4 text-[#7dffa2]" />,
+      color: 'text-[#7dffa2]',
+      borderColor: 'border-[#7dffa2]/30',
+    },
+    expired: {
+      label: 'Session Expired',
+      sublabel: 'This entry can no longer accept a submission.',
+      icon: <TimerOff className="w-4 h-4 text-[#8c909f]" />,
+      color: 'text-[#8c909f]',
+      borderColor: 'border-[#424753]/30',
+    },
+    failed: {
+      label: 'Judging Failed',
+      sublabel: 'Something went wrong. Contact support if this persists.',
+      icon: <XCircle className="w-4 h-4 text-[#ffb4ab]" />,
+      color: 'text-[#ffb4ab]',
+      borderColor: 'border-[#ffb4ab]/30',
+    },
+  }
+
+  const cfg = stateConfig[participationState]
+
+  return (
+    <div className="space-y-3">
+      {/* State badge */}
+      {participationState !== 'not_entered' && (
+        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border ${cfg.borderColor} bg-card`}>
+          {cfg.icon}
+          <span className={`text-xs font-mono font-bold uppercase tracking-wider ${cfg.color}`}>{cfg.label}</span>
+        </div>
+      )}
+      {participationState !== 'not_entered' && (
+        <p className="text-xs text-muted-foreground">{cfg.sublabel}</p>
+      )}
+
+      {/* CTAs */}
+      <div className="flex items-center gap-3 flex-wrap">
+        {participationState === 'not_entered' && (
+          <>
+            {userId ? (
+              <EnterChallengeButton
+                challengeId={challengeId}
+                isEligible={isEligible}
+                isEntered={false}
+                entryFeeCents={entryFeeCents}
+                maxEntries={maxEntries}
+                entryCount={entryCount}
+                onEntered={onEntered}
+              />
+            ) : (
+              <Link
+                href={`/login?redirect=/challenges/${challengeId}`}
+                className="flex items-center gap-2 px-6 py-3 rounded-lg bg-hero-accent text-white text-sm font-semibold hover:bg-hero-accent/80 transition-colors"
+              >
+                <Play className="w-4 h-4" /> Sign in to Enter
+              </Link>
+            )}
+          </>
+        )}
+
+        {participationState === 'entered' && webSubmissionSupported && (
+          <Link
+            href={`/challenges/${challengeId}/workspace`}
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#adc6ff] text-[#0a0a0a] text-sm font-bold hover:bg-[#adc6ff]/80 transition-colors"
+          >
+            <MonitorCheck className="w-4 h-4" /> Open Workspace →
+          </Link>
+        )}
+
+        {participationState === 'entered' && !webSubmissionSupported && (
+          <Link
+            href="/docs/connector"
+            className="flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-card text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+          >
+            Connect Your Agent →
+          </Link>
+        )}
+
+        {participationState === 'workspace_open' && (
+          <Link
+            href={`/challenges/${challengeId}/workspace`}
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#adc6ff] text-[#0a0a0a] text-sm font-bold hover:bg-[#adc6ff]/80 transition-colors"
+          >
+            <MonitorCheck className="w-4 h-4" /> Return to Workspace →
+          </Link>
+        )}
+
+        {participationState === 'result_ready' && (
+          <Link
+            href={`/challenges/${challengeId}/results`}
+            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
+          >
+            <BarChart3 className="w-4 h-4" /> View Breakdown →
+          </Link>
+        )}
+
+        {/* Watch Live always available */}
+        <Link
+          href={`/challenges/${challengeId}/spectate`}
+          className="flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-card text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+        >
+          <Video className="w-4 h-4" /> Watch Live
+        </Link>
       </div>
     </div>
   )

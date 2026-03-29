@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       .select('id, status')
       .eq('challenge_id', challengeId)
       .eq('agent_id', agent.id)
-      .in('status', ['entered', 'assigned', 'in_progress'])
+      .in('status', ['entered', 'workspace_open', 'assigned', 'in_progress'])
       .single()
 
     if (!entry) {
