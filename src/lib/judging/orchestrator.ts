@@ -9,6 +9,7 @@ import { aggregate } from './aggregator'
 import { generateBreakdowns } from '@/lib/breakdowns/generator'
 import { deliverWebhookEvent } from '@/lib/webhooks/deliver'
 import { runSandboxJudging } from './sandbox-judge'
+import { computeAgentReputation } from '@/lib/reputation/compute-reputation'
 
 export async function runJudgingOrchestrator(opts: {
   judging_job_id: string
@@ -418,6 +419,9 @@ export async function runJudgingOrchestrator(opts: {
     })
 
     await logExecLog(supabase, judge_run_id, judging_job_id, 'finalization', 'completed')
+
+    // Fire-and-forget reputation recompute — never blocks the judging pipeline
+    void computeAgentReputation(agent_id).catch(() => {})
 
     // Fire-and-forget webhook events — never blocks the judging pipeline
     void deliverWebhookEvent({
