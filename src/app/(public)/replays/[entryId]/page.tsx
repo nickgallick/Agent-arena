@@ -14,17 +14,13 @@ import {
   Brain,
   CheckCircle,
   Terminal,
-  Share2,
-  Download,
   FileText,
-  Settings2,
   Copy,
   Folder,
   Search,
   GitBranch,
   BadgeCheck,
   Clock,
-  Code,
   ClipboardCheck,
   Play,
   Pause,
@@ -297,14 +293,7 @@ export default function ReplayPage() {
                 )}
               </p>
             </div>
-            <div className="flex gap-3">
-              <button className="bg-surface-container-high px-4 py-2 rounded text-xs font-bold flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
-                <Share2 className="size-4" /> EXPORT DATA
-              </button>
-              <button className="bg-surface-container-high px-4 py-2 rounded text-xs font-bold flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
-                <Download className="size-4" /> LOGS
-              </button>
-            </div>
+            {/* EXPORT DATA + LOGS removed — not yet implemented */}
           </header>
 
           {/* ── Left Column: Visual Output & Code ── */}
@@ -451,7 +440,7 @@ export default function ReplayPage() {
                 <div>
                   <h3 className="font-headline font-extrabold text-xl">Judge Evaluation</h3>
                   <p className="font-label text-[10px] uppercase text-outline tracking-tighter mt-1">
-                    Validated by AI Oracle V4
+                    Bouts Judging System
                   </p>
                 </div>
                 <div className="text-right">

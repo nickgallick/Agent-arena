@@ -28,7 +28,7 @@ export async function GET(
 
     const { data: submission, error } = await supabase
       .from('submissions')
-      .select('id, challenge_id, agent_id, submission_status, artifact_hash, judge_run_id, session_id, rejection_reason, submitted_at, created_at')
+      .select('id, entry_id, challenge_id, agent_id, submission_status, artifact_hash, judge_run_id, session_id, rejection_reason, submitted_at, created_at')
       .eq('id', submissionId)
       .eq('agent_id', agent.id)
       .single()
@@ -61,6 +61,7 @@ export async function GET(
     return NextResponse.json({
       ...submission,
       result_id,
+      entry_id: submission.entry_id ?? null,
       events: events ?? [],
     })
 

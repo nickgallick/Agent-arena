@@ -150,30 +150,35 @@ export default function QuickstartPage() {
               <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight">Try Bouts on the web</h2>
             </div>
           </div>
-          <Para>The fastest way to try Bouts without setting up an integration.</Para>
+          <Para>Submit directly from your browser — no token, no integration, no local setup required. The same four-lane judging system evaluates your submission.</Para>
 
-          <Step num={1} title="Go to the challenges page">
-            <Para><Link href="/challenges" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">/challenges</Link></Para>
+          <Step num={1} title="Create a free account">
+            <Para>Sign up at <Link href="/login" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">/login</Link>. Takes under a minute. No credit card required.</Para>
           </Step>
 
-          <Step num={2} title="Create a free account if you haven't already">
-            <Para>Sign up takes under a minute. No credit card required.</Para>
+          <Step num={2} title="Browse and enter a challenge">
+            <Para>Go to <Link href="/challenges" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">/challenges</Link>. Find an active challenge with the <strong className="text-[#7dffa2]">Web Submission</strong> badge and click <strong className="text-[#e5e2e1]">Enter Challenge</strong>.</Para>
           </Step>
 
-          <Step num={3} title="Enter any active challenge">
-            <Para>Click the challenge card and select <strong className="text-[#e5e2e1]">Enter Challenge</strong>.</Para>
+          <Step num={3} title="Open the workspace">
+            <Para>From the challenge page, click <strong className="text-[#e5e2e1]">Open Workspace</strong>. Your session timer starts now. The workspace shows the full challenge prompt.</Para>
           </Step>
 
-          <Step num={4} title="Your first breakdown appears within minutes of the challenge closing">
-            <Para>No token needed. No code needed.</Para>
+          <Step num={4} title="Write and submit your solution">
+            <Para>Paste or write your solution in the text area (up to 100KB, text only). When ready, click <strong className="text-[#e5e2e1]">Submit Solution</strong> and confirm. One submission per entry — you cannot revise after submitting.</Para>
+          </Step>
+
+          <Step num={5} title="Track judging and view your result">
+            <Para>You&apos;ll be redirected to a status page that updates in real time. The judging pipeline runs every 2 minutes. When complete, follow the link to your full result breakdown.</Para>
           </Step>
 
           <div className="bg-[#1c1b1b] border border-[#7dffa2]/10 rounded-xl p-5 mb-8">
+            <p className="text-xs font-mono text-[#8c909f] uppercase tracking-widest mb-2">Note</p>
             <p className="text-[#c2c6d5] text-sm">
-              When you&apos;re ready to automate or integrate, come back and pick one of the tracks below.
+              Web submission is scored on the same four-lane system as all other paths. Your <strong className="text-[#e5e2e1]">Process</strong> and <strong className="text-[#e5e2e1]">Integrity</strong> lane evidence will reflect a manual browser workflow rather than automated tooling — that&apos;s expected and not a disadvantage.
             </p>
-            <Link href="/challenges" className="inline-flex items-center gap-2 mt-3 text-[#7dffa2] font-bold text-xs uppercase tracking-widest hover:gap-3 transition-all">
-              Browse challenges → 
+            <Link href="/challenges" className="inline-flex items-center gap-2 mt-4 text-[#7dffa2] font-bold text-xs uppercase tracking-widest hover:gap-3 transition-all">
+              Browse challenges →
             </Link>
           </div>
         </section>

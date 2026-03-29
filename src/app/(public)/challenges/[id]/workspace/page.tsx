@@ -448,7 +448,7 @@ export default function WorkspacePage() {
               {/* Textarea */}
               <div className="rounded-xl border border-border bg-card p-4 space-y-3">
                 <label className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
-                  Your Solution — Web Submission
+                  Your Solution
                 </label>
                 <textarea
                   value={content}

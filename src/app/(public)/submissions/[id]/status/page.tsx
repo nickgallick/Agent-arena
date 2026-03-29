@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
-import { Loader2, CheckCircle2, XCircle, Clock, BarChart3, AlertTriangle, RefreshCw } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, Clock, BarChart3, AlertTriangle, RefreshCw, Copy, Check } from 'lucide-react'
 
 // ─────────────────────────────────────────────
 // Types
@@ -23,6 +23,7 @@ interface SubmissionEvent {
 
 interface StatusData {
   id: string
+  entry_id: string | null
   challenge_id: string
   submission_status: SubmissionStatus
   submitted_at: string
@@ -43,13 +44,15 @@ const STATUS_CONFIG: Record<SubmissionStatus, {
   sublabel: string
   icon: React.ReactNode
   color: string
+  borderColor: string
   terminal: boolean
 }> = {
   received: {
     label: 'Received',
-    sublabel: 'Your submission has been received. Waiting to enter the judging queue.',
+    sublabel: 'Your submission has been received and is waiting to enter the judging queue.',
     icon: <Clock className="w-6 h-6 text-[#adc6ff]" />,
     color: 'text-[#adc6ff]',
+    borderColor: 'border-border',
     terminal: false,
   },
   queued: {
@@ -57,6 +60,7 @@ const STATUS_CONFIG: Record<SubmissionStatus, {
     sublabel: 'Your submission is in the judging queue. The pipeline processes jobs every 2 minutes.',
     icon: <Loader2 className="w-6 h-6 text-[#adc6ff] animate-spin" />,
     color: 'text-[#adc6ff]',
+    borderColor: 'border-[#adc6ff]/20',
     terminal: false,
   },
   judging: {
@@ -64,13 +68,15 @@ const STATUS_CONFIG: Record<SubmissionStatus, {
     sublabel: 'The four-lane judging pipeline is evaluating your submission.',
     icon: <Loader2 className="w-6 h-6 text-[#ffb780] animate-spin" />,
     color: 'text-[#ffb780]',
+    borderColor: 'border-[#ffb780]/20',
     terminal: false,
   },
   completed: {
     label: 'Result Ready',
-    sublabel: 'Judging complete. Your breakdown is available.',
+    sublabel: 'Judging is complete. Your breakdown and scores are available.',
     icon: <CheckCircle2 className="w-6 h-6 text-[#7dffa2]" />,
     color: 'text-[#7dffa2]',
+    borderColor: 'border-[#7dffa2]/30',
     terminal: true,
   },
   failed: {
@@ -78,6 +84,7 @@ const STATUS_CONFIG: Record<SubmissionStatus, {
     sublabel: 'The judging pipeline encountered an error. Your submission was received and recorded — this is a platform issue, not a problem with your solution.',
     icon: <XCircle className="w-6 h-6 text-[#ffb4ab]" />,
     color: 'text-[#ffb4ab]',
+    borderColor: 'border-[#ffb4ab]/30',
     terminal: true,
   },
 }
@@ -97,6 +104,37 @@ const STAGE_LABELS: Record<string, string> = {
   finalization:              'Finalized',
   queued:                    'Queued',
   failed:                    'Failed',
+}
+
+// ─────────────────────────────────────────────
+// CopyButton — copy submission ID to clipboard
+// ─────────────────────────────────────────────
+
+function CopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // ignore clipboard errors
+    }
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      title="Copy to clipboard"
+      className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {copied
+        ? <Check className="w-3 h-3 text-[#7dffa2]" />
+        : <Copy className="w-3 h-3" />
+      }
+    </button>
+  )
 }
 
 // ─────────────────────────────────────────────
@@ -196,11 +234,16 @@ export default function SubmissionStatusPage() {
   const isCompleted = status === 'completed'
   const isFailed = status === 'failed'
 
-  // Breakdown CTA: deep-link to the result breakdown if result_id is available,
-  // otherwise fall back to the results list
-  const breakdownHref = data.result_id
-    ? `/api/submissions/${data.id}/breakdown`
-    : '/results'
+  // Deep-link to the per-entry replay/result page when we have entry_id
+  const resultHref = data.entry_id ? `/replays/${data.entry_id}` : '/results'
+
+  // Format submission timestamp: date + time
+  const submittedDate = new Date(data.submitted_at)
+  const submittedFormatted = submittedDate.toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  }) + ' at ' + submittedDate.toLocaleTimeString('en-US', {
+    hour: '2-digit', minute: '2-digit',
+  })
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -209,11 +252,7 @@ export default function SubmissionStatusPage() {
         <main className="max-w-2xl mx-auto px-4 md:px-8 py-10 md:py-14">
 
           {/* Status card */}
-          <div className={`rounded-xl border bg-card p-8 text-center mb-6 ${
-            isCompleted ? 'border-[#7dffa2]/30' :
-            isFailed    ? 'border-[#ffb4ab]/30' :
-            'border-border'
-          }`}>
+          <div className={`rounded-xl border bg-card p-8 text-center mb-6 ${cfg.borderColor}`}>
             <div className="flex justify-center mb-4">{cfg.icon}</div>
             <h1 className={`font-display text-2xl font-black mb-2 ${cfg.color}`}>{cfg.label}</h1>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">{cfg.sublabel}</p>
@@ -233,31 +272,22 @@ export default function SubmissionStatusPage() {
               </div>
             )}
 
-            {/* CTA on completion — deep-link to breakdown if available, else results list */}
+            {/* CTA on completion — deep-link to per-entry replay/breakdown */}
             {isCompleted && (
-              <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-                {data.result_id ? (
-                  <Link
-                    href={`/results`}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
-                  >
-                    <BarChart3 className="w-4 h-4" /> View Your Results →
-                  </Link>
-                ) : (
-                  <Link
-                    href="/results"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
-                  >
-                    <BarChart3 className="w-4 h-4" /> View Your Results →
-                  </Link>
-                )}
+              <div className="mt-6">
+                <Link
+                  href={resultHref}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
+                >
+                  <BarChart3 className="w-4 h-4" /> View Your Results →
+                </Link>
               </div>
             )}
 
             {/* Failed state — prominent reason + guidance */}
             {isFailed && (
-              <div className="mt-5 space-y-3">
-                <div className="flex items-start gap-2 text-left rounded-lg bg-[#ffb4ab]/5 border border-[#ffb4ab]/20 p-4">
+              <div className="mt-5 space-y-3 text-left">
+                <div className="flex items-start gap-2 rounded-lg bg-[#ffb4ab]/5 border border-[#ffb4ab]/20 p-4">
                   <AlertTriangle className="w-4 h-4 text-[#ffb4ab] flex-shrink-0 mt-0.5" />
                   <div className="text-xs font-mono space-y-1">
                     {data.rejection_reason ? (
@@ -271,7 +301,7 @@ export default function SubmissionStatusPage() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground font-mono">
-                  Your submission is safely recorded. Check back shortly — the pipeline may retry automatically. If this persists, contact support with your Submission ID below.
+                  Your submission is safely recorded. If this persists, contact support and reference your Submission ID above.
                 </p>
                 <button
                   onClick={fetchStatus}
@@ -288,12 +318,15 @@ export default function SubmissionStatusPage() {
             <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-3">Submission Details</span>
             <div className="grid grid-cols-2 gap-4 text-xs font-mono">
               <div>
-                <span className="text-muted-foreground block">Submission ID</span>
-                <span className="text-foreground font-bold truncate block" title={data.id}>{data.id.slice(0, 8)}…</span>
+                <span className="text-muted-foreground block mb-1">Submission ID</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-foreground font-bold truncate" title={data.id}>{data.id.slice(0, 8)}…</span>
+                  <CopyButton value={data.id} />
+                </div>
               </div>
               <div>
-                <span className="text-muted-foreground block">Submitted</span>
-                <span className="text-foreground font-bold">{new Date(data.submitted_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="text-muted-foreground block mb-1">Submitted</span>
+                <span className="text-foreground font-bold">{submittedFormatted}</span>
               </div>
             </div>
           </div>
@@ -322,7 +355,7 @@ export default function SubmissionStatusPage() {
             </div>
           )}
 
-          {/* Back link — always present, no dead end */}
+          {/* Back link — always present */}
           <div className="mt-6 text-center">
             <Link href="/results" className="text-xs text-muted-foreground hover:text-foreground transition-colors font-mono">
               ← Back to your results

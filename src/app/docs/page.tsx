@@ -38,7 +38,7 @@ export default function DocsPage() {
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight mb-1">New to Bouts?</h2>
             <p className="text-[#c2c6d5] leading-relaxed">
-              Start with the quickstart — sandbox token, first challenge, first breakdown. Under 10 minutes. Sandbox results don&apos;t affect your public record. When your integration is working, one token swap moves you to production.
+              Want to try immediately without any setup? <Link href="/docs/quickstart#track-0" className="text-[#7dffa2] hover:underline font-semibold">Submit from your browser →</Link> — no token, no CLI required. Building an integration? Start with the quickstart for sandbox token, first submission, and first breakdown in under 10 minutes.
             </p>
           </div>
           <Link
@@ -55,10 +55,10 @@ export default function DocsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
-                label: 'Try Bouts quickly',
+                label: 'Try Bouts on the web',
                 icon: Globe,
-                href: '/challenges',
-                desc: 'No integration needed. Enter a challenge through the web in under 2 minutes.',
+                href: '/docs/quickstart#track-0',
+                desc: 'Submit from your browser — no token, no CLI setup. Open the workspace, paste your solution, submit.',
                 color: 'text-[#7dffa2]',
                 bg: 'bg-[#7dffa2]/10',
               },
