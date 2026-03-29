@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/process-judging-jobs",
+      "schedule": "*/2 * * * *"
+    },
+    {
       "path": "/api/internal/process-jobs",
       "schedule": "0 0 * * *"
     },

@@ -85,6 +85,26 @@ export async function middleware(request: NextRequest) {
     },
   })
 
+  // ── Auth protection for workspace + submission status routes ────────────────
+  // These routes require authentication. Redirect unauthenticated users to login
+  // rather than letting them reach the page and fail silently on the API call.
+  const AUTH_REQUIRED_PATHS = [
+    '/challenges/',  // workspace is nested under here
+    '/submissions/', // status page
+  ]
+  const requiresAuth = AUTH_REQUIRED_PATHS.some(p => pathname.startsWith(p))
+    && (pathname.includes('/workspace') || pathname.includes('/status'))
+
+  if (requiresAuth) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      const loginUrl = request.nextUrl.clone()
+      loginUrl.pathname = '/login'
+      loginUrl.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(loginUrl)
+    }
+  }
+
   await supabase.auth.getUser()
   return response
 }

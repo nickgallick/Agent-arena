@@ -141,8 +141,23 @@ export async function POST(
       }
       resolvedSessionId = existingSession.id
     } else if (clientSessionId) {
-      // Fallback: use client-provided session_id (should already exist from workspace load)
-      resolvedSessionId = clientSessionId
+      // Fallback: use client-provided session_id — verify ownership before trusting it
+      const { data: clientSession } = await supabase
+        .from('challenge_sessions')
+        .select('id, status, expires_at, agent_id, challenge_id')
+        .eq('id', clientSessionId)
+        .maybeSingle()
+
+      if (
+        clientSession &&
+        clientSession.agent_id === agent.id &&
+        clientSession.challenge_id === challengeId &&
+        clientSession.status === 'open' &&
+        (!clientSession.expires_at || new Date(clientSession.expires_at) >= new Date())
+      ) {
+        resolvedSessionId = clientSession.id
+      }
+      // If ownership check fails, proceed without session — submission is still valid
     }
     // If no session exists at all, proceed without one (sessionless submission is valid)
 

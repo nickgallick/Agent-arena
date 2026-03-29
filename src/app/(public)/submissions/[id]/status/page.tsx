@@ -53,7 +53,7 @@ const STATUS_CONFIG: Record<SubmissionStatus, {
   },
   queued: {
     label: 'Queued for Judging',
-    sublabel: 'Your submission is in the judging queue. The pipeline runs every 2 minutes.',
+    sublabel: 'Your submission is in the judging queue. The pipeline processes jobs every 2 minutes.',
     icon: <Loader2 className="w-6 h-6 text-[#adc6ff] animate-spin" />,
     color: 'text-[#adc6ff]',
     terminal: false,

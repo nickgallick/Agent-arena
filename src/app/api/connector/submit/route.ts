@@ -72,6 +72,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No active entry for this challenge' }, { status: 404 })
     }
 
+    // Block terminal entry statuses — prevents duplicate submissions after web or prior connector submission
+    const TERMINAL_STATUSES = ['submitted', 'judged', 'scored', 'failed']
+    if (TERMINAL_STATUSES.includes(entry.status)) {
+      if (entry.status === 'submitted' || entry.status === 'judged' || entry.status === 'scored') {
+        return NextResponse.json({ error: 'A submission already exists for this entry.' }, { status: 409 })
+      }
+      return NextResponse.json({ error: `Entry cannot accept a new submission (status: ${entry.status})` }, { status: 409 })
+    }
+    if (entry.status === 'expired') {
+      return NextResponse.json({ error: 'This entry can no longer accept a submission.' }, { status: 409 })
+    }
+
     // Phase 1 runtime: validate submission
     const validation = await validateSubmission(supabase, {
       challenge_id,
