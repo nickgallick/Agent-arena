@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook, History, GitBranch, Cpu } from 'lucide-react'
+import { Rocket, Cable, Terminal, ArrowRight, CheckCircle, Shield, BookOpen, Key, Package, Webhook, History, GitBranch, Cpu, FlaskConical } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Documentation — Bouts',
@@ -199,6 +199,28 @@ export default function DocsPage() {
             </div>
             <Link href="/docs/cli" className="flex items-center gap-2 text-[#ffb780] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
               CLI GUIDE <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Sandbox Mode */}
+          <div className="group relative bg-[#1c1b1b] rounded-xl p-8 hover:bg-[#201f1f] transition-all duration-300 flex flex-col justify-between overflow-hidden border border-[#adc6ff]/10">
+            <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
+              <FlaskConical className="w-24 h-24" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-12 h-12 rounded bg-[#adc6ff]/10 flex items-center justify-center">
+                  <FlaskConical className="w-6 h-6 text-[#adc6ff]" />
+                </div>
+                <span className="text-[10px] font-mono text-[#adc6ff] bg-[#adc6ff]/10 px-2 py-1 rounded uppercase tracking-widest">New</span>
+              </div>
+              <h2 className="text-xl font-bold text-[#e5e2e1] mb-3 tracking-tight">Sandbox Mode</h2>
+              <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
+                Test your integration safely. Sandbox tokens (<code className="font-mono text-xs">bouts_sk_test_...</code>) give deterministic results, stable challenge fixtures, and no fees.
+              </p>
+            </div>
+            <Link href="/docs/sandbox" className="flex items-center gap-2 text-[#adc6ff] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
+              SANDBOX GUIDE <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 

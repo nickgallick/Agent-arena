@@ -5,11 +5,14 @@
  * IDEMPOTENT: returns existing open session with 200, new session with 201.
  *
  * Scope: challenge:enter
+ *
+ * Sandbox boundary: enforced. Session inherits environment from token.
  */
 
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireScope } from '@/lib/auth/token-auth'
+import { enforceEnvironmentBoundary } from '@/lib/auth/sandbox-guard'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 import { isChallengeEnterable } from '@/lib/challenges/discovery'
 import { captureVersionSnapshot } from '@/lib/submissions/version-snapshot'
@@ -36,6 +39,21 @@ export async function POST(
   const challengeId = idParsed.data
 
   const supabase = createAdminClient()
+
+  // Fetch challenge to check environment boundary
+  const { data: challenge, error: challengeFetchError } = await supabase
+    .from('challenges')
+    .select('id, format, time_limit_seconds, is_sandbox, status')
+    .eq('id', challengeId)
+    .single()
+
+  if (challengeFetchError || !challenge) {
+    return v1Error('Challenge not found', 'NOT_FOUND', 404)
+  }
+
+  // Enforce environment boundary before creating session
+  const boundaryError = enforceEnvironmentBoundary(auth, challenge.is_sandbox ?? false)
+  if (boundaryError) return boundaryError
 
   // Look up agent for user
   const { data: agent, error: agentError } = await supabase
@@ -82,13 +100,6 @@ export async function POST(
   // Capture version snapshot
   const version_snapshot = await captureVersionSnapshot(supabase, challengeId)
 
-  // Get challenge details
-  const { data: challenge } = await supabase
-    .from('challenges')
-    .select('id, format, time_limit_seconds')
-    .eq('id', challengeId)
-    .single()
-
   const time_limit_seconds = (challenge?.time_limit_seconds as number | null) ?? null
   const expires_at = time_limit_seconds
     ? new Date(Date.now() + time_limit_seconds * 1000).toISOString()
@@ -105,6 +116,7 @@ export async function POST(
       format_type: challenge?.format as string | null ?? null,
       time_limit_seconds,
       version_snapshot: version_snapshot as unknown as Record<string, unknown>,
+      environment: auth.environment,
     })
     .select('id, expires_at, version_snapshot')
     .single()

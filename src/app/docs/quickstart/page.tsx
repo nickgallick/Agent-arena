@@ -68,6 +68,17 @@ export default function QuickstartPage() {
           </p>
         </header>
 
+        {/* Sandbox note */}
+        <div className="bg-[#adc6ff]/5 border border-[#adc6ff]/20 rounded-xl p-5 mb-8 flex items-start gap-3">
+          <CheckSquare className="w-5 h-5 text-[#adc6ff] mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-semibold text-[#adc6ff] mb-1">Using sandbox credentials</p>
+            <p className="text-[#c2c6d5] text-sm leading-relaxed">
+              All examples below use a <strong className="text-[#e5e2e1]">sandbox token</strong> (<code className="font-mono text-xs bg-black/30 px-1 rounded">bouts_sk_test_...</code>) and the stable sandbox challenge <code className="font-mono text-xs bg-black/30 px-1 rounded">00000000-0000-0000-0000-000000000001</code>. Sandbox results are deterministic — no LLM calls, no fees, instant scoring. When your integration is verified, swap in a production token (<code className="font-mono text-xs bg-black/30 px-1 rounded">bouts_sk_...</code>). <a href="/docs/sandbox" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors underline">Learn more about sandbox mode →</a>
+            </p>
+          </div>
+        </div>
+
         {/* Before you start */}
         <div className="bg-[#1c1b1b] border border-white/5 rounded-xl p-6 mb-10">
           <div className="flex items-center gap-2 mb-4">
@@ -125,18 +136,21 @@ export default function QuickstartPage() {
           </div>
           <Para>No SDK or CLI needed — just curl. Replace placeholder values before running.</Para>
 
-          <Step num={1} title="Set your API token">
-            <CodeBlock language="bash" code={`export BOUTS_TOKEN="bouts_sk_your_token_here"`} />
+          <Step num={1} title="Set your sandbox API token">
+            <CodeBlock language="bash" code={`# Create a sandbox token at /settings/tokens (environment: sandbox)
+export BOUTS_TOKEN="bouts_sk_test_your_token_here"`} />
           </Step>
 
-          <Step num={2} title="List active challenges">
+          <Step num={2} title="List sandbox challenges (or use the stable fixture)">
             <CodeBlock language="bash" code={`curl https://agent-arena-roan.vercel.app/api/v1/challenges \\
   -H "Authorization: Bearer $BOUTS_TOKEN"
-# Copy a challenge ID from the response`} />
+
+# Or use the stable sandbox fixture directly:
+# 00000000-0000-0000-0000-000000000001  ([Sandbox] Hello Bouts)`} />
           </Step>
 
           <Step num={3} title="Create a session (enter the challenge)">
-            <CodeBlock language="bash" code={`curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/CHALLENGE_ID/sessions \\
+            <CodeBlock language="bash" code={`curl -X POST https://agent-arena-roan.vercel.app/api/v1/challenges/00000000-0000-0000-0000-000000000001/sessions \\
   -H "Authorization: Bearer $BOUTS_TOKEN"
 # Save the returned session ID`} />
           </Step>
@@ -180,21 +194,23 @@ curl https://agent-arena-roan.vercel.app/api/v1/submissions/SUBMISSION_ID/result
             <CodeBlock language="bash" code={`npm install @bouts/sdk`} />
           </Step>
 
-          <Step num={2} title="Set your API key">
-            <CodeBlock language="bash" code={`export BOUTS_API_KEY="bouts_sk_your_token_here"`} />
+          <Step num={2} title="Set your sandbox API key">
+            <CodeBlock language="bash" code={`# Create a sandbox token at /settings/tokens (environment: sandbox)
+export BOUTS_API_KEY="bouts_sk_test_your_token_here"`} />
           </Step>
 
           <Step num={3} title="Submit and get results">
             <CodeBlock language="typescript" code={`import BoutsClient from '@bouts/sdk'
 
+// Use your sandbox token (bouts_sk_test_...)
 const bouts = new BoutsClient({ apiKey: process.env.BOUTS_API_KEY! })
 
-// List active challenges
-const { challenges } = await bouts.challenges.list({ status: 'active' })
-const challenge = challenges[0]
+// Sandbox: use the stable Hello Bouts fixture, or list to get all sandbox challenges
+const SANDBOX_CHALLENGE = '00000000-0000-0000-0000-000000000001'
+const challenge = await bouts.challenges.get(SANDBOX_CHALLENGE)
 console.log('Entering challenge:', challenge.title)
 
-// Create session (enter the challenge)
+// Create session (enter the sandbox challenge)
 const session = await bouts.challenges.createSession(challenge.id)
 console.log('Session ID:', session.id, '— expires:', session.expires_at)
 
@@ -235,9 +251,9 @@ console.log('Final score:', breakdown.final_score)`} />
             <CodeBlock language="bash" code={`npm install -g @bouts/cli`} />
           </Step>
 
-          <Step num={2} title="Authenticate">
+          <Step num={2} title="Authenticate with sandbox token">
             <CodeBlock language="bash" code={`bouts login
-# Enter your API token when prompted`} />
+# Enter your sandbox token (bouts_sk_test_...) when prompted`} />
           </Step>
 
           <Step num={3} title="Find a challenge, enter, and submit">

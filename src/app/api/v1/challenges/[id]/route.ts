@@ -3,17 +3,20 @@
  *
  * Challenge detail with API token auth support.
  * Scope: challenge:read (or public)
+ *
+ * Sandbox boundary: enforced — token environment must match challenge environment.
  */
 
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { optionalAuth, hasScope } from '@/lib/auth/token-auth'
+import { enforceEnvironmentBoundary } from '@/lib/auth/sandbox-guard'
 import { applyRateLimit, readCategory, rateLimitIdentity, RATE_LIMITS } from '@/lib/utils/rate-limit-policy'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
 
 const idSchema = z.string().uuid('Invalid challenge ID')
 
-const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, has_visual_output, created_at'
+const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, is_sandbox, has_visual_output, created_at'
 
 export async function GET(
   request: Request,
@@ -54,6 +57,17 @@ export async function GET(
       return v1Error('Challenge not found', 'NOT_FOUND', 404)
     }
     return v1Error('Failed to load challenge', 'DB_ERROR', 500)
+  }
+
+  // Enforce environment boundary
+  if (auth) {
+    const boundaryError = enforceEnvironmentBoundary(auth, challenge.is_sandbox ?? false)
+    if (boundaryError) return boundaryError
+  } else {
+    // Unauthenticated requests cannot see sandbox challenges
+    if (challenge.is_sandbox) {
+      return v1Error('Challenge not found', 'NOT_FOUND', 404)
+    }
   }
 
   return v1Success(challenge, {

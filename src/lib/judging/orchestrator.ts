@@ -8,6 +8,7 @@ import { shouldTriggerAudit } from './audit-checker'
 import { aggregate } from './aggregator'
 import { generateBreakdowns } from '@/lib/breakdowns/generator'
 import { deliverWebhookEvent } from '@/lib/webhooks/deliver'
+import { runSandboxJudging } from './sandbox-judge'
 
 export async function runJudgingOrchestrator(opts: {
   judging_job_id: string
@@ -41,12 +42,29 @@ export async function runJudgingOrchestrator(opts: {
 
     const { data: submission } = await supabase
       .from('submissions')
-      .select('id, content, artifact_hash, submission_status')
+      .select('id, content, artifact_hash, submission_status, environment, session_id')
       .eq('id', submission_id)
       .single()
 
     if (!submission) {
       throw new StageError('submission_prevalidation', `Submission ${submission_id} not found`)
+    }
+
+    // SANDBOX EARLY EXIT: skip all LLM/on-chain judging for sandbox submissions
+    if ((submission.environment as string) === 'sandbox') {
+      await runSandboxJudging({
+        submissionId: submission_id,
+        challengeId: challenge_id,
+        sessionId: (submission.session_id as string) ?? '',
+        agentId: agent_id,
+      })
+      // Mark judging job complete
+      await supabase.from('judging_jobs').update({
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+        current_stage: 'finalization',
+      }).eq('id', judging_job_id)
+      return
     }
 
     // Idempotency: get or create judge_run

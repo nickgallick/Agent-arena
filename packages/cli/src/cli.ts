@@ -5,7 +5,7 @@ import ora from 'ora'
 import { createInterface } from 'readline'
 import { readFileSync } from 'fs'
 import BoutsClient, { BoutsApiError, BoutsAuthError, BoutsRateLimitError } from '@bouts/sdk'
-import { getConfig, setApiKey, clearConfig } from './config'
+import { getConfig, setApiKey, setEnv, clearConfig, detectTokenEnvironment } from './config'
 import { getClient } from './client'
 
 const program = new Command()
@@ -50,6 +50,12 @@ function maskKey(key: string): string {
   return `${prefix}${'*'.repeat(Math.max(0, key.length - 16))}`
 }
 
+function sandboxPrefix(): string {
+  const { env, apiKey } = getConfig()
+  const isSandbox = (env === 'sandbox') || (apiKey ? detectTokenEnvironment(apiKey) === 'sandbox' : false)
+  return isSandbox ? chalk.cyan('[SANDBOX] ') : ''
+}
+
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return chalk.dim('—')
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -78,11 +84,15 @@ program
   .command('login')
   .description('Authenticate with your API token')
   .option('--token <token>', 'API token (skip interactive prompt)')
-  .action(async (opts: { token?: string }) => {
+  .option('--sandbox', 'Mark this session as sandbox (sets BOUTS_ENV=sandbox in config)')
+  .action(async (opts: { token?: string; sandbox?: boolean }) => {
     let token = opts.token
 
     if (!token) {
-      token = await prompt('Enter your API token (bouts_sk_...): ')
+      const prompt_text = opts.sandbox
+        ? 'Enter your sandbox API token (bouts_sk_test_...): '
+        : 'Enter your API token (bouts_sk_...): '
+      token = await prompt(prompt_text)
     }
 
     if (!token) {
@@ -90,13 +100,25 @@ program
       process.exit(1)
     }
 
+    // Auto-detect environment from token prefix
+    const detectedEnv = detectTokenEnvironment(token)
+    const env = opts.sandbox ? 'sandbox' : detectedEnv
+
+    if (env === 'sandbox' && !token.startsWith('bouts_sk_test_')) {
+      console.warn(chalk.yellow('Warning: --sandbox flag set but token does not have bouts_sk_test_ prefix.'))
+    }
+
     const spinner = ora('Validating token...').start()
     try {
       const client = new BoutsClient({ apiKey: token })
       await client.challenges.list({ limit: 1 })
       setApiKey(token)
+      setEnv(env)
       spinner.succeed(chalk.green('Authenticated successfully'))
       console.log(chalk.dim(`Token saved: ${maskKey(token)}`))
+      if (env === 'sandbox') {
+        console.log(chalk.cyan('[SANDBOX] Sandbox mode active. Commands will operate in sandbox environment.'))
+      }
     } catch (err) {
       spinner.fail('Authentication failed')
       handleError(err)
@@ -144,6 +166,8 @@ challenges
         return
       }
 
+      const pfx = sandboxPrefix()
+      if (pfx) console.log(pfx + chalk.dim('Sandbox mode — showing sandbox challenges only'))
       console.log()
       console.log(
         chalk.bold.dim('  ID'.padEnd(14)),
@@ -239,7 +263,7 @@ sessions
     const spinner = ora('Creating session...').start()
     try {
       const session = await client.challenges.createSession(challengeId)
-      spinner.succeed('Session created')
+      spinner.succeed(`${sandboxPrefix()}Session created`)
 
       if (opts.json) {
         console.log(JSON.stringify(session, null, 2))
@@ -289,7 +313,7 @@ program
         content,
         { idempotencyKey: opts.idempotencyKey }
       )
-      spinner.succeed('Submission received')
+      spinner.succeed(`${sandboxPrefix()}Submission received`)
 
       if (opts.json) {
         console.log(JSON.stringify(submission, null, 2))
@@ -464,7 +488,7 @@ program
     console.log(chalk.bold('Bouts Doctor'))
     console.log(chalk.dim('─'.repeat(40)))
 
-    const { apiKey, baseUrl } = getConfig()
+    const { apiKey, baseUrl, env } = getConfig()
 
     // Check 1: Config present
     if (apiKey) {
@@ -472,7 +496,25 @@ program
       console.log(`     API key: ${maskKey(apiKey)}`)
     } else {
       console.log(`  ${chalk.red('❌')} No API key configured`)
-      console.log(`     Run: ${chalk.cyan('bouts login')}`)
+      console.log(`     Run: ${chalk.cyan('bouts login')} or ${chalk.cyan('bouts login --sandbox')}`)
+    }
+
+    // Check 2: Environment mode
+    const tokenEnv = apiKey ? detectTokenEnvironment(apiKey) : null
+    const activeEnv = env ?? 'production'
+    if (tokenEnv === 'sandbox' || activeEnv === 'sandbox') {
+      console.log(`  ${chalk.cyan('🧪')} Environment: ${chalk.cyan('SANDBOX')}`)
+      console.log(`     ${chalk.dim('Token prefix: bouts_sk_test_...')}`)
+      console.log(`     ${chalk.dim('Sandbox challenges only. Deterministic judging.')}`)
+    } else {
+      console.log(`  ${chalk.green('🚀')} Environment: ${chalk.green('PRODUCTION')}`)
+      console.log(`     ${chalk.dim('Token prefix: bouts_sk_...')}`)
+    }
+
+    // Warn if token prefix doesn't match configured env
+    if (apiKey && tokenEnv && tokenEnv !== activeEnv) {
+      console.log(`  ${chalk.yellow('⚠')} Token environment (${tokenEnv}) doesn't match config env (${activeEnv})`)
+      console.log(`     ${chalk.dim('Run: bouts login to re-authenticate')}`)
     }
 
     if (baseUrl) {
@@ -484,7 +526,7 @@ program
       return
     }
 
-    // Check 2: API reachable + key valid
+    // Check 3: API reachable + key valid
     const spinner = ora('  Checking API connectivity...').start()
     const start = Date.now()
     try {

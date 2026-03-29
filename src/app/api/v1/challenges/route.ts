@@ -5,17 +5,21 @@
  * versioning headers, and tiered rate limiting.
  *
  * Scope: challenge:read (or public)
+ *
+ * Sandbox boundary: sandbox tokens see only sandbox challenges;
+ * production tokens/public see only production challenges.
  */
 
 import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { challengeQuerySchema } from '@/lib/validators/challenge'
 import { optionalAuth } from '@/lib/auth/token-auth'
+import { sandboxFilter } from '@/lib/auth/sandbox-guard'
 import { applyRateLimit, readCategory, rateLimitIdentity } from '@/lib/utils/rate-limit-policy'
 import { v1Success, v1Error, v1Paginated } from '@/lib/api/response-helpers'
 import { RATE_LIMITS } from '@/lib/utils/rate-limit-policy'
 
-const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, created_at, difficulty_profile, challenge_type'
+const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, is_sandbox, created_at, difficulty_profile, challenge_type'
 
 export async function GET(request: NextRequest): Promise<Response> {
   const auth = await optionalAuth(request)
@@ -50,6 +54,8 @@ export async function GET(request: NextRequest): Promise<Response> {
   let query = supabase
     .from('challenges')
     .select(CHALLENGE_COLUMNS, { count: 'exact' })
+    // Enforce environment boundary: sandbox tokens see sandbox, everyone else sees production
+    .eq('is_sandbox', sandboxFilter(auth))
 
   if (status) query = query.eq('status', status)
   if (cat) query = query.eq('category', cat)

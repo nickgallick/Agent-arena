@@ -3,6 +3,9 @@
  * POST /api/v1/auth/tokens  — create a new API token
  *
  * Auth: JWT only (API tokens cannot be used to create new tokens)
+ *
+ * Supports environment: 'production' | 'sandbox'
+ * Sandbox tokens use bouts_sk_test_ prefix (Stripe-style)
  */
 
 import { randomBytes, createHash } from 'crypto'
@@ -15,13 +18,16 @@ import { ALL_SCOPES } from '@/lib/auth/token-auth'
 
 const ALL_SCOPES_SET = new Set<string>(ALL_SCOPES)
 
-const TOKEN_PREFIX = 'bouts_sk_'
-const MAX_TOKENS_PER_USER = 20
+const PRODUCTION_PREFIX = 'bouts_sk_'
+const SANDBOX_PREFIX = 'bouts_sk_test_'
+const MAX_PRODUCTION_TOKENS = 20
+const MAX_SANDBOX_TOKENS = 10
 
 const createTokenSchema = z.object({
   name: z.string().min(1).max(100),
   scopes: z.array(z.string()).min(1),
   expires_in_days: z.number().int().positive().optional().nullable(),
+  environment: z.enum(['production', 'sandbox']).optional().default('production'),
 })
 
 async function requireJwtUser(): Promise<{ user_id: string } | Response> {
@@ -42,7 +48,7 @@ export async function GET(request: Request): Promise<Response> {
 
   const { data: tokens, error } = await supabase
     .from('api_tokens')
-    .select('id, name, token_prefix, scopes, last_used_at, expires_at, created_at')
+    .select('id, name, token_prefix, scopes, environment, last_used_at, expires_at, created_at')
     .eq('user_id', user_id)
     .is('revoked_at', null)
     .order('created_at', { ascending: false })
@@ -77,7 +83,7 @@ export async function POST(request: Request): Promise<Response> {
     return v1Error(parsed.error.issues[0].message, 'VALIDATION_ERROR', 400)
   }
 
-  const { name, scopes, expires_in_days } = parsed.data
+  const { name, scopes, expires_in_days, environment } = parsed.data
 
   // Validate scopes — no admin:* allowed
   for (const scope of scopes) {
@@ -91,26 +97,39 @@ export async function POST(request: Request): Promise<Response> {
 
   const supabase = createAdminClient()
 
-  // Check max tokens
+  // Check max tokens per environment
+  const maxAllowed = environment === 'sandbox' ? MAX_SANDBOX_TOKENS : MAX_PRODUCTION_TOKENS
   const { count, error: countError } = await supabase
     .from('api_tokens')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', user_id)
+    .eq('environment', environment)
     .is('revoked_at', null)
 
   if (countError) {
     return v1Error('Failed to check token count', 'DB_ERROR', 500)
   }
 
-  if ((count ?? 0) >= MAX_TOKENS_PER_USER) {
-    return v1Error(`Maximum of ${MAX_TOKENS_PER_USER} active tokens allowed`, 'TOKEN_LIMIT_EXCEEDED', 400)
+  if ((count ?? 0) >= maxAllowed) {
+    return v1Error(
+      `Maximum of ${maxAllowed} active ${environment} tokens allowed`,
+      'TOKEN_LIMIT_EXCEEDED',
+      400
+    )
   }
 
-  // Generate token: bouts_sk_ (9 chars) + 55 hex chars = 64 total
-  const rawSuffix = randomBytes(28).toString('hex').slice(0, 55)
-  const plainToken = `${TOKEN_PREFIX}${rawSuffix}`
+  // Choose prefix based on environment
+  const prefix = environment === 'sandbox' ? SANDBOX_PREFIX : PRODUCTION_PREFIX
+
+  // Generate token: prefix + random hex suffix
+  // production: bouts_sk_ (9) + 55 chars = 64 total
+  // sandbox:    bouts_sk_test_ (14) + 50 chars = 64 total
+  const suffixLen = 64 - prefix.length
+  const rawSuffix = randomBytes(Math.ceil(suffixLen / 2)).toString('hex').slice(0, suffixLen)
+  const plainToken = `${prefix}${rawSuffix}`
   const tokenHash = createHash('sha256').update(plainToken).digest('hex')
-  const tokenPrefix = plainToken.slice(0, 17) // "bouts_sk_" + 8 chars
+  // Store first 17 chars as visible prefix
+  const tokenPrefix = plainToken.slice(0, Math.min(17, plainToken.length))
 
   const expiresAt = expires_in_days
     ? new Date(Date.now() + expires_in_days * 86_400_000).toISOString()
@@ -125,8 +144,9 @@ export async function POST(request: Request): Promise<Response> {
       token_prefix: tokenPrefix,
       scopes,
       expires_at: expiresAt,
+      environment,
     })
-    .select('id, name, scopes, expires_at')
+    .select('id, name, scopes, expires_at, environment')
     .single()
 
   if (insertError || !token) {
@@ -141,6 +161,7 @@ export async function POST(request: Request): Promise<Response> {
       token: plainToken,
       token_prefix: tokenPrefix,
       scopes: token.scopes,
+      environment: token.environment,
       expires_at: token.expires_at,
     },
     { status: 201 }

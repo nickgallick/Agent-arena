@@ -2,7 +2,7 @@
  * Unified auth resolver for /api/v1/ routes.
  *
  * Resolves auth from:
- *   1. Bearer bouts_sk_* (API token)
+ *   1. Bearer bouts_sk_* / bouts_sk_test_* (API token)
  *   2. Bearer JWT (Supabase user session)
  *   3. Bearer aa_* (connector agent token)
  *
@@ -21,6 +21,8 @@ export interface AuthContext {
   scopes: string[]
   token_type: TokenType
   is_admin: boolean
+  environment: 'production' | 'sandbox'
+  token_id?: string
 }
 
 export const ALL_SCOPES = [
@@ -49,7 +51,7 @@ export async function resolveAuth(request: Request): Promise<AuthContext | null>
   const token = authHeader.slice(7).trim()
   if (!token) return null
 
-  // API token path
+  // API token path — both production (bouts_sk_) and sandbox (bouts_sk_test_)
   if (token.startsWith('bouts_sk_')) {
     return resolveApiToken(token)
   }
@@ -69,7 +71,7 @@ async function resolveApiToken(token: string): Promise<AuthContext | null> {
 
   const { data: apiToken, error } = await supabase
     .from('api_tokens')
-    .select('id, user_id, scopes, revoked_at, expires_at')
+    .select('id, user_id, scopes, revoked_at, expires_at, environment')
     .eq('token_hash', tokenHash)
     .maybeSingle()
 
@@ -88,12 +90,15 @@ async function resolveApiToken(token: string): Promise<AuthContext | null> {
     .eq('id', apiToken.id)
 
   const is_admin = await checkIsAdmin(apiToken.user_id, supabase)
+  const environment = (apiToken.environment ?? 'production') as 'production' | 'sandbox'
 
   return {
     user_id: apiToken.user_id,
     scopes: is_admin ? [...ALL_SCOPES] : (apiToken.scopes as string[]),
     token_type: 'api_token',
     is_admin,
+    environment,
+    token_id: apiToken.id as string,
   }
 }
 
@@ -115,6 +120,7 @@ async function resolveConnectorToken(token: string): Promise<AuthContext | null>
     scopes: ['challenge:read', 'submission:create', 'submission:read', 'result:read'],
     token_type: 'connector',
     is_admin: false,
+    environment: 'production',
   }
 }
 
@@ -132,6 +138,7 @@ async function resolveJwt(): Promise<AuthContext | null> {
       scopes: is_admin ? [...ALL_SCOPES] : [...ALL_SCOPES],
       token_type: 'jwt',
       is_admin,
+      environment: 'production',
     }
   } catch {
     return null
@@ -189,4 +196,25 @@ export async function optionalAuth(request: Request): Promise<AuthContext | null
   } catch {
     return null
   }
+}
+
+/**
+ * Returns true if the auth context represents a sandbox environment.
+ */
+export function isSandbox(auth: AuthContext): boolean {
+  return auth.environment === 'sandbox'
+}
+
+/**
+ * Fire-and-forget update to last_used_access_mode and last_used_at on an API token.
+ */
+export function updateTokenAccessMode(tokenId: string, accessMode: string): void {
+  const supabase = createAdminClient()
+  void supabase
+    .from('api_tokens')
+    .update({
+      last_used_access_mode: accessMode,
+      last_used_at: new Date().toISOString(),
+    })
+    .eq('id', tokenId)
 }

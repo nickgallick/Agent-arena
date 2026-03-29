@@ -35,16 +35,24 @@ var import_sdk2 = __toESM(require("@bouts/sdk"));
 var import_conf = __toESM(require("conf"));
 var conf = new import_conf.default({ projectName: "bouts" });
 function getConfig() {
+  const env = process.env.BOUTS_ENV ?? conf.get("env") ?? "production";
   return {
     apiKey: process.env.BOUTS_API_KEY ?? conf.get("apiKey"),
-    baseUrl: process.env.BOUTS_BASE_URL ?? conf.get("baseUrl")
+    baseUrl: process.env.BOUTS_BASE_URL ?? conf.get("baseUrl"),
+    env
   };
 }
 function setApiKey(key) {
   conf.set("apiKey", key);
 }
+function setEnv(env) {
+  conf.set("env", env);
+}
 function clearConfig() {
   conf.clear();
+}
+function detectTokenEnvironment(apiKey) {
+  return apiKey.startsWith("bouts_sk_test_") ? "sandbox" : "production";
 }
 
 // src/client.ts
@@ -90,6 +98,11 @@ function maskKey(key) {
   const prefix = key.slice(0, 16);
   return `${prefix}${"*".repeat(Math.max(0, key.length - 16))}`;
 }
+function sandboxPrefix() {
+  const { env, apiKey } = getConfig();
+  const isSandbox = env === "sandbox" || (apiKey ? detectTokenEnvironment(apiKey) === "sandbox" : false);
+  return isSandbox ? import_chalk2.default.cyan("[SANDBOX] ") : "";
+}
 function formatDate(dateStr) {
   if (!dateStr) return import_chalk2.default.dim("\u2014");
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -121,22 +134,32 @@ function statusColor(status) {
       return import_chalk2.default.dim(status);
   }
 }
-program.command("login").description("Authenticate with your API token").option("--token <token>", "API token (skip interactive prompt)").action(async (opts) => {
+program.command("login").description("Authenticate with your API token").option("--token <token>", "API token (skip interactive prompt)").option("--sandbox", "Mark this session as sandbox (sets BOUTS_ENV=sandbox in config)").action(async (opts) => {
   let token = opts.token;
   if (!token) {
-    token = await prompt("Enter your API token (bouts_sk_...): ");
+    const prompt_text = opts.sandbox ? "Enter your sandbox API token (bouts_sk_test_...): " : "Enter your API token (bouts_sk_...): ";
+    token = await prompt(prompt_text);
   }
   if (!token) {
     console.error(import_chalk2.default.red("No token provided"));
     process.exit(1);
+  }
+  const detectedEnv = detectTokenEnvironment(token);
+  const env = opts.sandbox ? "sandbox" : detectedEnv;
+  if (env === "sandbox" && !token.startsWith("bouts_sk_test_")) {
+    console.warn(import_chalk2.default.yellow("Warning: --sandbox flag set but token does not have bouts_sk_test_ prefix."));
   }
   const spinner = (0, import_ora.default)("Validating token...").start();
   try {
     const client = new import_sdk2.default({ apiKey: token });
     await client.challenges.list({ limit: 1 });
     setApiKey(token);
+    setEnv(env);
     spinner.succeed(import_chalk2.default.green("Authenticated successfully"));
     console.log(import_chalk2.default.dim(`Token saved: ${maskKey(token)}`));
+    if (env === "sandbox") {
+      console.log(import_chalk2.default.cyan("[SANDBOX] Sandbox mode active. Commands will operate in sandbox environment."));
+    }
   } catch (err) {
     spinner.fail("Authentication failed");
     handleError(err);
@@ -165,6 +188,8 @@ challenges.command("list").description("List challenges").option("--format <form
       console.log(import_chalk2.default.dim("No challenges found"));
       return;
     }
+    const pfx = sandboxPrefix();
+    if (pfx) console.log(pfx + import_chalk2.default.dim("Sandbox mode \u2014 showing sandbox challenges only"));
     console.log();
     console.log(
       import_chalk2.default.bold.dim("  ID".padEnd(14)),
@@ -241,7 +266,7 @@ sessions.command("create <challenge-id>").description("Create a new submission s
   const spinner = (0, import_ora.default)("Creating session...").start();
   try {
     const session = await client.challenges.createSession(challengeId);
-    spinner.succeed("Session created");
+    spinner.succeed(`${sandboxPrefix()}Session created`);
     if (opts.json) {
       console.log(JSON.stringify(session, null, 2));
       return;
@@ -275,7 +300,7 @@ program.command("submit").description("Submit a solution file").requiredOption("
       content,
       { idempotencyKey: opts.idempotencyKey }
     );
-    spinner.succeed("Submission received");
+    spinner.succeed(`${sandboxPrefix()}Submission received`);
     if (opts.json) {
       console.log(JSON.stringify(submission, null, 2));
       return;
@@ -397,13 +422,27 @@ program.command("doctor").description("Check configuration and API connectivity"
   console.log();
   console.log(import_chalk2.default.bold("Bouts Doctor"));
   console.log(import_chalk2.default.dim("\u2500".repeat(40)));
-  const { apiKey, baseUrl } = getConfig();
+  const { apiKey, baseUrl, env } = getConfig();
   if (apiKey) {
     console.log(`  ${import_chalk2.default.green("\u2705")} Config found`);
     console.log(`     API key: ${maskKey(apiKey)}`);
   } else {
     console.log(`  ${import_chalk2.default.red("\u274C")} No API key configured`);
-    console.log(`     Run: ${import_chalk2.default.cyan("bouts login")}`);
+    console.log(`     Run: ${import_chalk2.default.cyan("bouts login")} or ${import_chalk2.default.cyan("bouts login --sandbox")}`);
+  }
+  const tokenEnv = apiKey ? detectTokenEnvironment(apiKey) : null;
+  const activeEnv = env ?? "production";
+  if (tokenEnv === "sandbox" || activeEnv === "sandbox") {
+    console.log(`  ${import_chalk2.default.cyan("\u{1F9EA}")} Environment: ${import_chalk2.default.cyan("SANDBOX")}`);
+    console.log(`     ${import_chalk2.default.dim("Token prefix: bouts_sk_test_...")}`);
+    console.log(`     ${import_chalk2.default.dim("Sandbox challenges only. Deterministic judging.")}`);
+  } else {
+    console.log(`  ${import_chalk2.default.green("\u{1F680}")} Environment: ${import_chalk2.default.green("PRODUCTION")}`);
+    console.log(`     ${import_chalk2.default.dim("Token prefix: bouts_sk_...")}`);
+  }
+  if (apiKey && tokenEnv && tokenEnv !== activeEnv) {
+    console.log(`  ${import_chalk2.default.yellow("\u26A0")} Token environment (${tokenEnv}) doesn't match config env (${activeEnv})`);
+    console.log(`     ${import_chalk2.default.dim("Run: bouts login to re-authenticate")}`);
   }
   if (baseUrl) {
     console.log(`  ${import_chalk2.default.blue("\u2139")} Custom base URL: ${baseUrl}`);
