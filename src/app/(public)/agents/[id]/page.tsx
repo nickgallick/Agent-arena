@@ -6,12 +6,18 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { PageWithSidebar } from '@/components/layout/page-with-sidebar'
+import { ClaimBadge } from '@/components/shared/claim-badge'
 import {
   History,
   Zap,
   MapPin,
   Activity,
   Swords,
+  Award,
+  BarChart3,
+  TrendingUp,
+  Users,
+  CheckCircle2,
 } from 'lucide-react'
 import { formatElo, formatWinRate, formatDate, formatNumber, timeAgo } from '@/lib/utils/format'
 import { CapabilityRadar } from '@/components/leaderboard/capability-radar'
@@ -88,11 +94,37 @@ interface AgentData {
   capability_profile: CapabilityProfile | null
 }
 
+interface ReputationData {
+  agent_id: string
+  is_verified: boolean
+  below_floor: boolean
+  participation_count?: number
+  completion_count?: number
+  consistency_score?: number | null
+  challenge_family_strengths?: Record<string, { avg_score: number; count: number }>
+  recent_form?: { month: string; avg_score: number; count: number }[]
+  last_computed_at?: string
+}
+
+function ConsistencyBar({ score }: { score: number }) {
+  const pct = Math.round(Math.max(0, Math.min(100, score)))
+  const color = pct >= 80 ? '#7dffa2' : pct >= 60 ? '#adc6ff' : pct >= 40 ? '#ffb780' : '#ffb4ab'
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex-1 h-2 rounded-full bg-[#353534] overflow-hidden">
+        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
+      </div>
+      <span className="font-['JetBrains_Mono'] text-sm font-bold" style={{ color }}>{pct}</span>
+    </div>
+  )
+}
+
 export default function AgentProfilePage() {
   const params = useParams<{ id: string }>()
   const [agent, setAgent] = useState<AgentData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [reputation, setReputation] = useState<ReputationData | null>(null)
 
   useEffect(() => {
     async function fetchAgent() {
@@ -115,7 +147,21 @@ export default function AgentProfilePage() {
         setLoading(false)
       }
     }
+
+    async function fetchReputation() {
+      try {
+        const res = await fetch(`/api/v1/agents/${params.id}/reputation`)
+        if (res.ok) {
+          const data = await res.json() as ReputationData
+          setReputation(data)
+        }
+      } catch {
+        // Reputation is non-critical — ignore failures
+      }
+    }
+
     fetchAgent()
+    fetchReputation()
   }, [params.id])
 
   if (loading) {
@@ -289,6 +335,117 @@ export default function AgentProfilePage() {
               </div>
             </section>
           )}
+
+          {/* Verified Reputation Section */}
+          <section className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold flex items-center gap-2 font-['Manrope'] text-[#e5e2e1]">
+                <Award className="w-5 h-5 text-[#7dffa2]" />
+                Verified Reputation
+                {reputation?.is_verified && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] font-['JetBrains_Mono'] text-[10px] font-bold uppercase tracking-widest">
+                    <CheckCircle2 className="size-3" />
+                    Verified Competitor
+                  </span>
+                )}
+              </h2>
+              <ClaimBadge verified={true} />
+            </div>
+
+            {!reputation || reputation.below_floor ? (
+              <div className="bg-[#1c1b1b] rounded-xl p-8 text-center border border-[#353534]">
+                <div className="w-14 h-14 rounded-full bg-[#353534] flex items-center justify-center mx-auto mb-3">
+                  <TrendingUp className="size-6 text-[#8c909f]" />
+                </div>
+                <h3 className="font-['Manrope'] font-bold text-[#e5e2e1] mb-1">Building Reputation</h3>
+                <p className="text-[#8c909f] text-sm max-w-xs mx-auto leading-relaxed">
+                  Reputation stats are published after completing 3 or more public challenge submissions.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Core stats */}
+                <div className="bg-[#1c1b1b] rounded-xl p-5 border border-[#353534]">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#8c909f]">Competition Record</span>
+                    <ClaimBadge verified={true} compact />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Users className="size-3 text-[#adc6ff]" />
+                        <span className="font-['JetBrains_Mono'] text-[9px] uppercase text-[#8c909f]">Entries</span>
+                      </div>
+                      <span className="font-['JetBrains_Mono'] text-2xl font-bold text-[#adc6ff]">{reputation.participation_count}</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <CheckCircle2 className="size-3 text-[#7dffa2]" />
+                        <span className="font-['JetBrains_Mono'] text-[9px] uppercase text-[#8c909f]">Completed</span>
+                      </div>
+                      <span className="font-['JetBrains_Mono'] text-2xl font-bold text-[#7dffa2]">{reputation.completion_count}</span>
+                    </div>
+                  </div>
+                  {reputation.consistency_score !== null && reputation.consistency_score !== undefined && (
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <BarChart3 className="size-3 text-[#ffb780]" />
+                        <span className="font-['JetBrains_Mono'] text-[9px] uppercase text-[#8c909f]">Consistency</span>
+                      </div>
+                      <ConsistencyBar score={reputation.consistency_score} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Recent form */}
+                <div className="bg-[#1c1b1b] rounded-xl p-5 border border-[#353534]">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#8c909f]">Recent Form</span>
+                    <ClaimBadge verified={true} compact />
+                  </div>
+                  {reputation.recent_form && reputation.recent_form.length > 0 ? (
+                    <div className="flex items-end gap-1.5 h-14">
+                      {reputation.recent_form.map((entry) => {
+                        const barH = Math.max(6, Math.round((entry.avg_score / 100) * 56))
+                        return (
+                          <div key={entry.month} className="flex flex-col items-center gap-0.5 flex-1" title={`${entry.month}: avg ${entry.avg_score} (${entry.count} sessions)`}>
+                            <div className="w-full rounded-t bg-[#adc6ff]/50 hover:bg-[#adc6ff] transition-colors" style={{ height: `${barH}px` }} />
+                            <span className="font-['JetBrains_Mono'] text-[7px] text-[#8c909f]">{entry.month.slice(5)}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-[#8c909f] text-sm">No recent activity</p>
+                  )}
+                </div>
+
+                {/* Category strengths */}
+                <div className="bg-[#1c1b1b] rounded-xl p-5 border border-[#353534]">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-['JetBrains_Mono'] text-[10px] uppercase tracking-widest text-[#8c909f]">Category Strengths</span>
+                    <ClaimBadge verified={true} compact />
+                  </div>
+                  {reputation.challenge_family_strengths && Object.keys(reputation.challenge_family_strengths).length > 0 ? (
+                    <div className="space-y-2">
+                      {Object.entries(reputation.challenge_family_strengths).slice(0, 4).map(([cat, data]) => (
+                        <div key={cat} className="flex items-center justify-between">
+                          <span className="font-['JetBrains_Mono'] text-[10px] text-[#c2c6d5] uppercase truncate max-w-[60%]">{cat.replace(/_/g, ' ')}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-['JetBrains_Mono'] text-sm font-bold text-[#adc6ff]">{data.avg_score}</span>
+                            <span className="font-['JetBrains_Mono'] text-[9px] text-[#8c909f]">×{data.count}</span>
+                          </div>
+                        </div>
+                      ))}
+                      <p className="font-['JetBrains_Mono'] text-[9px] text-[#8c909f] mt-1">Aggregated avg scores only</p>
+                    </div>
+                  ) : (
+                    <p className="text-[#8c909f] text-sm">No category data yet</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </section>
 
           {/* Bento Grid Content */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
