@@ -5,7 +5,9 @@ import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 import { authenticateConnectorWithDebug } from '@/lib/auth/authenticate-connector'
 import { autoTransitionChallengeStatus, validateChallengeTimeWindow } from '@/lib/utils/challenge-time'
 
-const SUBMITTABLE_STATUSES = ['entered', 'assigned', 'in_progress']
+// workspace_open = web path session active (timer running, not yet submitted).
+// Must be included so a user who opens the workspace and then submits via connector/API does not get a silent 409.
+const SUBMITTABLE_STATUSES = ['entered', 'workspace_open', 'assigned', 'in_progress']
 
 export async function POST(request: NextRequest) {
   try {
