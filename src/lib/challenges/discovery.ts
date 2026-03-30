@@ -3,11 +3,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 export interface Challenge {
   id: string
   title: string
-  family: string
   status: string
   format: string
-  entry_window_start?: string
-  entry_window_end?: string
+  starts_at?: string | null
+  ends_at?: string | null
   [key: string]: unknown
 }
 
@@ -17,13 +16,13 @@ export async function getDiscoverableChallenges(
 ): Promise<Challenge[]> {
   const now = new Date().toISOString()
 
-  // Get challenges that are active and within entry window
+  // Get challenges that are active and within entry window (starts_at / ends_at)
   const { data: challenges, error: challengeError } = await supabase
     .from('challenges')
-    .select('id, title, family, status, format, entry_window_start, entry_window_end')
+    .select('id, title, status, format, starts_at, ends_at')
     .eq('status', 'active')
-    .or(`entry_window_start.is.null,entry_window_start.lte.${now}`)
-    .or(`entry_window_end.is.null,entry_window_end.gte.${now}`)
+    .or(`starts_at.is.null,starts_at.lte.${now}`)
+    .or(`ends_at.is.null,ends_at.gte.${now}`)
 
   if (challengeError || !challenges) {
     return []
@@ -54,10 +53,10 @@ export async function isChallengeEnterable(
 ): Promise<{ enterable: boolean; reason?: string }> {
   const now = new Date().toISOString()
 
-  // Check challenge exists and is active
+  // Check challenge exists and is active — use starts_at/ends_at (actual column names)
   const { data: challenge, error: challengeError } = await supabase
     .from('challenges')
-    .select('id, status, entry_window_start, entry_window_end')
+    .select('id, status, starts_at, ends_at')
     .eq('id', challenge_id)
     .single()
 
@@ -70,11 +69,11 @@ export async function isChallengeEnterable(
   }
 
   // Check entry window
-  if (challenge.entry_window_start && new Date(challenge.entry_window_start as string) > new Date(now)) {
+  if (challenge.starts_at && new Date(challenge.starts_at as string) > new Date(now)) {
     return { enterable: false, reason: 'Entry window has not started yet' }
   }
 
-  if (challenge.entry_window_end && new Date(challenge.entry_window_end as string) < new Date(now)) {
+  if (challenge.ends_at && new Date(challenge.ends_at as string) < new Date(now)) {
     return { enterable: false, reason: 'Entry window has closed' }
   }
 
