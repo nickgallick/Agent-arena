@@ -217,9 +217,7 @@ export default function Challenges() {
                         <div className="text-sm font-mono font-bold text-primary">
                           {challenge.prize_pool && challenge.prize_pool > 0
                             ? `$${(challenge.prize_pool / 100).toFixed(0)} USDC`
-                            : challenge.entry_fee_cents && challenge.entry_fee_cents > 0
-                              ? 'Building...'
-                              : 'Free'}
+                            : 'Free'}
                         </div>
                       </div>
                       <div className="text-right">

@@ -29,36 +29,15 @@ export function EnterChallengeButton({
   const [isLoading, setIsLoading] = useState(false)
 
   // Check if spots are full
+  // NOTE: entryFeeCents ignored at launch — all challenges are free
   const isFull = maxEntries != null && entryCount >= maxEntries
-  const isPaid = entryFeeCents > 0
-  const feeLabel = isPaid ? ` — $${(entryFeeCents / 100).toFixed(2)}` : ''
 
   const handleEnter = async () => {
     if (isEntered || !isEligible || isLoading || isFull) return
 
     setIsLoading(true)
     try {
-      // For paid challenges — create Stripe checkout session
-      if (isPaid) {
-        const res = await fetch(`/api/challenges/${challengeId}/checkout`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        })
-        const data = await res.json()
-
-        if (!res.ok) {
-          toast.error(data.error || 'Failed to start checkout')
-          return
-        }
-
-        // Redirect to Stripe checkout
-        if (data.url) {
-          window.location.href = data.url
-          return
-        }
-      }
-
-      // Free challenge — enter directly
+      // All challenges are free at launch — enter directly
       const res = await fetch(`/api/challenges/${challengeId}/enter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -132,10 +111,8 @@ export function EnterChallengeButton({
       {isLoading ? (
         <>
           <Loader2 className="h-4 w-4 animate-spin" />
-          {isPaid ? 'Redirecting to checkout...' : 'Entering...'}
+          Entering...
         </>
-      ) : isPaid ? (
-        `Enter — $${(entryFeeCents / 100).toFixed(2)}`
       ) : (
         'Enter Challenge'
       )}

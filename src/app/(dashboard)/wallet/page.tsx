@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { Coins, ArrowDownRight, ArrowUpRight, Trophy, Clock, ShieldCheck, AlertTriangle, Loader2, X, ChevronRight, Building2, CheckCircle2 } from 'lucide-react'
+import { Coins, ArrowDownRight, ArrowUpRight, Trophy, Clock, ShieldCheck, AlertTriangle, Loader2, X, ChevronRight } from 'lucide-react'
 
 interface Transaction {
   id: string
@@ -70,20 +69,6 @@ export default function WalletPage() {
   // Annual total from profile
   const [annualTotal, setAnnualTotal] = useState(0)
   const [w9Collected, setW9Collected] = useState(false)
-  const [stripeConnected, setStripeConnected] = useState(false)
-  const [stripePayoutsEnabled, setStripePayoutsEnabled] = useState(false)
-  const [connectingBank, setConnectingBank] = useState(false)
-  const [connectBanner, setConnectBanner] = useState<'active' | 'pending' | 'error' | null>(null)
-
-  const searchParams = useSearchParams()
-
-  useEffect(() => {
-    const connectStatus = searchParams.get('connect')
-    if (connectStatus === 'active') setConnectBanner('active')
-    else if (connectStatus === 'pending') setConnectBanner('pending')
-    else if (connectStatus === 'error') setConnectBanner('error')
-    else if (connectStatus === 'refresh') setConnectBanner('pending')
-  }, [searchParams])
 
   useEffect(() => {
     Promise.all([
@@ -94,29 +79,10 @@ export default function WalletPage() {
       setWallet(walletData)
       setAnnualTotal(meData?.profile?.annual_prize_total ?? 0)
       setW9Collected(meData?.profile?.w9_collected ?? false)
-      setStripeConnected(!!meData?.profile?.stripe_account_id)
-      setStripePayoutsEnabled(meData?.profile?.stripe_payouts_enabled ?? false)
       setAgents(agentsData?.agents ?? [])
     }).catch(() => setError('Failed to load wallet'))
     .finally(() => setLoading(false))
   }, [])
-
-  async function handleConnectBank() {
-    setConnectingBank(true)
-    try {
-      const res = await fetch('/api/stripe/connect/onboard', { method: 'POST' })
-      const data = await res.json()
-      if (data.url) {
-        window.location.href = data.url
-      } else {
-        setError(data.error ?? 'Failed to start bank setup')
-      }
-    } catch {
-      setError('Network error — please try again')
-    } finally {
-      setConnectingBank(false)
-    }
-  }
 
   async function handleClaim() {
     setClaim(c => ({ ...c, loading: true, error: null }))
@@ -209,64 +175,11 @@ export default function WalletPage() {
         <p className="text-[#8c909f] text-sm mt-1">Your prize balance, history, and payouts</p>
       </div>
 
-      {/* Connect status banners */}
-      {connectBanner === 'active' && (
-        <div className="rounded-xl border border-[#7dffa2]/30 bg-[#7dffa2]/10 p-4 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-[#7dffa2] flex-shrink-0" />
-          <p className="text-sm text-[#7dffa2]">Bank account connected! Payouts are now active.</p>
-        </div>
-      )}
-      {connectBanner === 'pending' && (
-        <div className="rounded-xl border border-[#adc6ff]/30 bg-[#adc6ff]/10 p-4 flex items-center gap-3">
-          <Clock className="w-5 h-5 text-[#adc6ff] flex-shrink-0" />
-          <p className="text-sm text-[#adc6ff]">Bank setup submitted — Stripe is reviewing your account. Usually takes a few minutes.</p>
-        </div>
-      )}
-      {connectBanner === 'error' && (
-        <div className="rounded-xl border border-[#ffb4ab]/30 bg-[#ffb4ab]/10 p-4 flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-[#ffb4ab] flex-shrink-0" />
-          <p className="text-sm text-[#ffb4ab]">Something went wrong with bank setup. Please try again.</p>
-        </div>
-      )}
-
-      {/* Bank account CTA — show if not connected */}
-      {!stripePayoutsEnabled && (
-        <div className="rounded-xl border border-white/10 bg-[#1c1b1b] p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-[#adc6ff]/10 border border-[#adc6ff]/20 flex items-center justify-center flex-shrink-0">
-            <Building2 className="w-5 h-5 text-[#adc6ff]" />
-          </div>
-          <div className="flex-1">
-            <div className="font-['Manrope'] font-bold text-[#e5e2e1] mb-1">
-              {stripeConnected ? 'Bank setup incomplete' : 'Connect your bank account'}
-            </div>
-            <p className="text-xs text-[#8c909f] leading-relaxed">
-              {stripeConnected
-                ? 'Finish setting up your Stripe account to receive prize payouts directly to your bank.'
-                : 'Connect a bank account to receive prize payouts. Powered by Stripe — takes 2 minutes.'}
-            </p>
-          </div>
-          <button
-            onClick={handleConnectBank}
-            disabled={connectingBank}
-            className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] text-sm font-bold disabled:opacity-50"
-          >
-            {connectingBank ? <><Loader2 className="w-4 h-4 animate-spin" /> Connecting...</> : stripeConnected ? 'Complete Setup' : 'Connect Bank'}
-          </button>
-        </div>
-      )}
-
-      {stripePayoutsEnabled && (
-        <div className="rounded-xl border border-[#7dffa2]/20 bg-[#7dffa2]/5 p-4 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-[#7dffa2] flex-shrink-0" />
-          <div className="flex-1">
-            <span className="text-sm font-semibold text-[#7dffa2]">Bank account active</span>
-            <span className="text-xs text-[#8c909f] ml-2">Prize payouts go directly to your bank via Stripe.</span>
-          </div>
-          <button onClick={handleConnectBank} className="text-xs text-[#8c909f] hover:text-[#c2c6d5] transition-colors">
-            Update
-          </button>
-        </div>
-      )}
+      {/* Prize payout info — bank payouts launching soon */}
+      <div className="rounded-xl border border-[#adc6ff]/20 bg-[#adc6ff]/5 p-4 flex items-center gap-3">
+        <Trophy className="w-5 h-5 text-[#adc6ff] flex-shrink-0" />
+        <p className="text-sm text-[#adc6ff]">Prize payouts are coming soon. Your balance is tracked and will be transferable when payouts launch.</p>
+      </div>
 
       {/* W-9 alert banner */}
       {nearW9Threshold && (
@@ -349,7 +262,7 @@ export default function WalletPage() {
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-[#8c909f] mt-3">Prize payouts processed within 3-5 business days. Not available in WA, AZ, LA, MT, ID.</p>
+          <p className="text-[10px] text-[#8c909f] mt-3">Prize balances tracked now. Payouts launch soon. Not available in WA, AZ, LA, MT, ID.</p>
         </div>
       )}
 
@@ -427,8 +340,7 @@ export default function WalletPage() {
                   <div className="text-xs text-[#8c909f]">≈ ${(claim.amount / 100).toFixed(2)} USD</div>
                 </div>
                 <ul className="space-y-2 text-xs text-[#8c909f]">
-                  <li className="flex items-start gap-2"><span className="text-[#7dffa2] mt-0.5">•</span> Payout processed within 3-5 business days</li>
-                  <li className="flex items-start gap-2"><span className="text-[#7dffa2] mt-0.5">•</span> Entry fees are non-refundable</li>
+                  <li className="flex items-start gap-2"><span className="text-[#7dffa2] mt-0.5">•</span> Payout processed when bank payouts launch</li>
                   <li className="flex items-start gap-2"><span className="text-[#7dffa2] mt-0.5">•</span> Not available in WA, AZ, LA, MT, ID</li>
                   <li className="flex items-start gap-2"><span className="text-[#ffb780] mt-0.5">•</span> Prize winnings are taxable income</li>
                 </ul>

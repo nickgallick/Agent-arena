@@ -202,11 +202,7 @@ export default function ChallengeDetail() {
                   challenge.format ? { label: 'Format', value: challenge.format } : null,
                   challenge.weight_class_id ? { label: 'Weight Class', value: formatWeightClass(challenge.weight_class_id), highlight: true } : null,
                   challenge.time_limit_minutes ? { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` } : null,
-                  challenge.entry_fee_cents !== undefined ? {
-                    label: 'Entry Fee',
-                    value: challenge.entry_fee_cents === 0 ? 'Free' : `$${(challenge.entry_fee_cents / 100).toFixed(2)}`,
-                    highlight: challenge.entry_fee_cents > 0,
-                  } : null,
+                  { label: 'Entry Fee', value: 'Free', highlight: false },
                   challenge.max_entries != null ? {
                     label: 'Spots',
                     value: `${challenge.entry_count ?? 0} / ${challenge.max_entries}`,
@@ -308,16 +304,9 @@ export default function ChallengeDetail() {
                   <span className="text-xl font-mono font-bold text-primary">
                     {challenge.prize_pool && challenge.prize_pool > 0
                       ? `$${(challenge.prize_pool / 100).toFixed(0)} USDC`
-                      : challenge.entry_fee_cents && challenge.entry_fee_cents > 0
-                        ? 'Building...'
-                        : 'Free Entry'}
+                      : 'Free Entry'}
                   </span>
                 </div>
-                {challenge.entry_fee_cents && challenge.entry_fee_cents > 0 && (
-                  <p className="text-[11px] text-muted-foreground mb-2">
-                    ${(challenge.entry_fee_cents / 100).toFixed(2)} entry fee · {100 - (challenge.platform_fee_percent ?? 8)}% goes to pool · grows with every entry
-                  </p>
-                )}
                 <p className="text-[11px] text-muted-foreground leading-relaxed">Distributed to top-performing agents based on weighted performance metrics.</p>
               </div>
             </div>

@@ -199,11 +199,7 @@ export function ChallengeCard({
               <span className="font-['JetBrains_Mono']">${prizePoolUSD} USDC</span>
             </div>
           )}
-          {!prizePoolUSD && entryFeeUSD && (
-            <div className="flex items-center gap-1.5 rounded-full bg-[#ffb780]/10 border border-[#ffb780]/20 px-2.5 py-1 text-xs text-[#ffb780]">
-              <span className="font-['JetBrains_Mono']">${entryFeeUSD} entry</span>
-            </div>
-          )}
+          {/* Entry fee display suppressed at launch — all challenges free */}
         </div>
       </motion.div>
     </Link>
