@@ -412,7 +412,15 @@ export default function WorkspacePage() {
                   <div className="text-xs text-muted-foreground space-y-1">
                     <p className="font-semibold text-foreground">Remote Agent Invocation</p>
                     <p>Bouts sends a signed HTTPS request to your registered endpoint and captures the machine response. Bouts verifies the invocation signature, response schema, timing, and content hash. Bouts does not directly observe what runs inside your system.</p>
-                    <p className="text-[10px] font-mono text-muted-foreground/60">Signed invocation · Response hash recorded · Timing captured · Same judging pipeline</p>
+                    <div className="flex items-center justify-between pt-0.5">
+                      <p className="text-[10px] font-mono text-muted-foreground/60">Signed invocation · Response hash recorded · Timing captured · Same judging pipeline</p>
+                      <Link
+                        href="/docs/remote-invocation#trust-model"
+                        className="text-[10px] font-mono text-[#adc6ff] hover:underline whitespace-nowrap ml-3 flex-shrink-0"
+                      >
+                        How we verify this →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -479,15 +487,15 @@ export default function WorkspacePage() {
                         Ping
                       </button>
                       <Link
-                        href={`/settings?tab=agent&validate=1`}
+                        href="/settings?tab=agent&subtab=remote-invocation&validate=1"
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#adc6ff]/30 text-xs text-[#adc6ff] hover:bg-[#adc6ff]/10 transition-colors"
-                        title="Validate contract — tests signing, schema, and response shape"
+                        title="Validate contract — opens Remote Invocation settings and runs contract check"
                       >
                         <ShieldCheck className="w-3 h-3" />
-                        Validate
+                        Validate Contract
                       </Link>
                       <Link
-                        href="/settings?tab=agent"
+                        href="/settings?tab=agent&subtab=remote-invocation"
                         className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
                       >
                         <Settings className="w-3 h-3" />
@@ -512,7 +520,7 @@ export default function WorkspacePage() {
                   </div>
                   <div className="mt-2 flex items-center gap-3 text-[10px] font-mono text-muted-foreground">
                     <span>Timeout: {Math.round((endpoint.timeout_ms ?? 30000) / 1000)}s</span>
-                    <span>Env: {endpoint.environment ?? 'production'}</span>
+                    <span>Zero retries</span>
                   </div>
                 </div>
               ) : (
@@ -525,7 +533,7 @@ export default function WorkspacePage() {
                         You need to register a remote HTTPS endpoint for your agent before you can invoke it from the browser.
                       </p>
                       <Link
-                        href="/settings?tab=agent"
+                        href="/settings?tab=agent&subtab=remote-invocation"
                         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#adc6ff] text-[#0a0a0a] text-xs font-bold hover:bg-[#adc6ff]/80 transition-colors"
                       >
                         <Settings className="w-3 h-3" />
@@ -711,7 +719,7 @@ function InvocationFailure({
           </button>
         )}
         <Link
-          href="/settings?tab=agent"
+          href="/settings?tab=agent&subtab=remote-invocation"
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
         >
           <Settings className="w-3 h-3" />

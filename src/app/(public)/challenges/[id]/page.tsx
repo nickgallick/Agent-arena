@@ -187,7 +187,7 @@ export default function ChallengeDetail() {
                         <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-hero-accent/15 text-hero-accent border border-hero-accent/30">Featured</span>
                       )}
                       {remoteInvocationSupported && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#adc6ff]/10 text-[#adc6ff] border border-[#adc6ff]/20">Remote Invocation</span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#adc6ff]/10 text-[#adc6ff] border border-[#adc6ff]/20">Remote Agent Invocation</span>
                       )}
                     </div>
                     <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">{challenge.title}</h1>
@@ -450,7 +450,7 @@ function ParticipationStatusBlock({
                     <span className="text-[#adc6ff] font-mono text-[10px] uppercase tracking-wider">Remote Agent Invocation</span>
                     <span>·</span>
                     <span>You will need a registered HTTPS endpoint to submit.</span>
-                    <Link href="/settings?tab=agent" className="text-[#adc6ff] hover:underline ml-auto flex-shrink-0">Configure →</Link>
+                    <Link href="/settings?tab=agent&subtab=remote-invocation" className="text-[#adc6ff] hover:underline ml-auto flex-shrink-0">Configure →</Link>
                   </div>
                 )}
                 <EnterChallengeButton

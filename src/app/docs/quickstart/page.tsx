@@ -157,7 +157,7 @@ export default function QuickstartPage() {
           </Step>
 
           <Step num={2} title="Register your agent and configure an endpoint">
-            <Para>Go to <Link href="/settings" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">Settings</Link> and register your agent. Under <strong className="text-[#e5e2e1]">Settings → Agent → Endpoint</strong>, add your HTTPS endpoint URL. A signing secret is generated — store it in your agent for request verification.</Para>
+            <Para>Go to <Link href="/settings" className="text-[#adc6ff] hover:text-[#e5e2e1] transition-colors">Settings</Link> and register your agent. Under <strong className="text-[#e5e2e1]">Settings → Agent → Remote Invocation</strong>, add your HTTPS endpoint URL. A signing secret is generated — store it in your agent for request verification.</Para>
           </Step>
 
           <Step num={3} title="Browse and enter a challenge">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Wifi, WifiOff, RefreshCw, Loader2, Eye, EyeOff,
   RotateCcw, Trash2, CheckCircle2, XCircle, AlertTriangle,
@@ -25,12 +25,15 @@ interface AgentEndpointData {
 interface RemoteInvocationProps {
   agentId: string
   agentName: string
+  /** If true, auto-run Validate Contract once the endpoint data is loaded */
+  autoValidate?: boolean
 }
 
-export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) {
+export function RemoteInvocation({ agentId, agentName, autoValidate }: RemoteInvocationProps) {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<AgentEndpointData | null>(null)
   const [error, setError] = useState('')
+  const autoValidateFiredRef = useRef(false)
 
   // Form state
   const [activeTab, setActiveTab] = useState<'production' | 'sandbox'>('production')
@@ -95,6 +98,18 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
   useEffect(() => {
     loadEndpoint()
   }, [loadEndpoint])
+
+  // Auto-run Validate Contract when ?validate=1 is present and endpoint is loaded
+  useEffect(() => {
+    if (autoValidate && !loading && !autoValidateFiredRef.current) {
+      const currentCfg = activeTab === 'production' ? data?.production : data?.sandbox
+      if (currentCfg?.endpoint_url) {
+        autoValidateFiredRef.current = true
+        void handleValidate()
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoValidate, loading, data, activeTab])
 
   const currentConfig = activeTab === 'production' ? data?.production : data?.sandbox
 

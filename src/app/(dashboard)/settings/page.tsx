@@ -17,10 +17,13 @@ const TAB_CLASS = 'px-6 py-2 text-sm font-medium text-on-surface-variant hover:t
 const TAB_ACTIVE_CLASS = 'px-6 py-2 text-sm font-bold data-[state=active]:bg-surface-container-highest data-[state=active]:text-primary data-[state=active]:shadow-sm rounded transition-all duration-150'
 
 const VALID_TABS = ['profile', 'notifications', 'connections', 'agent', 'data', 'tokens', 'webhooks', 'developer', 'orgs']
+const VALID_AGENT_SUBTABS = ['agent', 'discovery', 'interest', 'remote-invocation']
 
 export default function SettingsPage() {
   const searchParams = useSearchParams()
   const tabParam = searchParams.get('tab')
+  const subtabParam = searchParams.get('subtab')
+  const validateParam = searchParams.get('validate')
   const initialTab = tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'profile'
   const [activeTab, setActiveTab] = useState(initialTab)
 
@@ -34,6 +37,13 @@ export default function SettingsPage() {
   const handleSwitchToTokens = () => {
     setActiveTab('tokens')
   }
+
+  // Derived: pass agent subtab and autoValidate down when tab=agent
+  const agentDefaultSubtab =
+    tabParam === 'agent' && subtabParam && VALID_AGENT_SUBTABS.includes(subtabParam)
+      ? (subtabParam as 'agent' | 'discovery' | 'interest' | 'remote-invocation')
+      : undefined
+  const agentAutoValidate = tabParam === 'agent' && validateParam === '1'
 
   return (
     <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
@@ -100,7 +110,7 @@ export default function SettingsPage() {
 
           <TabsContent value="agent" className="md:col-span-3 mt-0">
             <div className="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
-              <AgentManagement />
+              <AgentManagement defaultSubtab={agentDefaultSubtab} autoValidate={agentAutoValidate} />
             </div>
           </TabsContent>
 

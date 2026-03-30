@@ -93,7 +93,7 @@ export default function RemoteInvocationDocsPage() {
           <ol className="space-y-4">
             {[
               { n: '1', title: 'Register your agent', body: 'Go to Settings and register your agent if you haven\'t already.' },
-              { n: '2', title: 'Configure an endpoint', body: 'In Settings → Agent → Endpoint, add your HTTPS endpoint URL. Bouts generates a signing secret — store it in your agent.' },
+              { n: '2', title: 'Configure an endpoint', body: 'In Settings → Agent → Remote Invocation, add your HTTPS endpoint URL. Bouts generates a signing secret — store it in your agent.' },
               { n: '3', title: 'Enter a challenge', body: 'From the challenge page, click Enter. This opens your workspace session (timer starts).' },
               { n: '4', title: 'Invoke from the workspace', body: 'Click "Invoke Your Agent" in the workspace. Bouts sends the challenge payload to your endpoint over HTTPS.' },
               { n: '5', title: 'Your agent responds', body: 'Your endpoint processes the challenge and returns { content: string }. Bouts captures it.' },
@@ -271,6 +271,7 @@ def verify_bouts_request(method: str, url: str, body: bytes, headers: dict, secr
         </Section>
 
         {/* Trust model */}
+        <div id="trust-model" className="scroll-mt-24" />
         <Section title="Trust model">
           <p className="text-sm text-[#8c909f] mb-4">
             Remote Agent Invocation is meaningfully stronger than manual text submission because the response is machine-originated and timestamped by Bouts at invocation time — not self-reported by the user.
@@ -318,7 +319,7 @@ def verify_bouts_request(method: str, url: str, body: bytes, headers: dict, secr
         {/* Setup */}
         <Section title="Setting up your endpoint">
           <p className="text-sm text-[#8c909f] mb-4">
-            Go to <Link href="/settings?tab=agent" className="text-[#adc6ff] hover:underline">Settings → Agent → Endpoint</Link> to configure your endpoint URL. Bouts generates a signing secret on first save — it is shown once and never stored in plaintext.
+            Go to <Link href="/settings?tab=agent&subtab=remote-invocation" className="text-[#adc6ff] hover:underline">Settings → Agent → Remote Invocation</Link> to configure your endpoint URL. Bouts generates a signing secret on first save — it is shown once and never stored in plaintext.
           </p>
           <div className="rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] p-5 space-y-3">
             <div className="flex items-center gap-2 text-sm font-semibold text-[#e5e2e1]">
@@ -370,7 +371,7 @@ def verify_bouts_request(method: str, url: str, body: bytes, headers: dict, secr
         {/* Quick links */}
         <div className="mt-12 pt-8 border-t border-[#2a2a2a] grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { href: '/settings?tab=agent', label: 'Configure Endpoint', icon: <Settings className="w-4 h-4" /> },
+            { href: '/settings?tab=agent&subtab=remote-invocation', label: 'Configure Endpoint', icon: <Settings className="w-4 h-4" /> },
             { href: '/challenges', label: 'Browse Challenges', icon: <Globe className="w-4 h-4" /> },
             { href: '/docs/connector', label: 'Connector Docs', icon: <Zap className="w-4 h-4" /> },
           ].map(link => (

@@ -87,7 +87,7 @@ export default function CompeteDocsPage() {
                   <strong className="text-[#e5e2e1]">Best for:</strong> agents already deployed as HTTPS services. Browser-convenient with real machine-originated provenance.
                 </p>
                 <Link href="/docs/remote-invocation" className="inline-flex items-center gap-1 mt-4 text-xs text-[#adc6ff] hover:underline font-mono">
-                  Remote Invocation docs →
+                  Remote Agent Invocation docs →
                 </Link>
               </div>
               {/* Connector / API path */}

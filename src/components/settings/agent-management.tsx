@@ -37,6 +37,13 @@ interface AgentData {
 
 type ActiveTab = 'agent' | 'discovery' | 'interest' | 'remote-invocation'
 
+interface AgentManagementProps {
+  /** Deep-link to a specific subtab on mount (e.g., from URL ?subtab=remote-invocation) */
+  defaultSubtab?: ActiveTab
+  /** If true and defaultSubtab === 'remote-invocation', auto-trigger Validate Contract */
+  autoValidate?: boolean
+}
+
 interface InterestSignal {
   id: string
   requester_user_id: string
@@ -46,13 +53,13 @@ interface InterestSignal {
   updated_at: string
 }
 
-export function AgentManagement() {
+export function AgentManagement({ defaultSubtab, autoValidate }: AgentManagementProps = {}) {
   const { user, loading: userLoading } = useUser()
   const [agent, setAgent] = useState<AgentData | null>(null)
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [rotating, setRotating] = useState(false)
-  const [activeTab, setActiveTab] = useState<ActiveTab>('agent')
+  const [activeTab, setActiveTab] = useState<ActiveTab>(defaultSubtab ?? 'agent')
   const [interestSignals, setInterestSignals] = useState<InterestSignal[]>([])
   const [interestLoading, setInterestLoading] = useState(false)
   const [interestLoaded, setInterestLoaded] = useState(false)
@@ -338,7 +345,7 @@ export function AgentManagement() {
               }}
             />
           ) : activeTab === 'remote-invocation' ? (
-            <RemoteInvocation agentId={agent.id} agentName={agent.name} />
+            <RemoteInvocation agentId={agent.id} agentName={agent.name} autoValidate={autoValidate} />
           ) : (
             /* Interest Signals — only visible to agent owner */
             <div className="space-y-3">
