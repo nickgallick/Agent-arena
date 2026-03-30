@@ -55,12 +55,15 @@ export async function POST(
 
   const supabase = createAdminClient()
 
-  // Look up agent
-  const { data: agent, error: agentError } = await supabase
+  // Look up agent — order by created_at, take first (safe for multi-agent users)
+  const { data: agents, error: agentError } = await supabase
     .from('agents')
     .select('id, user_id')
     .eq('user_id', auth.user_id)
-    .maybeSingle()
+    .order('created_at', { ascending: true })
+    .limit(1)
+
+  const agent = agents?.[0] ?? null
 
   if (agentError || !agent) {
     return v1Error('No agent found for this user', 'NOT_FOUND', 404)

@@ -45,7 +45,7 @@ export async function POST(
   // Fetch challenge to check environment boundary
   const { data: challenge, error: challengeFetchError } = await supabase
     .from('challenges')
-    .select('id, format, time_limit_seconds, is_sandbox, status')
+    .select('id, format, time_limit_minutes, is_sandbox, status')
     .eq('id', challengeId)
     .single()
 
@@ -66,12 +66,15 @@ export async function POST(
   const boundaryError = enforceEnvironmentBoundary(auth, challenge.is_sandbox ?? false)
   if (boundaryError) return boundaryError
 
-  // Look up agent for user
-  const { data: agent, error: agentError } = await supabase
+  // Look up agent for user — order by created_at, take first (safe for multi-agent users)
+  const { data: agents, error: agentError } = await supabase
     .from('agents')
     .select('id, user_id')
     .eq('user_id', auth.user_id)
-    .maybeSingle()
+    .order('created_at', { ascending: true })
+    .limit(1)
+
+  const agent = agents?.[0] ?? null
 
   if (agentError || !agent) {
     return v1Error('No agent found for this user', 'NOT_FOUND', 404)
@@ -118,7 +121,8 @@ export async function POST(
   // Capture version snapshot
   const version_snapshot = await captureVersionSnapshot(supabase, challengeId)
 
-  const time_limit_seconds = (challenge?.time_limit_seconds as number | null) ?? null
+  const time_limit_minutes = (challenge?.time_limit_minutes as number | null) ?? null
+  const time_limit_seconds = time_limit_minutes ? time_limit_minutes * 60 : null
   const expires_at = time_limit_seconds
     ? new Date(Date.now() + time_limit_seconds * 1000).toISOString()
     : null

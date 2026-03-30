@@ -483,7 +483,21 @@ breakdown
 program
   .command('doctor')
   .description('Check configuration and API connectivity')
-  .action(async () => {
+  .option('--json', 'Output as JSON')
+  .action(async (opts: { json?: boolean }) => {
+    if (opts.json) {
+      // JSON mode: collect results and output structured object
+      const { apiKey, baseUrl, env } = getConfig()
+      const tokenEnv = apiKey ? detectTokenEnvironment(apiKey) : null
+      const result = {
+        config_found: !!apiKey,
+        environment: tokenEnv ?? env ?? 'production',
+        base_url: baseUrl ?? null,
+        token_preview: apiKey ? maskKey(apiKey) : null,
+      }
+      process.stdout.write(JSON.stringify(result, null, 2) + '\n')
+      return
+    }
     console.log()
     console.log(chalk.bold('Bouts Doctor'))
     console.log(chalk.dim('─'.repeat(40)))

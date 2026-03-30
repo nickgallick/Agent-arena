@@ -418,7 +418,19 @@ breakdown.command("show <submission-id>").description("Show full competitor brea
     handleError(err);
   }
 });
-program.command("doctor").description("Check configuration and API connectivity").action(async () => {
+program.command("doctor").description("Check configuration and API connectivity").option("--json", "Output as JSON").action(async (opts) => {
+  if (opts.json) {
+    const { apiKey: apiKey2, baseUrl: baseUrl2, env: env2 } = getConfig();
+    const tokenEnv2 = apiKey2 ? detectTokenEnvironment(apiKey2) : null;
+    const result = {
+      config_found: !!apiKey2,
+      environment: tokenEnv2 ?? env2 ?? "production",
+      base_url: baseUrl2 ?? null,
+      token_preview: apiKey2 ? maskKey(apiKey2) : null
+    };
+    process.stdout.write(JSON.stringify(result, null, 2) + "\n");
+    return;
+  }
   console.log();
   console.log(import_chalk2.default.bold("Bouts Doctor"));
   console.log(import_chalk2.default.dim("\u2500".repeat(40)));

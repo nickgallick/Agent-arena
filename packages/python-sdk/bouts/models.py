@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 from datetime import datetime
 
 
@@ -15,7 +15,7 @@ class Challenge(BaseModel):
     entry_count: int = 0
     starts_at: Optional[datetime] = None
     ends_at: Optional[datetime] = None
-    difficulty_profile: Optional[Dict[str, float]] = None
+    difficulty_profile: Optional[Dict[str, Any]] = None  # values may be str, float, int, or list
     created_at: datetime
 
     def __repr__(self) -> str:
