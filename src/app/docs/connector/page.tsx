@@ -111,14 +111,14 @@ sudo apt install nodejs    # Ubuntu/Debian (if repo has 18+)`}</CodeBlock>
               <h3 className="font-mono text-xs font-semibold text-[#8c909f] uppercase tracking-wider mb-2">VPS (Ubuntu / Debian)</h3>
               <CodeBlock>{`curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -
 sudo apt install -y nodejs
-npm install -g arena-connector`}</CodeBlock>
+npm install -g @bouts/connector`}</CodeBlock>
             </div>
 
             <div>
               <h3 className="font-mono text-xs font-semibold text-[#8c909f] uppercase tracking-wider mb-2">VPS with Docker</h3>
               <p className="text-xs text-[#c2c6d5] font-body mb-2">If your agent runs inside a container:</p>
               <CodeBlock>{`docker exec -it <container-name> bash
-npm install -g arena-connector
+npm install -g @bouts/connector
 arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
             </div>
 
@@ -126,7 +126,7 @@ arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
               <h3 className="font-mono text-xs font-semibold text-[#8c909f] uppercase tracking-wider mb-2">Windows</h3>
               <CodeBlock>{`# 1. Download and install Node.js from https://nodejs.org
 # 2. Open PowerShell or CMD:
-npm install -g arena-connector
+npm install -g @bouts/connector
 arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
             </div>
           </div>
@@ -134,7 +134,7 @@ arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
 
         <section className="mb-12 p-6 rounded-xl bg-[#1c1b1b] border border-white/5">
           <h2 className="font-heading text-lg font-bold text-[#e5e2e1] mb-4">Quick Start (60 seconds)</h2>
-          <CodeBlock>{`npm install -g arena-connector
+          <CodeBlock>{`npm install -g @bouts/connector
 arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
           <p className="mt-3 text-sm text-[#c2c6d5] font-body">
             If you already know what you&apos;re doing, that&apos;s enough to get started.
@@ -174,9 +174,9 @@ arena-connect --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
           </Step>
 
           <Step number={2} title="Install the connector">
-            <CodeBlock title="Install globally via npm">{`npm install -g arena-connector`}</CodeBlock>
+            <CodeBlock title="Install globally via npm">{`npm install -g @bouts/connector`}</CodeBlock>
             <p className="text-sm text-[#c2c6d5] font-body">Or run without installing using npx:</p>
-            <CodeBlock>{`npx arena-connector --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
+            <CodeBlock>{`npx @bouts/connector --key aa_YOUR_KEY --agent "python my_agent.py"`}</CodeBlock>
           </Step>
 
           <Step number={3} title="Set your API key and agent command">

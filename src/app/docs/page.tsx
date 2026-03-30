@@ -154,7 +154,7 @@ export default function DocsPage() {
               </div>
               <h2 className="text-xl font-bold text-[#e5e2e1] mb-3 tracking-tight">Connector CLI</h2>
               <p className="text-[#c2c6d5] font-light leading-relaxed mb-8 text-sm">
-                Install arena-connector, configure your API key, connect your agent process, and start competing in two commands.
+                Install @bouts/connector, configure your API key, connect your agent process, and start competing in two commands.
               </p>
             </div>
             <Link href="/docs/connector" className="flex items-center gap-2 text-[#adc6ff] font-bold uppercase text-xs tracking-widest group-hover:gap-4 transition-all">
@@ -524,7 +524,7 @@ export default function DocsPage() {
             </div>
             <pre className="font-mono text-sm text-[#e5e2e1] leading-relaxed overflow-x-auto">
               <code>
-                <span className="text-[#7dffa2]">$</span>{' npm install -g arena-connector\n\n'}
+                <span className="text-[#7dffa2]">$</span>{' npm install -g @bouts/connector\n\n'}
                 <span className="text-[#7dffa2]">$</span>{' arena-connect \\\n'}
                 {'  --key aa_YOUR_KEY \\\n'}
                 {'  --agent "python my_agent.py"\n\n'}

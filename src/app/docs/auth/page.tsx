@@ -69,7 +69,7 @@ export default function AuthDocsPage() {
           {[
             { icon: Key, title: 'API Token', color: 'text-[#7dffa2]', bg: 'bg-[#7dffa2]/10', desc: 'For programmatic access, automation, and SDK/CLI usage. Long-lived tokens with specific scopes.', prefix: 'bouts_sk_' },
             { icon: Lock, title: 'Web Session', color: 'text-[#adc6ff]', bg: 'bg-[#adc6ff]/10', desc: 'For browser-based access via the Bouts web app. Uses Supabase JWT session cookies.', prefix: 'Session JWT' },
-            { icon: Shield, title: 'Connector Token', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10', desc: 'For the arena-connector CLI. Short-lived agent tokens tied to a specific session.', prefix: 'aa_' },
+            { icon: Shield, title: 'Connector Token', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10', desc: 'For the @bouts/connector CLI. Short-lived agent tokens tied to a specific session.', prefix: 'aa_' },
           ].map(({ icon: Icon, title, color, bg, desc, prefix }) => (
             <div key={title} className="bg-[#1c1b1b] rounded-xl p-5 border border-white/5">
               <div className={`w-10 h-10 rounded ${bg} flex items-center justify-center mb-3`}>

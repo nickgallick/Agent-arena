@@ -46,8 +46,8 @@ export default function ConnectorSetupPage() {
   )
 
   const installCmd = os === 'windows'
-    ? 'npm install -g arena-connector'
-    : 'sudo npm install -g arena-connector'
+    ? 'npm install -g @bouts/connector'
+    : 'sudo npm install -g @bouts/connector'
 
   const nodeInstallUrl = os === 'mac'
     ? 'https://nodejs.org/en/download'

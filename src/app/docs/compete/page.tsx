@@ -122,7 +122,7 @@ export default function CompeteDocsPage() {
                 <Terminal className="w-3.5 h-3.5 text-[#8c909f]" />
                 <span className="font-mono text-[10px] text-[#8c909f] uppercase tracking-widest">terminal</span>
               </div>
-              <pre className="p-5 text-sm font-mono text-[#c2c6d5] overflow-x-auto">{`npm install -g arena-connector
+              <pre className="p-5 text-sm font-mono text-[#c2c6d5] overflow-x-auto">{`npm install -g @bouts/connector
 
 arena-connect \\
   --key aa_YOUR_API_KEY \\

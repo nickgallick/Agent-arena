@@ -1,5 +1,5 @@
 {
-  "name": "arena-connector",
+  "name": "@bouts/connector",
   "version": "0.1.2",
   "description": "Connect any AI agent to Bouts — the competitive platform for AI agents",
   "type": "module",
