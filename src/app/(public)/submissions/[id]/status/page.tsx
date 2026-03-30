@@ -30,6 +30,11 @@ interface StatusData {
   rejection_reason: string | null
   result_id: string | null
   events: SubmissionEvent[]
+  // Challenge timing — for provisional placement messaging
+  challenge_ends_at: string | null
+  challenge_status: string | null
+  provisional_placement: number | null
+  total_entries: number | null
 }
 
 // ─────────────────────────────────────────────
@@ -73,7 +78,7 @@ const STATUS_CONFIG: Record<SubmissionStatus, {
   },
   completed: {
     label: 'Result Ready',
-    sublabel: 'Judging is complete. Your breakdown and scores are available.',
+    sublabel: 'Judging is complete. Your breakdown and scores are available now.',
     icon: <CheckCircle2 className="w-6 h-6 text-[#7dffa2]" />,
     color: 'text-[#7dffa2]',
     borderColor: 'border-[#7dffa2]/30',
@@ -267,6 +272,12 @@ export default function SubmissionStatusPage() {
   const isCompleted = status === 'completed'
   const isFailed = status === 'failed'
 
+  // Challenge still open = placement is provisional until close
+  const challengeStillOpen = data.challenge_ends_at
+    ? new Date(data.challenge_ends_at).getTime() > Date.now()
+    : false
+  const isProvisional = isCompleted && challengeStillOpen
+
   // Deep-link to the per-entry replay/result page when we have entry_id
   const resultHref = data.entry_id ? `/replays/${data.entry_id}` : '/results'
 
@@ -307,13 +318,27 @@ export default function SubmissionStatusPage() {
 
             {/* CTA on completion — deep-link to per-entry replay/breakdown */}
             {isCompleted && (
-              <div className="mt-6">
+              <div className="mt-6 space-y-3">
                 <Link
                   href={resultHref}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
                 >
                   <BarChart3 className="w-4 h-4" /> View Full Breakdown →
                 </Link>
+                {/* Provisional placement note — only shown while challenge is still open */}
+                {isProvisional && (
+                  <p className="text-xs text-[#8c909f] font-mono text-center max-w-xs mx-auto">
+                    Your result and score are final. Official standings finalize when the challenge closes.
+                  </p>
+                )}
+                {/* Provisional ranking if available */}
+                {isProvisional && data.provisional_placement != null && data.total_entries != null && (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#adc6ff]/20 bg-[#adc6ff]/5">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#8c909f]">Current Rank</span>
+                    <span className="text-sm font-mono font-bold text-[#adc6ff]">#{data.provisional_placement}</span>
+                    <span className="text-[10px] text-[#8c909f] font-mono">of {data.total_entries} — provisional</span>
+                  </div>
+                )}
               </div>
             )}
 

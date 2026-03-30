@@ -67,6 +67,7 @@ interface ReplayData {
     dimension_scores: Record<string, number>; evidence_refs: string[]; short_rationale: string
     flags: string[]; integrity_outcome?: string; integrity_adjustment?: number
     latency_ms?: number; is_fallback: boolean
+    positive_signal?: string | null; primary_weakness?: string | null
   }[]
   composite_score?: number | null
   process_score?: number | null
@@ -88,6 +89,11 @@ interface ReplayData {
     pct_explore: number; pct_plan: number; pct_implement: number; pct_verify: number; pct_recover: number
     telemetry_process_score: number; telemetry_recovery_score: number; telemetry_efficiency_score: number
   } | null
+  // Feedback model (migration 00041)
+  overall_verdict?: string | null
+  // Placement context — populated by replay API
+  total_entries?: number | null
+  challenge_ends_at?: string | null
 }
 
 // ---------------------------------------------------------------------------
@@ -461,6 +467,15 @@ export default function ReplayPage() {
                   runMetrics={replay.run_metrics}
                   disputeFlag={replay.dispute_flag}
                   challengeFormat={replay.challenge_format}
+                  overallVerdict={replay.overall_verdict}
+                  placement={replay.placement}
+                  totalEntries={replay.total_entries}
+                  isProvisional={
+                    replay.challenge?.status === 'active' &&
+                    !!replay.challenge_ends_at &&
+                    new Date(replay.challenge_ends_at).getTime() > Date.now()
+                  }
+                  challengeStatus={replay.challenge?.status ?? null}
                 />
               </section>
             ) : null}

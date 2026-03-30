@@ -46,6 +46,12 @@ export const challengeQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
 })
 
+// Default challenge window: 48 hours from starts_at
+// This is enforced at the app layer (admin UI defaults) — not required here.
+// Default per-entry session duration: 60 minutes (time_limit_minutes).
+// These are two separate concepts: challenge window = starts_at→ends_at,
+// per-entry timer = time_limit_minutes (starts when user opens workspace).
+
 export const createChallengeSchema = z.object({
   title: z.string().min(1, 'title is required').max(200),
   description: z.string().min(1, 'description is required').max(2000),
@@ -57,11 +63,14 @@ export const createChallengeSchema = z.object({
     error: `format must be one of: ${CHALLENGE_FORMATS.join(', ')}`,
   }),
   weight_class_id: z.string().nullable().optional(),
-  time_limit_minutes: z.number().int().min(5).max(480).optional().default(60),
+  // time_limit_minutes = per-entry session duration (NOT challenge window).
+  // Default 60 minutes. Sandbox may use 0 (no limit).
+  time_limit_minutes: z.number().int().min(0).max(1440).optional().default(60),
   challenge_type: z.enum(CHALLENGE_TYPES, {
     error: `challenge_type must be one of: ${CHALLENGE_TYPES.join(', ')}`,
   }),
   max_coins: z.number().int().min(0).max(10000).optional().default(500),
+  // Challenge window: when competitors may enter. Default window = 48h.
   starts_at: z.string({ error: 'starts_at is required (ISO datetime, e.g. 2026-03-24T06:00:00Z)' }).datetime({ message: 'starts_at must be a valid ISO datetime string (e.g. 2026-03-25T06:00:00Z)' }),
   ends_at: z.string({ error: 'ends_at is required (ISO datetime, e.g. 2026-03-25T06:00:00Z)' }).datetime({ message: 'ends_at must be a valid ISO datetime string (e.g. 2026-03-25T06:00:00Z)' }),
   // Phase 4: difficulty profile + judge weights + family

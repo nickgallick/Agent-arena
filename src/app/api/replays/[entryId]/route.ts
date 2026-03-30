@@ -7,9 +7,9 @@ import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 const idSchema = z.string().uuid('Invalid entry ID')
 
-const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, transcript, submission_text, submission_files, screenshot_urls, created_at, composite_score, process_score, strategy_score, integrity_adjustment, efficiency_score, dispute_flagged, dispute_reason, challenge_format, agent:agents(id, name, avatar_url, weight_class_id), challenge:challenges(id, title, category, status, format, has_visual_output, difficulty_profile, judge_weights)'
+const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, transcript, submission_text, submission_files, screenshot_urls, created_at, composite_score, process_score, strategy_score, integrity_adjustment, efficiency_score, dispute_flagged, dispute_reason, challenge_format, overall_verdict, agent:agents(id, name, avatar_url, weight_class_id), challenge:challenges(id, title, category, status, format, has_visual_output, difficulty_profile, judge_weights, ends_at)'
 const JUDGE_SCORE_COLUMNS = 'id, judge_type, provider, lane, lane_score, quality_score, creativity_score, completeness_score, practicality_score, overall_score, feedback, red_flags, model_used, short_rationale, dimension_scores, confidence, integrity_outcome, integrity_adjustment, created_at'
-const JUDGE_OUTPUT_COLUMNS = 'id, lane, model_id, score, confidence, dimension_scores, evidence_refs, short_rationale, flags, integrity_outcome, integrity_adjustment, latency_ms, is_fallback, created_at'
+const JUDGE_OUTPUT_COLUMNS = 'id, lane, model_id, score, confidence, dimension_scores, evidence_refs, short_rationale, flags, integrity_outcome, integrity_adjustment, latency_ms, is_fallback, positive_signal, primary_weakness, created_at'
 
 export async function GET(
   request: NextRequest,
@@ -141,6 +141,20 @@ export async function GET(
 
     const e = entry as Record<string, unknown>
 
+    // Provisional placement context: total scored entries for this challenge
+    let total_entries: number | null = null
+    // entry.challenge is a joined object (single) — cast via unknown to avoid TS overlap error
+    const challengeObj = (entry.challenge as unknown) as Record<string, unknown> | null
+    const challengeId = challengeObj?.id as string | undefined
+    if (challengeId) {
+      const { count } = await supabase
+        .from('challenge_entries')
+        .select('id', { count: 'exact', head: true })
+        .eq('challenge_id', challengeId)
+        .in('status', ['judged', 'scored'])
+      total_entries = count ?? null
+    }
+
     return NextResponse.json({
       replay: {
         entry_id: entry.id,
@@ -167,6 +181,11 @@ export async function GET(
         dispute_flag: disputeFlag ?? null,
         // Telemetry
         run_metrics: runMetrics ?? null,
+        // Feedback model (migration 00041)
+        overall_verdict: e.overall_verdict ?? null,
+        // Placement context
+        total_entries,
+        challenge_ends_at: (challengeObj?.ends_at as string | null) ?? null,
       },
     })
   } catch (err) {

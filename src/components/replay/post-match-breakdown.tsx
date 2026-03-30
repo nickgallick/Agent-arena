@@ -1,12 +1,28 @@
 'use client'
 
-// PostMatchBreakdown — Phase 6
-// Shows real lane scores, telemetry, dispute status, dimension breakdowns
-// All data sourced from judge_outputs + run_metrics — no fake data
-// Forge · 2026-03-27
+// PostMatchBreakdown — Launch Feedback Model
+// Forge · 2026-03-31
+//
+// Feedback design rules (enforced here, not just in docs):
+// - Overall verdict: synthesized from actual lane data. Never generic filler.
+// - Per-lane: score + evidence-linked explanation + strongest positive + primary weakness
+// - "What to improve": max 5 items, derived from actual weak signals — not boilerplate
+// - Relative context: median comparison only when we have enough entries
+// - Provisional placement shown with explicit label when challenge still open
+//
+// Nothing in this component renders if the underlying data doesn't support it.
+// We suppress rather than show weak/vague statements.
 
 import { CapabilityRadar } from '@/components/leaderboard/capability-radar'
-import { AlertTriangle, CheckCircle, Shield, Zap, Brain, Wrench, BarChart2, Clock } from 'lucide-react'
+import {
+  AlertTriangle, CheckCircle, Shield, Zap, Brain, Wrench,
+  BarChart2, Clock, TrendingUp, TrendingDown, ArrowRight,
+  Trophy, Info
+} from 'lucide-react'
+
+// ─────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────
 
 interface JudgeOutput {
   id: string
@@ -22,6 +38,9 @@ interface JudgeOutput {
   integrity_adjustment?: number
   latency_ms?: number
   is_fallback: boolean
+  // New columns (migration 00041) — populated by judge when available
+  positive_signal?: string | null
+  primary_weakness?: string | null
 }
 
 interface RunMetrics {
@@ -66,30 +85,413 @@ interface PostMatchBreakdownProps {
   runMetrics?: RunMetrics | null
   disputeFlag?: DisputeFlag | null
   challengeFormat?: string | null
+  // Overall verdict — set during judging finalization (migration 00041)
+  // If null, we synthesize from lane data rather than showing nothing
+  overallVerdict?: string | null
+  // Placement context
+  placement?: number | null
+  totalEntries?: number | null
+  isProvisional?: boolean
+  challengeStatus?: string | null
 }
 
-const LANE_META: Record<string, { label: string; icon: React.ElementType; color: string; model: string }> = {
-  process:   { label: 'Process',   icon: Wrench, color: 'text-blue-400',   model: 'Claude' },
-  strategy:  { label: 'Strategy',  icon: Brain,  color: 'text-purple-400', model: 'GPT-4o' },
-  integrity: { label: 'Integrity', icon: Shield, color: 'text-green-400',  model: 'Gemini' },
-  audit:     { label: 'Audit',     icon: BarChart2, color: 'text-yellow-400', model: 'Claude Opus' },
+// ─────────────────────────────────────────────
+// Lane metadata
+// ─────────────────────────────────────────────
+
+const LANE_META: Record<string, {
+  label: string
+  icon: React.ElementType
+  color: string
+  barColor: string
+  model: string
+  weight: string
+  description: string
+}> = {
+  objective: {
+    label: 'Objective',
+    icon: BarChart2,
+    color: 'text-[#7dffa2]',
+    barColor: 'bg-[#7dffa2]',
+    model: 'Multi-judge',
+    weight: '45–65%',
+    description: 'Correctness, completeness, and hidden test performance',
+  },
+  process: {
+    label: 'Process',
+    icon: Wrench,
+    color: 'text-blue-400',
+    barColor: 'bg-blue-500',
+    model: 'Claude',
+    weight: '20%',
+    description: 'Execution quality, tool use, recovery behavior',
+  },
+  strategy: {
+    label: 'Strategy',
+    icon: Brain,
+    color: 'text-purple-400',
+    barColor: 'bg-purple-500',
+    model: 'GPT-4o',
+    weight: '20%',
+    description: 'Decomposition, prioritization, reasoning quality',
+  },
+  integrity: {
+    label: 'Integrity',
+    icon: Shield,
+    color: 'text-green-400',
+    barColor: 'bg-green-500',
+    model: 'Gemini',
+    weight: '10%',
+    description: 'Honest competition, self-policing, no exploits',
+  },
+  audit: {
+    label: 'Audit',
+    icon: BarChart2,
+    color: 'text-yellow-400',
+    barColor: 'bg-yellow-500',
+    model: 'Claude Opus',
+    weight: 'arbitration',
+    description: 'Triggered when judge spread exceeds threshold',
+  },
 }
 
-function ScoreBar({ value, max = 100, color = 'bg-blue-500' }: { value: number; max?: number; color?: string }) {
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
+
+function ScoreBar({ value, max = 100, colorClass = 'bg-blue-500' }: { value: number; max?: number; colorClass?: string }) {
   const pct = Math.max(0, Math.min(100, (value / max) * 100))
   return (
     <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-      <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
+      <div className={`h-full rounded-full transition-all ${colorClass}`} style={{ width: `${pct}%` }} />
     </div>
   )
 }
 
 function pct(v: number) { return `${(v * 100).toFixed(0)}%` }
+
 function scoreColor(v: number) {
   if (v >= 70) return 'text-green-400'
   if (v >= 40) return 'text-yellow-400'
   return 'text-red-400'
 }
+
+function scoreBand(v: number): 'strong' | 'mid' | 'weak' {
+  if (v >= 70) return 'strong'
+  if (v >= 40) return 'mid'
+  return 'weak'
+}
+
+// ─────────────────────────────────────────────
+// Verdict synthesis
+// Derives a concise, specific overall verdict from real lane data.
+// Rules:
+//   - Must reference at least one concrete signal (score differential, flag, metric)
+//   - Never uses: "Good effort", "room for improvement", "nice work overall"
+//   - Returns null if data is insufficient to say anything specific
+// ─────────────────────────────────────────────
+
+function synthesizeVerdict(
+  judgeOutputs: JudgeOutput[],
+  compositeScore: number | null | undefined,
+  processScore: number | null | undefined,
+  strategyScore: number | null | undefined,
+  integrityAdjustment: number,
+  runMetrics: RunMetrics | null | undefined,
+  overallVerdict: string | null | undefined,
+): string | null {
+  // If the judging system populated a verdict, use it — it has access to more signal
+  if (overallVerdict && overallVerdict.trim().length > 20) {
+    // Reject generic filler patterns
+    const genericPatterns = [
+      /good effort/i,
+      /room for improvement/i,
+      /nice (work|job)/i,
+      /well done/i,
+      /great (work|job)/i,
+      /shows promise/i,
+    ]
+    const isGeneric = genericPatterns.some(p => p.test(overallVerdict))
+    if (!isGeneric) return overallVerdict
+  }
+
+  // Synthesize from data
+  if (compositeScore == null) return null
+
+  const parts: string[] = []
+
+  // Lead with composite result
+  const composite = scoreBand(compositeScore)
+  if (composite === 'strong') parts.push(`Composite score ${compositeScore.toFixed(0)}/100 — strong overall result`)
+  else if (composite === 'mid') parts.push(`Composite score ${compositeScore.toFixed(0)}/100 — solid but uneven across lanes`)
+  else parts.push(`Composite score ${compositeScore.toFixed(0)}/100 — significant room to improve`)
+
+  // Identify strongest and weakest lanes
+  const lanePairs: { lane: string; score: number }[] = []
+  for (const o of judgeOutputs) {
+    if (o.lane === 'audit') continue
+    lanePairs.push({ lane: o.lane, score: o.score })
+  }
+  if (processScore != null) {
+    const existing = lanePairs.find(l => l.lane === 'process')
+    if (!existing) lanePairs.push({ lane: 'process', score: processScore })
+  }
+  if (strategyScore != null) {
+    const existing = lanePairs.find(l => l.lane === 'strategy')
+    if (!existing) lanePairs.push({ lane: 'strategy', score: strategyScore })
+  }
+
+  if (lanePairs.length >= 2) {
+    const sorted = [...lanePairs].sort((a, b) => b.score - a.score)
+    const best = sorted[0]
+    const worst = sorted[sorted.length - 1]
+    const spread = best.score - worst.score
+
+    if (spread >= 15) {
+      // Meaningful spread — call it out specifically
+      parts.push(`strongest on ${best.lane} (${best.score.toFixed(0)}), weakest on ${worst.lane} (${worst.score.toFixed(0)})`)
+    }
+  }
+
+  // Integrity flag
+  if (integrityAdjustment < -5) {
+    parts.push(`integrity penalty applied (${integrityAdjustment} points)`)
+  } else if (integrityAdjustment > 0) {
+    parts.push(`integrity commendation (+${integrityAdjustment} points)`)
+  }
+
+  // Telemetry signal
+  if (runMetrics) {
+    if (runMetrics.thrash_rate > 0.35) {
+      parts.push(`high thrash rate (${pct(runMetrics.thrash_rate)}) limited process score`)
+    } else if (runMetrics.verification_density < 0.05) {
+      parts.push(`low verification density hurt process evidence`)
+    }
+  }
+
+  if (parts.length === 0) return null
+  return parts.join(' — ')
+}
+
+// ─────────────────────────────────────────────
+// Per-lane signal synthesis
+// Derives positive_signal and primary_weakness from dimension_scores + flags
+// when the judge didn't populate them directly.
+// Returns null if not enough signal to say something specific.
+// ─────────────────────────────────────────────
+
+function deriveLaneSignals(output: JudgeOutput): {
+  positive: string | null
+  weakness: string | null
+} {
+  // Use judge-populated signals if available and non-generic
+  const genericTerms = /^(good|nice|well|solid|decent|fair|ok|okay)\.?$/i
+  const positive = (output.positive_signal && !genericTerms.test(output.positive_signal.trim()))
+    ? output.positive_signal
+    : null
+  const weakness = (output.primary_weakness && !genericTerms.test(output.primary_weakness.trim()))
+    ? output.primary_weakness
+    : null
+
+  if (positive && weakness) return { positive, weakness }
+
+  // Fall back to dimension scores
+  const dims = output.dimension_scores
+  const dimEntries = Object.entries(dims).sort((a, b) => b[1] - a[1])
+  const bestDim = dimEntries[0]
+  const worstDim = dimEntries[dimEntries.length - 1]
+
+  const derivedPositive = positive ?? (
+    bestDim && bestDim[1] >= 65
+      ? `Strong ${bestDim[0].replace(/_/g, ' ')} (${bestDim[1]})`
+      : null
+  )
+
+  // Flags take priority for weakness — they're the most concrete signal
+  const flagWeakness = output.flags && output.flags.length > 0
+    ? output.flags[0].replace(/_/g, ' ')
+    : null
+
+  const derivedWeakness = weakness ?? flagWeakness ?? (
+    worstDim && worstDim[1] < 45 && worstDim[0] !== bestDim?.[0]
+      ? `Low ${worstDim[0].replace(/_/g, ' ')} (${worstDim[1]})`
+      : null
+  )
+
+  return { positive: derivedPositive, weakness: derivedWeakness }
+}
+
+// ─────────────────────────────────────────────
+// Improvement guidance synthesis
+// Generates a specific, prioritized list of improvements.
+// Max 5 items. Derived from real signal — not from a static template list.
+// ─────────────────────────────────────────────
+
+interface ImprovementItem {
+  priority: number
+  text: string
+  lane: string
+}
+
+function synthesizeImprovements(
+  judgeOutputs: JudgeOutput[],
+  runMetrics: RunMetrics | null | undefined,
+  compositeScore: number | null | undefined,
+): ImprovementItem[] {
+  const items: ImprovementItem[] = []
+
+  for (const output of judgeOutputs) {
+    if (output.lane === 'audit') continue
+    const meta = LANE_META[output.lane]
+
+    // Lane-level weakness
+    if (output.score < 50) {
+      const { weakness } = deriveLaneSignals(output)
+      if (weakness) {
+        items.push({
+          priority: output.lane === 'objective' ? 1 : output.lane === 'process' ? 2 : 3,
+          text: `${meta?.label ?? output.lane}: ${weakness}`,
+          lane: output.lane,
+        })
+      } else {
+        // Generic lane message only if score is truly low and we have nothing specific
+        if (output.score < 35) {
+          items.push({
+            priority: 2,
+            text: `${meta?.label ?? output.lane} lane score low (${output.score.toFixed(0)}) — review ${meta?.description ?? 'lane criteria'}`,
+            lane: output.lane,
+          })
+        }
+      }
+    }
+
+    // Evidence gaps
+    if (output.evidence_refs && output.evidence_refs.length === 0 && output.score < 60) {
+      items.push({
+        priority: 3,
+        text: `Provide stronger process evidence — ${meta?.label ?? output.lane} judge found no supporting signal`,
+        lane: output.lane,
+      })
+    }
+
+    // Flags → specific guidance
+    for (const flag of (output.flags ?? [])) {
+      const flagText = flag.replace(/_/g, ' ')
+      items.push({ priority: 1, text: `Address flagged issue: ${flagText}`, lane: output.lane })
+    }
+  }
+
+  // Telemetry-based improvements
+  if (runMetrics) {
+    if (runMetrics.thrash_rate > 0.3) {
+      items.push({ priority: 2, text: `Reduce thrash rate (currently ${pct(runMetrics.thrash_rate)}) — excessive retries and direction changes hurt process score`, lane: 'process' })
+    }
+    if (runMetrics.verification_density < 0.05 && runMetrics.total_events > 10) {
+      items.push({ priority: 2, text: `Increase verification density — add test runs and assertions to demonstrate correctness`, lane: 'process' })
+    }
+    if (runMetrics.wasted_action_ratio > 0.4) {
+      items.push({ priority: 3, text: `Reduce wasted actions (${pct(runMetrics.wasted_action_ratio)}) — tighten tool discipline`, lane: 'process' })
+    }
+    if (runMetrics.pct_verify < 0.05 && runMetrics.total_events > 15) {
+      items.push({ priority: 2, text: `Spend more time in the verify phase — currently ${pct(runMetrics.pct_verify)} of session`, lane: 'process' })
+    }
+  }
+
+  // Deduplicate by text prefix (same root cause, different source)
+  const seen = new Set<string>()
+  const deduped = items.filter(item => {
+    const key = item.text.slice(0, 40)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
+  // Sort by priority, take top 5
+  return deduped.sort((a, b) => a.priority - b.priority).slice(0, 5)
+}
+
+// ─────────────────────────────────────────────
+// Relative context
+// Only shown when we have placement + total entries with meaningful sample size.
+// Never exposes sensitive score data of other competitors.
+// ─────────────────────────────────────────────
+
+function RelativeContext({
+  placement,
+  totalEntries,
+  isProvisional,
+  compositeScore,
+  processScore,
+  strategyScore,
+}: {
+  placement: number | null | undefined
+  totalEntries: number | null | undefined
+  isProvisional: boolean
+  compositeScore: number | null | undefined
+  processScore: number | null | undefined
+  strategyScore: number | null | undefined
+}) {
+  if (!placement || !totalEntries || totalEntries < 3) return null
+
+  const percentile = Math.round((1 - (placement - 1) / totalEntries) * 100)
+  const isTopThird = placement <= Math.ceil(totalEntries / 3)
+  const isBottomThird = placement > Math.floor((totalEntries * 2) / 3)
+
+  let relativeLabel: string
+  if (placement === 1) relativeLabel = 'top of the leaderboard'
+  else if (isTopThird) relativeLabel = 'top third of entries'
+  else if (isBottomThird) relativeLabel = 'bottom third of entries'
+  else relativeLabel = 'middle of the field'
+
+  // Lane comparison — only show if we have both scores and a meaningful differential
+  const laneInsights: string[] = []
+  if (processScore != null && strategyScore != null) {
+    const diff = processScore - strategyScore
+    if (Math.abs(diff) >= 12) {
+      if (diff > 0) laneInsights.push(`stronger on process than strategy`)
+      else laneInsights.push(`stronger on strategy than process`)
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-card/50 p-4 space-y-2">
+      <div className="flex items-center gap-2">
+        <TrendingUp className="w-4 h-4 text-muted-foreground" />
+        <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+          {isProvisional ? 'Current Standing (Provisional)' : 'Final Standing'}
+        </span>
+      </div>
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Trophy className="w-4 h-4 text-[#ffb780]" />
+          <span className="text-sm font-mono font-bold text-foreground">
+            #{placement}
+            {isProvisional && <span className="text-[10px] text-[#8c909f] ml-1">provisional</span>}
+          </span>
+          <span className="text-xs text-muted-foreground">of {totalEntries}</span>
+        </div>
+        <span className="text-[10px] font-mono text-[#adc6ff] bg-[#adc6ff]/10 px-2 py-0.5 rounded">
+          top {100 - percentile + 1}%
+        </span>
+        <span className="text-xs text-muted-foreground">{relativeLabel}</span>
+      </div>
+      {laneInsights.length > 0 && (
+        <p className="text-[11px] text-muted-foreground font-mono">
+          {laneInsights.join(' · ')}
+        </p>
+      )}
+      {isProvisional && (
+        <p className="text-[10px] text-[#8c909f] font-mono">
+          Official placement finalizes when the challenge closes.
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// Main component
+// ─────────────────────────────────────────────
 
 export function PostMatchBreakdown({
   judgeOutputs,
@@ -101,9 +503,26 @@ export function PostMatchBreakdown({
   runMetrics,
   disputeFlag,
   challengeFormat = 'standard',
+  overallVerdict,
+  placement,
+  totalEntries,
+  isProvisional = false,
+  challengeStatus,
 }: PostMatchBreakdownProps) {
   const hasLaneData = judgeOutputs.length > 0
   const hasMetrics = runMetrics != null
+
+  const verdict = synthesizeVerdict(
+    judgeOutputs,
+    compositeScore,
+    processScore,
+    strategyScore,
+    integrityAdjustment,
+    runMetrics,
+    overallVerdict,
+  )
+
+  const improvements = synthesizeImprovements(judgeOutputs, runMetrics, compositeScore)
 
   // Build radar data from lane scores
   const radarData = {
@@ -118,14 +537,14 @@ export function PostMatchBreakdown({
   return (
     <div className="space-y-6">
 
-      {/* Dispute banner */}
+      {/* ── Dispute banner ── */}
       {disputeFlag && disputeFlag.status !== 'resolved' && (
         <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex items-start gap-3">
           <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-sm font-semibold text-yellow-300">Score Under Review</p>
             <p className="text-xs text-yellow-400/80 mt-0.5">
-              Judge spread exceeded threshold ({disputeFlag.max_judge_spread?.toFixed(1)}pts).
+              Judge spread exceeded threshold ({disputeFlag.max_judge_spread?.toFixed(1)} pts).
               Audit judge has been queued. Final score may change.
             </p>
           </div>
@@ -145,71 +564,115 @@ export function PostMatchBreakdown({
         </div>
       )}
 
-      {/* Composite score header */}
+      {/* ── Composite score + overall verdict ── */}
       {compositeScore != null && (
-        <div className="rounded-xl border border-border bg-card p-6 flex items-center gap-6">
-          <div className="flex-shrink-0">
-            <CapabilityRadar data={radarData} size={100} showLabels={false} />
+        <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+          <div className="flex items-start gap-5">
+            <div className="flex-shrink-0">
+              <CapabilityRadar data={radarData} size={96} showLabels={false} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                Composite Score · {challengeFormat} format
+              </div>
+              <div className={`text-4xl font-mono font-bold ${scoreColor(compositeScore)}`}>
+                {compositeScore.toFixed(1)}
+                <span className="text-lg text-muted-foreground">/100</span>
+              </div>
+              <div className="flex items-center gap-4 mt-2 flex-wrap">
+                {processScore != null && (
+                  <div className="text-xs font-mono">
+                    <span className="text-muted-foreground">Process </span>
+                    <span className={`font-bold ${scoreColor(processScore)}`}>{processScore.toFixed(0)}</span>
+                  </div>
+                )}
+                {strategyScore != null && (
+                  <div className="text-xs font-mono">
+                    <span className="text-muted-foreground">Strategy </span>
+                    <span className={`font-bold ${scoreColor(strategyScore)}`}>{strategyScore.toFixed(0)}</span>
+                  </div>
+                )}
+                {efficiencyScore != null && (
+                  <div className="text-xs font-mono">
+                    <span className="text-muted-foreground">Efficiency </span>
+                    <span className={`font-bold ${scoreColor(efficiencyScore)}`}>{efficiencyScore.toFixed(0)}</span>
+                  </div>
+                )}
+                {integrityAdjustment !== 0 && (
+                  <div className="text-xs font-mono">
+                    <span className="text-muted-foreground">Integrity </span>
+                    <span className={`font-bold ${integrityAdjustment > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {integrityAdjustment > 0 ? '+' : ''}{integrityAdjustment}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
-              Composite Score · {challengeFormat} format
+
+          {/* Overall verdict — specific, evidence-linked, never generic */}
+          {verdict && (
+            <div className="border-t border-border/60 pt-4">
+              <div className="flex items-start gap-2">
+                <Info className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-foreground leading-relaxed font-mono">{verdict}</p>
+              </div>
             </div>
-            <div className={`text-4xl font-mono font-bold ${scoreColor(compositeScore)}`}>
-              {compositeScore.toFixed(1)}
-              <span className="text-lg text-muted-foreground">/100</span>
+          )}
+
+          {/* Provisional placement note */}
+          {isProvisional && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#adc6ff]/5 border border-[#adc6ff]/15 text-[10px] font-mono text-[#8c909f]">
+              <Clock className="w-3 h-3 text-[#adc6ff]" />
+              Your result is final. Official standings finalize when the challenge closes.
             </div>
-            <div className="flex items-center gap-4 mt-3 flex-wrap">
-              {processScore != null && (
-                <div className="text-xs font-mono">
-                  <span className="text-muted-foreground">Process </span>
-                  <span className={`font-bold ${scoreColor(processScore)}`}>{processScore.toFixed(0)}</span>
-                </div>
-              )}
-              {strategyScore != null && (
-                <div className="text-xs font-mono">
-                  <span className="text-muted-foreground">Strategy </span>
-                  <span className={`font-bold ${scoreColor(strategyScore)}`}>{strategyScore.toFixed(0)}</span>
-                </div>
-              )}
-              {efficiencyScore != null && (
-                <div className="text-xs font-mono">
-                  <span className="text-muted-foreground">Efficiency </span>
-                  <span className={`font-bold ${scoreColor(efficiencyScore)}`}>{efficiencyScore.toFixed(0)}</span>
-                </div>
-              )}
-              {integrityAdjustment !== 0 && (
-                <div className="text-xs font-mono">
-                  <span className="text-muted-foreground">Integrity </span>
-                  <span className={`font-bold ${integrityAdjustment > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {integrityAdjustment > 0 ? '+' : ''}{integrityAdjustment}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* Lane judge breakdown */}
+      {/* ── Relative context (placement) ── */}
+      <RelativeContext
+        placement={placement}
+        totalEntries={totalEntries}
+        isProvisional={isProvisional}
+        compositeScore={compositeScore}
+        processScore={processScore}
+        strategyScore={strategyScore}
+      />
+
+      {/* ── Lane-by-lane breakdown ── */}
       {hasLaneData && (
         <div className="space-y-3">
-          <h3 className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Judge Breakdown</h3>
+          <h3 className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Lane Breakdown</h3>
           {judgeOutputs.map(output => {
-            const meta = LANE_META[output.lane] ?? { label: output.lane, icon: BarChart2, color: 'text-muted-foreground', model: output.model_id }
+            const meta = LANE_META[output.lane] ?? {
+              label: output.lane,
+              icon: BarChart2,
+              color: 'text-muted-foreground',
+              barColor: 'bg-white/20',
+              model: output.model_id,
+              weight: '',
+              description: '',
+            }
             const Icon = meta.icon
+            const { positive, weakness } = deriveLaneSignals(output)
+
             return (
               <div key={output.id} className="rounded-xl border border-border bg-card p-4 space-y-3">
+                {/* Lane header */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Icon className={`w-4 h-4 ${meta.color}`} />
-                    <span className={`text-sm font-semibold ${meta.color}`}>{meta.label} Judge</span>
+                    <span className={`text-sm font-semibold ${meta.color}`}>{meta.label}</span>
                     <span className="text-[10px] font-mono text-muted-foreground">· {meta.model}</span>
+                    {meta.weight && (
+                      <span className="text-[10px] font-mono text-muted-foreground/70">· {meta.weight} weight</span>
+                    )}
                     {output.is_fallback && (
                       <span className="text-[10px] font-mono text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">fallback</span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-shrink-0">
                     {output.latency_ms && (
                       <span className="text-[10px] font-mono text-muted-foreground flex items-center gap-1">
                         <Clock className="w-3 h-3" />{(output.latency_ms / 1000).toFixed(1)}s
@@ -218,20 +681,41 @@ export function PostMatchBreakdown({
                     <span className="text-[10px] font-mono text-muted-foreground">
                       conf {(output.confidence * 100).toFixed(0)}%
                     </span>
-                    <span className={`text-xl font-mono font-bold ${scoreColor(output.score)}`}>
+                    <span className={`text-2xl font-mono font-bold ${scoreColor(output.score)}`}>
                       {output.score.toFixed(0)}
                     </span>
                   </div>
                 </div>
 
-                <ScoreBar value={output.score} color={
-                  output.lane === 'process' ? 'bg-blue-500' :
-                  output.lane === 'strategy' ? 'bg-purple-500' :
-                  output.lane === 'integrity' ? 'bg-green-500' : 'bg-yellow-500'
-                } />
+                <ScoreBar value={output.score} colorClass={meta.barColor} />
 
-                {output.short_rationale && (
+                {/* Rationale — only shown when non-empty and substantive */}
+                {output.short_rationale && output.short_rationale.trim().length > 15 && (
                   <p className="text-xs text-muted-foreground leading-relaxed">{output.short_rationale}</p>
+                )}
+
+                {/* Positive signal + weakness — the core per-lane feedback */}
+                {(positive || weakness) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    {positive && (
+                      <div className="flex items-start gap-2 rounded-lg bg-green-500/5 border border-green-500/15 px-3 py-2">
+                        <TrendingUp className="w-3.5 h-3.5 text-green-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-green-400/70 block mb-0.5">Strongest signal</span>
+                          <span className="text-xs text-foreground leading-relaxed">{positive}</span>
+                        </div>
+                      </div>
+                    )}
+                    {weakness && (
+                      <div className="flex items-start gap-2 rounded-lg bg-red-500/5 border border-red-500/15 px-3 py-2">
+                        <TrendingDown className="w-3.5 h-3.5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-red-400/70 block mb-0.5">Key weakness</span>
+                          <span className="text-xs text-foreground leading-relaxed">{weakness}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Dimension scores */}
@@ -245,7 +729,7 @@ export function PostMatchBreakdown({
                           </span>
                           <span className={`text-[10px] font-mono font-bold ${scoreColor(val)}`}>{val}</span>
                         </div>
-                        <ScoreBar value={val} color="bg-white/20" />
+                        <ScoreBar value={val} colorClass="bg-white/20" />
                       </div>
                     ))}
                   </div>
@@ -261,8 +745,8 @@ export function PostMatchBreakdown({
                   }`}>
                     <Shield className="w-3 h-3" />
                     {output.integrity_outcome}
-                    {output.integrity_adjustment !== 0 && (
-                      <span>{output.integrity_adjustment! > 0 ? '+' : ''}{output.integrity_adjustment}</span>
+                    {output.integrity_adjustment != null && output.integrity_adjustment !== 0 && (
+                      <span>{output.integrity_adjustment > 0 ? '+' : ''}{output.integrity_adjustment}</span>
                     )}
                   </div>
                 )}
@@ -273,7 +757,7 @@ export function PostMatchBreakdown({
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Evidence</span>
                     {output.evidence_refs.slice(0, 3).map((ref, i) => (
                       <p key={i} className="text-[11px] text-muted-foreground italic pl-2 border-l border-border">
-                        "{ref}"
+                        &ldquo;{ref}&rdquo;
                       </p>
                     ))}
                   </div>
@@ -284,7 +768,7 @@ export function PostMatchBreakdown({
                   <div className="flex flex-wrap gap-1 pt-1">
                     {output.flags.map((flag, i) => (
                       <span key={i} className="text-[10px] font-mono bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">
-                        {flag}
+                        {flag.replace(/_/g, ' ')}
                       </span>
                     ))}
                   </div>
@@ -295,7 +779,29 @@ export function PostMatchBreakdown({
         </div>
       )}
 
-      {/* Telemetry breakdown */}
+      {/* ── What to improve next ── */}
+      {improvements.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-[#adc6ff]" />
+            <h3 className="text-sm font-semibold text-foreground">What to improve next</h3>
+            <span className="text-[10px] font-mono text-muted-foreground">· derived from your submission signals</span>
+          </div>
+          <ol className="space-y-2">
+            {improvements.map((item, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <span className="text-[10px] font-mono text-[#adc6ff] flex-shrink-0 mt-0.5 w-4">{i + 1}.</span>
+                <div className="flex items-start gap-2 min-w-0">
+                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <span className="text-xs text-muted-foreground leading-relaxed">{item.text}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {/* ── Telemetry breakdown ── */}
       {hasMetrics && (
         <div className="rounded-xl border border-border bg-card p-4 space-y-4">
           <div className="flex items-center gap-2">
@@ -304,15 +810,14 @@ export function PostMatchBreakdown({
             <span className="text-[10px] font-mono text-muted-foreground">· {runMetrics.total_events} events captured</span>
           </div>
 
-          {/* Key metrics grid */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: 'Thrash Rate',    value: pct(runMetrics.thrash_rate),      bad: runMetrics.thrash_rate > 0.3 },
-              { label: 'Tool Discipline',value: pct(runMetrics.tool_discipline),   bad: runMetrics.tool_discipline < 0.5 },
-              { label: 'Verify Density', value: pct(runMetrics.verification_density), bad: runMetrics.verification_density < 0.1 },
-              { label: 'Waste Ratio',    value: pct(runMetrics.wasted_action_ratio), bad: runMetrics.wasted_action_ratio > 0.4 },
-              { label: 'Pivot Count',    value: String(runMetrics.pivot_count),   bad: false },
-              { label: 'Errors',         value: String(runMetrics.error_count),   bad: runMetrics.error_count > 5 },
+              { label: 'Thrash Rate',     value: pct(runMetrics.thrash_rate),               bad: runMetrics.thrash_rate > 0.3 },
+              { label: 'Tool Discipline', value: pct(runMetrics.tool_discipline),            bad: runMetrics.tool_discipline < 0.5 },
+              { label: 'Verify Density',  value: pct(runMetrics.verification_density),       bad: runMetrics.verification_density < 0.1 },
+              { label: 'Waste Ratio',     value: pct(runMetrics.wasted_action_ratio),        bad: runMetrics.wasted_action_ratio > 0.4 },
+              { label: 'Pivot Count',     value: String(runMetrics.pivot_count),             bad: false },
+              { label: 'Errors',          value: String(runMetrics.error_count),             bad: runMetrics.error_count > 5 },
             ].map(m => (
               <div key={m.label} className="space-y-0.5">
                 <span className="text-[10px] font-mono text-muted-foreground">{m.label}</span>
@@ -328,11 +833,11 @@ export function PostMatchBreakdown({
             <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Phase Distribution</span>
             <div className="flex h-3 rounded-full overflow-hidden gap-px">
               {[
-                { pct: runMetrics.pct_explore,    color: 'bg-blue-500',   label: 'explore' },
-                { pct: runMetrics.pct_plan,        color: 'bg-indigo-500', label: 'plan' },
-                { pct: runMetrics.pct_implement,   color: 'bg-purple-500', label: 'implement' },
-                { pct: runMetrics.pct_verify,      color: 'bg-green-500',  label: 'verify' },
-                { pct: runMetrics.pct_recover,     color: 'bg-red-500',    label: 'recover' },
+                { pct: runMetrics.pct_explore,   color: 'bg-blue-500',   label: 'explore' },
+                { pct: runMetrics.pct_plan,       color: 'bg-indigo-500', label: 'plan' },
+                { pct: runMetrics.pct_implement,  color: 'bg-purple-500', label: 'implement' },
+                { pct: runMetrics.pct_verify,     color: 'bg-green-500',  label: 'verify' },
+                { pct: runMetrics.pct_recover,    color: 'bg-red-500',    label: 'recover' },
               ].filter(p => p.pct > 0).map(p => (
                 <div
                   key={p.label}
@@ -344,11 +849,11 @@ export function PostMatchBreakdown({
             </div>
             <div className="flex gap-3 flex-wrap">
               {[
-                { label: 'Explore',    pct: runMetrics.pct_explore,    color: 'bg-blue-500' },
-                { label: 'Plan',       pct: runMetrics.pct_plan,        color: 'bg-indigo-500' },
-                { label: 'Implement',  pct: runMetrics.pct_implement,   color: 'bg-purple-500' },
-                { label: 'Verify',     pct: runMetrics.pct_verify,      color: 'bg-green-500' },
-                { label: 'Recover',    pct: runMetrics.pct_recover,     color: 'bg-red-500' },
+                { label: 'Explore',   pct: runMetrics.pct_explore,   color: 'bg-blue-500' },
+                { label: 'Plan',      pct: runMetrics.pct_plan,       color: 'bg-indigo-500' },
+                { label: 'Implement', pct: runMetrics.pct_implement,  color: 'bg-purple-500' },
+                { label: 'Verify',    pct: runMetrics.pct_verify,     color: 'bg-green-500' },
+                { label: 'Recover',   pct: runMetrics.pct_recover,    color: 'bg-red-500' },
               ].filter(p => p.pct > 0).map(p => (
                 <div key={p.label} className="flex items-center gap-1">
                   <div className={`w-2 h-2 rounded-full ${p.color}`} />
@@ -361,9 +866,9 @@ export function PostMatchBreakdown({
           {/* Telemetry scores */}
           <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border/50">
             {[
-              { label: 'Process Score',   val: runMetrics.telemetry_process_score },
-              { label: 'Recovery Score',  val: runMetrics.telemetry_recovery_score },
-              { label: 'Efficiency Score',val: runMetrics.telemetry_efficiency_score },
+              { label: 'Process Score',    val: runMetrics.telemetry_process_score },
+              { label: 'Recovery Score',   val: runMetrics.telemetry_recovery_score },
+              { label: 'Efficiency Score', val: runMetrics.telemetry_efficiency_score },
             ].map(m => (
               <div key={m.label}>
                 <span className="text-[10px] font-mono text-muted-foreground block">{m.label}</span>
@@ -376,7 +881,7 @@ export function PostMatchBreakdown({
         </div>
       )}
 
-      {/* No data state */}
+      {/* No data fallback */}
       {!hasLaneData && !hasMetrics && compositeScore == null && (
         <div className="rounded-xl border border-border bg-card p-6 text-center">
           <p className="text-sm text-muted-foreground">Score breakdown not yet available for this entry.</p>

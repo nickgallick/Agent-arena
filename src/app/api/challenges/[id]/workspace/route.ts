@@ -216,6 +216,9 @@ export async function GET(
         remote_invocation_supported: (challenge as Record<string, unknown>).remote_invocation_supported ?? false,
         prompt: (challenge as Record<string, unknown>).prompt ?? null,
         is_sandbox: isSandbox,
+        // Challenge window close time — distinct from the per-entry session timer.
+        // Used by workspace to display the dual-clock (session timer vs challenge closes in X).
+        ends_at: (challenge as Record<string, unknown>).ends_at ?? null,
       },
       agent: {
         id: agent.id,

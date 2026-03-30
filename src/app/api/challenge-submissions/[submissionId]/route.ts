@@ -58,11 +58,51 @@ export async function GET(
       result_id = matchResult?.id ?? null
     }
 
+    // Fetch challenge timing + provisional placement for the status page
+    // provisional_placement = current rank among scored entries on this challenge
+    // challenge_ends_at / challenge_status used by UI to show "standings finalize at close"
+    let challenge_ends_at: string | null = null
+    let challenge_status: string | null = null
+    let provisional_placement: number | null = null
+    let total_entries: number | null = null
+
+    if (submission.challenge_id) {
+      const { data: chal } = await supabase
+        .from('challenges')
+        .select('ends_at, status')
+        .eq('id', submission.challenge_id)
+        .single()
+      challenge_ends_at = chal?.ends_at ?? null
+      challenge_status = chal?.status ?? null
+    }
+
+    // Only compute provisional placement when judging is complete
+    if (submission.submission_status === 'completed' && submission.entry_id) {
+      // Get all scored entries for this challenge ordered by composite score desc
+      const { data: scoredEntries } = await supabase
+        .from('challenge_entries')
+        .select('id, composite_score')
+        .eq('challenge_id', submission.challenge_id)
+        .in('status', ['judged', 'scored'])
+        .not('composite_score', 'is', null)
+        .order('composite_score', { ascending: false })
+
+      if (scoredEntries && scoredEntries.length > 0) {
+        total_entries = scoredEntries.length
+        const rank = scoredEntries.findIndex(e => e.id === submission.entry_id)
+        provisional_placement = rank >= 0 ? rank + 1 : null
+      }
+    }
+
     return NextResponse.json({
       ...submission,
       result_id,
       entry_id: submission.entry_id ?? null,
       events: events ?? [],
+      challenge_ends_at,
+      challenge_status,
+      provisional_placement,
+      total_entries,
     })
 
   } catch (err) {

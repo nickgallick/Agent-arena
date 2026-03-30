@@ -7,7 +7,7 @@ import { Header } from '@/components/layout/header'
 import {
   Clock, ChevronRight, AlertTriangle, Loader2, CheckCircle2,
   XCircle, TimerOff, ArrowLeft, Bot, Zap, Settings, Wifi,
-  WifiOff, RefreshCw, ExternalLink, ShieldCheck
+  WifiOff, RefreshCw, ExternalLink, ShieldCheck, CalendarClock
 } from 'lucide-react'
 
 // ─────────────────────────────────────────────
@@ -55,6 +55,7 @@ interface WorkspaceData {
     web_submission_supported: boolean
     prompt: string | null
     is_sandbox: boolean
+    ends_at: string | null
   }
   agent: {
     id: string
@@ -379,7 +380,7 @@ export default function WorkspacePage() {
                   {[
                     challenge.format && { label: 'Format', value: challenge.format },
                     challenge.weight_class_id && { label: 'Weight Class', value: challenge.weight_class_id.charAt(0).toUpperCase() + challenge.weight_class_id.slice(1) },
-                    challenge.time_limit_minutes && { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` },
+                    challenge.time_limit_minutes && { label: 'Session', value: `${challenge.time_limit_minutes}m / entry` },
                   ].filter(Boolean).map(tag => tag && (
                     <div key={tag.label} className="rounded-lg border border-border bg-background px-3 py-1.5">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">{tag.label}</span>
@@ -429,16 +430,20 @@ export default function WorkspacePage() {
             {/* ── RIGHT: Invoke panel ── */}
             <div className="space-y-4">
 
-              {/* Timer + Identity card */}
+              {/* Dual-clock card — session timer + challenge close are different clocks */}
               <div className={`rounded-xl border bg-card p-5 ${
                 isExpired    ? 'border-[#8c909f]/30' :
                 isWarning    ? 'border-[#ffb780]/40' :
                 invocationState === 'invoking' || invocationState === 'submitting' ? 'border-[#adc6ff]/40' :
                                'border-border'
               }`}>
-                <div className="flex items-center justify-between gap-4">
+                {/* Row 1: session timer + agent identity */}
+                <div className="flex items-center justify-between gap-4 mb-4">
                   <div className="min-w-0">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Session Timer</span>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Clock className={`w-3.5 h-3.5 ${isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780] animate-pulse' : 'text-muted-foreground'}`} />
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Your Session</span>
+                    </div>
                     {timeLeftMs !== null ? (
                       <div className={`font-mono text-3xl font-black tabular-nums ${
                         isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780]' : 'text-foreground'
@@ -448,6 +453,11 @@ export default function WorkspacePage() {
                     ) : (
                       <div className="font-mono text-3xl font-black text-[#8c909f]">No limit</div>
                     )}
+                    <span className={`text-[10px] font-mono uppercase font-bold tracking-wider ${
+                      isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780]' : 'text-[#7dffa2]'
+                    }`}>
+                      {isExpired ? 'Expired' : 'Active'}
+                    </span>
                   </div>
                   <div className="w-px self-stretch bg-border flex-shrink-0" />
                   <div className="flex items-center gap-2 min-w-0">
@@ -458,15 +468,23 @@ export default function WorkspacePage() {
                       {agent.model_name && <span className="text-[10px] text-muted-foreground font-mono truncate block">{agent.model_name}</span>}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <Clock className={`w-4 h-4 ${isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780] animate-pulse' : 'text-muted-foreground'}`} />
-                    <span className={`text-[10px] font-mono uppercase font-bold tracking-wider ${
-                      isExpired ? 'text-[#8c909f]' : isWarning ? 'text-[#ffb780]' : 'text-[#7dffa2]'
-                    }`}>
-                      {isExpired ? 'Expired' : 'Active'}
-                    </span>
-                  </div>
                 </div>
+
+                {/* Row 2: challenge close clock — clearly separate from session timer */}
+                {challenge.ends_at && (
+                  <div className="pt-3 border-t border-border/60">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarClock className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Challenge Closes</span>
+                      </div>
+                      <WorkspaceChallengeCountdown endsAt={challenge.ends_at} />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      These are two different clocks. Your session is your personal timer. The challenge window controls when new entries are accepted.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Endpoint status card */}
@@ -727,5 +745,46 @@ function InvocationFailure({
         </Link>
       </div>
     </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// WorkspaceChallengeCountdown
+// Shows how long until the challenge window closes — separate from session timer.
+// This is intentionally compact: it lives in the dual-clock row, not the hero.
+// ─────────────────────────────────────────────
+
+function WorkspaceChallengeCountdown({ endsAt }: { endsAt: string }) {
+  const [msLeft, setMsLeft] = useState(() => new Date(endsAt).getTime() - Date.now())
+
+  useEffect(() => {
+    const tick = () => setMsLeft(new Date(endsAt).getTime() - Date.now())
+    tick()
+    const id = setInterval(tick, 10_000) // update every 10s — don't need second precision here
+    return () => clearInterval(id)
+  }, [endsAt])
+
+  if (msLeft <= 0) {
+    return (
+      <span className="text-[10px] font-mono text-[#8c909f]">Closed — finish your session</span>
+    )
+  }
+
+  const totalSec = Math.floor(msLeft / 1000)
+  const d = Math.floor(totalSec / 86400)
+  const h = Math.floor((totalSec % 86400) / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+
+  let label: string
+  if (d > 0) label = `${d}d ${h}h`
+  else if (h > 0) label = `${h}h ${m}m`
+  else label = `${m}m`
+
+  const isUrgent = msLeft < 3600 * 1000
+
+  return (
+    <span className={`text-xs font-mono font-bold ${isUrgent ? 'text-[#ffb780]' : 'text-muted-foreground'}`}>
+      {label}
+    </span>
   )
 }

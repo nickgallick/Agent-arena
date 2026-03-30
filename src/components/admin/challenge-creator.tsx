@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Loader2 } from 'lucide-react'
+import { Plus, Loader2, Info } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,6 +17,38 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+// ── Defaults (Launch timing model) ────────────────────────────────────────────
+// Challenge window:    48 hours  (starts_at → ends_at)
+// Per-entry session:   60 minutes  (time_limit_minutes — starts when user opens workspace)
+//
+// These are SEPARATE concepts. The challenge window is how long the challenge is open
+// for new entries. The per-entry session is the individual timer that starts
+// when a competitor opens the workspace.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DEFAULT_SESSION_MINUTES = 60
+const DEFAULT_WINDOW_HOURS = 48
+
+function defaultStartDate(): string {
+  const d = new Date()
+  // Round up to next hour
+  d.setMinutes(0, 0, 0)
+  d.setHours(d.getHours() + 1)
+  return toLocalDatetimeInputValue(d)
+}
+
+function defaultEndDate(startStr: string): string {
+  const d = startStr ? new Date(startStr) : new Date()
+  d.setHours(d.getHours() + DEFAULT_WINDOW_HOURS)
+  return toLocalDatetimeInputValue(d)
+}
+
+function toLocalDatetimeInputValue(d: Date): string {
+  // datetime-local input expects "YYYY-MM-DDTHH:MM"
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 const INITIAL_FORM = {
   title: '',
   description: '',
@@ -25,28 +57,58 @@ const INITIAL_FORM = {
   format: '',
   challengeType: '',
   weightClass: '',
-  timeLimit: '',
+  sessionDurationMinutes: String(DEFAULT_SESSION_MINUTES),
   maxCoins: '',
-  startDate: '',
+  startDate: defaultStartDate(),
   endDate: '',
 }
 
 export function ChallengeCreator() {
   const [submitting, setSubmitting] = useState(false)
-  const [form, setForm] = useState(INITIAL_FORM)
+  const [form, setForm] = useState(() => {
+    const start = defaultStartDate()
+    return { ...INITIAL_FORM, startDate: start, endDate: defaultEndDate(start) }
+  })
   const [formError, setFormError] = useState('')
 
   function update(key: string, value: string) {
-    setForm((prev) => ({ ...prev, [key]: value }))
+    setForm((prev) => {
+      const next = { ...prev, [key]: value }
+      // When startDate changes, auto-update endDate to start + 48h (only if endDate hasn't been manually changed)
+      if (key === 'startDate' && value) {
+        const autoEnd = defaultEndDate(value)
+        // Only auto-update if endDate is currently at the default offset from old startDate
+        const expectedOldEnd = defaultEndDate(prev.startDate)
+        if (!prev.endDate || prev.endDate === expectedOldEnd) {
+          next.endDate = autoEnd
+        }
+      }
+      return next
+    })
     setFormError('')
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setFormError('')
+
+    // Validate: ends_at must be after starts_at
+    if (form.startDate && form.endDate) {
+      const start = new Date(form.startDate)
+      const end = new Date(form.endDate)
+      if (end <= start) {
+        setFormError('Challenge close time must be after open time.')
+        return
+      }
+      const windowHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+      if (windowHours < 1) {
+        setFormError('Challenge window must be at least 1 hour.')
+        return
+      }
+    }
+
     setSubmitting(true)
 
-    // Build payload matching createChallengeSchema
     const payload = {
       title: form.title,
       description: form.description,
@@ -55,7 +117,8 @@ export function ChallengeCreator() {
       format: form.format,
       challenge_type: form.challengeType,
       weight_class_id: form.weightClass || null,
-      time_limit_minutes: form.timeLimit ? Number(form.timeLimit) : undefined,
+      // time_limit_minutes = per-entry session duration
+      time_limit_minutes: form.sessionDurationMinutes ? Number(form.sessionDurationMinutes) : DEFAULT_SESSION_MINUTES,
       max_coins: form.maxCoins ? Number(form.maxCoins) : undefined,
       starts_at: form.startDate ? new Date(form.startDate).toISOString() : undefined,
       ends_at: form.endDate ? new Date(form.endDate).toISOString() : undefined,
@@ -78,7 +141,8 @@ export function ChallengeCreator() {
       }
 
       toast.success('Challenge created successfully')
-      setForm(INITIAL_FORM)
+      const next = defaultStartDate()
+      setForm({ ...INITIAL_FORM, startDate: next, endDate: defaultEndDate(next) })
     } catch {
       toast.error('Network error — please try again')
       setFormError('Network error — please try again')
@@ -88,6 +152,18 @@ export function ChallengeCreator() {
   }
 
   const inputClasses = 'border-white/5 bg-[#1c1b1b]/50 text-[#e5e2e1] placeholder:text-[#8c909f]'
+
+  // Preview challenge window duration
+  const windowPreview = (() => {
+    if (!form.startDate || !form.endDate) return null
+    try {
+      const diff = new Date(form.endDate).getTime() - new Date(form.startDate).getTime()
+      if (diff <= 0) return null
+      const h = Math.floor(diff / (1000 * 60 * 60))
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      return m > 0 ? `${h}h ${m}m window` : `${h}h window`
+    } catch { return null }
+  })()
 
   return (
     <Card className="border-white/5 bg-[#201f1f]/50">
@@ -140,8 +216,10 @@ export function ChallengeCreator() {
                 </SelectTrigger>
                 <SelectContent className="border-white/5 bg-[#1c1b1b]">
                   <SelectItem value="speed_build">Speed Build</SelectItem>
-                  <SelectItem value="deep_research">Deep Research</SelectItem>
+                  <SelectItem value="algorithm">Algorithm</SelectItem>
+                  <SelectItem value="debug">Debug</SelectItem>
                   <SelectItem value="problem_solving">Problem Solving</SelectItem>
+                  <SelectItem value="optimization">Optimization</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -184,24 +262,35 @@ export function ChallengeCreator() {
                 </SelectTrigger>
                 <SelectContent className="border-white/5 bg-[#1c1b1b]">
                   <SelectItem value="frontier">Frontier</SelectItem>
-                  <SelectItem value="scrapper">Scrapper</SelectItem>
+                  <SelectItem value="heavyweight">Heavyweight</SelectItem>
+                  <SelectItem value="middleweight">Middleweight</SelectItem>
+                  <SelectItem value="lightweight">Lightweight</SelectItem>
                   <SelectItem value="open">Open</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="timeLimit" className="text-[#c2c6d5]">Time Limit (minutes)</Label>
-              <Input
-                id="timeLimit"
-                type="number"
-                value={form.timeLimit}
-                onChange={(e) => update('timeLimit', e.target.value)}
-                placeholder="60"
-                min={5}
-                max={480}
-                className={inputClasses}
-              />
+              <div className="flex items-center gap-1.5">
+                <Label htmlFor="sessionDuration" className="text-[#c2c6d5]">Per-Entry Session</Label>
+                <span title="This is the individual competitor timer — starts when a user opens the workspace. Separate from the challenge window." className="cursor-help">
+                  <Info className="w-3 h-3 text-[#8c909f]" />
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="sessionDuration"
+                  type="number"
+                  value={form.sessionDurationMinutes}
+                  onChange={(e) => update('sessionDurationMinutes', e.target.value)}
+                  placeholder="60"
+                  min={0}
+                  max={1440}
+                  className={inputClasses}
+                />
+                <span className="text-xs text-[#8c909f] flex-shrink-0">min</span>
+              </div>
+              <p className="text-[10px] text-[#8c909f] font-mono">Timer starts when competitor opens workspace. 0 = no limit (sandbox).</p>
             </div>
 
             <div className="space-y-2">
@@ -219,27 +308,45 @@ export function ChallengeCreator() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="startDate" className="text-[#c2c6d5]">Start Date &amp; Time</Label>
-              <Input
-                id="startDate"
-                type="datetime-local"
-                value={form.startDate}
-                onChange={(e) => update('startDate', e.target.value)}
-                className={inputClasses}
-              />
+          {/* Challenge Window — visually grouped and labeled */}
+          <div className="rounded-lg border border-white/5 bg-[#1a1919]/50 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Label className="text-[#c2c6d5] text-sm font-semibold">Challenge Window</Label>
+                <span title="How long this challenge is open for new entries. Recommended: 48 hours. Separate from the per-entry session timer." className="cursor-help">
+                  <Info className="w-3 h-3 text-[#8c909f]" />
+                </span>
+              </div>
+              {windowPreview && (
+                <span className="text-[10px] font-mono text-[#7dffa2] bg-[#7dffa2]/10 px-2 py-0.5 rounded">
+                  {windowPreview}
+                </span>
+              )}
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="endDate" className="text-[#c2c6d5]">End Date &amp; Time</Label>
-              <Input
-                id="endDate"
-                type="datetime-local"
-                value={form.endDate}
-                onChange={(e) => update('endDate', e.target.value)}
-                className={inputClasses}
-              />
+            <p className="text-[10px] text-[#8c909f] font-mono">
+              When competitors may enter. Default: 48 hours. New entries blocked after close. In-progress sessions may finish after close.
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="startDate" className="text-[#8c909f] text-xs">Opens</Label>
+                <Input
+                  id="startDate"
+                  type="datetime-local"
+                  value={form.startDate}
+                  onChange={(e) => update('startDate', e.target.value)}
+                  className={inputClasses}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="endDate" className="text-[#8c909f] text-xs">Closes</Label>
+                <Input
+                  id="endDate"
+                  type="datetime-local"
+                  value={form.endDate}
+                  onChange={(e) => update('endDate', e.target.value)}
+                  className={inputClasses}
+                />
+              </div>
             </div>
           </div>
 

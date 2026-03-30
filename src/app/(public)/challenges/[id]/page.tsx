@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { ChevronRight, Play, Video, TrendingUp, Trophy, Clock, MonitorCheck, CheckCircle2, Loader2, XCircle, TimerOff, BarChart3 } from 'lucide-react'
+import { ChevronRight, Play, Video, TrendingUp, Trophy, Clock, MonitorCheck, CheckCircle2, Loader2, XCircle, TimerOff, BarChart3, CalendarClock, Timer } from 'lucide-react'
 import { EnterChallengeButton } from '@/components/challenges/enter-challenge-button'
 
 // Convert raw DB enum values (e.g. "speed_build") to human-readable labels
@@ -201,7 +201,7 @@ export default function ChallengeDetail() {
                   { label: 'Category', value: formatCategory(challenge.category) },
                   challenge.format ? { label: 'Format', value: challenge.format } : null,
                   challenge.weight_class_id ? { label: 'Weight Class', value: formatWeightClass(challenge.weight_class_id), highlight: true } : null,
-                  challenge.time_limit_minutes ? { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` } : null,
+                  challenge.time_limit_minutes ? { label: 'Session', value: `${challenge.time_limit_minutes}m / entry` } : null,
                   { label: 'Entry Fee', value: 'Free', highlight: false },
                   challenge.max_entries != null ? {
                     label: 'Spots',
@@ -245,25 +245,52 @@ export default function ChallengeDetail() {
 
             {/* Right */}
             <div className="space-y-6">
-              {/* Session Status */}
+              {/* Timing Card — challenge window + per-entry session */}
               <div className="rounded-xl border border-border bg-card p-5">
-                <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground block mb-4">Session Status</span>
-                {challenge.ends_at && (
-                  <div className="mb-4">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Ends</span>
-                    <div className="text-lg font-mono font-bold text-foreground mt-1 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      {new Date(challenge.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-muted-foreground block mb-4">Challenge Timing</span>
+
+                <div className="space-y-3 mb-4">
+                  {challenge.starts_at && (
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <CalendarClock className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Opens</span>
+                      </div>
+                      <div className="text-sm font-mono font-semibold text-foreground">
+                        {new Date(challenge.starts_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
+                      </div>
                     </div>
-                    <div className="h-0.5 bg-hero-accent/30 rounded-full mt-3">
-                      <div className="h-full bg-hero-accent rounded-full" style={{ width: isActive ? '60%' : '100%' }} />
+                  )}
+                  {challenge.ends_at && (
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Closes</span>
+                      </div>
+                      <div className="text-sm font-mono font-semibold text-foreground">
+                        {new Date(challenge.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
+                      </div>
+                      <ChallengeCountdown endsAt={challenge.ends_at} isActive={isActive} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Per-entry session duration — clearly labeled, separate from window */}
+                {challenge.time_limit_minutes ? (
+                  <div className="flex items-start gap-3 rounded-lg border border-border bg-background/50 px-3 py-2.5 mb-3">
+                    <Timer className="w-4 h-4 text-[#adc6ff] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">Per-Entry Session</span>
+                      <span className="text-sm font-mono font-bold text-foreground">{challenge.time_limit_minutes} minutes once started</span>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Your timer starts when you open the workspace — not when you enter.</p>
                     </div>
                   </div>
-                )}
-                <div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Active Competitors</span>
+                ) : null}
+
+                <div className="pt-2 border-t border-border">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Entries</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-mono font-bold text-foreground">{(challenge.entry_count ?? 0).toLocaleString()}</span>
+                    <span className="text-2xl font-mono font-bold text-foreground">{(challenge.entry_count ?? 0).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -508,5 +535,44 @@ function ParticipationStatusBlock({
         </Link>
       </div>
     </div>
+  )
+}
+
+// ─────────────────────────────────────────────
+// ChallengeCountdown — live countdown to challenge close
+// Updates every second. Shows "Challenge closes in Xh Xm" or "Closed".
+// ─────────────────────────────────────────────
+
+function ChallengeCountdown({ endsAt, isActive }: { endsAt: string; isActive: boolean }) {
+  const [msLeft, setMsLeft] = useState(() => new Date(endsAt).getTime() - Date.now())
+
+  useEffect(() => {
+    const tick = () => setMsLeft(new Date(endsAt).getTime() - Date.now())
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [endsAt])
+
+  if (!isActive) return null
+  if (msLeft <= 0) return (
+    <span className="text-[10px] font-mono text-[#8c909f] block mt-0.5">Closed</span>
+  )
+
+  const totalSec = Math.floor(msLeft / 1000)
+  const d = Math.floor(totalSec / 86400)
+  const h = Math.floor((totalSec % 86400) / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+
+  let label: string
+  if (d > 0) label = `${d}d ${h}h remaining`
+  else if (h > 0) label = `${h}h ${m}m remaining`
+  else label = `${m}m remaining`
+
+  const isUrgent = msLeft < 3600 * 1000 // < 1 hour
+
+  return (
+    <span className={`text-[10px] font-mono block mt-0.5 ${isUrgent ? 'text-[#ffb780]' : 'text-[#7dffa2]'}`}>
+      Challenge closes in {label}
+    </span>
   )
 }
