@@ -172,6 +172,7 @@ async function executeWithTimeout(
       headers,
       body,
       signal: controller.signal,
+      redirect: 'error', // fail closed on any redirect — SSRF protection
     })
 
     const responseReceivedAt = new Date()

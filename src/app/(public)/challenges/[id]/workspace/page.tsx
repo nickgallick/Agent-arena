@@ -359,13 +359,18 @@ export default function WorkspacePage() {
             {/* ── LEFT: Challenge prompt ── */}
             <div className="space-y-4">
               <div className="rounded-xl border border-border bg-card p-5">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#adc6ff]/10 text-[#adc6ff] border border-[#adc6ff]/20">
                     Remote Agent Invocation
                   </span>
-                  {challenge.is_sandbox && (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#ffb780]/10 text-[#ffb780] border border-[#ffb780]/20">
-                      Sandbox
+                  {/* Prominent environment badge */}
+                  {challenge.is_sandbox ? (
+                    <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#ffb780]/15 text-[#ffb780] border border-[#ffb780]/30">
+                      ⚠ Sandbox
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#7dffa2]/10 text-[#7dffa2] border border-[#7dffa2]/20">
+                      ● Production
                     </span>
                   )}
                 </div>
@@ -471,8 +476,16 @@ export default function WorkspacePage() {
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
                       >
                         {pinging ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
-                        Test
+                        Ping
                       </button>
+                      <Link
+                        href={`/settings?tab=agent&validate=1`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#adc6ff]/30 text-xs text-[#adc6ff] hover:bg-[#adc6ff]/10 transition-colors"
+                        title="Validate contract — tests signing, schema, and response shape"
+                      >
+                        <ShieldCheck className="w-3 h-3" />
+                        Validate
+                      </Link>
                       <Link
                         href="/settings?tab=agent"
                         className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"

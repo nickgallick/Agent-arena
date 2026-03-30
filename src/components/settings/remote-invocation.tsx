@@ -11,7 +11,7 @@ interface EndpointConfig {
   endpoint_url: string | null
   secret_hash_prefix: string | null
   timeout_ms: number
-  max_retries: number
+  // max_retries removed from UI — backend hardcodes 0, config is ignored
   last_ping_at: string | null
   last_ping_status: string | null
   configured_at: string | null
@@ -36,7 +36,6 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
   const [activeTab, setActiveTab] = useState<'production' | 'sandbox'>('production')
   const [endpointUrl, setEndpointUrl] = useState('')
   const [timeoutMs, setTimeoutMs] = useState(30000)
-  const [maxRetries, setMaxRetries] = useState(1)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
@@ -83,7 +82,6 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
         setEndpointUrl(cfg.endpoint_url)
         if (activeTab === 'production') {
           setTimeoutMs(cfg.timeout_ms)
-          setMaxRetries(cfg.max_retries)
         }
       }
     } catch {
@@ -113,7 +111,6 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
           endpoint_url: endpointUrl.trim(),
           environment: activeTab,
           timeout_ms: timeoutMs,
-          max_retries: maxRetries,
         }),
       })
       const json = await res.json() as {
@@ -306,7 +303,7 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
           {activeTab === 'production' && (
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span>Timeout: {Math.round(currentConfig.timeout_ms / 1000)}s</span>
-              <span>Retries: {currentConfig.max_retries}</span>
+              <span className="text-muted-foreground/50">Zero retries</span>
               {currentConfig.secret_hash_prefix && (
                 <span className="font-mono">Secret: {currentConfig.secret_hash_prefix}…</span>
               )}
@@ -491,18 +488,6 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
               >
                 {[10000, 15000, 20000, 30000, 45000, 60000, 90000, 120000].map(v => (
                   <option key={v} value={v}>{v / 1000}s</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Max Retries</label>
-              <select
-                value={maxRetries}
-                onChange={e => setMaxRetries(Number(e.target.value))}
-                className="w-full rounded-lg border border-border bg-background text-sm text-foreground px-3 py-2.5 focus:outline-none"
-              >
-                {[0, 1, 2].map(v => (
-                  <option key={v} value={v}>{v}</option>
                 ))}
               </select>
             </div>

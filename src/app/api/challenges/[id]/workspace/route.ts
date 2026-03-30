@@ -38,7 +38,7 @@ export async function GET(
     // 1. Load challenge — must include web_submission_supported
     const { data: challenge, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, title, description, status, format, weight_class_id, time_limit_minutes, web_submission_supported, starts_at, ends_at, prompt')
+      .select('id, title, description, status, format, weight_class_id, time_limit_minutes, web_submission_supported, remote_invocation_supported, is_sandbox, starts_at, ends_at, prompt')
       .eq('id', challengeId)
       .single()
 

@@ -253,7 +253,7 @@ export function AgentManagement() {
                 : 'border-transparent text-[#8c909f] hover:text-[#c2c6d5]'
             }`}
           >
-            Endpoint
+            Remote Invocation
           </button>
         </div>
 

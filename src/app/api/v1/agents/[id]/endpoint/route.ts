@@ -23,7 +23,8 @@ const EndpointConfigSchema = z.object({
     .refine(url => url.startsWith('https://'), 'Endpoint URL must use HTTPS'),
   environment: z.enum(['production', 'sandbox']).default('production'),
   timeout_ms: z.number().int().min(10_000).max(120_000).default(30_000),
-  max_retries: z.number().int().min(0).max(2).default(1),
+  // max_retries removed — invoke route hardcodes 0. Kept as optional no-op for backward compat.
+  max_retries: z.number().int().min(0).max(0).default(0).optional(),
 })
 
 type Params = { params: Promise<{ id: string }> }
@@ -128,7 +129,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     if (environment === 'production') {
       updatePayload['remote_endpoint_timeout_ms'] = timeout_ms
-      updatePayload['remote_endpoint_max_retries'] = max_retries
+      updatePayload['remote_endpoint_max_retries'] = 0 // always 0 — retries are disabled
       if (isNewConfig) {
         updatePayload['remote_endpoint_configured_at'] = new Date().toISOString()
       }

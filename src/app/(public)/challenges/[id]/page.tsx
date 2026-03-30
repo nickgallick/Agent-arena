@@ -186,6 +186,9 @@ export default function ChallengeDetail() {
                       {challenge.is_featured && (
                         <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-hero-accent/15 text-hero-accent border border-hero-accent/30">Featured</span>
                       )}
+                      {remoteInvocationSupported && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#adc6ff]/10 text-[#adc6ff] border border-[#adc6ff]/20">Remote Invocation</span>
+                      )}
                     </div>
                     <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">{challenge.title}</h1>
                   </div>
@@ -196,9 +199,9 @@ export default function ChallengeDetail() {
               <div className="flex items-center gap-3 flex-wrap">
                 {[
                   { label: 'Category', value: formatCategory(challenge.category) },
-                  { label: 'Format', value: challenge.format },
-                  { label: 'Weight Class', value: formatWeightClass(challenge.weight_class_id), highlight: true },
-                  { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` },
+                  challenge.format ? { label: 'Format', value: challenge.format } : null,
+                  challenge.weight_class_id ? { label: 'Weight Class', value: formatWeightClass(challenge.weight_class_id), highlight: true } : null,
+                  challenge.time_limit_minutes ? { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` } : null,
                   challenge.entry_fee_cents !== undefined ? {
                     label: 'Entry Fee',
                     value: challenge.entry_fee_cents === 0 ? 'Free' : `$${(challenge.entry_fee_cents / 100).toFixed(2)}`,
@@ -239,6 +242,7 @@ export default function ChallengeDetail() {
                 maxEntries={challenge.max_entries}
                 entryCount={challenge.entry_count ?? 0}
                 webSubmissionSupported={hasWebPath}
+                remoteInvocationSupported={remoteInvocationSupported}
                 onEntered={fetchChallenge}
               />
             </div>
@@ -341,6 +345,7 @@ interface ParticipationStatusBlockProps {
   maxEntries?: number | null
   entryCount: number
   webSubmissionSupported: boolean
+  remoteInvocationSupported: boolean
   onEntered: () => void
 }
 
@@ -354,6 +359,7 @@ function ParticipationStatusBlock({
   maxEntries,
   entryCount,
   webSubmissionSupported,
+  remoteInvocationSupported,
   onEntered,
 }: ParticipationStatusBlockProps) {
   // State config: label, sublabel, icon, color, CTA
@@ -437,15 +443,26 @@ function ParticipationStatusBlock({
         {participationState === 'not_entered' && (
           <>
             {userId ? (
-              <EnterChallengeButton
-                challengeId={challengeId}
-                isEligible={isEligible}
-                isEntered={false}
-                entryFeeCents={entryFeeCents}
-                maxEntries={maxEntries}
-                entryCount={entryCount}
-                onEntered={onEntered}
-              />
+              <div className="flex flex-col gap-2 w-full">
+                {/* Pre-entry RAI nudge — show before timer starts */}
+                {remoteInvocationSupported && (
+                  <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#adc6ff]/20 bg-[#adc6ff]/5 text-xs text-[#8c909f]">
+                    <span className="text-[#adc6ff] font-mono text-[10px] uppercase tracking-wider">Remote Agent Invocation</span>
+                    <span>·</span>
+                    <span>You will need a registered HTTPS endpoint to submit.</span>
+                    <Link href="/settings?tab=agent" className="text-[#adc6ff] hover:underline ml-auto flex-shrink-0">Configure →</Link>
+                  </div>
+                )}
+                <EnterChallengeButton
+                  challengeId={challengeId}
+                  isEligible={isEligible}
+                  isEntered={false}
+                  entryFeeCents={entryFeeCents}
+                  maxEntries={maxEntries}
+                  entryCount={entryCount}
+                  onEntered={onEntered}
+                />
+              </div>
             ) : (
               <Link
                 href={`/login?redirect=/challenges/${challengeId}`}
