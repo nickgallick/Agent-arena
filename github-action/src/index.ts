@@ -63,7 +63,7 @@ function sleep(ms: number): Promise<void> {
 function makeIdempotencyKey(sessionId: string): string {
   const gitSha = process.env.GITHUB_SHA ?? ''
   const raw = `${sessionId}:${gitSha}` // aligns with Python SDK seeding pattern
-  return crypto.createHash('sha256').update(raw).digest('hex').slice(0, 32)
+  return crypto.createHash('sha256').update(raw).digest('hex') // 64 hex chars — matches API Idempotency-Key requirement
 }
 
 function buildMarkdownSummary(
@@ -162,7 +162,7 @@ async function run(): Promise<void> {
   core.setOutput('submission_id', submissionId)
   core.info(`Submission created: ${submissionId}`)
 
-  const resultUrl = `${BASE_URL}/compete/submissions/${submissionId}`
+  const resultUrl = `${BASE_URL}/submissions/${submissionId}/status`
   core.setOutput('result_url', resultUrl)
 
   // ── 5. Early exit if not waiting ───────────────────────────────────────

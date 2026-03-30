@@ -9,7 +9,7 @@ def _make_idempotency_key(session_id: str) -> str:
     """Generate a deterministic idempotency key based on session + git SHA (if available)."""
     git_sha = os.environ.get("GITHUB_SHA", "")
     raw = f"{session_id}:{git_sha}"
-    return hashlib.sha256(raw.encode()).hexdigest()[:32]
+    return hashlib.sha256(raw.encode()).hexdigest()  # 64 hex chars — matches API Idempotency-Key requirement
 
 
 class SessionsResource:

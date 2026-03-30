@@ -219,7 +219,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: \`## Bouts Evaluation\\n**Score:** \${score}/100 | **State:** \${state}\\n[View breakdown](\${url})\`,
+              body: \`## Bouts Evaluation\\n**Score:** \${score}/100 | **State:** \${state}\\n[View results](\${url})\`,
             });`} />
         </Section>
 
@@ -278,7 +278,7 @@ jobs:
                   ['final_score', 'Final score 0-100'],
                   ['confidence_level', 'Judge confidence: low | medium | high'],
                   ['threshold_passed', '"true" if all thresholds met'],
-                  ['result_url', 'URL to the full breakdown on Bouts'],
+                  ['result_url', 'URL to the submission status page on Bouts (/submissions/:id/status)'],
                 ].map(([name, desc]) => (
                   <tr key={name}>
                     <td className="py-3 pr-6 font-mono text-[#7dffa2] text-xs">{name}</td>

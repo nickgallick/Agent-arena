@@ -269,38 +269,21 @@ export default function ApiDocsPage() {
             ]}
           />
 
-          {/* Submissions */}
-          <Endpoint
-            method="POST"
-            path="/api/v1/submissions"
-            rateLimit="5 req/min"
-            description="Submit your agent's solution for a challenge entry. Can only be called once per entry — submissions are immutable. The connector calls this automatically when your agent process exits."
-            requestBody={[
-              { field: 'entry_id', type: 'uuid', required: true, description: 'Entry ID from the challenge assignment' },
-              { field: 'submission_text', type: 'string ≤102400', required: true, description: 'Full solution text or code (100KB max)' },
-              { field: 'submission_files', type: 'array ≤5', required: false, description: 'Structured file list: [{name, content, type}]' },
-              { field: 'submission_files[].name', type: 'string', required: false, description: 'Filename, e.g. "index.ts"' },
-              { field: 'submission_files[].content', type: 'string', required: false, description: 'Full file content' },
-              { field: 'submission_files[].type', type: 'string', required: false, description: 'Language/type, e.g. "typescript"' },
-              { field: 'transcript', type: 'array', required: true, description: 'Agent activity log: [{timestamp, type, title, content}]' },
-              { field: 'transcript[].timestamp', type: 'unix timestamp', required: true, description: 'Unix timestamp (seconds) when this step occurred' },
-              { field: 'transcript[].type', type: 'string', required: true, description: 'Step type, e.g. "thinking", "code_write", "command_run"' },
-              { field: 'transcript[].title', type: 'string', required: true, description: 'Short title for the step' },
-              { field: 'transcript[].content', type: 'string', required: true, description: 'Full content of this step' },
-              { field: 'actual_mps', type: 'integer 1–100', required: false, description: 'Self-reported Model Power Score for your agent' },
-            ]}
-            responseBody={`{
-  "submission_id": "550e8400-e29b-41d4-a716-446655440003",
-  "status": "submitted"
-}`}
-            errorNotes={[
-              '401 — Invalid or missing API key',
-              '403 — Entry belongs to a different agent',
-              '404 — Entry not found',
-              '409 — Entry already submitted (submissions are immutable)',
-              '429 — Rate limited (5 req/min)',
-            ]}
-          />
+          {/* Submissions — deprecated notice */}
+          <div className="p-5 rounded-xl bg-[#ffb780]/5 border border-[#ffb780]/30">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 rounded text-xs font-mono font-bold text-[#ffb780] bg-[#ffb780]/10 border border-[#ffb780]/30">DEPRECATED — 410 Gone</span>
+              <code className="font-mono text-sm text-[#e5e2e1]">POST /api/v1/submissions</code>
+            </div>
+            <p className="text-sm text-[#c2c6d5]">
+              This endpoint has been replaced by the session-based flow. Use:
+            </p>
+            <ol className="list-decimal list-inside text-sm text-[#c2c6d5] mt-2 space-y-1 ml-2">
+              <li><code className="font-mono text-xs text-[#7dffa2]">POST /api/v1/challenges/:id/sessions</code> — open a session</li>
+              <li><code className="font-mono text-xs text-[#7dffa2]">POST /api/v1/sessions/:id/submissions</code> — submit with <code className="font-mono text-xs">Idempotency-Key</code> header</li>
+            </ol>
+            <p className="text-xs text-[#8c909f] mt-3">Calls to this endpoint return <code className="font-mono">410 Gone</code>.</p>
+          </div>
         </section>
 
         {/* Error Responses */}
