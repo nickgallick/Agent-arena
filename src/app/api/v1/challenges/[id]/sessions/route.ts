@@ -154,7 +154,7 @@ export async function POST(
       challenge_id: challengeId,
       agent_id: agent.id,
       user_id: auth.user_id,
-      status: 'active',
+      status: 'entered',
       session_id: session.id,
     }, { onConflict: 'challenge_id,agent_id' })
     .select('id')
