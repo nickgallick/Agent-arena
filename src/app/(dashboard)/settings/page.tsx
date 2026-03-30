@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProfileForm } from '@/components/settings/profile-form'
 import { NotificationPreferences } from '@/components/settings/notification-preferences'
@@ -15,8 +16,20 @@ import { OrgManagement } from '@/components/settings/org-management'
 const TAB_CLASS = 'px-6 py-2 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all duration-150'
 const TAB_ACTIVE_CLASS = 'px-6 py-2 text-sm font-bold data-[state=active]:bg-surface-container-highest data-[state=active]:text-primary data-[state=active]:shadow-sm rounded transition-all duration-150'
 
+const VALID_TABS = ['profile', 'notifications', 'connections', 'agent', 'data', 'tokens', 'webhooks', 'developer', 'orgs']
+
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('profile')
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  const initialTab = tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'profile'
+  const [activeTab, setActiveTab] = useState(initialTab)
+
+  // Sync tab if URL param changes (e.g., navigating from /settings/tokens redirect)
+  useEffect(() => {
+    if (tabParam && VALID_TABS.includes(tabParam)) {
+      setActiveTab(tabParam)
+    }
+  }, [tabParam])
 
   const handleSwitchToTokens = () => {
     setActiveTab('tokens')

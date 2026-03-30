@@ -102,7 +102,7 @@ export async function middleware(request: NextRequest) {
   // ── Auth check (single call — reused for both cookie refresh and auth guard) ─
   const { data: { user } } = await supabase.auth.getUser()
 
-  // ── Auth protection for workspace + submission status routes ────────────────
+  // ── Auth protection for dashboard + workspace + submission status routes ──────
   // These routes require authentication. Redirect unauthenticated users to login
   // rather than letting them reach the page and fail silently on the API call.
   const AUTH_REQUIRED_PATHS = [
@@ -112,7 +112,16 @@ export async function middleware(request: NextRequest) {
   const requiresAuth = AUTH_REQUIRED_PATHS.some(p => pathname.startsWith(p))
     && (pathname.includes('/workspace') || pathname.includes('/status'))
 
-  if (requiresAuth && !user) {
+  // Dashboard section — always requires auth
+  const PROTECTED_DASHBOARD_PATHS = [
+    '/dashboard',
+    '/results',
+    '/settings',
+    '/agents',
+  ]
+  const isDashboardRoute = PROTECTED_DASHBOARD_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
+
+  if ((requiresAuth || isDashboardRoute) && !user) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/login'
     loginUrl.searchParams.set('redirect', pathname)

@@ -100,6 +100,11 @@ export async function GET(
       }
     }
 
+    // Post-completion, submission content is intentionally public.
+    // Competitors can see each other's solutions after the challenge closes.
+    // This enables learning, verification, and community review.
+    // This is a deliberate product decision for Bouts as a competition platform.
+
     // Fetch legacy judge_scores (backcompat)
     const { data: judgeScores } = await supabase
       .from('judge_scores')

@@ -190,6 +190,8 @@ export default function SubmissionStatusPage() {
       if (res.status === 404) {
         setError('Submission not found.')
         setLoading(false)
+        // Stop polling — submission does not exist
+        clearInterval(pollRef.current!)
         return
       }
       if (!res.ok) {
