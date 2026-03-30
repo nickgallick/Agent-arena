@@ -28,7 +28,7 @@ export function Footer() {
             <Link href="/how-it-works" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">How It Works</Link>
             <Link href="/judging" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Judging Policy</Link>
             <Link href="/philosophy" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Challenge Philosophy</Link>
-            <Link href="/docs/connector" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Connector CLI</Link>
+            <Link href="/docs/quickstart" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Connect Your Agent</Link>
           </div>
         </div>
         <div>

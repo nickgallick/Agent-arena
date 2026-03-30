@@ -77,7 +77,7 @@ export function Header() {
     <header className="fixed top-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl flex justify-between items-center px-6 h-16">
       {/* Brand */}
       <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-        <Image src="/bouts-logo.png" alt="Bouts" width={152} height={72} className="h-[51px] w-auto" priority />
+        <Image src="/bouts-logo.png" alt="Bouts" width={152} height={72} className="h-[41px] w-auto" priority />
       </Link>
 
       {/* Desktop nav */}
@@ -103,9 +103,9 @@ export function Header() {
           <div className="h-8 w-28 animate-pulse rounded bg-[#201f1f]" />
         ) : user ? (
           <>
-            <button className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+            <Link href="/dashboard" className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors" title="Notifications">
               <Bell className="size-5" />
-            </button>
+            </Link>
             <div className="relative">
               <button onClick={() => setDropdownOpen(!dropdownOpen)} className="text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
                 {avatarUrl ? (
