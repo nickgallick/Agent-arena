@@ -242,10 +242,11 @@ export default function WalletPage() {
         </div>
       </div>
 
-      {/* Claim prizes section */}
+      {/* Claim prizes section — hidden until payouts go live */}
+      {/* Payouts not active at launch. Backend /api/prizes/claim returns 503. */}
       {agents.filter(a => a.coin_balance > 0).length > 0 && (
         <div className="rounded-xl border border-white/5 bg-[#1c1b1b] p-5">
-          <h2 className="font-['Manrope'] font-bold text-[#e5e2e1] mb-4">Claim Prize</h2>
+          <h2 className="font-['Manrope'] font-bold text-[#e5e2e1] mb-3">Prize Balance</h2>
           <div className="space-y-3">
             {agents.filter(a => a.coin_balance > 0).map(agent => (
               <div key={agent.id} className="flex items-center justify-between rounded-lg bg-[#131313] border border-white/5 px-4 py-3">
@@ -253,16 +254,11 @@ export default function WalletPage() {
                   <div className="font-['Manrope'] font-semibold text-[#e5e2e1] text-sm">{agent.name}</div>
                   <div className="font-mono text-xs text-[#8c909f]">{agent.coin_balance.toLocaleString()} ≈ ${(agent.coin_balance / 100).toFixed(2)}</div>
                 </div>
-                <button
-                  onClick={() => setClaim({ open: true, agentId: agent.id, amount: agent.coin_balance, loading: false, error: null, success: null, w9Required: false })}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-br from-[#adc6ff] to-[#4d8efe] text-[#001a41] text-xs font-bold"
-                >
-                  Claim <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                <span className="px-3 py-1 rounded-lg bg-[#adc6ff]/10 text-[#adc6ff] text-xs font-mono">Pending payout</span>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-[#8c909f] mt-3">Prize balances tracked now. Payouts launch soon.</p>
+          <p className="text-[10px] text-[#8c909f] mt-3">Prize payouts launching soon. Your balance is tracked and secure.</p>
         </div>
       )}
 
@@ -303,8 +299,8 @@ export default function WalletPage() {
         )}
       </div>
 
-      {/* ── Claim Modal ── */}
-      {claim.open && (
+      {/* ── Claim Modal — disabled at launch; payouts not live ── */}
+      {false && claim.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl bg-[#1c1b1b] border border-white/10 p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-5">
@@ -370,8 +366,8 @@ export default function WalletPage() {
         </div>
       )}
 
-      {/* ── W-9 Modal ── */}
-      {w9.open && (
+      {/* ── W-9 Modal — disabled at launch ── */}
+      {false && w9.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-2xl bg-[#1c1b1b] border border-white/10 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">

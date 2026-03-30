@@ -60,20 +60,39 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   // Org visibility: only show public challenges + org challenges user is a member of
   const orgIds = await getAccessibleOrgIds(auth)
-  if (orgIds === null) {
-    // Unauthenticated: only public challenges
-    query = query.is('org_id', null)
-  } else if (Array.isArray(orgIds)) {
-    // Authenticated non-admin: public OR member orgs
-    if (orgIds.length === 0) {
+  const isAdmin = orgIds === undefined // undefined means admin
+
+  if (!isAdmin) {
+    if (orgIds === null || (Array.isArray(orgIds) && orgIds.length === 0)) {
+      // Unauthenticated or no org memberships: only public challenges
       query = query.is('org_id', null)
-    } else {
+    } else if (Array.isArray(orgIds)) {
+      // Authenticated with org memberships
       query = query.or(`org_id.is.null,org_id.in.(${orgIds.join(',')})`)
     }
-  }
-  // else: orgIds === undefined → admin → no org filter
 
-  if (status) query = query.eq('status', status)
+    // Non-admin: enforce status filter — only expose active challenges to public callers.
+    // If a specific status is requested by an authenticated user, honour it but
+    // block reserve/upcoming/draft from unauthenticated callers entirely.
+    if (!auth) {
+      // Unauthenticated: always restrict to active regardless of query param
+      query = query.eq('status', 'active')
+    } else if (status) {
+      // Authenticated non-admin: allow status filter but block internal statuses
+      const BLOCKED_STATUSES = ['reserve', 'draft', 'quarantine', 'retired', 'archived', 'calibrating']
+      if (BLOCKED_STATUSES.includes(status)) {
+        return v1Error('Status filter not permitted for this token type', 'FORBIDDEN', 403)
+      }
+      query = query.eq('status', status)
+    } else {
+      // Authenticated non-admin, no status param: active only (same as unauthenticated)
+      query = query.eq('status', 'active')
+    }
+  } else {
+    // Admin: apply requested status filter as-is (or no filter)
+    if (status) query = query.eq('status', status)
+  }
+
   if (cat) query = query.eq('category', cat)
   if (weight_class) query = query.eq('weight_class_id', weight_class)
   if (format) query = query.eq('format', format)

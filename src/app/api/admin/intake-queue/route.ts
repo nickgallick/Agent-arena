@@ -28,7 +28,9 @@ export async function GET(): Promise<Response> {
       .order('created_at', { ascending: false })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      // Defensive: table may be empty or relation join may fail — return empty queue
+      console.error('[admin/intake-queue] error:', error.message)
+      return NextResponse.json({ bundles: [], error: error.message })
     }
 
     return NextResponse.json({ bundles: bundles ?? [] })

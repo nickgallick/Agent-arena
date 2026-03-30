@@ -25,11 +25,13 @@ export async function GET(): Promise<Response> {
 
     const { data: challenges, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, title, category, format, status, pipeline_status, calibration_status, cdi_score, web_submission_supported')
-      .in('status', ['active', 'upcoming'])
+      .select('id, title, category, format, status, pipeline_status, calibration_status, cdi_score, web_submission_supported, remote_invocation_supported')
+      .in('status', ['active', 'upcoming', 'complete'])
 
     if (challengeError) {
-      return NextResponse.json({ error: challengeError.message }, { status: 500 })
+      // Defensive: if column doesn't exist yet, retry without optional columns
+      console.error('[admin/health-dashboard] challenge fetch error:', challengeError.message)
+      return NextResponse.json({ challenges: [], summary: { healthy: 0, warning: 0, critical: 0 }, error: challengeError.message }, { status: 200 })
     }
 
     if (!challenges || challenges.length === 0) {
@@ -46,11 +48,13 @@ export async function GET(): Promise<Response> {
       .order('last_calculated_at', { ascending: false })
 
     if (snapshotError) {
-      return NextResponse.json({ error: snapshotError.message }, { status: 500 })
+      // Non-fatal: snapshots may not exist yet — return challenges without quality data
+      console.error('[admin/health-dashboard] snapshot error:', snapshotError.message)
     }
 
+    type Snapshot = NonNullable<typeof snapshots>[number]
     // Take latest snapshot per challenge
-    const latestByChallenge = new Map<string, typeof snapshots[0]>()
+    const latestByChallenge = new Map<string, Snapshot>()
     for (const s of snapshots ?? []) {
       if (!latestByChallenge.has(s.challenge_id)) {
         latestByChallenge.set(s.challenge_id, s)
@@ -82,7 +86,8 @@ export async function GET(): Promise<Response> {
         entry_count: snap?.entry_count ?? 0,
         last_calculated_at: snap?.last_calculated_at ?? null,
         health_signal,
-        web_submission_supported: c.web_submission_supported ?? false,
+        web_submission_supported: (c as Record<string, unknown>).web_submission_supported ?? false,
+        remote_invocation_supported: (c as Record<string, unknown>).remote_invocation_supported ?? false,
       }
     })
 

@@ -1537,7 +1537,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
                         <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Health</th>
-                        <th className="px-6 py-4 uppercase tracking-widest">Web Submit</th>
+                        <th className="px-6 py-4 uppercase tracking-widest" title="Sandbox/web workspace submission path (separate from Remote Agent Invocation)">Web Workspace</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Solve Rate</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Score Spread</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Dispute Rate</th>
@@ -1559,7 +1559,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                             <button
                               disabled={healthActionLoading === `${item.id}-web`}
                               onClick={() => handleWebSubmissionToggle(item.id, item.web_submission_supported)}
-                              title={item.web_submission_supported ? 'Click to disable web submission for this challenge' : 'Click to enable web submission for this challenge'}
+                              title={item.web_submission_supported ? 'Web workspace enabled — click to disable (does NOT affect Remote Agent Invocation)' : 'Web workspace disabled — click to enable sandbox/manual web path (does NOT affect Remote Agent Invocation)'}
                               className={`px-3 py-1.5 rounded text-[10px] font-bold transition-colors disabled:opacity-50 ${
                                 item.web_submission_supported
                                   ? 'bg-[#7dffa2]/10 text-[#7dffa2] hover:bg-[#7dffa2]/20'

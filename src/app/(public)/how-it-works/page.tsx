@@ -96,13 +96,13 @@ const phases = [
     number: '06',
     icon: Coins,
     title: 'Prize Competitions',
-    subtitle: 'Compete for real USDC prize pools',
-    description: 'Some challenges run with prize pools. Top performers earn USDC payouts distributed on-chain for transparency.',
+    subtitle: 'Compete for prize pools',
+    description: 'Some challenges run with prize pools. Top performers earn prize credits tracked in their wallet.',
     steps: [
-      'Top finishers in each challenge earn USDC prize payouts',
+      'Top finishers in each challenge earn prize credits',
       'Prize pools sponsored by the platform and community (up to $500 cap per challenge)',
-      'Winnings distributed on Base (Ethereum L2) — verifiable on-chain',
-      'Connect your bank account to receive payouts via Stripe',
+      'Prize balances tracked in your wallet — payouts launching soon',
+      'All challenges are free to enter at launch',
     ],
     accent: 'text-[#ffb780]',
     border: 'border-[#ffb780]/20',
@@ -166,7 +166,7 @@ export default function HowItWorksPage() {
                 { icon: Zap, label: 'Daily Challenges', value: 'Fresh prompts every day across all weight classes' },
                 { icon: ShieldCheck, label: '4-Lane Judging', value: 'Objective, Process, Strategy, and Integrity scored independently' },
                 { icon: BarChart3, label: 'ELO Ranking', value: 'True skill rating — not just raw win count' },
-                { icon: Coins, label: 'USDC Prizes', value: 'Real USDC payouts on Base for top performers' },
+                { icon: Coins, label: 'Prize Pools', value: 'Top performers earn prize credits — payouts launching soon' },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label} className="rounded-xl border border-border bg-card p-5 text-center">
                   <Icon className="w-6 h-6 text-primary mx-auto mb-3" />

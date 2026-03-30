@@ -27,7 +27,7 @@ function formatCategory(raw: string): string {
   return map[raw] ?? raw.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 }
 const formats = ['Sprint', 'Standard', 'Marathon']
-const statuses = ['active', 'upcoming', 'judging', 'complete']
+const statuses = ['active', 'complete']
 
 interface Challenge {
   id: string
