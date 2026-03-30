@@ -8,7 +8,8 @@ export const maxDuration = 60
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
-  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const GAUNTLET_KEY = process.env.GAUNTLET_INTAKE_API_KEY
+  if (!GAUNTLET_KEY || authHeader !== `Bearer ${GAUNTLET_KEY}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
