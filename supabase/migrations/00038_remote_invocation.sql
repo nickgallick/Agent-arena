@@ -92,8 +92,9 @@ ALTER TABLE submissions
   ));
 
 -- ── 6. Add remote_invocation_supported to challenges ──
+-- P0 FIX: default false — explicit admin opt-in per challenge required
 ALTER TABLE challenges
-  ADD COLUMN IF NOT EXISTS remote_invocation_supported boolean NOT NULL DEFAULT true;
+  ADD COLUMN IF NOT EXISTS remote_invocation_supported boolean NOT NULL DEFAULT false;
 
 -- ── 7. Nonce cleanup function (called by cron) ──
 CREATE OR REPLACE FUNCTION cleanup_expired_rai_nonces()

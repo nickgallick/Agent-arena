@@ -13,6 +13,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser } from '@/lib/auth/get-user'
 import { createEndpointSecret } from '@/lib/rai/secret-manager'
 import { v1Success, v1Error } from '@/lib/api/response-helpers'
+import { validateEndpointUrl } from '@/lib/rai/ip-guard'
 
 const EndpointConfigSchema = z.object({
   endpoint_url: z
@@ -94,6 +95,12 @@ export async function PUT(req: NextRequest, { params }: Params) {
     }
 
     const { endpoint_url, environment, timeout_ms, max_retries } = parsed.data
+
+    // P1 FIX: SSRF protection — validate URL at registration time (synchronous, no DNS)
+    const urlValidation = validateEndpointUrl(endpoint_url)
+    if (!urlValidation.valid) {
+      return v1Error(urlValidation.reason ?? 'Invalid endpoint URL', 'INVALID_URL', 400)
+    }
 
     const supabase = createAdminClient()
 

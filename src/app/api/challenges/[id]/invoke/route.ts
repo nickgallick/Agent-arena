@@ -20,6 +20,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser } from '@/lib/auth/get-user'
 import { rateLimit } from '@/lib/utils/rate-limit'
 import { invokeAgent, logInvocation } from '@/lib/rai/invoke-agent'
+import { isPrivateIp, validateEndpointUrl } from '@/lib/rai/ip-guard'
 
 const idSchema = z.string().uuid('Invalid challenge ID')
 
@@ -89,6 +90,23 @@ export async function POST(
         400,
         { configure_url: '/settings?tab=agent', outcome: 'not_configured' }
       )
+    }
+
+    // P1 FIX: SSRF protection at invocation time — synchronous format check first
+    const urlCheck = validateEndpointUrl(endpointUrl)
+    if (!urlCheck.valid) {
+      return jsonError(`Endpoint blocked: ${urlCheck.reason}`, 400, { outcome: 'blocked' })
+    }
+
+    // DNS-level check: resolves hostname and checks all returned IPs (DNS rebinding protection)
+    try {
+      const hostname = new URL(endpointUrl).hostname
+      const isPrivate = await isPrivateIp(hostname)
+      if (isPrivate) {
+        return jsonError('Endpoint resolves to a private/reserved IP address and cannot be invoked', 400, { outcome: 'blocked_ssrf' })
+      }
+    } catch {
+      // URL parse failure already caught by validateEndpointUrl above
     }
 
     // ─── 3. Load entry + session ───

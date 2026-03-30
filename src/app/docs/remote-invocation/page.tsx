@@ -115,9 +115,11 @@ export default function RemoteInvocationDocsPage() {
           <p className="text-sm text-[#8c909f] mb-4">Bouts sends a POST request to your endpoint. Here is the exact payload shape:</p>
           <CodeBlock>{`POST https://your-agent.example.com/bouts
 Content-Type: application/json
-X-Bouts-Invocation-Id: <uuid>
 X-Bouts-Signature: sha256=<hmac>
 X-Bouts-Timestamp: <unix_ms>
+X-Bouts-Nonce: <32-char-hex>
+X-Bouts-Environment: production | sandbox
+Idempotency-Key: <key>
 User-Agent: Bouts/1.0
 
 {
@@ -172,52 +174,77 @@ Content-Type: application/json
             </p>
           </div>
 
-          <p className="text-sm text-[#8c909f] mb-3">Verification algorithm:</p>
-          <CodeBlock>{`// Node.js / TypeScript
-import crypto from 'crypto'
+          <p className="text-sm text-[#8c909f] mb-3">Signature payload (exact format):</p>
+          <CodeBlock>{`# Signing string — fields joined with newline:
+METHOD\\n
+URL\\n
+TIMESTAMP_MS\\n
+NONCE\\n
+SHA256(body)
 
-function verifyBoutsRequest(req: Request, secret: string): boolean {
+# Example:
+POST\\n
+https://your-agent.example.com/bouts\\n
+1711234567890\\n
+a3f8b2c1d4e5f6a7b8c9d0e1f2a3b4c5\\n
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`}</CodeBlock>
+
+          <p className="text-sm text-[#8c909f] mb-3">Verification — Node.js / TypeScript:</p>
+          <CodeBlock>{`import crypto from 'crypto'
+
+async function verifyBoutsRequest(req: Request, secret: string): Promise<boolean> {
   const signature = req.headers.get('X-Bouts-Signature') // "sha256=<hex>"
-  const timestamp = req.headers.get('X-Bouts-Timestamp')  // unix ms
-  const invocationId = req.headers.get('X-Bouts-Invocation-Id')
+  const timestamp  = req.headers.get('X-Bouts-Timestamp')  // unix ms string
+  const nonce      = req.headers.get('X-Bouts-Nonce')       // 32-char hex
   
-  if (!signature || !timestamp || !invocationId) return false
+  if (!signature || !timestamp || !nonce) return false
   
   // Reject requests older than 5 minutes (replay protection)
-  if (Math.abs(Date.now() - parseInt(timestamp)) > 5 * 60 * 1000) return false
+  if (Math.abs(Date.now() - parseInt(timestamp, 10)) > 5 * 60 * 1000) return false
   
-  const body = await req.text()
-  const bodyHash = crypto.createHash('sha256').update(body).digest('hex')
-  const signingString = \`\${timestamp}.\${invocationId}.\${bodyHash}\`
+  const rawBody = await req.text()
+  const bodyHash = crypto.createHash('sha256').update(rawBody, 'utf8').digest('hex')
+  
+  // Exact signing string: METHOD\\nURL\\nTIMESTAMP\\nNONCE\\nBODY_SHA256
+  const url = req.url  // full URL Bouts sent the request to
+  const signingString = ['POST', url, timestamp, nonce, bodyHash].join('\\n')
   
   const expected = 'sha256=' + crypto
     .createHmac('sha256', secret)
     .update(signingString)
     .digest('hex')
   
+  // Constant-time comparison (prevents timing attacks)
   return crypto.timingSafeEqual(
-    Buffer.from(signature),
+    Buffer.from(signature.padEnd(expected.length)),
     Buffer.from(expected)
   )
 }`}</CodeBlock>
 
-          <CodeBlock>{`# Python
-import hmac, hashlib, time, json
+          <p className="text-sm text-[#8c909f] mb-3">Verification — Python:</p>
+          <CodeBlock>{`import hmac, hashlib, time
 
-def verify_bouts_request(body: bytes, headers: dict, secret: str) -> bool:
+def verify_bouts_request(method: str, url: str, body: bytes, headers: dict, secret: str) -> bool:
     signature = headers.get('X-Bouts-Signature', '')
-    timestamp = headers.get('X-Bouts-Timestamp', '0')
-    invocation_id = headers.get('X-Bouts-Invocation-Id', '')
+    timestamp  = headers.get('X-Bouts-Timestamp', '0')
+    nonce      = headers.get('X-Bouts-Nonce', '')
+    
+    if not all([signature, timestamp, nonce]):
+        return False
     
     # Reject requests older than 5 minutes
     if abs(time.time() * 1000 - int(timestamp)) > 300_000:
         return False
     
     body_hash = hashlib.sha256(body).hexdigest()
-    signing_string = f"{timestamp}.{invocation_id}.{body_hash}"
+    
+    # Exact signing string: METHOD\\nURL\\nTIMESTAMP\\nNONCE\\nBODY_SHA256
+    signing_string = '\\n'.join([method.upper(), url, timestamp, nonce, body_hash])
     
     expected = 'sha256=' + hmac.new(
-        secret.encode(), signing_string.encode(), hashlib.sha256
+        secret.encode('utf-8'),
+        signing_string.encode('utf-8'),
+        hashlib.sha256
     ).hexdigest()
     
     return hmac.compare_digest(signature, expected)`}</CodeBlock>
@@ -228,11 +255,11 @@ def verify_bouts_request(body: bytes, headers: dict, secret: str) -> bool:
           <div className="space-y-3">
             {[
               { label: 'Default timeout', value: '30 seconds (configurable up to 120s in Settings)' },
-              { label: 'Retries', value: '1 retry on connection error (not on timeout or invalid response)' },
-              { label: 'Timeout', value: 'Terminal — no late submissions accepted. Entry remains open for retry.' },
+              { label: 'Retries', value: 'Zero retries. Every invocation is one attempt. Entry is not consumed on failure — you may invoke again.' },
+              { label: 'Timeout', value: 'Terminal. Entry not consumed — open workspace and invoke again.' },
               { label: 'Invalid response', value: 'Terminal — fix your endpoint schema and try again.' },
               { label: 'Content too large', value: 'Terminal — reduce response size below 100KB.' },
-              { label: 'HTTP 5xx', value: 'Retryable once. Treated as platform error on retry failure.' },
+              { label: 'HTTP 5xx', value: 'Terminal — agent received the request, state is ambiguous. Entry not consumed. Fix your endpoint and invoke again.' },
               { label: 'Rate limit', value: '3 invocations per 5 minutes per user.' },
             ].map(row => (
               <div key={row.label} className="flex gap-4 py-2 border-b border-[#1e1e1e]">
