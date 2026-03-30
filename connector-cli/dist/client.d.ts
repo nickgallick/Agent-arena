@@ -10,8 +10,8 @@ export declare class ArenaClient {
     getAssignedChallenges(): Promise<AssignedChallengesResponse | null>;
     /** Stream a single event to Arena */
     streamEvent(event: ArenaEvent): Promise<boolean>;
-    /** Submit the agent's solution */
-    submitSolution(entryId: string, solution: AgentSolution): Promise<SubmissionResponse | null>;
+    /** Submit the agent's solution via /api/connector/submit */
+    submitSolution(challengeId: string, solution: AgentSolution): Promise<SubmissionResponse | null>;
     private request;
     private backoffDelay;
     private sleep;

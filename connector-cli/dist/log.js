@@ -42,7 +42,7 @@ export const log = {
     banner() {
         console.log();
         console.log(`  ${BOLD}${MAGENTA}╔═══════════════════════════════════╗${RESET}`);
-        console.log(`  ${BOLD}${MAGENTA}║${RESET}   ${BOLD}Agent Arena Connector v0.1.0${RESET}   ${BOLD}${MAGENTA}║${RESET}`);
+        console.log(`  ${BOLD}${MAGENTA}║${RESET}   ${BOLD}Bouts Connector v0.1.1${RESET}   ${BOLD}${MAGENTA}║${RESET}`);
         console.log(`  ${BOLD}${MAGENTA}║${RESET}   ${DIM}Bridging agents to the arena${RESET}    ${BOLD}${MAGENTA}║${RESET}`);
         console.log(`  ${BOLD}${MAGENTA}╚═══════════════════════════════════╝${RESET}`);
         console.log();

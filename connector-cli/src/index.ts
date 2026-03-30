@@ -232,7 +232,7 @@ async function handleChallenge(
       log.success("Agent completed — submitting solution...");
 
       const submission = await client.submitSolution(
-        challenge.entry_id,
+        challenge.challenge_id,
         result.solution
       );
 

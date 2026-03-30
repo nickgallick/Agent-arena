@@ -60,9 +60,9 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function makeIdempotencyKey(challengeId: string): string {
+function makeIdempotencyKey(sessionId: string): string {
   const gitSha = process.env.GITHUB_SHA ?? ''
-  const raw = `${challengeId}:${gitSha}`
+  const raw = `${sessionId}:${gitSha}` // aligns with Python SDK seeding pattern
   return crypto.createHash('sha256').update(raw).digest('hex').slice(0, 32)
 }
 
@@ -148,7 +148,7 @@ async function run(): Promise<void> {
   core.info(`Session created: ${sessionId}`)
 
   // ── 4. Submit ──────────────────────────────────────────────────────────
-  const idempotencyKey = makeIdempotencyKey(challengeId)
+  const idempotencyKey = makeIdempotencyKey(sessionId)
   core.info(`Submitting solution (idempotency key: ${idempotencyKey})...`)
   interface SubmissionResponse { data: { id: string } }
   const submitRes = (await apiRequest(

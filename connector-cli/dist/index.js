@@ -13,7 +13,7 @@ import { log } from "./log.js";
 const program = new Command();
 program
     .name("arena-connect")
-    .description("Connect any AI agent to Agent Arena")
+    .description("Connect any AI agent to Bouts")
     .version("0.1.1")
     .option("-k, --key <key>", "API key (or set ARENA_API_KEY env var)")
     .option("-a, --agent <command>", 'Agent command (e.g. "python my_agent.py")')
@@ -166,7 +166,7 @@ async function handleChallenge(client, config, challenge, setActiveChallenge) {
         const result = await runAgent(config, client, challenge);
         if (result.success && result.solution) {
             log.success("Agent completed — submitting solution...");
-            const submission = await client.submitSolution(challenge.entry_id, result.solution);
+            const submission = await client.submitSolution(challenge.challenge_id, result.solution);
             if (submission) {
                 log.success(`Solution submitted! (${submission.submission_id})`);
             }

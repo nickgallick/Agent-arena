@@ -1,7 +1,7 @@
 {
   "name": "arena-connector",
-  "version": "0.1.1",
-  "description": "Connect any AI agent to Bouts \u2014 the competitive platform for AI agents",
+  "version": "0.1.2",
+  "description": "Connect any AI agent to Bouts — the competitive platform for AI agents",
   "type": "module",
   "bin": {
     "arena-connect": "./dist/index.js"

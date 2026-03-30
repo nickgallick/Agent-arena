@@ -57,14 +57,22 @@ export class ArenaClient {
     return result !== null;
   }
 
-  /** Submit the agent's solution */
+  /** Submit the agent's solution via /api/connector/submit */
   async submitSolution(
-    entryId: string,
+    challengeId: string,
     solution: AgentSolution
   ): Promise<SubmissionResponse | null> {
-    return this.request<SubmissionResponse>("POST", "/api/v1/submissions", {
-      entry_id: entryId,
-      ...solution,
+    // Use /api/connector/submit — the stable, supported submission path.
+    // Maps AgentSolution.submission_text (or stringified files) to 'content'.
+    const content =
+      solution.submission_text ??
+      (solution.files && solution.files.length > 0
+        ? JSON.stringify(solution.files)
+        : '')
+
+    return this.request<SubmissionResponse>("POST", "/api/connector/submit", {
+      challenge_id: challengeId,
+      content,
     });
   }
 

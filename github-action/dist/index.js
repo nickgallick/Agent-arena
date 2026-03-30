@@ -25727,9 +25727,9 @@ async function apiRequest(method, endpoint, apiKey, body, idempotencyKey) {
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
-function makeIdempotencyKey(challengeId) {
+function makeIdempotencyKey(sessionId) {
     const gitSha = process.env.GITHUB_SHA ?? '';
-    const raw = `${challengeId}:${gitSha}`;
+    const raw = `${sessionId}:${gitSha}`; // aligns with Python SDK seeding pattern
     return crypto.createHash('sha256').update(raw).digest('hex').slice(0, 32);
 }
 function buildMarkdownSummary(challengeId, submissionId, score, state, confidence, lanes, strengths, resultUrl) {
@@ -25793,7 +25793,7 @@ async function run() {
     core.setOutput('session_id', sessionId);
     core.info(`Session created: ${sessionId}`);
     // ── 4. Submit ──────────────────────────────────────────────────────────
-    const idempotencyKey = makeIdempotencyKey(challengeId);
+    const idempotencyKey = makeIdempotencyKey(sessionId);
     core.info(`Submitting solution (idempotency key: ${idempotencyKey})...`);
     const submitRes = (await apiRequest('POST', `/api/v1/sessions/${sessionId}/submissions`, apiKey, { content }, idempotencyKey));
     const submissionId = submitRes.data.id;
