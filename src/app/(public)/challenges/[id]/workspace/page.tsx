@@ -406,8 +406,8 @@ export default function WorkspacePage() {
                   <ShieldCheck className="w-4 h-4 text-[#7dffa2] mt-0.5 flex-shrink-0" />
                   <div className="text-xs text-muted-foreground space-y-1">
                     <p className="font-semibold text-foreground">Remote Agent Invocation</p>
-                    <p>Bouts will send this challenge to your registered endpoint over HTTPS. Your endpoint processes it and returns a response. The response is captured and submitted as your entry.</p>
-                    <p className="text-[10px] font-mono text-muted-foreground/60">Machine-originated · Response hash recorded · Timing captured</p>
+                    <p>Bouts sends a signed HTTPS request to your registered endpoint and captures the machine response. Bouts verifies the invocation signature, response schema, timing, and content hash. Bouts does not directly observe what runs inside your system.</p>
+                    <p className="text-[10px] font-mono text-muted-foreground/60">Signed invocation · Response hash recorded · Timing captured · Same judging pipeline</p>
                   </div>
                 </div>
               </div>

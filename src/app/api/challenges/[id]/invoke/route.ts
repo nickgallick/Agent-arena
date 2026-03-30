@@ -164,7 +164,10 @@ export async function POST(
       {
         endpointUrl,
         timeoutMs: (a.remote_endpoint_timeout_ms as number | null) ?? 30_000,
-        maxRetries: (a.remote_endpoint_max_retries as number | null) ?? 1,
+        // Default 0 retries — explicit safety. Only a pure TCP connection
+        // failure (no HTTP response) may retry once if max_retries=1.
+        // Everything else is terminal on first attempt.
+        maxRetries: 0,
         environment,
       },
       {
@@ -206,10 +209,13 @@ export async function POST(
         invalid_response: 422,
         content_too_large: 413,
       }
+      // Entry is NOT consumed on invocation failure — user may retry
       return jsonError(result.errorMessage ?? 'Invocation failed', outcomeToStatus[result.outcome] ?? 502, {
         outcome: result.outcome,
         latency_ms: result.latencyMs,
         invocation_id: result.invocationId,
+        entry_consumed: false,
+        retry_allowed: result.outcome === 'timeout' || result.outcome === 'error',
       })
     }
 
@@ -256,20 +262,33 @@ export async function POST(
       .select('id')
       .single()
 
+    // ── ONE-SHOT SEMANTICS ──
+    // An entry is only "consumed" when:
+    //   1. submission row is written (content + provenance), AND
+    //   2. enqueue_judging_job() succeeds (or cron picks it up)
+    //
+    // Failures that do NOT burn the entry:
+    //   - endpoint timeout      → entry stays open, user can retry
+    //   - endpoint invalid resp → entry stays open, user fixes endpoint and retries
+    //   - content_too_large     → entry stays open
+    //   - submission INSERT fails (platform error) → entry stays open
+    //
+    // Failure that DOES burn the entry:
+    //   - submission written + enqueue failed (cron will recover) → entry consumed,
+    //     submission_id returned so user can track status
+    //
+    // Entry status is updated to 'submitted' only after submission row is confirmed.
+
     if (subError || !submission) {
-      return jsonError('Failed to record submission', 500, {
-        outcome: 'submission_error',
+      // Platform-side failure — entry NOT consumed. User can retry.
+      return jsonError('Failed to record submission — your entry has not been consumed. Please try again.', 500, {
+        outcome: 'platform_error',
         invocation_id: result.invocationId,
+        entry_consumed: false,
       })
     }
 
     const submissionId = (submission as Record<string, unknown>).id as string
-
-    // Update entry → submitted
-    await supabase
-      .from('challenge_entries')
-      .update({ status: 'submitted', submitted_at: new Date().toISOString() })
-      .eq('id', e.id)
 
     // ─── 9. Load version snapshot + enqueue judging ───
     let versionSnapshot: Record<string, unknown> = {}
@@ -282,6 +301,7 @@ export async function POST(
       if (sess) versionSnapshot = (sess as Record<string, unknown>).version_snapshot as Record<string, unknown> ?? {}
     }
 
+    let enqueueError: unknown = null
     try {
       await supabase.rpc('enqueue_judging_job', {
         p_submission_id: submissionId,
@@ -289,13 +309,24 @@ export async function POST(
         p_agent_id: agent.id,
         p_version_snapshot: versionSnapshot,
       })
-    } catch { /* cron fallback */ }
+    } catch (err) {
+      enqueueError = err
+      // Non-fatal: cron (every 2min) will pick up pending submissions without jobs
+    }
+
+    // Update entry → submitted (entry is now consumed — submission row exists)
+    await supabase
+      .from('challenge_entries')
+      .update({ status: 'submitted', submitted_at: new Date().toISOString() })
+      .eq('id', e.id)
 
     return NextResponse.json({
       submission_id: submissionId,
       outcome: 'accepted',
       invocation_id: result.invocationId,
       latency_ms: result.latencyMs,
+      entry_consumed: true,
+      enqueue_note: enqueueError ? 'Queued via cron fallback — judging will begin within 2 minutes.' : undefined,
       message: 'Submission accepted and queued for judging.',
     })
   } catch (err) {

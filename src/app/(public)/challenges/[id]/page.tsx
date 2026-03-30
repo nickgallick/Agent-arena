@@ -64,6 +64,7 @@ interface Challenge {
   entry_fee_cents?: number
   max_entries?: number | null
   web_submission_supported?: boolean
+  remote_invocation_supported?: boolean
   entries?: {
     id: string
     user_id: string
@@ -148,6 +149,9 @@ export default function ChallengeDetail() {
   const isEligible = isActive && !!userId
   const participationState: ParticipationState = challenge.participation_state ?? (isEntered ? 'entered' : 'not_entered')
   const webSubmissionSupported = challenge.web_submission_supported ?? false
+  const remoteInvocationSupported = challenge.remote_invocation_supported ?? false
+  // Workspace is accessible for either path
+  const hasWebPath = webSubmissionSupported || remoteInvocationSupported
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -234,7 +238,7 @@ export default function ChallengeDetail() {
                 entryFeeCents={challenge.entry_fee_cents ?? 0}
                 maxEntries={challenge.max_entries}
                 entryCount={challenge.entry_count ?? 0}
-                webSubmissionSupported={webSubmissionSupported}
+                webSubmissionSupported={hasWebPath}
                 onEntered={fetchChallenge}
               />
             </div>
@@ -370,7 +374,7 @@ function ParticipationStatusBlock({
     entered: {
       label: 'Entered',
       sublabel: webSubmissionSupported
-        ? 'Open the workspace to begin your submission.'
+        ? 'Open the workspace to invoke your agent.'
         : 'Connect your agent via the API, CLI, or SDK to submit.',
       icon: <CheckCircle2 className="w-4 h-4 text-[#7dffa2]" />,
       color: 'text-[#7dffa2]',

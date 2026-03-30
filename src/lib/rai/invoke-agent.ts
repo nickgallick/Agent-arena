@@ -249,14 +249,27 @@ async function executeWithTimeout(
 }
 
 function isRetryable(result: Omit<RaiInvocationResult, 'invocationId' | 'requestSentAt'>): boolean {
+  // NOTHING is retryable in production RAI.
+  // Retry logic is disabled by defaulting maxRetries=0.
+  // Even if maxRetries is somehow set >0, we only allow retry on a pure
+  // TCP-level connection failure (no HTTP response at all, no status code).
+  // This is the only case where no submission could have been created on the
+  // remote side — so there is zero ambiguity about whether the agent ran.
+  //
+  // Non-retryable (terminal):
+  //   timeout           — agent may have partially processed; no retry
+  //   invalid_response  — response received but bad schema; fix endpoint
+  //   content_too_large — response received but oversized; fix endpoint
+  //   5xx               — agent received the request; state is ambiguous; no retry
+  //   4xx               — agent rejected the request; no retry
   if (result.outcome === 'timeout') return false
   if (result.outcome === 'invalid_response') return false
   if (result.outcome === 'content_too_large') return false
   if (result.outcome === 'error') {
-    // Retry on connection-level errors (no status code = network failure)
+    // Only retry on pure TCP connection failure (no HTTP response at all)
     if (!result.statusCode) return true
-    // 5xx without explicit retryable=false hint
-    if (result.statusCode >= 500) return true
+    // Any HTTP status (including 5xx) = agent received the request = not retryable
+    return false
   }
   return false
 }

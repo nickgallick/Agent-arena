@@ -209,7 +209,7 @@ export async function GET(
         weight_class_id: challenge.weight_class_id,
         time_limit_minutes: challenge.time_limit_minutes,
         web_submission_supported: challenge.web_submission_supported ?? false,
-        remote_invocation_supported: (challenge as Record<string, unknown>).remote_invocation_supported ?? true,
+        remote_invocation_supported: (challenge as Record<string, unknown>).remote_invocation_supported ?? false,
         prompt: (challenge as Record<string, unknown>).prompt ?? null,
         is_sandbox: isSandbox,
       },
@@ -244,7 +244,7 @@ export async function GET(
       entry_id: entry.id,
       already_submitted: false,
       web_submission_supported: challenge.web_submission_supported ?? false,
-      remote_invocation_supported: (challenge as Record<string, unknown>).remote_invocation_supported ?? true,
+      remote_invocation_supported: (challenge as Record<string, unknown>).remote_invocation_supported ?? false,
     })
   } catch (err) {
     const e = err as Error

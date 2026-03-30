@@ -49,6 +49,17 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
   const [pinging, setPinging] = useState(false)
   const [pingResult, setPingResult] = useState<{ status: string; latency_ms?: number } | null>(null)
 
+  // Validate state
+  const [validating, setValidating] = useState(false)
+  const [validateResult, setValidateResult] = useState<{
+    overall: boolean
+    steps_passed: number
+    steps_total: number
+    latency_ms: number | null
+    steps: Record<string, { passed: boolean; detail: string }>
+    note: string
+  } | null>(null)
+
   // Rotate state
   const [rotating, setRotating] = useState(false)
   const [rotateConfirm, setRotateConfirm] = useState(false)
@@ -146,6 +157,29 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
       setPingResult({ status: 'error' })
     } finally {
       setPinging(false)
+    }
+  }
+
+  async function handleValidate() {
+    if (validating) return
+    setValidating(true)
+    setValidateResult(null)
+    try {
+      const res = await fetch(`/api/v1/agents/${agentId}/endpoint/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ environment: activeTab }),
+      })
+      const json = await res.json() as { data?: typeof validateResult; error?: { message: string } }
+      if (res.ok && json.data) {
+        setValidateResult(json.data)
+      } else {
+        setValidateResult(null)
+      }
+    } catch {
+      // silent
+    } finally {
+      setValidating(false)
     }
   }
 
@@ -279,7 +313,7 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
             </div>
           )}
 
-          {/* Ping */}
+          {/* Ping + Validate */}
           <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={handlePing}
@@ -287,7 +321,16 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors disabled:opacity-50"
             >
               {pinging ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
-              Test Connection
+              Ping
+            </button>
+
+            <button
+              onClick={handleValidate}
+              disabled={validating}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#adc6ff]/30 text-xs font-semibold text-[#adc6ff] hover:bg-[#adc6ff]/10 transition-colors disabled:opacity-50"
+            >
+              {validating ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+              Validate Contract
             </button>
 
             {pingResult && (
@@ -299,11 +342,51 @@ export function RemoteInvocation({ agentId, agentName }: RemoteInvocationProps) 
                 {pingResult.status === 'ok' ? <CheckCircle2 className="w-3 h-3" /> :
                  pingResult.status === 'timeout' ? <AlertTriangle className="w-3 h-3" /> :
                  <XCircle className="w-3 h-3" />}
-                {pingResult.status}
+                ping: {pingResult.status}
                 {pingResult.latency_ms && ` (${pingResult.latency_ms}ms)`}
               </div>
             )}
           </div>
+
+          {/* Validate result */}
+          {validateResult && (
+            <div className={`rounded-lg border p-4 space-y-3 ${
+              validateResult.overall
+                ? 'border-[#7dffa2]/20 bg-[#7dffa2]/5'
+                : 'border-[#ffb780]/20 bg-[#ffb780]/5'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {validateResult.overall
+                    ? <CheckCircle2 className="w-4 h-4 text-[#7dffa2]" />
+                    : <AlertTriangle className="w-4 h-4 text-[#ffb780]" />
+                  }
+                  <span className="text-sm font-semibold text-foreground">
+                    {validateResult.overall ? 'Contract Valid' : 'Contract Issues Found'}
+                  </span>
+                </div>
+                <span className="text-xs font-mono text-muted-foreground">
+                  {validateResult.steps_passed}/{validateResult.steps_total} checks passed
+                  {validateResult.latency_ms && ` · ${validateResult.latency_ms}ms`}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {Object.entries(validateResult.steps).map(([step, result]) => (
+                  <div key={step} className="flex items-start gap-2">
+                    {result.passed
+                      ? <CheckCircle2 className="w-3 h-3 text-[#7dffa2] mt-0.5 flex-shrink-0" />
+                      : <XCircle className="w-3 h-3 text-[#ffb4ab] mt-0.5 flex-shrink-0" />
+                    }
+                    <div>
+                      <span className="text-[10px] font-mono uppercase text-muted-foreground">{step.replace(/_/g, ' ')} </span>
+                      <span className="text-xs text-muted-foreground">{result.detail}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">{validateResult.note}</p>
+            </div>
+          )}
 
           {/* Danger zone */}
           <div className="pt-3 border-t border-border flex items-center gap-3 flex-wrap">
