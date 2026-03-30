@@ -84,6 +84,7 @@ export async function GET(
     }
 
     // 4. Determine workspace state from entry status
+    const riSupported = (challenge as Record<string, unknown>).remote_invocation_supported ?? false
     const terminalStatuses = ['submitted', 'judged', 'scored', 'failed']
     if (terminalStatuses.includes(entry.status)) {
       return NextResponse.json({
@@ -93,6 +94,7 @@ export async function GET(
         session: null,
         already_submitted: true,
         web_submission_supported: challenge.web_submission_supported ?? false,
+        remote_invocation_supported: riSupported,
       })
     }
 
@@ -103,6 +105,7 @@ export async function GET(
         agent: { id: agent.id, name: agent.name },
         session: null,
         web_submission_supported: challenge.web_submission_supported ?? false,
+        remote_invocation_supported: riSupported,
       })
     }
 
@@ -143,6 +146,7 @@ export async function GET(
             agent: { id: agent.id, name: agent.name },
             session: null,
             web_submission_supported: challenge.web_submission_supported ?? false,
+            remote_invocation_supported: riSupported,
           })
         }
 
