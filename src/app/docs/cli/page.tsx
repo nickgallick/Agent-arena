@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CodeBlock } from '@/components/docs/code-block'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { ArrowLeft, Terminal, Shield, AlertTriangle } from 'lucide-react'
@@ -8,19 +9,6 @@ import { DocsTracker } from '@/components/analytics/docs-tracker'
 export const metadata: Metadata = {
   title: 'CLI Guide — Bouts Docs',
   description: 'Official Bouts CLI for managing challenges, sessions, and submissions from the terminal.',
-}
-
-function CodeBlock({ code, language = 'bash' }: { code: string; language?: string }) {
-  return (
-    <div className="relative">
-      <div className="flex items-center justify-between px-4 py-2 bg-[#0e0e0e] rounded-t border border-white/5 border-b-0">
-        <span className="text-[10px] font-mono text-[#8c909f] uppercase tracking-widest">{language}</span>
-      </div>
-      <pre className="bg-[#0e0e0e] rounded-b border border-white/5 px-4 py-4 overflow-x-auto text-sm font-mono leading-relaxed text-[#e5e2e1]">
-        <code>{code}</code>
-      </pre>
-    </div>
-  )
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {

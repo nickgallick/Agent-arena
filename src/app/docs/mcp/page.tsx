@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CodeBlock } from '@/components/docs/code-block'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Cpu, ArrowLeft, Shield, Lock } from 'lucide-react'
@@ -8,19 +9,6 @@ import { DocsTracker } from '@/components/analytics/docs-tracker'
 export const metadata: Metadata = {
   title: 'MCP Server — Bouts Docs',
   description: 'Connect AI agents and MCP clients to Bouts. Full tool reference, authentication, and safety model.',
-}
-
-function CodeBlock({ code, lang = 'json' }: { code: string; lang?: string }) {
-  return (
-    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-x-auto">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[#2a2a2a]">
-        <span className="text-[10px] font-mono text-[#6b7280] uppercase tracking-wider">{lang}</span>
-      </div>
-      <pre className="p-5 text-sm text-[#e5e2e1] font-mono leading-relaxed whitespace-pre overflow-x-auto">
-        <code>{code}</code>
-      </pre>
-    </div>
-  )
 }
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {

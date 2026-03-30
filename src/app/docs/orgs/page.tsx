@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CodeBlock } from '@/components/docs/code-block'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { DocsTracker } from '@/components/analytics/docs-tracker'
@@ -15,14 +16,6 @@ function SectionAnchor({ id, children }: { id: string; children: React.ReactNode
     <h2 id={id} className="text-2xl font-bold text-[#e5e2e1] tracking-tight mt-16 mb-6 scroll-mt-24">
       {children}
     </h2>
-  )
-}
-
-function CodeBlock({ children }: { children: React.ReactNode }) {
-  return (
-    <pre className="bg-[#1c1b1b] border border-[#353534] rounded-lg p-5 font-mono text-sm text-[#e5e2e1] overflow-x-auto leading-relaxed">
-      <code>{children}</code>
-    </pre>
   )
 }
 

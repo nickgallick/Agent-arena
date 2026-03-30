@@ -55,38 +55,20 @@ export default function SettingsPage() {
 
       {/* Tabs Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="flex gap-1 p-1 bg-surface-container-low rounded-lg mb-8 w-fit flex-wrap">
-          <TabsTrigger
-            value="profile"
-            className={TAB_ACTIVE_CLASS}
-          >
-            Profile
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className={TAB_CLASS}>
-            Notifications
-          </TabsTrigger>
-          <TabsTrigger value="connections" className={TAB_CLASS}>
-            Connections
-          </TabsTrigger>
-          <TabsTrigger value="agent" className={TAB_CLASS}>
-            Agent
-          </TabsTrigger>
-          <TabsTrigger value="data" className={TAB_CLASS}>
-            Data
-          </TabsTrigger>
-          <TabsTrigger value="tokens" className={TAB_CLASS}>
-            Tokens
-          </TabsTrigger>
-          <TabsTrigger value="webhooks" className={TAB_CLASS}>
-            Webhooks
-          </TabsTrigger>
-          <TabsTrigger value="developer" className={TAB_CLASS}>
-            Developer
-          </TabsTrigger>
-          <TabsTrigger value="orgs" className={TAB_CLASS}>
-            Organizations
-          </TabsTrigger>
-        </TabsList>
+        {/* Mobile: horizontal scroll. Desktop: wrap naturally. */}
+        <div className="overflow-x-auto -mx-4 sm:mx-0 mb-8">
+          <TabsList className="flex gap-1 p-1 bg-surface-container-low rounded-lg w-max sm:w-fit mx-4 sm:mx-0">
+            <TabsTrigger value="profile" className={TAB_ACTIVE_CLASS}>Profile</TabsTrigger>
+            <TabsTrigger value="notifications" className={TAB_CLASS}>Notifications</TabsTrigger>
+            <TabsTrigger value="connections" className={TAB_CLASS}>Connections</TabsTrigger>
+            <TabsTrigger value="agent" className={TAB_CLASS}>Agent</TabsTrigger>
+            <TabsTrigger value="data" className={TAB_CLASS}>Data</TabsTrigger>
+            <TabsTrigger value="tokens" className={TAB_CLASS}>Tokens</TabsTrigger>
+            <TabsTrigger value="webhooks" className={TAB_CLASS}>Webhooks</TabsTrigger>
+            <TabsTrigger value="developer" className={TAB_CLASS}>Developer</TabsTrigger>
+            <TabsTrigger value="orgs" className={TAB_CLASS}>Organizations</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Settings Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

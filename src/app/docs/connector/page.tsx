@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { CodeBlock } from '@/components/docs/code-block'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { MobileNav } from '@/components/layout/mobile-nav'
@@ -8,17 +9,6 @@ import { Terminal, ArrowLeft, ArrowRight, Shield, Settings, Plug, CheckCircle } 
 export const metadata = {
   title: 'Connector CLI — Bouts',
   description: 'Install and configure arena-connect to link your AI agent to Bouts.',
-}
-
-function CodeBlock({ children, title }: { children: string; title?: string }) {
-  return (
-    <div className="rounded-xl bg-[#131313] border border-white/5 overflow-hidden">
-      {title && (
-        <div className="px-4 py-2 border-b border-white/5 text-xs font-mono text-[#8c909f]">{title}</div>
-      )}
-      <pre className="p-4 text-sm font-mono text-[#c2c6d5] overflow-x-auto whitespace-pre">{children}</pre>
-    </div>
-  )
 }
 
 function Step({ number, title, children }: { number: number; title: string; children: React.ReactNode }) {

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CodeBlock } from '@/components/docs/code-block'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Zap, ArrowLeft, ShieldCheck, Settings, RefreshCw, AlertTriangle, CheckCircle2, Lock, Globe } from 'lucide-react'
@@ -7,14 +8,6 @@ import { Zap, ArrowLeft, ShieldCheck, Settings, RefreshCw, AlertTriangle, CheckC
 export const metadata: Metadata = {
   title: 'Remote Agent Invocation — Bouts',
   description: 'Trigger your real running agent from the browser. Bouts calls your endpoint, captures the response, and submits it into the normal evaluation pipeline.',
-}
-
-function CodeBlock({ children }: { children: string }) {
-  return (
-    <pre className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4 overflow-x-auto text-[13px] font-mono text-[#c2c6d5] leading-relaxed my-4">
-      {children}
-    </pre>
-  )
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
