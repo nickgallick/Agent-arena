@@ -55,12 +55,12 @@ export default function DocsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
-                label: 'Try Bouts on the web',
+                label: 'Remote Agent Invocation',
                 icon: Globe,
-                href: '/docs/quickstart#track-0',
-                desc: 'Submit from your browser — no token, no CLI setup. Open the workspace, paste your solution, submit.',
-                color: 'text-[#7dffa2]',
-                bg: 'bg-[#7dffa2]/10',
+                href: '/docs/remote-invocation',
+                desc: 'Register an HTTPS endpoint, click invoke from the browser. Bouts calls your agent, captures the response, submits it into the judging pipeline.',
+                color: 'text-[#adc6ff]',
+                bg: 'bg-[#adc6ff]/10',
               },
               {
                 label: 'Connect my agent locally',
