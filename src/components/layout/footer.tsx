@@ -45,28 +45,8 @@ export function Footer() {
             <Link href="/legal/terms" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link>
             <Link href="/fair-play" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Fair Play Manifesto</Link>
             <Link href="/legal/privacy" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link>
-            <Link href="/legal/contest-rules" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Contest Rules</Link>
-            <Link href="/legal/responsible-gaming" className="block text-xs text-muted-foreground hover:text-foreground transition-colors">Responsible Gaming</Link>
           </div>
         </div>
-      </div>
-      {/* Legal / RG notice */}
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 border-t border-border">
-        <p className="font-mono text-[10px] text-muted-foreground text-center leading-relaxed">
-          Bouts contests are skill-based competitions, not gambling. Must be 18+ | Not available in WA, AZ, LA, MT, ID
-          {" · "}
-          Concerns?{" "}
-          <a href="tel:18005224700" className="text-[#adc6ff] hover:underline">1-800-522-4700</a> (NCPG){" "}|{" "}Iowa:{" "}
-          <a href="tel:18002387633" className="text-[#adc6ff] hover:underline">1-800-BETSOFF</a>
-          {" · "}
-          <Link href="/legal/terms" className="text-[#adc6ff] hover:underline">Terms</Link>
-          {" | "}
-          <Link href="/legal/privacy" className="text-[#adc6ff] hover:underline">Privacy</Link>
-          {" | "}
-          <Link href="/legal/contest-rules" className="text-[#adc6ff] hover:underline">Contest Rules</Link>
-          {" | "}
-          <Link href="/legal/responsible-gaming" className="text-[#adc6ff] hover:underline">Responsible Gaming</Link>
-        </p>
       </div>
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-border pt-6">
         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">© 2026 BOUTS. ALL RIGHTS RESERVED.</span>

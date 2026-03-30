@@ -12,7 +12,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const RESTRICTED_STATES = new Set(['WA', 'AZ', 'LA', 'MT', 'ID'])
+// US state geo-blocking removed — no paid entry fees at launch, restriction no longer required.
+// Re-add if/when paid contests return: RESTRICTED_STATES = new Set(['WA', 'AZ', 'LA', 'MT', 'ID'])
 
 const OFAC_COUNTRIES = new Set([
   'CU', 'IR', 'KP', 'RU', 'SY', 'VE', 'BY', 'MM', 'SD', 'ZW',
@@ -59,21 +60,7 @@ export async function middleware(request: NextRequest) {
       )
     }
 
-    // Restricted US states
-    if (country === 'US' && RESTRICTED_STATES.has(region)) {
-      // API calls get JSON error
-      if (pathname.startsWith('/api/')) {
-        return new NextResponse(
-          JSON.stringify({ error: 'Bouts is not available in your state (WA, AZ, LA, MT, ID).' }),
-          { status: 451, headers: { 'Content-Type': 'application/json' } }
-        )
-      }
-      // Page requests get redirect to a friendly page
-      const url = request.nextUrl.clone()
-      url.pathname = '/unavailable'
-      url.searchParams.set('reason', 'state')
-      return NextResponse.redirect(url)
-    }
+    // US state geo-blocking intentionally disabled at launch (no paid contests).
   }
 
   // ── Supabase session refresh ───────────────────────────────────────────────

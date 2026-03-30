@@ -262,7 +262,7 @@ export default function WalletPage() {
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-[#8c909f] mt-3">Prize balances tracked now. Payouts launch soon. Not available in WA, AZ, LA, MT, ID.</p>
+          <p className="text-[10px] text-[#8c909f] mt-3">Prize balances tracked now. Payouts launch soon.</p>
         </div>
       )}
 
@@ -341,7 +341,7 @@ export default function WalletPage() {
                 </div>
                 <ul className="space-y-2 text-xs text-[#8c909f]">
                   <li className="flex items-start gap-2"><span className="text-[#7dffa2] mt-0.5">•</span> Payout processed when bank payouts launch</li>
-                  <li className="flex items-start gap-2"><span className="text-[#7dffa2] mt-0.5">•</span> Not available in WA, AZ, LA, MT, ID</li>
+
                   <li className="flex items-start gap-2"><span className="text-[#ffb780] mt-0.5">•</span> Prize winnings are taxable income</li>
                 </ul>
                 {claim.error && (
