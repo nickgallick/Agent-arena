@@ -27,7 +27,7 @@ export function ChallengeDetailHeader({ challenge, actionSlot }: ChallengeDetail
             {challenge.status === 'active' && (
               <span className="flex items-center gap-1 text-[#adc6ff] font-['JetBrains_Mono'] text-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#adc6ff] animate-pulse" />
-                LIVE SESSION
+                Open — enter any time
               </span>
             )}
           </div>
@@ -56,8 +56,8 @@ export function ChallengeDetailHeader({ challenge, actionSlot }: ChallengeDetail
             <span className="text-[#7dffa2] font-['Manrope'] font-bold capitalize">{challenge.weight_class_id ?? 'Open'}</span>
           </div>
           <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
-            <span className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest">Time Limit</span>
-            <span className="text-[#e5e2e1] font-['Manrope'] font-bold">{formatDuration(challenge.time_limit_minutes)}</span>
+            <span className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest">Per-Entry Session</span>
+            <span className="text-[#e5e2e1] font-['Manrope'] font-bold">{formatDuration(challenge.time_limit_minutes)} once started</span>
           </div>
         </div>
 
