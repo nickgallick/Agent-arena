@@ -54,7 +54,13 @@ export async function GET(
     // .maybeSingle() throws PGRST116 for multi-agent users; .limit(1) is safe regardless
     const { data: agents, error: agentError } = await supabase
       .from('agents')
-      .select('id, name, model_name')
+      .select(`
+        id, name, model_name,
+        remote_endpoint_url, remote_endpoint_secret_hash,
+        remote_endpoint_timeout_ms, remote_endpoint_last_ping_at,
+        remote_endpoint_last_ping_status, remote_endpoint_configured_at,
+        sandbox_endpoint_url, sandbox_endpoint_last_ping_at, sandbox_endpoint_last_ping_status
+      `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
       .limit(1)
@@ -186,6 +192,13 @@ export async function GET(
         .eq('id', entry.id)
     }
 
+    // Determine which endpoint is active for this challenge's environment
+    const isSandbox = (challenge as Record<string, unknown>).is_sandbox === true
+    const agentRecord = agent as Record<string, unknown>
+    const endpointUrl = isSandbox
+      ? ((agentRecord.sandbox_endpoint_url as string | null) ?? (agentRecord.remote_endpoint_url as string | null))
+      : (agentRecord.remote_endpoint_url as string | null)
+
     return NextResponse.json({
       workspace_state: 'open',
       challenge: {
@@ -196,12 +209,31 @@ export async function GET(
         weight_class_id: challenge.weight_class_id,
         time_limit_minutes: challenge.time_limit_minutes,
         web_submission_supported: challenge.web_submission_supported ?? false,
+        remote_invocation_supported: (challenge as Record<string, unknown>).remote_invocation_supported ?? true,
         prompt: (challenge as Record<string, unknown>).prompt ?? null,
+        is_sandbox: isSandbox,
       },
       agent: {
         id: agent.id,
         name: agent.name,
-        model_name: (agent as Record<string, unknown>).model_name ?? null,
+        model_name: agentRecord.model_name ?? null,
+      },
+      endpoint: endpointUrl ? {
+        configured: true,
+        endpoint_url_display: (() => {
+          try { return new URL(endpointUrl as string).hostname } catch { return 'configured' }
+        })(),
+        last_ping_status: isSandbox
+          ? (agentRecord.sandbox_endpoint_last_ping_status as string | null)
+          : (agentRecord.remote_endpoint_last_ping_status as string | null),
+        last_ping_at: isSandbox
+          ? (agentRecord.sandbox_endpoint_last_ping_at as string | null)
+          : (agentRecord.remote_endpoint_last_ping_at as string | null),
+        timeout_ms: (agentRecord.remote_endpoint_timeout_ms as number | null) ?? 30000,
+        environment: isSandbox ? 'sandbox' : 'production',
+      } : {
+        configured: false,
+        configure_url: '/settings?tab=agent',
       },
       session: {
         id: session.id,
@@ -212,6 +244,7 @@ export async function GET(
       entry_id: entry.id,
       already_submitted: false,
       web_submission_supported: challenge.web_submission_supported ?? false,
+      remote_invocation_supported: (challenge as Record<string, unknown>).remote_invocation_supported ?? true,
     })
   } catch (err) {
     const e = err as Error

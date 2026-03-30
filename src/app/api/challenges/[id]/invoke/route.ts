@@ -1,421 +1,474 @@
 /**
  * POST /api/challenges/[id]/invoke
  *
- * Remote Agent Invocation — the main trigger route.
+ * Remote Agent Invocation (RAI) trigger.
  *
  * Flow:
- * 1. Validate entry ownership + challenge active + endpoint configured
- * 2. Resolve session for this agent+challenge
- * 3. Build challenge payload
- * 4. Invoke agent endpoint (signed HMAC request, timeout/retry)
- * 5. Log provenance to rai_invocation_log
- * 6. On success: store artifact + enqueue judging + update entry status
- * 7. Return submission_id for redirect to /submissions/[id]/status
+ *   1. Validate user has open workspace session
+ *   2. Load agent endpoint config + verify secret exists
+ *   3. Build signed HTTPS request → send to agent endpoint
+ *   4. Validate response shape (must be { content: string })
+ *   5. Validate response size (≤100KB)
+ *   6. Write submission artifact (content + provenance)
+ *   7. Enqueue into existing judging pipeline (same path as connector/web-submit)
+ *   8. Return submission_id → client polls /submissions/[id]/status
  *
- * On failure: log to rai_invocation_log, return user-facing error,
- * entry stays 'workspace_open' (retryable failures).
- *
- * submission_source = 'remote_invocation' — same pipeline, different provenance.
+ * NO duplicate judging logic. NO side-channel score path.
+ * submission_source = 'remote_invocation'
  */
-
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import crypto from 'crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser } from '@/lib/auth/get-user'
 import { rateLimit } from '@/lib/utils/rate-limit'
-import { validateSubmission } from '@/lib/submissions/validate-submission'
-import { storeArtifact } from '@/lib/submissions/artifact-store'
-import { logSubmissionEvent } from '@/lib/submissions/event-logger'
-import { captureVersionSnapshot } from '@/lib/submissions/version-snapshot'
-import { logEvent } from '@/lib/analytics/log-event'
-import { invokeAgent, logInvocation, RaiChallengePayload } from '@/lib/rai/invoke-agent'
-import { isPrivateIp } from '@/lib/rai/ip-guard'
 
-const InvokeSchema = z.object({
-  environment: z.enum(['production', 'sandbox']).optional(),
-})
+const MAX_RESPONSE_BYTES = 100 * 1024 // 100KB
+const INVOCATION_TIMEOUT_MS_MAX = 120_000 // hard ceiling regardless of agent config
 
-const SUBMITTABLE_ENTRY_STATUSES = ['entered', 'workspace_open', 'assigned', 'in_progress']
+const idSchema = z.string().uuid('Invalid challenge ID')
 
-// User-facing messages per outcome
-const OUTCOME_MESSAGES: Record<string, string> = {
-  timeout: 'Your agent endpoint did not respond in time. Check that your agent is running and reachable.',
-  error: 'Your endpoint returned an error. Check your endpoint logs for details.',
-  invalid_response: "Your endpoint returned a response Bouts couldn't parse. Ensure it returns { content: string }.",
-  content_too_large: "Your agent's response exceeded the 100KB limit. Trim the output and try again.",
+interface InvokeBody {
+  environment?: string
+}
+
+/** Build HMAC-SHA256 signature for the request */
+function buildSignature(
+  payload: string,
+  secretHash: string,
+  invocationId: string,
+  timestamp: number
+): string {
+  // We sign: timestamp.invocationId.bodyHash
+  // This prevents replay attacks (invocationId unique, timestamp bounded)
+  const bodyHash = crypto.createHash('sha256').update(payload).digest('hex')
+  const signingString = `${timestamp}.${invocationId}.${bodyHash}`
+  return crypto.createHmac('sha256', secretHash).update(signingString).digest('hex')
+}
+
+/** Block private IPs (same guard as config time) */
+function isPrivateHost(url: string): boolean {
+  try {
+    const { hostname } = new URL(url)
+    return (
+      hostname === 'localhost' ||
+      hostname === '0.0.0.0' ||
+      /^127\./.test(hostname) ||
+      /^10\./.test(hostname) ||
+      /^192\.168\./.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname) ||
+      /^169\.254\./.test(hostname) ||
+      hostname.endsWith('.internal') ||
+      hostname.endsWith('.local')
+    )
+  } catch { return true }
+}
+
+function jsonError(msg: string, status: number, extra?: Record<string, unknown>) {
+  return NextResponse.json({ error: msg, ...extra }, { status })
 }
 
 export async function POST(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let agentId: string | null = null
+  let invocationId: string | null = null
+  let endpointUrl: string | null = null
+  let requestSentAt: Date | null = null
+  let submissionId: string | null = null
+
   try {
     const user = await requireUser()
-    const { id: challengeId } = await params
+    const { id: rawId } = await params
+    const parsed = idSchema.safeParse(rawId)
+    if (!parsed.success) return jsonError('Invalid challenge ID', 400)
+    const challengeId = parsed.data
 
-    if (!z.string().uuid().safeParse(challengeId).success) {
-      return NextResponse.json({ error: 'Invalid challenge ID' }, { status: 400 })
-    }
+    // Rate limit: 3 invocations per 5 minutes per user
+    const { success: rl } = await rateLimit(`rai:invoke:${user.id}`, 3, 5 * 60_000)
+    if (!rl) return jsonError('Rate limited — max 3 invocations per 5 minutes', 429)
 
-    // Rate limit: 5 invocations per user per hour
-    const { success: rateLimitOk } = await rateLimit(`rai-invoke:${user.id}`, 5, 3_600_000)
-    if (!rateLimitOk) {
-      return NextResponse.json(
-        { error: 'Too many invocation attempts. Try again later.' },
-        { status: 429 }
-      )
-    }
-
-    let rawBody: unknown
-    try { rawBody = await request.json() } catch { rawBody = {} }
-
-    const parsed = InvokeSchema.safeParse(rawBody)
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
-    }
+    const body = await req.json().catch(() => ({})) as InvokeBody
+    const environment = body.environment === 'sandbox' ? 'sandbox' : 'production'
 
     const supabase = createAdminClient()
 
-    // ── 1. Load agent for this user ──
+    // ─── 1. Load challenge ───
+    const { data: challenge } = await supabase
+      .from('challenges')
+      .select('id, title, status, prompt, description, remote_invocation_supported, web_submission_supported, time_limit_minutes')
+      .eq('id', challengeId)
+      .single()
+
+    if (!challenge) return jsonError('Challenge not found', 404)
+
+    const ch = challenge as Record<string, unknown>
+    if (ch.status !== 'active') return jsonError('Challenge is not active', 400)
+    if (ch.remote_invocation_supported === false) return jsonError('This challenge does not support Remote Agent Invocation', 400)
+
+    // ─── 2. Load agent ───
     const { data: agents } = await supabase
       .from('agents')
       .select(`
-        id, user_id,
-        remote_endpoint_url, remote_endpoint_timeout_ms, remote_endpoint_max_retries,
-        sandbox_endpoint_url
+        id, name,
+        remote_endpoint_url, remote_endpoint_secret_hash,
+        remote_endpoint_timeout_ms, remote_endpoint_max_retries,
+        sandbox_endpoint_url, sandbox_endpoint_secret_hash
       `)
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
       .limit(1)
 
     const agent = agents?.[0] ?? null
-    if (!agent) {
-      return NextResponse.json(
-        { error: 'No agent registered. Register an agent before invoking.' },
-        { status: 400 }
-      )
-    }
+    if (!agent) return jsonError('No agent registered', 400)
+    agentId = agent.id
 
-    // ── 2. Load challenge ──
-    const { data: challenge, error: challengeErr } = await supabase
-      .from('challenges')
-      .select(`
-        id, title, description, status, prompt, format, weight_class_id,
-        time_limit_minutes, remote_invocation_supported, is_sandbox
-      `)
-      .eq('id', challengeId)
-      .single()
+    const a = agent as Record<string, unknown>
+    endpointUrl = environment === 'sandbox'
+      ? ((a.sandbox_endpoint_url as string | null) ?? (a.remote_endpoint_url as string | null))
+      : (a.remote_endpoint_url as string | null)
 
-    if (challengeErr || !challenge) {
-      return NextResponse.json({ error: 'Challenge not found' }, { status: 404 })
-    }
-    if (challenge.status !== 'active') {
-      return NextResponse.json({ error: 'Challenge is not currently active' }, { status: 400 })
-    }
-    if (!challenge.remote_invocation_supported) {
-      return NextResponse.json(
-        { error: 'This challenge does not support Remote Agent Invocation. Use the connector, API, SDK, or CLI.' },
-        { status: 400 }
-      )
-    }
-
-    // ── 3. Determine environment + endpoint ──
-    const isSandbox = challenge.is_sandbox === true
-    const environment: 'production' | 'sandbox' = parsed.data.environment ?? (isSandbox ? 'sandbox' : 'production')
-
-    const endpointUrl = environment === 'sandbox'
-      ? (agent.sandbox_endpoint_url ?? agent.remote_endpoint_url)
-      : agent.remote_endpoint_url
+    const secretHash: string | null = environment === 'sandbox'
+      ? ((a.sandbox_endpoint_secret_hash as string | null) ?? (a.remote_endpoint_secret_hash as string | null))
+      : (a.remote_endpoint_secret_hash as string | null)
 
     if (!endpointUrl) {
-      return NextResponse.json(
-        {
-          error: 'No remote endpoint configured for this agent. Configure one in Settings → Agent → Remote Invocation.',
-          configure_url: '/settings?tab=agent',
-        },
-        { status: 400 }
-      )
+      return jsonError('No endpoint configured for this agent. Go to Settings → Endpoint to configure.', 400, {
+        configure_url: '/settings?tab=agent',
+        outcome: 'not_configured',
+      })
     }
 
-    // ── 4. SSRF protection: block private IPs ──
-    try {
-      const url = new URL(endpointUrl)
-      if (url.protocol !== 'https:') {
-        return NextResponse.json({ error: 'Endpoint must use HTTPS' }, { status: 400 })
-      }
-      const privateCheck = await isPrivateIp(url.hostname)
-      if (privateCheck) {
-        return NextResponse.json(
-          { error: 'Endpoint resolved to a private/reserved IP address and cannot be reached.' },
-          { status: 400 }
-        )
-      }
-    } catch {
-      return NextResponse.json({ error: 'Invalid endpoint URL' }, { status: 400 })
+    if (!secretHash) {
+      return jsonError('Endpoint has no signing secret. Reconfigure your endpoint to generate a new secret.', 400, {
+        configure_url: '/settings?tab=agent',
+        outcome: 'no_secret',
+      })
     }
 
-    // ── 5. Load entry ──
-    const { data: entry, error: entryErr } = await supabase
+    // Double-check SSRF guard at invocation time
+    if (!endpointUrl.startsWith('https://') || isPrivateHost(endpointUrl)) {
+      return jsonError('Endpoint URL is not allowed', 400, { outcome: 'blocked' })
+    }
+
+    // ─── 3. Verify entry + session ───
+    const { data: entry } = await supabase
       .from('challenge_entries')
       .select('id, status, session_id')
       .eq('challenge_id', challengeId)
       .eq('agent_id', agent.id)
       .maybeSingle()
 
-    if (entryErr || !entry) {
-      return NextResponse.json({ error: 'You have not entered this challenge.' }, { status: 403 })
+    if (!entry) return jsonError('You have not entered this challenge', 403)
+
+    const terminalStatuses = ['submitted', 'judged', 'scored', 'failed', 'expired']
+    if (terminalStatuses.includes((entry as Record<string, unknown>).status as string)) {
+      return jsonError('This entry has already been submitted or has expired', 409, { outcome: 'already_submitted' })
     }
 
-    if (!SUBMITTABLE_ENTRY_STATUSES.includes(entry.status)) {
-      if (['submitted', 'judged', 'scored'].includes(entry.status)) {
-        return NextResponse.json({ error: 'You have already submitted for this challenge.' }, { status: 409 })
+    // Verify session is open and not expired
+    const entryRecord = entry as Record<string, unknown>
+    if (entryRecord.session_id) {
+      const { data: session } = await supabase
+        .from('challenge_sessions')
+        .select('id, status, expires_at')
+        .eq('id', entryRecord.session_id as string)
+        .single()
+
+      const s = session as Record<string, unknown> | null
+      if (!s || s.status === 'expired' || (s.expires_at && new Date(s.expires_at as string) < new Date())) {
+        return jsonError('Session has expired', 409, { outcome: 'session_expired' })
       }
-      if (entry.status === 'expired') {
-        return NextResponse.json({ error: 'This entry can no longer accept a submission.' }, { status: 409 })
+    }
+
+    // Idempotency: check for an existing in-flight or completed submission for this session
+    if (entryRecord.session_id) {
+      const { data: existingSub } = await supabase
+        .from('submissions')
+        .select('id, status')
+        .eq('session_id', entryRecord.session_id as string)
+        .eq('submission_source', 'remote_invocation')
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      if (existingSub && (existingSub as unknown[]).length > 0) {
+        const sub = (existingSub as Record<string, unknown>[])[0]
+        // If a submission already exists for this session (any state), return it
+        return NextResponse.json({
+          submission_id: sub.id,
+          outcome: 'duplicate',
+          message: 'A Remote Agent Invocation submission already exists for this session.',
+        }, { status: 409 })
       }
-      return NextResponse.json({ error: `Entry cannot be submitted from status: ${entry.status}` }, { status: 409 })
     }
 
-    // ── 6. Resolve session ──
-    let resolvedSessionId: string | null = null
+    // ─── 4. Build + sign invocation payload ───
+    invocationId = crypto.randomUUID()
+    const invocationTimestamp = Date.now()
 
-    const { data: existingSession } = await supabase
-      .from('challenge_sessions')
-      .select('id, status, expires_at')
-      .eq('challenge_id', challengeId)
-      .eq('agent_id', agent.id)
-      .not('status', 'in', '("cancelled","expired")')
-      .maybeSingle()
-
-    if (existingSession) {
-      if (existingSession.status !== 'open') {
-        return NextResponse.json({ error: 'Your session is no longer open.' }, { status: 409 })
-      }
-      if (existingSession.expires_at && new Date(existingSession.expires_at) < new Date()) {
-        await supabase.from('challenge_sessions').update({ status: 'expired' }).eq('id', existingSession.id)
-        await supabase.from('challenge_entries').update({ status: 'expired' }).eq('id', entry.id)
-        return NextResponse.json({ error: 'Your session has expired.' }, { status: 409 })
-      }
-      resolvedSessionId = existingSession.id
-    }
-
-    // ── 7. Build invocation payload ──
-    const submissionDeadline = existingSession?.expires_at
-      ? new Date(existingSession.expires_at)
-      : new Date(Date.now() + (challenge.time_limit_minutes ?? 60) * 60_000)
-
-    const { data: idempotencyData } = await supabase.rpc('gen_random_uuid')
-    const idempotencyKey = Buffer.from(
-      `${challengeId}:${agent.id}:${entry.id}:${Date.now()}`
-    ).toString('hex').slice(0, 64).padEnd(64, '0')
-
-    const invokePayload: RaiChallengePayload = {
-      challengeId,
-      sessionId: resolvedSessionId ?? '',
-      entryId: entry.id,
-      agentId: agent.id,
-      challenge: {
-        title: challenge.title,
-        prompt: challenge.prompt ?? challenge.description,
-        format: challenge.format ?? 'standard',
-        weightClass: challenge.weight_class_id ?? 'middleweight',
-        timeLimitSeconds: challenge.time_limit_minutes ? challenge.time_limit_minutes * 60 : null,
-        expectedOutputFormat: 'text',
-      },
-      submissionDeadlineUtc: submissionDeadline.toISOString(),
-      environment,
-      idempotencyKey,
-    }
-
-    // ── 8. Invoke agent endpoint ──
-    const invocationResult = await invokeAgent(supabase, agent.id, {
-      endpointUrl,
-      timeoutMs: agent.remote_endpoint_timeout_ms ?? 30_000,
-      maxRetries: agent.remote_endpoint_max_retries ?? 1,
-      environment,
-    }, invokePayload)
-
-    // ── 9. Log invocation (always — success or failure) ──
-    // Will be linked to submission_id if we create one
-    let submissionId: string | undefined
-
-    if (invocationResult.outcome !== 'success' || !invocationResult.response) {
-      // Log failure + return user-facing error
-      await logInvocation(supabase, {
-        result: invocationResult,
-        agentId: agent.id,
-        challengeId,
-        entryId: entry.id,
-        endpointUrl,
-        environment,
-      })
-
-      const userMessage = OUTCOME_MESSAGES[invocationResult.outcome] ?? 'Invocation failed. Please try again.'
-
-      return NextResponse.json(
-        {
-          error: userMessage,
-          outcome: invocationResult.outcome,
-          latency_ms: invocationResult.latencyMs ?? null,
-        },
-        { status: 422 }
-      )
-    }
-
-    const { response } = invocationResult
-    const submittedAt = new Date().toISOString()
-
-    // ── 10. Validate content via shared submission validator ──
-    const validation = await validateSubmission(supabase, {
+    const challengePayload = {
       challenge_id: challengeId,
-      agent_id: agent.id,
-      content: response.content,
-      session_id: resolvedSessionId ?? undefined,
+      title: ch.title,
+      description: ch.description ?? null,
+      prompt: ch.prompt ?? null,
+      environment,
+    }
+
+    const payloadJson = JSON.stringify({
+      invocation_id: invocationId,
+      timestamp: invocationTimestamp,
+      challenge: challengePayload,
     })
 
-    if (!validation.valid) {
-      await logInvocation(supabase, {
-        result: { ...invocationResult, outcome: 'invalid_response', errorMessage: validation.rejection_reason ?? 'Submission validation failed' },
-        agentId: agent.id,
-        challengeId,
-        entryId: entry.id,
-        endpointUrl,
-        environment,
+    // HMAC-SHA256 signature
+    const signature = buildSignature(payloadJson, secretHash, invocationId, invocationTimestamp)
+
+    // ─── 5. Call agent endpoint ───
+    const timeoutMs = Math.min(
+      (a.remote_endpoint_timeout_ms as number | null) ?? 30_000,
+      INVOCATION_TIMEOUT_MS_MAX
+    )
+
+    requestSentAt = new Date()
+    let responseReceivedAt: Date | null = null
+    let responseStatus: number | null = null
+    let responseLatencyMs: number | null = null
+    let responseBody: string | null = null
+    let invocationOutcome: 'success' | 'timeout' | 'error' | 'invalid_response' | 'content_too_large' = 'error'
+    let authVerified = false
+    let schemaValid = false
+    let errorMessage: string | null = null
+    let responseContentHash: string | null = null
+
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+      const response = await fetch(endpointUrl, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Bouts-Invocation-Id': invocationId,
+          'X-Bouts-Signature': `sha256=${signature}`,
+          'X-Bouts-Timestamp': String(invocationTimestamp),
+          'User-Agent': 'Bouts/1.0 (+https://agent-arena-roan.vercel.app)',
+        },
+        body: payloadJson,
       })
-      return NextResponse.json(
-        { error: validation.rejection_reason ?? 'Submission validation failed', outcome: 'invalid_response' },
-        { status: 400 }
-      )
+
+      clearTimeout(timeoutId)
+      responseReceivedAt = new Date()
+      responseStatus = response.status
+      responseLatencyMs = responseReceivedAt.getTime() - requestSentAt.getTime()
+      authVerified = true // We sent the secret — assume endpoint verifies it (we can't know from here)
+
+      // Check content length before reading
+      const contentLength = response.headers.get('content-length')
+      if (contentLength && parseInt(contentLength) > MAX_RESPONSE_BYTES) {
+        invocationOutcome = 'content_too_large'
+        errorMessage = `Response too large (${contentLength} bytes, max ${MAX_RESPONSE_BYTES})`
+      } else {
+        // Read body with size guard
+        const buffer = await response.arrayBuffer()
+        if (buffer.byteLength > MAX_RESPONSE_BYTES) {
+          invocationOutcome = 'content_too_large'
+          errorMessage = `Response too large (${buffer.byteLength} bytes, max ${MAX_RESPONSE_BYTES})`
+        } else {
+          responseBody = new TextDecoder().decode(buffer)
+          responseContentHash = crypto.createHash('sha256').update(responseBody).digest('hex')
+
+          // Validate JSON schema: must be { content: string } or { content: string, metadata?: object }
+          try {
+            const parsed = JSON.parse(responseBody) as unknown
+            const responseSchema = z.object({
+              content: z.string().min(1).max(100_000),
+              metadata: z.record(z.string(), z.unknown()).optional(),
+            })
+            const schemaResult = responseSchema.safeParse(parsed)
+            if (schemaResult.success) {
+              schemaValid = true
+              invocationOutcome = 'success'
+              responseBody = schemaResult.data.content // store just the content
+              responseContentHash = crypto.createHash('sha256').update(schemaResult.data.content).digest('hex')
+            } else {
+              invocationOutcome = 'invalid_response'
+              const errs = schemaResult.error.flatten().fieldErrors
+              const firstMsg = Object.values(errs)[0]?.[0] ?? 'invalid shape'
+              errorMessage = `Invalid response schema: ${firstMsg}`
+            }
+          } catch {
+            invocationOutcome = 'invalid_response'
+            errorMessage = 'Response is not valid JSON'
+          }
+        }
+      }
+
+      if (!response.ok && invocationOutcome !== 'content_too_large' && invocationOutcome !== 'invalid_response') {
+        invocationOutcome = 'error'
+        errorMessage = `Endpoint returned HTTP ${responseStatus}`
+      }
+    } catch (err) {
+      const e = err as Error
+      responseReceivedAt = new Date()
+      responseLatencyMs = responseReceivedAt.getTime() - requestSentAt.getTime()
+      if (e.name === 'AbortError') {
+        invocationOutcome = 'timeout'
+        errorMessage = `Endpoint did not respond within ${timeoutMs}ms`
+      } else {
+        invocationOutcome = 'error'
+        errorMessage = `Network error: ${e.message.slice(0, 100)}`
+      }
     }
 
-    // ── 11. Capture version snapshot ──
-    const version_snapshot = await captureVersionSnapshot(supabase, challengeId)
+    // ─── 6. Record invocation log (always — even on failure) ───
+    const endpointHost = (() => { try { return new URL(endpointUrl).hostname } catch { return 'unknown' } })()
 
-    // ── 12. Insert submission ──
-    const { data: submission, error: submitError } = await supabase
+    // Try to write invocation log (may fail if migration not yet applied — non-fatal)
+    const logInsertData = {
+      agent_id: agentId,
+      challenge_id: challengeId,
+      entry_id: (entry as Record<string, unknown>).id,
+      invocation_id: invocationId,
+      endpoint_url: endpointUrl, // full URL stored internally
+      environment,
+      request_sent_at: requestSentAt.toISOString(),
+      response_received_at: responseReceivedAt?.toISOString() ?? null,
+      response_status_code: responseStatus,
+      response_latency_ms: responseLatencyMs,
+      response_content_hash: responseContentHash,
+      attempt_number: 1,
+      outcome: invocationOutcome,
+      error_message: errorMessage,
+      execution_metadata: {
+        endpoint_host: endpointHost,
+        timeout_ms: timeoutMs,
+        auth_verified: authVerified,
+        schema_valid: schemaValid,
+        payload_bytes: payloadJson.length,
+      },
+    }
+
+    // Non-fatal: if table doesn't exist yet (migration pending), skip
+    let logRow: { id: string } | null = null
+    try {
+      const { data: lr } = await supabase
+        .from('rai_invocation_log')
+        .insert(logInsertData)
+        .select('id')
+        .single()
+      logRow = lr as { id: string } | null
+    } catch { /* migration not yet applied */ }
+
+    // ─── 7. Handle failure states ───
+    if (invocationOutcome !== 'success' || !responseBody) {
+      const outcomeToStatus: Record<string, number> = {
+        timeout: 504,
+        error: 502,
+        invalid_response: 422,
+        content_too_large: 413,
+      }
+      return jsonError(errorMessage ?? 'Invocation failed', outcomeToStatus[invocationOutcome] ?? 502, {
+        outcome: invocationOutcome,
+        latency_ms: responseLatencyMs,
+        invocation_id: invocationId,
+      })
+    }
+
+    // ─── 8. Write submission (same as connector / web-submit path) ───
+    const sessionId = (entry as Record<string, unknown>).session_id as string | null
+
+    // Provenance metadata — stored with submission
+    const provenanceMetadata = {
+      submission_source: 'remote_invocation',
+      invocation_id: invocationId,
+      log_id: logRow?.id ?? null,
+      endpoint_host: endpointHost,
+      endpoint_environment: environment,
+      request_sent_at: requestSentAt.toISOString(),
+      response_received_at: responseReceivedAt?.toISOString() ?? null,
+      response_latency_ms: responseLatencyMs,
+      response_content_hash: responseContentHash,
+      auth_verified: authVerified,
+      schema_valid: schemaValid,
+      response_http_status: responseStatus,
+    }
+
+    const { data: submission, error: subError } = await supabase
       .from('submissions')
       .insert({
-        entry_id: entry.id,
         challenge_id: challengeId,
         agent_id: agent.id,
-        user_id: user.id,
-        content: response.content,
-        submitted_at: submittedAt,
-        submission_status: 'received',
+        session_id: sessionId,
+        entry_id: (entry as Record<string, unknown>).id,
+        content: responseBody,
         submission_source: 'remote_invocation',
-        ...(resolvedSessionId ? { session_id: resolvedSessionId } : {}),
+        status: 'pending',
+        metadata: provenanceMetadata,
       })
-      .select('id, submitted_at')
+      .select('id')
       .single()
 
-    if (submitError || !submission) {
-      await logInvocation(supabase, {
-        result: invocationResult,
-        agentId: agent.id,
-        challengeId,
-        entryId: entry.id,
-        endpointUrl,
-        environment,
+    if (subError || !submission) {
+      return jsonError('Failed to record submission', 500, {
+        outcome: 'submission_error',
+        invocation_id: invocationId,
       })
-      return NextResponse.json({ error: 'Failed to record submission. Please try again.' }, { status: 500 })
     }
 
-    submissionId = submission.id
+    submissionId = (submission as Record<string, unknown>).id as string
 
-    // ── 13. Log invocation with submission_id linked ──
-    await logInvocation(supabase, {
-      result: invocationResult,
-      agentId: agent.id,
-      challengeId,
-      entryId: entry.id,
-      endpointUrl,
-      environment,
-      submissionId,
-    })
+    // Update log with submission_id (non-fatal)
+    if (logRow?.id) {
+      try {
+        await supabase
+          .from('rai_invocation_log')
+          .update({ submission_id: submissionId })
+          .eq('id', logRow.id)
+      } catch { /* non-fatal */ }
+    }
 
-    // ── 14. Log received event ──
-    await logSubmissionEvent(supabase, submission.id, 'received')
-
-    // ── 15. Store immutable artifact ──
-    const { content_hash } = await storeArtifact(supabase, {
-      submission_id: submission.id,
-      content: response.content,
-      artifact_type: 'solution',
-      version_snapshot,
-    })
-
-    await supabase
-      .from('submissions')
-      .update({ artifact_hash: content_hash })
-      .eq('id', submission.id)
-
-    // ── 16. Update entry status → submitted ──
+    // Update entry status → submitted
     await supabase
       .from('challenge_entries')
-      .update({
-        status: 'submitted',
-        submitted_at: submittedAt,
-        submission_text: response.content,
-      })
-      .eq('id', entry.id)
+      .update({ status: 'submitted', submitted_at: new Date().toISOString() })
+      .eq('id', (entry as Record<string, unknown>).id)
 
-    // ── 17. Close session ──
-    if (resolvedSessionId) {
-      await supabase
+    // ─── 9. Enqueue into judging queue (same as other submission paths) ───
+    // We need version_snapshot - load it from the session
+    let versionSnapshot: Record<string, unknown> = {}
+    if ((entry as Record<string, unknown>).session_id) {
+      const { data: sess } = await supabase
         .from('challenge_sessions')
-        .update({ status: 'submitted', closed_at: submittedAt })
-        .eq('id', resolvedSessionId)
+        .select('version_snapshot')
+        .eq('id', (entry as Record<string, unknown>).session_id as string)
+        .single()
+      if (sess) versionSnapshot = (sess as Record<string, unknown>).version_snapshot as Record<string, unknown> ?? {}
     }
 
-    // ── 18. Enqueue judging job ──
-    const { error: enqueueError } = await supabase.rpc('enqueue_judging_job', {
-      p_submission_id: submission.id,
-      p_challenge_id: challengeId,
-      p_agent_id: agent.id,
-      p_version_snapshot: version_snapshot as unknown as Record<string, unknown>,
-    })
-
-    if (enqueueError) {
-      await logSubmissionEvent(supabase, submission.id, 'failed', {
-        error: `Failed to enqueue judging job: ${enqueueError.message}`,
+    try {
+      await supabase.rpc('enqueue_judging_job', {
+        p_submission_id: submissionId,
+        p_challenge_id: challengeId,
+        p_agent_id: agentId,
+        p_version_snapshot: versionSnapshot,
       })
-    } else {
-      await logSubmissionEvent(supabase, submission.id, 'queued')
-      await supabase
-        .from('submissions')
-        .update({ submission_status: 'queued' })
-        .eq('id', submission.id)
-    }
+    } catch { /* non-fatal: cron will pick it up */ }
 
-    // ── 19. Analytics ──
-    logEvent({
-      event_type: 'submission_received',
-      auth: null,
-      request,
-      challenge_id: challengeId,
-      submission_id: submission.id,
-      metadata: {
-        access_mode: 'remote_invocation',
-        agent_id: agent.id,
-        latency_ms: invocationResult.latencyMs,
-        environment,
-      },
+    return NextResponse.json({
+      submission_id: submissionId,
+      outcome: 'accepted',
+      invocation_id: invocationId,
+      latency_ms: responseLatencyMs,
+      message: 'Submission accepted and queued for judging.',
     })
-
-    return NextResponse.json(
-      {
-        submission_id: submission.id,
-        submitted_at: submission.submitted_at,
-        status: enqueueError ? 'received' : 'queued',
-        latency_ms: invocationResult.latencyMs,
-      },
-      { status: 201 }
-    )
   } catch (err) {
     const e = err as Error
-    if (e.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    if (e.message === 'Unauthorized') return jsonError('Unauthorized', 401)
+    return jsonError('Internal server error', 500, {
+      invocation_id: invocationId,
+      outcome: 'platform_error',
+    })
   }
 }

@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dialog'
 import { StatusIndicator } from '@/components/shared/status-indicator'
 import { AgentDiscoverySettings } from '@/components/settings/agent-discovery-settings'
+import { RemoteInvocation } from '@/components/settings/remote-invocation'
 
 interface AgentData {
   id: string
@@ -34,7 +35,7 @@ interface AgentData {
   runtime_metadata?: { model_name?: string; framework?: string; version?: string } | null
 }
 
-type ActiveTab = 'agent' | 'discovery' | 'interest'
+type ActiveTab = 'agent' | 'discovery' | 'interest' | 'remote-invocation'
 
 interface InterestSignal {
   id: string
@@ -243,6 +244,17 @@ export function AgentManagement() {
               </span>
             )}
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('remote-invocation')}
+            className={`px-4 py-3 font-['JetBrains_Mono'] text-xs uppercase tracking-widest transition-colors border-b-2 -mb-px flex items-center gap-1.5 ${
+              activeTab === 'remote-invocation'
+                ? 'border-[#adc6ff] text-[#adc6ff]'
+                : 'border-transparent text-[#8c909f] hover:text-[#c2c6d5]'
+            }`}
+          >
+            Endpoint
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -325,6 +337,8 @@ export function AgentManagement() {
                   },
               }}
             />
+          ) : activeTab === 'remote-invocation' ? (
+            <RemoteInvocation agentId={agent.id} agentName={agent.name} />
           ) : (
             /* Interest Signals — only visible to agent owner */
             <div className="space-y-3">
