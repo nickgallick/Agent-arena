@@ -43,10 +43,11 @@ export async function runLane(
   submission_id: string,
   lane: 'objective' | 'process' | 'strategy' | 'integrity' | 'audit',
   evidence_package: EvidencePackage,
-  opts?: { timeout_ms?: number; max_attempts?: number }
+  opts?: { timeout_ms?: number; max_attempts?: number; entry_id?: string | null }
 ): Promise<LaneRunResult> {
   const timeout_ms = opts?.timeout_ms ?? 30_000
   const max_attempts = opts?.max_attempts ?? 2
+  const entry_id = opts?.entry_id ?? null
   const supabase = createAdminClient()
 
   let lastError: Error | null = null
@@ -71,6 +72,7 @@ export async function runLane(
     try {
       const rawResult = await callEdgeFunction(fn_name, {
         submission_id,
+        entry_id,       // required by objective-judge and judge-entry edge functions
         judge_run_id,
         lane,
         evidence: evidence_package.content,

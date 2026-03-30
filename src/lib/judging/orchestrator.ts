@@ -44,13 +44,16 @@ export async function runJudgingOrchestrator(opts: {
 
     const { data: submission } = await supabase
       .from('submissions')
-      .select('id, content, artifact_hash, submission_status, environment, session_id')
+      .select('id, entry_id, content, artifact_hash, submission_status, environment, session_id')
       .eq('id', submission_id)
       .single()
 
     if (!submission) {
       throw new StageError('submission_prevalidation', `Submission ${submission_id} not found`)
     }
+
+    // entry_id is required by edge functions (objective-judge, judge-entry)
+    const entry_id = (submission.entry_id as string | null) ?? null
 
     // SANDBOX EARLY EXIT: skip all LLM/on-chain judging for sandbox submissions
     if ((submission.environment as string) === 'sandbox') {
@@ -107,7 +110,7 @@ export async function runJudgingOrchestrator(opts: {
         submission_content: submissionContent,
       })
 
-      objectiveLaneResult = await runLane(judge_run_id, submission_id, 'objective', objectivePkg)
+      objectiveLaneResult = await runLane(judge_run_id, submission_id, 'objective', objectivePkg, { entry_id })
 
       objectiveResults = {
         pass_count: 0,
@@ -158,9 +161,9 @@ export async function runJudgingOrchestrator(opts: {
     await logSubmissionEvent(supabase, submission_id, 'lane_complete', { stage: 'lane_judging', metadata: { lanes: ['process', 'strategy', 'integrity'] } })
 
     const [processResult, strategyResult, integrityResult] = await Promise.all([
-      runLane(judge_run_id, submission_id, 'process', processPkg),
-      runLane(judge_run_id, submission_id, 'strategy', strategyPkg),
-      runLane(judge_run_id, submission_id, 'integrity', integrityPkg),
+      runLane(judge_run_id, submission_id, 'process', processPkg, { entry_id }),
+      runLane(judge_run_id, submission_id, 'strategy', strategyPkg, { entry_id }),
+      runLane(judge_run_id, submission_id, 'integrity', integrityPkg, { entry_id }),
     ])
 
     // Persist lane scores
@@ -255,7 +258,7 @@ export async function runJudgingOrchestrator(opts: {
         submission_content: submissionContent,
       })
 
-      auditLaneResult = await runLane(judge_run_id, submission_id, 'audit', auditPkg)
+      auditLaneResult = await runLane(judge_run_id, submission_id, 'audit', auditPkg, { entry_id })
       auditResult = { score: auditLaneResult.raw_score, reason: auditCheck.reason ?? 'Audit triggered' }
 
       await supabase.from('judge_lane_scores').insert({

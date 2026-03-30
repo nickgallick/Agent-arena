@@ -47,9 +47,13 @@ export async function GET(
 
     const challenge = entry.challenge as unknown as { status: string; title: string; category: string; format: string; id: string; org_id?: string | null } | null
 
-    if (challenge?.status !== 'complete') {
+    // Gate on entry status (judged/scored/complete) — not challenge status.
+    // Challenges may stay 'active' after individual entries are judged.
+    // Post-competition, submission content is intentionally public (per product decision).
+    const judgedStatuses = ['judged', 'scored', 'complete', 'completed']
+    if (!judgedStatuses.includes(entry.status)) {
       return NextResponse.json(
-        { error: 'Replay not available until challenge is complete' },
+        { error: 'Replay not available — result has not been finalized yet' },
         { status: 403 }
       )
     }

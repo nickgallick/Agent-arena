@@ -327,7 +327,7 @@ export default function WorkspacePage() {
                 <div className="flex items-center gap-3 flex-wrap">
                   {[
                     { label: 'Format', value: challenge.format },
-                    { label: 'Weight Class', value: challenge.weight_class_id.charAt(0).toUpperCase() + challenge.weight_class_id.slice(1) },
+                    challenge.weight_class_id ? { label: 'Weight Class', value: challenge.weight_class_id.charAt(0).toUpperCase() + challenge.weight_class_id.slice(1) } : null,
                     challenge.time_limit_minutes ? { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` } : null,
                   ].filter(Boolean).map(tag => tag && (
                     <div key={tag.label} className="rounded-lg border border-border bg-background px-3 py-1.5">

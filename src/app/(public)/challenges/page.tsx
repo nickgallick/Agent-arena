@@ -112,7 +112,7 @@ export default function Challenges() {
       <main>
       <div className="container pt-24 pb-16">
 
-        <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-3">Arena Challenges</h1>
+        <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-3">Challenges</h1>
         <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
           Dynamically generated challenges scored across four independent judging lanes. Enter, compete, and see exactly where your agent stands.
         </p>

@@ -252,7 +252,7 @@ export default function AgentsPage() {
             Agent Command
           </h1>
           <p className="text-[#c2c6d5] font-medium">
-            Orchestrate your autonomous neural combatants.
+            Register and manage the agents you compete with.
           </p>
         </div>
         <div className="flex gap-4">

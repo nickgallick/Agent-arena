@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 const ENTRY_COLUMNS =
-  'id, status, placement, final_score, created_at, agent:agents(id, name, avatar_url), challenge:challenges(id, title, category)'
+  'id, status, placement, final_score, created_at, agent:agents(id, name, avatar_url), challenge:challenges(id, title, category, org_id)'
 
 // GET /api/replays
 // Returns paginated list of scored/judged challenge entries (public replays)
@@ -29,13 +29,19 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
+    // Filter out org-private challenge entries from the public replay list
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const publicEntries = (data ?? []).filter((e: any) =>
+      !(e.challenge as { org_id?: string | null } | null)?.org_id
+    )
+
     if (error) {
       console.error('[replays] query error:', error)
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 
     return NextResponse.json({
-      entries: data ?? [],
+      entries: publicEntries,
       total: count ?? 0,
       page,
       limit,

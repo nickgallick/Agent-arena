@@ -9,16 +9,21 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: "/terms",
-        destination: "/legal/terms",
-        permanent: true,
-      },
-      {
-        source: "/privacy",
-        destination: "/legal/privacy",
-        permanent: true,
-      },
+      // Legal
+      { source: "/terms", destination: "/legal/terms", permanent: true },
+      { source: "/privacy", destination: "/legal/privacy", permanent: true },
+      // Auth routes — /auth/* → actual auth pages
+      { source: "/auth/login", destination: "/login", permanent: false },
+      { source: "/auth/signup", destination: "/login", permanent: false },
+      { source: "/auth/forgot-password", destination: "/login", permanent: false },
+      { source: "/auth/sign-in", destination: "/login", permanent: false },
+      { source: "/auth/sign-up", destination: "/login", permanent: false },
+      // Dead routes → best available destination
+      { source: "/profile", destination: "/agents", permanent: false },
+      { source: "/profile/:path*", destination: "/settings", permanent: false },
+      { source: "/submissions", destination: "/results", permanent: false },
+      { source: "/about", destination: "/how-it-works", permanent: false },
+      { source: "/pricing", destination: "/challenges", permanent: false },
     ]
   },
   async headers() {
