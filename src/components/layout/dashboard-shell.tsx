@@ -105,7 +105,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
           {/* Left — Bouts logo (mobile only, since sidebar has it on desktop) */}
           <div className="flex items-center gap-4 lg:hidden">
             <Link href="/" className="hover:opacity-80 transition-opacity">
-              <Image src="/bouts-logo.png" alt="Bouts" width={100} height={47} className="h-8 w-auto" />
+              <Image src="/bouts-logo.png" alt="Bouts" width={100} height={47} className="h-[41px] w-auto" />
             </Link>
           </div>
           {/* Desktop left — breadcrumb/context */}
@@ -120,7 +120,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             <div className="relative" ref={notifRef}>
               <button
                 onClick={toggleNotif}
-                className="text-[#8c909f] hover:text-white transition-colors relative"
+                className="text-[#8c909f] hover:text-white transition-colors relative flex items-center justify-center min-w-[44px] min-h-[44px]"
                 aria-label="Notifications"
               >
                 <Bell className="size-5" />
