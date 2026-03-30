@@ -119,6 +119,21 @@ export async function POST(
     return v1Error('Session is not open', 'SESSION_CLOSED', 400)
   }
 
+  // App-level duplicate check (secondary guard — DB unique index is primary).
+  // Decision: DB unique index idx_submissions_one_per_entry is the authoritative guard.
+  // This app-level check provides a user-friendly error before hitting the DB constraint.
+  if (session.entry_id) {
+    const { data: existingSubmission } = await supabase
+      .from('submissions')
+      .select('id, submission_status')
+      .eq('entry_id', session.entry_id)
+      .maybeSingle()
+
+    if (existingSubmission) {
+      return v1Error('A submission already exists for this entry.', 'DUPLICATE_SUBMISSION', 409)
+    }
+  }
+
   let body: unknown
   try {
     body = await request.json()

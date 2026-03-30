@@ -11,6 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { isCronAuthorized } from '@/lib/auth/cron-auth'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -107,9 +108,8 @@ Return JSON:
 }
 
 export async function GET(req: NextRequest) {
-  // Auth
-  const authHeader = req.headers.get('authorization')
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  // Fail-closed cron auth: requires CRON_SECRET Bearer OR Vercel's x-vercel-cron: 1 header
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

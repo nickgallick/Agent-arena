@@ -486,6 +486,7 @@ export async function runJudgingOrchestrator(opts: {
 
       await supabase.from('submissions').update({
         submission_status: 'failed',
+        rejection_reason: 'Judging pipeline failed after maximum retries. Your submission is recorded. Contact support if this persists.',
       }).eq('id', submission_id)
 
       if (judge_run_id!) {

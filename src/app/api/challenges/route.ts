@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { challengeQuerySchema } from '@/lib/validators/challenge'
 import { rateLimit } from '@/lib/utils/rate-limit'
+import { getUser } from '@/lib/auth/get-user'
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,12 +30,41 @@ export async function GET(request: NextRequest) {
     const { status, category, weight_class, format, page = 1, limit = 20 } = parsed.data
     const offset = (page - 1) * limit
 
-    const supabase = await createClient()
+    // Determine auth level — admins see all, anonymous users see only safe public challenges
+    let user = null
+    let isAdmin = false
+    try {
+      user = await getUser()
+      if (user) {
+        // Check admin role
+        const supabaseAuth = await createClient()
+        const { data: profile } = await supabaseAuth
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle()
+        isAdmin = profile?.role === 'admin'
+      }
+    } catch {
+      // Not authenticated — fine
+    }
+
+    const supabase = createAdminClient()
     let query = supabase
       .from('challenges')
       .select('id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, web_submission_supported, created_at, difficulty_profile, challenge_type', { count: 'exact' })
 
-    if (status) query = query.eq('status', status)
+    if (!isAdmin) {
+      // Anonymous and non-admin users: only show active, non-sandbox, public (no org) challenges
+      query = query
+        .eq('status', 'active')
+        .eq('is_sandbox', false)
+        .is('org_id', null)
+    } else {
+      // Admin: apply requested filters as-is
+      if (status) query = query.eq('status', status)
+    }
+
     if (category) query = query.eq('category', category)
     if (weight_class) query = query.eq('weight_class_id', weight_class)
     if (format) query = query.eq('format', format)

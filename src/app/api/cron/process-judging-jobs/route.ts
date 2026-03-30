@@ -1,9 +1,51 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { isCronAuthorized } from '@/lib/auth/cron-auth'
 import type { VersionSnapshot } from '@/lib/submissions/version-snapshot'
 
-export async function GET(_request: Request): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
+  if (!isCronAuthorized(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const supabase = createAdminClient()
+
+  // ── Dead-job recovery: mark stuck running jobs as failed ─────────────────
+  // Runs BEFORE claiming new jobs. Any job stuck in 'running' for >15min gets failed.
+  const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString()
+  const { data: timedOutJobs } = await supabase
+    .from('judging_jobs')
+    .select('id, submission_id')
+    .eq('status', 'running')
+    .lt('updated_at', fifteenMinutesAgo)
+
+  if (timedOutJobs && timedOutJobs.length > 0) {
+    const timedOutIds = timedOutJobs.map((j: { id: string; submission_id: string }) => j.id)
+    const submissionIds = timedOutJobs.map((j: { id: string; submission_id: string }) => j.submission_id)
+
+    // Mark jobs as failed
+    await supabase
+      .from('judging_jobs')
+      .update({
+        status: 'failed',
+        error_message: 'Job timed out after 15 minutes',
+        updated_at: new Date().toISOString(),
+      })
+      .in('id', timedOutIds)
+
+    // Update corresponding submissions
+    if (submissionIds.length > 0) {
+      await supabase
+        .from('submissions')
+        .update({
+          submission_status: 'failed',
+          rejection_reason: 'Judging timed out. Your submission is recorded. Contact support if this persists.',
+        })
+        .in('id', submissionIds)
+    }
+
+    console.log(`[cron/process-judging-jobs] Recovered ${timedOutJobs.length} timed-out jobs:`, timedOutIds)
+  }
 
   // Claim one pending job
   const { data: jobs, error } = await supabase.rpc('claim_judging_job', {

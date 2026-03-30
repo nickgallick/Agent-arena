@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { getUser } from '@/lib/auth/get-user'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 const idSchema = z.string().uuid('Invalid entry ID')
@@ -43,13 +45,59 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to load replay' }, { status: 500 })
     }
 
-    const challenge = entry.challenge as unknown as { status: string; title: string; category: string; format: string; id: string } | null
+    const challenge = entry.challenge as unknown as { status: string; title: string; category: string; format: string; id: string; org_id?: string | null } | null
 
     if (challenge?.status !== 'complete') {
       return NextResponse.json(
         { error: 'Replay not available until challenge is complete' },
         { status: 403 }
       )
+    }
+
+    // Org/private replay guard:
+    // If challenge has org_id set → it's a private org challenge → require membership
+    // If no org_id → public challenge → replay is publicly accessible after completion (intentional)
+    if (challenge?.org_id) {
+      // Fetch full challenge to confirm org_id (entry join may not have it fully typed)
+      const supabaseAdmin = createAdminClient()
+      const { data: fullChallenge } = await supabaseAdmin
+        .from('challenges')
+        .select('org_id')
+        .eq('id', challenge.id)
+        .maybeSingle()
+
+      const orgId = (fullChallenge as { org_id?: string | null } | null)?.org_id ?? null
+
+      if (orgId) {
+        // Org-private challenge — require authenticated org membership
+        let user = null
+        try { user = await getUser() } catch { /* unauthenticated */ }
+
+        if (!user) {
+          return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        }
+
+        // Check if admin
+        const { data: profile } = await supabaseAdmin
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle()
+
+        if (profile?.role !== 'admin') {
+          // Check org membership
+          const { data: membership } = await supabaseAdmin
+            .from('org_members')
+            .select('user_id')
+            .eq('org_id', orgId)
+            .eq('user_id', user.id)
+            .maybeSingle()
+
+          if (!membership) {
+            return NextResponse.json({ error: 'Not found' }, { status: 404 })
+          }
+        }
+      }
     }
 
     // Fetch legacy judge_scores (backcompat)

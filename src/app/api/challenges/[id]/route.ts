@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getUser } from '@/lib/auth/get-user'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 const idSchema = z.string().uuid('Invalid challenge ID')
 
 // Safe challenge columns — never include internal admin fields
-const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, has_visual_output, web_submission_supported, created_at'
+const CHALLENGE_COLUMNS = 'id, title, description, category, format, weight_class_id, status, time_limit_minutes, max_coins, entry_fee_cents, prize_pool, platform_fee_percent, starts_at, ends_at, entry_count, is_featured, is_daily, has_visual_output, web_submission_supported, is_sandbox, org_id, created_at'
 const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, coins_awarded, submitted_at, created_at, agent:agents(id, name, avatar_url, weight_class_id)'
 
 export async function GET(
@@ -28,9 +29,9 @@ export async function GET(
       return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: { 'Retry-After': '60' } })
     }
 
-    const supabase = await createClient()
+    const supabaseAdmin = createAdminClient()
 
-    const { data: challenge, error: challengeError } = await supabase
+    const { data: challenge, error: challengeError } = await supabaseAdmin
       .from('challenges')
       .select(CHALLENGE_COLUMNS)
       .eq('id', id)
@@ -44,6 +45,38 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to load challenge' }, { status: 500 })
     }
 
+    let user = null
+    let isAdmin = false
+    try {
+      user = await getUser()
+      if (user) {
+        const supabaseAuth = await createClient()
+        const { data: profile } = await supabaseAuth
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle()
+        isAdmin = profile?.role === 'admin'
+      }
+    } catch {
+      // Not authenticated — fine for public challenges
+    }
+
+    // Anonymous visibility guard: non-admins can only see active/complete public non-sandbox challenges
+    const ch = challenge as unknown as { status: string; is_sandbox?: boolean; org_id?: string | null } & Record<string, unknown>
+    if (!isAdmin) {
+      const visibleStatuses = ['active', 'complete']
+      if (
+        ch.is_sandbox ||
+        !visibleStatuses.includes(ch.status) ||
+        ch.org_id != null
+      ) {
+        return NextResponse.json({ error: 'Challenge not found' }, { status: 404 })
+      }
+    }
+
+    const supabase = await createClient()
+
     // Entries — add LIMIT to prevent unbounded query
     const { data: entries, error: entriesError } = await supabase
       .from('challenge_entries')
@@ -56,17 +89,10 @@ export async function GET(
       console.error('[api/challenges/[id] GET] Entries error:', entriesError.message)
     }
 
-    let user = null
-    try {
-      user = await getUser()
-    } catch {
-      // Not authenticated — fine for public challenges
-    }
-
     // Strip scoring fields from non-owner entries until challenge completes
     const processedEntries = (entries ?? []).map((entry) => {
       const isOwner = user && entry.user_id === user.id
-      if (challenge.status !== 'complete' && !isOwner) {
+      if (ch.status !== 'complete' && !isOwner) {
         const { final_score, placement, elo_change, coins_awarded, ...rest } = entry
         void final_score; void placement; void elo_change; void coins_awarded
         return rest
@@ -106,7 +132,7 @@ export async function GET(
 
     return NextResponse.json({
       challenge: {
-        ...challenge,
+        ...(ch as Record<string, unknown>),
         entries: processedEntries,
         is_entered: isEntered,
         participation_state: participationState,

@@ -30,6 +30,20 @@ const GEO_BYPASS_PATHS = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // ── QA login hard 404 ─────────────────────────────────────────────────────
+  // /qa-login must NEVER return 200 in production, regardless of env vars.
+  // ENABLE_QA_LOGIN is only respected in local dev (NODE_ENV=development).
+  // In all other environments, /qa-login → hard 404 (rewrite to /_not-found).
+  if (pathname === '/qa-login' || pathname.startsWith('/qa-login/')) {
+    const isDev = process.env.NODE_ENV === 'development'
+    const qaEnabled = process.env.ENABLE_QA_LOGIN === 'true'
+    if (!isDev || !qaEnabled) {
+      const notFoundUrl = request.nextUrl.clone()
+      notFoundUrl.pathname = '/_not-found'
+      return NextResponse.rewrite(notFoundUrl, { status: 404 })
+    }
+  }
+
   // ── Geo-blocking (secondary layer — Cloudflare WAF is primary) ────────────
   const isBypass = GEO_BYPASS_PATHS.some(p => pathname.startsWith(p))
 
