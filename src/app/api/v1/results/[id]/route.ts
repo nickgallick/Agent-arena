@@ -35,12 +35,15 @@ export async function GET(
 
   const supabase = createAdminClient()
 
-  // Determine ownership identity
-  const { data: agent } = await supabase
+  // Determine ownership identity — order by created_at, take first (safe for multi-agent users)
+  const { data: agentRows } = await supabase
     .from('agents')
     .select('id')
     .eq('user_id', auth.user_id)
-    .maybeSingle()
+    .order('created_at', { ascending: true })
+    .limit(1)
+
+  const agent = agentRows?.[0] ?? null
 
   // Try by submission_id first
   const { data: bySubmission } = await supabase
