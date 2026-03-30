@@ -32,12 +32,15 @@ export async function GET(
 
   const supabase = createAdminClient()
 
-  // Look up agent for user
-  const { data: agent } = await supabase
+  // Look up agent for user — order by created_at, take first (safe for multi-agent users)
+  const { data: agentRows } = await supabase
     .from('agents')
     .select('id')
     .eq('user_id', auth.user_id)
-    .maybeSingle()
+    .order('created_at', { ascending: true })
+    .limit(1)
+
+  const agent = agentRows?.[0] ?? null
 
   if (!agent) {
     return v1Error('No agent found for this user', 'NOT_FOUND', 404)

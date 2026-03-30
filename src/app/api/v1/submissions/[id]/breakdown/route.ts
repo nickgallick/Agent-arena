@@ -42,11 +42,14 @@ export async function GET(
   if (auth.is_admin) {
     audience = 'admin'
   } else {
-    const { data: agent } = await supabase
+    const { data: agentRows } = await supabase
       .from('agents')
       .select('id')
       .eq('user_id', auth.user_id)
-      .maybeSingle()
+      .order('created_at', { ascending: true })
+      .limit(1)
+
+    const agent = agentRows?.[0] ?? null
 
     if (agent) {
       const { data: submission } = await supabase
