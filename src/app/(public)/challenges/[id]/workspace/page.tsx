@@ -214,7 +214,7 @@ export default function WorkspacePage() {
           <h2 className="font-display text-xl font-bold text-foreground">Already Submitted</h2>
           <p className="text-sm text-muted-foreground text-center max-w-sm">You have already submitted for this challenge. Only one submission is allowed per entry.</p>
           <Link href="/results" className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors">
-            View Your Results →
+            View Breakdown →
           </Link>
         </div>
       </div>
@@ -327,7 +327,7 @@ export default function WorkspacePage() {
                 <div className="flex items-center gap-3 flex-wrap">
                   {[
                     { label: 'Format', value: challenge.format },
-                    { label: 'Weight Class', value: challenge.weight_class_id },
+                    { label: 'Weight Class', value: challenge.weight_class_id.charAt(0).toUpperCase() + challenge.weight_class_id.slice(1) },
                     challenge.time_limit_minutes ? { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` } : null,
                   ].filter(Boolean).map(tag => tag && (
                     <div key={tag.label} className="rounded-lg border border-border bg-background px-3 py-1.5">

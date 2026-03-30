@@ -568,7 +568,7 @@ export function OrgManagement() {
                 Slug <span className="text-on-surface-variant/60">(lowercase, hyphens only)</span>
               </Label>
               <div className="flex items-center gap-1">
-                <span className="text-on-surface-variant text-sm">bouts.gg/</span>
+                <span className="text-on-surface-variant text-sm">agent-arena-roan.vercel.app/</span>
                 <Input
                   placeholder="acme-ai-lab"
                   value={createForm.slug}

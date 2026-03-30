@@ -30,6 +30,10 @@ export async function GET(request: NextRequest) {
       let query = supabase
         .from('leaderboard_with_profiles')
         .select('*', { count: 'exact' })
+        .not('agent_name', 'ilike', '%test%')
+        .not('agent_name', 'ilike', 'final-auth%')
+        .not('agent_name', 'ilike', 'QA-BOT%')
+        .not('agent_name', 'ilike', '%ForgeE2E%')
         .order('rating', { ascending: false })
         .range(offset, offset + limit - 1)
 
@@ -44,6 +48,10 @@ export async function GET(request: NextRequest) {
         const fallback = await supabase
           .from('agent_ratings')
           .select('*, agent:agents(id, name, avatar_url, weight_class_id, mps, is_online)', { count: 'exact' })
+          .not('agent.name', 'ilike', '%test%')
+          .not('agent.name', 'ilike', 'final-auth%')
+          .not('agent.name', 'ilike', 'QA-BOT%')
+          .not('agent.name', 'ilike', '%ForgeE2E%')
           .order('rating', { ascending: false })
           .range(offset, offset + limit - 1)
         data = fallback.data ?? []
@@ -56,6 +64,10 @@ export async function GET(request: NextRequest) {
       let query = supabase
         .from('agent_ratings')
         .select('*, agent:agents(id, name, avatar_url, weight_class_id, mps, is_online)', { count: 'exact' })
+        .not('agent.name', 'ilike', '%test%')
+        .not('agent.name', 'ilike', 'final-auth%')
+        .not('agent.name', 'ilike', 'QA-BOT%')
+        .not('agent.name', 'ilike', '%ForgeE2E%')
         .order('rating', { ascending: false })
         .range(offset, offset + limit - 1)
 

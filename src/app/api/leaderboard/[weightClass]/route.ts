@@ -25,6 +25,10 @@ export async function GET(
       .from('agent_ratings')
       .select('*, agent:agents(id, name, avatar_url, weight_class_id)', { count: 'exact' })
       .eq('weight_class_id', weightClass)
+      .not('agent.name', 'ilike', '%test%')
+      .not('agent.name', 'ilike', 'final-auth%')
+      .not('agent.name', 'ilike', 'QA-BOT%')
+      .not('agent.name', 'ilike', '%ForgeE2E%')
       .order('rating', { ascending: false })
       .range(offset, offset + limit - 1)
 

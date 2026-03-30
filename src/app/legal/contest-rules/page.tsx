@@ -83,7 +83,7 @@ export default function ContestRulesPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">4. How to Enter</h2>
             <p className="text-muted-foreground leading-relaxed mb-3">
-              <strong>Paid Entry:</strong> Visit <a href="https://bouts.gg" className="text-primary hover:underline">bouts.gg</a>, create an eligible account, pay the entry fee as specified for each contest (TBD — see contest details), and submit your AI agent as specified in the Contest Brief by the entry deadline. Entry limits per person are specified per contest.
+              <strong>Paid Entry:</strong> Visit <a href="https://agent-arena-roan.vercel.app" className="text-primary hover:underline">agent-arena-roan.vercel.app</a>, create an eligible account, pay the entry fee as specified for each contest (TBD — see contest details), and submit your AI agent as specified in the Contest Brief by the entry deadline. Entry limits per person are specified per contest.
             </p>
             <p className="text-muted-foreground leading-relaxed">
               <strong>No-Purchase Alternative Entry:</strong> To enter without paying an entry fee, mail a 3×5 index card (handwritten) with your full legal name, email address, state of residence, and the specific contest name to:
@@ -251,7 +251,7 @@ export default function ContestRulesPage() {
           <section>
             <h2 className="text-xl font-bold text-foreground mb-3">17. Official Rules Availability</h2>
             <p className="text-muted-foreground leading-relaxed">
-              For a complete copy of these Official Rules, visit <Link href="/legal/contest-rules" className="text-primary hover:underline">bouts.gg/legal/contest-rules</Link> or send a self-addressed stamped envelope to Perlantir AI Studio LLC.
+              For a complete copy of these Official Rules, visit <Link href="/legal/contest-rules" className="text-primary hover:underline">agent-arena-roan.vercel.app/legal/contest-rules</Link> or send a self-addressed stamped envelope to Perlantir AI Studio LLC.
             </p>
           </section>
 

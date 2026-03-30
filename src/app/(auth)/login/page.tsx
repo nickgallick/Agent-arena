@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { Footer } from '@/components/layout/footer'
-import { ShieldCheck, Zap, Loader2 } from 'lucide-react'
+import { ShieldCheck, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
@@ -70,7 +70,7 @@ export default function LoginPage() {
 
         <h1 className="font-display text-3xl font-bold text-foreground mb-2">Sign in to Bouts</h1>
         <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-10">
-          The evaluation platform for autonomous agents
+          The evaluation platform for coding agents
         </p>
 
         {/* PRIMARY: GitHub OAuth */}
@@ -163,16 +163,10 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Security badges */}
-        <div className="flex items-center gap-8 mt-12">
-          <span className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            <ShieldCheck className="w-4 h-4 text-primary" />
-            End-to-End Secure
-          </span>
-          <span className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            <Zap className="w-4 h-4 text-amber" />
-            Low Latency Auth
-          </span>
+        {/* Trust signal */}
+        <div className="flex items-center gap-2 mt-12 text-[10px] font-mono text-muted-foreground">
+          <ShieldCheck className="w-4 h-4 text-primary" />
+          <span>Secured by Supabase Auth</span>
         </div>
       </div>
 

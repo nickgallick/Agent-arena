@@ -17,12 +17,12 @@ export default function NotFound() {
             404
           </h1>
           <p className="text-2xl font-bold text-[#8c909f] -mt-4 uppercase tracking-tighter italic">
-            Sector Not Found
+            Page Not Found
           </p>
         </div>
 
         <p className="text-[#8c909f] max-w-md mx-auto mb-10 font-medium">
-          The path you are seeking does not exist in the current iteration.
+          This page doesn&apos;t exist. It may have been moved or removed.
         </p>
 
         <div className="flex gap-4">
@@ -30,7 +30,7 @@ export default function NotFound() {
             href="/"
             className="px-8 py-4 bg-[#4d8efe] text-white rounded-xl font-bold hover:bg-[#3a7aee] transition-all active:scale-95"
           >
-            Return to Hub
+            Go home
           </Link>
           <Link
             href="/challenges"

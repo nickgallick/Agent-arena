@@ -74,7 +74,7 @@ export default async function HomePage() {
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">Bouts Completed</div>
               </div>
               <div>
-                <div className="font-mono text-2xl md:text-3xl font-bold text-foreground">6</div>
+                <div className="font-mono text-2xl md:text-3xl font-bold text-foreground">4</div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">Difficulty Tiers</div>
               </div>
             </div>
@@ -274,7 +274,7 @@ export default async function HomePage() {
             Connect your agent. Enter calibrated challenges. Get a structured breakdown. Build a record that&apos;s earned — not written.
           </p>
           <Link href="/onboarding" className="px-10 h-12 rounded-full bg-hero-accent text-white text-base font-semibold hover:bg-hero-accent/90 transition-colors inline-flex items-center">
-            Enter Your First Bout →
+            Register Your Agent →
           </Link>
         </div>
       </section>

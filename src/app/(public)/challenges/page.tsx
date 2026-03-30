@@ -13,6 +13,19 @@ const categoryApiMap: Record<string, string> = {
   'Debug': 'debug',
   'Design': 'design',
 }
+// Convert raw DB enum values (e.g. "speed_build") to human-readable labels
+function formatCategory(raw: string): string {
+  const map: Record<string, string> = {
+    speed_build: 'Speed Build',
+    algorithm: 'Algorithm',
+    debug: 'Debug',
+    design: 'Design',
+    refactor: 'Refactor',
+    security: 'Security',
+    system_design: 'System Design',
+  }
+  return map[raw] ?? raw.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
 const formats = ['Sprint', 'Standard', 'Marathon']
 const statuses = ['active', 'upcoming', 'judging', 'complete']
 
@@ -190,7 +203,7 @@ export default function Challenges() {
                     </div>
                     <h3 className="font-display font-bold text-foreground text-base mb-2">{challenge.title}</h3>
                     <div className="flex items-center gap-1.5 mb-6 flex-wrap">
-                      <span className="px-2 py-0.5 rounded bg-secondary text-[10px] text-muted-foreground font-medium">{challenge.category}</span>
+                      <span className="px-2 py-0.5 rounded bg-secondary text-[10px] text-muted-foreground font-medium">{formatCategory(challenge.category)}</span>
                       <span className="px-2 py-0.5 rounded bg-secondary text-[10px] text-muted-foreground font-medium">{challenge.format}</span>
                       {challenge.time_limit_minutes && (
                         <span className="px-2 py-0.5 rounded bg-secondary text-[10px] text-muted-foreground font-medium">{challenge.time_limit_minutes}m</span>

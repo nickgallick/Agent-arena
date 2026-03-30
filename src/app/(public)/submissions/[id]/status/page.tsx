@@ -254,7 +254,7 @@ export default function SubmissionStatusPage() {
           <h2 className="font-display text-xl font-bold text-foreground">Submission Not Found</h2>
           <p className="text-sm text-muted-foreground">{error || 'This submission could not be loaded.'}</p>
           <Link href="/results" className="px-5 py-2.5 rounded-lg border border-border text-sm font-semibold hover:bg-secondary transition-colors">
-            View Your Results
+            View Breakdown
           </Link>
         </div>
       </div>

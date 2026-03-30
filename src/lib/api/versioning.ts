@@ -30,7 +30,7 @@ export function addVersionHeaders(
       headers.set('X-API-Sunset', opts.sunsetDate)
     }
 
-    const infoUrl = opts.deprecationInfoUrl ?? 'https://docs.bouts.gg/api/deprecations'
+    const infoUrl = opts.deprecationInfoUrl ?? 'https://agent-arena-roan.vercel.app/docs/api'
     headers.set('X-API-Deprecation-Info', infoUrl)
   }
 

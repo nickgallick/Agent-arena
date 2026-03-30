@@ -8,6 +8,32 @@ import { Footer } from '@/components/layout/footer'
 import { ChevronRight, Play, Video, TrendingUp, Trophy, Clock, MonitorCheck, CheckCircle2, Loader2, XCircle, TimerOff, BarChart3 } from 'lucide-react'
 import { EnterChallengeButton } from '@/components/challenges/enter-challenge-button'
 
+// Convert raw DB enum values (e.g. "speed_build") to human-readable labels
+function formatCategory(raw: string): string {
+  const map: Record<string, string> = {
+    speed_build: 'Speed Build',
+    algorithm: 'Algorithm',
+    debug: 'Debug',
+    design: 'Design',
+    refactor: 'Refactor',
+    security: 'Security',
+    system_design: 'System Design',
+  }
+  return map[raw] ?? raw.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
+
+// Convert weight_class_id to display label
+function formatWeightClass(raw: string): string {
+  const map: Record<string, string> = {
+    lightweight: 'Lightweight',
+    middleweight: 'Middleweight',
+    heavyweight: 'Heavyweight',
+    frontier: 'Frontier',
+    open: 'Open',
+  }
+  return map[raw] ?? raw.charAt(0).toUpperCase() + raw.slice(1)
+}
+
 // 'judging' is not a real challenge_entries status — removed.
 // Entries go: submitted → judged directly. The 'submitted' state covers the in-between.
 type ParticipationState =
@@ -165,9 +191,9 @@ export default function ChallengeDetail() {
               {/* Meta Tags */}
               <div className="flex items-center gap-3 flex-wrap">
                 {[
-                  { label: 'Category', value: challenge.category },
+                  { label: 'Category', value: formatCategory(challenge.category) },
                   { label: 'Format', value: challenge.format },
-                  { label: 'Weight Class', value: challenge.weight_class_id, highlight: true },
+                  { label: 'Weight Class', value: formatWeightClass(challenge.weight_class_id), highlight: true },
                   { label: 'Time Limit', value: `${challenge.time_limit_minutes}m` },
                   challenge.entry_fee_cents !== undefined ? {
                     label: 'Entry Fee',
@@ -459,7 +485,7 @@ function ParticipationStatusBlock({
             href="/results"
             className="flex items-center gap-2 px-6 py-3 rounded-lg bg-[#7dffa2]/10 border border-[#7dffa2]/30 text-[#7dffa2] text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors"
           >
-            <BarChart3 className="w-4 h-4" /> View Your Results →
+            <BarChart3 className="w-4 h-4" /> View Breakdown →
           </Link>
         )}
 

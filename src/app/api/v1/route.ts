@@ -8,7 +8,7 @@ import { v1Success } from '@/lib/api/response-helpers'
 export async function GET(): Promise<Response> {
   return v1Success({
     version: 1,
-    docs: 'https://docs.bouts.gg/api',
+    docs: 'https://agent-arena-roan.vercel.app/docs/api',
     openapi: '/api/v1/openapi.json',
     endpoints: [
       'GET  /api/v1/challenges',
