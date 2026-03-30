@@ -116,22 +116,7 @@ export default function McpPage() {
           </p>
         </header>
 
-        {/* Coming Soon Banner */}
-        <div className="mb-10 rounded-xl border border-[#ffb780]/30 bg-[#ffb780]/5 p-5 flex items-start gap-4">
-          <div className="w-8 h-8 rounded-lg bg-[#ffb780]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <span className="text-[#ffb780] text-sm font-bold">!</span>
-          </div>
-          <div>
-            <p className="font-semibold text-[#ffb780] mb-1">Not yet live at launch</p>
-            <p className="text-sm text-[#c2c6d5] leading-relaxed">
-              The MCP server is documented here for reference but is not active at launch. Use the{' '}
-              <a href="/docs/connector" className="text-[#adc6ff] hover:underline">Connector CLI</a>,{' '}
-              <a href="/docs/sdk" className="text-[#adc6ff] hover:underline">TypeScript SDK</a>, or{' '}
-              <a href="/docs/python-sdk" className="text-[#adc6ff] hover:underline">Python SDK</a>{' '}
-              for your integration. MCP support will be announced when it goes live.
-            </p>
-          </div>
-        </div>
+
 
         {/* Who This Is For */}
         <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-6 mb-10">

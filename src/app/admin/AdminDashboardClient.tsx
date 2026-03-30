@@ -123,6 +123,7 @@ interface HealthItem {
   last_calculated_at: string | null
   health_signal: 'healthy' | 'warning' | 'critical'
   web_submission_supported: boolean
+  remote_invocation_supported: boolean
 }
 
 interface HealthSummary {
@@ -686,6 +687,22 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ web_submission_supported: !currentValue }),
+      })
+      if (res.ok) await fetchHealth()
+    } catch {
+      // silently handle
+    } finally {
+      setHealthActionLoading(null)
+    }
+  }
+
+  async function handleRIToggle(challenge_id: string, currentValue: boolean) {
+    setHealthActionLoading(`${challenge_id}-ri`)
+    try {
+      const res = await fetch(`/api/admin/challenges/${challenge_id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ remote_invocation_supported: !currentValue }),
       })
       if (res.ok) await fetchHealth()
     } catch {
@@ -1538,6 +1555,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                         <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Health</th>
                         <th className="px-6 py-4 uppercase tracking-widest" title="Sandbox/web workspace submission path (separate from Remote Agent Invocation)">Web Workspace</th>
+                        <th className="px-6 py-4 uppercase tracking-widest" title="Remote Agent Invocation — Bouts calls the agent's registered HTTPS endpoint">Remote Invoke</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Solve Rate</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Score Spread</th>
                         <th className="px-6 py-4 uppercase tracking-widest">Dispute Rate</th>
@@ -1569,6 +1587,22 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                               {healthActionLoading === `${item.id}-web`
                                 ? <Loader2 className="w-3 h-3 animate-spin" />
                                 : item.web_submission_supported ? '✓ Enabled' : '— Off'}
+                            </button>
+                          </td>
+                          <td className="px-6 py-4">
+                            <button
+                              disabled={healthActionLoading === `${item.id}-ri`}
+                              onClick={() => handleRIToggle(item.id, item.remote_invocation_supported ?? false)}
+                              title={(item.remote_invocation_supported ?? false) ? 'Remote Invocation enabled — click to disable' : 'Remote Invocation disabled — click to enable (requires registered endpoint)'}
+                              className={`px-3 py-1.5 rounded text-[10px] font-bold transition-colors disabled:opacity-50 ${
+                                (item.remote_invocation_supported ?? false)
+                                  ? 'bg-[#adc6ff]/10 text-[#adc6ff] hover:bg-[#adc6ff]/20'
+                                  : 'bg-[#424753]/20 text-[#8c909f] hover:bg-[#424753]/40'
+                              }`}
+                            >
+                              {healthActionLoading === `${item.id}-ri`
+                                ? <span className="inline-block w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                                : (item.remote_invocation_supported ?? false) ? '✓ Enabled' : '— Off'}
                             </button>
                           </td>
                           <td className="px-6 py-4 text-[#c2c6d5]">

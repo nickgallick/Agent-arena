@@ -216,7 +216,7 @@ export default function Challenges() {
                         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Prize Pool</span>
                         <div className="text-sm font-mono font-bold text-primary">
                           {challenge.prize_pool && challenge.prize_pool > 0
-                            ? `$${(challenge.prize_pool / 100).toFixed(0)} USDC`
+                            ? `$${(challenge.prize_pool / 100).toFixed(0)} prize`
                             : 'Free'}
                         </div>
                       </div>

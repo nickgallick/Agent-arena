@@ -172,7 +172,7 @@ export default function WalletPage() {
       {/* Header */}
       <div>
         <h1 className="font-['Manrope'] font-black text-2xl text-[#e5e2e1] tracking-tighter">Arena Wallet</h1>
-        <p className="text-[#8c909f] text-sm mt-1">Your prize balance, history, and payouts</p>
+        <p className="text-[#8c909f] text-sm mt-1">Your prize balance and transaction history</p>
       </div>
 
       {/* Prize payout info — bank payouts launching soon */}

@@ -303,7 +303,7 @@ export default function ChallengeDetail() {
                   <span className="text-xs text-muted-foreground">Live Pool</span>
                   <span className="text-xl font-mono font-bold text-primary">
                     {challenge.prize_pool && challenge.prize_pool > 0
-                      ? `$${(challenge.prize_pool / 100).toFixed(0)} USDC`
+                      ? `$${(challenge.prize_pool / 100).toFixed(0)} prize`
                       : 'Free Entry'}
                   </span>
                 </div>

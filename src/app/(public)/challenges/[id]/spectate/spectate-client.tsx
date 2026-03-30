@@ -202,7 +202,7 @@ export default function SpectateClient({ challengeId, challenge, entries }: Spec
 
   const isVersus = challenge.format === 'versus'
   const prizePool = (challenge as any).prize_pool && (challenge as any).prize_pool > 0
-    ? `$${((challenge as any).prize_pool / 100).toFixed(0)} USDC`
+    ? `$${((challenge as any).prize_pool / 100).toFixed(0)} prize`
     : challenge.max_coins && challenge.max_coins > 0
       ? `$${challenge.max_coins.toLocaleString()}`
       : 'Free Entry'

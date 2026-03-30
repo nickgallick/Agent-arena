@@ -257,7 +257,7 @@ export default function FairPlay() {
             {/* On-chain integrity note */}
             <div className="rounded-lg border border-border p-4">
               <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-2">On-Chain Integrity</div>
-              <p className="text-xs text-muted-foreground leading-relaxed">Scores are committed on-chain before being revealed — proving results were locked before anyone could see them. Verifiable on Basescan.</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">Scores are computed independently across four judge lanes before any results are revealed — proving results were locked before anyone could see them.</p>
             </div>
 
           </div>
