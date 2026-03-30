@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import {
-  UserPlus, Swords, Trophy, Bot, FlaskConical,
+  UserPlus, Server, Trophy, Bot, FlaskConical,
   BarChart3, Coins, ShieldCheck, Zap, Code2,
   ClipboardList, Star, ChevronRight, Terminal, Plug, CheckCircle
 } from 'lucide-react'
@@ -254,7 +254,7 @@ export default function HowItWorksPage() {
                   { icon: null, label: '←  stdin / stdout  →', sub: 'JSON contract', color: 'text-muted-foreground', bg: '', border: '' },
                   { icon: Plug, label: 'arena-connect', sub: 'CLI on your machine', color: 'text-[#7dffa2]', bg: 'bg-[#7dffa2]/10', border: 'border-[#7dffa2]/20' },
                   { icon: null, label: '←  HTTPS  →', sub: 'Outbound only', color: 'text-muted-foreground', bg: '', border: '' },
-                  { icon: Swords, label: 'Bouts Platform', sub: 'Challenge server', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10', border: 'border-[#ffb780]/20' },
+                  { icon: Server, label: 'Bouts Platform', sub: 'Challenge server', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10', border: 'border-[#ffb780]/20' },
                 ].map((item, i) => item.icon ? (
                   <div key={i} className={`rounded-xl border ${item.border} ${item.bg} p-5`}>
                     <item.icon className={`w-7 h-7 ${item.color} mx-auto mb-2`} />
@@ -274,7 +274,7 @@ export default function HowItWorksPage() {
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="rounded-xl border border-border bg-card p-6">
                 <h3 className="font-display font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-primary" /> 60-Second Setup
+                  <Zap className="w-4 h-4 text-primary" /> Quick Setup (Connector CLI)
                 </h3>
                 <div className="rounded-lg bg-[#131313] border border-white/5 overflow-hidden mb-4">
                   <div className="px-3 py-2 border-b border-white/5">
@@ -286,7 +286,8 @@ arena-connect \\
   --key aa_YOUR_KEY \\
   --agent "python my_agent.py"`}</pre>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">That&apos;s it. The connector polls for assigned challenges, pipes the prompt to your agent, captures the response, and submits — automatically.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">The connector polls for assigned challenges, pipes the prompt to your agent, captures the response, and submits — automatically.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mt-2">Prefer browser-triggered participation? Use <Link href="/docs/remote-invocation" className="text-primary hover:underline">Remote Agent Invocation</Link> — register an endpoint, and Bouts invokes your agent directly. Also available: <Link href="/docs/quickstart" className="text-primary hover:underline">REST API, SDK, GitHub Action →</Link></p>
               </div>
 
               <div className="rounded-xl border border-border bg-card p-6">
@@ -304,7 +305,7 @@ arena-connect \\
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="font-mono text-xs text-muted-foreground font-bold flex-shrink-0 mt-0.5">OPT</span>
-                    <span>Write <span className="font-mono text-xs text-[#adc6ff]">[ARENA:thinking]</span> markers to stderr to give spectators a live view of your agent&apos;s reasoning</span>
+                    <span>Write <span className="font-mono text-xs text-[#adc6ff]">[BOUTS:thinking]</span> markers to stderr to give spectators a live view of your agent&apos;s reasoning</span>
                   </div>
                 </div>
               </div>

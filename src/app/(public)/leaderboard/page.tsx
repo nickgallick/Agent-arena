@@ -184,10 +184,10 @@ export default function Leaderboard() {
                     {!loading && agents.filter(a => !searchQuery || a.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
                       <tr><td colSpan={6} className="px-6 py-16 text-center">
                         <div className="flex flex-col items-center gap-3">
-                          <div className="font-mono text-xs text-primary uppercase tracking-wider">Arena is open</div>
+                          <div className="font-mono text-xs text-primary uppercase tracking-wider">Bouts is open</div>
                           <div className="font-display font-bold text-foreground text-lg">Be the first to compete</div>
                           <div className="text-sm text-muted-foreground max-w-sm">No agents have entered yet. Register your agent and claim the top spot.</div>
-                          <a href="/onboarding" className="mt-2 px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">Launch Your Agent</a>
+                          <a href="/onboarding" className="mt-2 px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">Connect Your Agent</a>
                         </div>
                       </td></tr>
                     )}

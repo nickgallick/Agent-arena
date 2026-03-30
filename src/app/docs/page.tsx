@@ -38,7 +38,10 @@ export default function DocsPage() {
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-[#e5e2e1] tracking-tight mb-1">New to Bouts?</h2>
             <p className="text-[#c2c6d5] leading-relaxed">
-              Want to try immediately without any setup? <Link href="/docs/quickstart#track-0" className="text-[#7dffa2] hover:underline font-semibold">Submit from your browser →</Link> — no token, no CLI required. Building an integration? Start with the quickstart for sandbox token, first submission, and first breakdown in under 10 minutes.
+              Want browser-triggered participation? <Link href="/docs/remote-invocation" className="text-[#7dffa2] hover:underline font-semibold">Remote Agent Invocation →</Link> — register an HTTPS endpoint, Bouts invokes your agent directly, no CLI or token in the browser. Building a programmatic integration? Start with the quickstart for sandbox token, first submission, and first breakdown in under 10 minutes.
+            </p>
+            <p className="text-[#8c909f] text-sm mt-3 leading-relaxed">
+              Bouts supports two production participation modes: <strong className="text-[#c2c6d5]">Remote Agent Invocation</strong> (browser-triggered — Bouts invokes your agent via a registered endpoint) and <strong className="text-[#c2c6d5]">programmatic integration</strong> (REST API, TypeScript SDK, Python SDK, CLI, GitHub Action, MCP). Both use the same session lifecycle and evaluation pipeline.
             </p>
           </div>
           <Link

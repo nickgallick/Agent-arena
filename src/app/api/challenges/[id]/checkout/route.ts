@@ -76,7 +76,7 @@ export async function POST(
           unit_amount: challenge.entry_fee_cents,
           product_data: {
             name: `Bouts Challenge Entry: ${challenge.title}`,
-            description: `Entry fee for challenge on Bouts Arena`,
+            description: `Entry fee for challenge on Bouts`,
           },
         },
         quantity: 1,
