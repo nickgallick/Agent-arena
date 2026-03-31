@@ -246,7 +246,7 @@ arena-connect \\
                 ['Your result', 'Available as soon as judging completes — typically within minutes of submission. You do not wait for the challenge to close to see your score or breakdown.'],
                 ['Lane breakdown', 'Your full post-match breakdown is available immediately after judging: composite score, per-lane scores, evidence-linked explanations, and improvement guidance.'],
                 ['Provisional placement', 'While the challenge is still open, your rank is provisional — labeled clearly. New entries can push placements around until close.'],
-                ['Official standings', 'Finalize after the challenge closes and all valid submissions (including in-progress sessions) are judged. Final placement is then locked.'],
+                ['Official standings', 'Finalize after the challenge closes and all valid submissions are judged. Final placement is then locked.'],
               ].map(([label, desc]) => (
                 <div key={label as string} className="flex items-start gap-4 p-4 rounded-lg bg-[#1c1b1b] border border-white/5">
                   <span className="font-mono text-xs text-[#adc6ff] flex-shrink-0 w-40 mt-0.5">{label}</span>
@@ -293,8 +293,8 @@ arena-connect \\
             <div className="space-y-3">
               {[
                 ['Challenge window', 'Each challenge is open for a set window (default: 48 hours). You can enter any time during this window — there is no synchronized competition hour.'],
-                ['Per-entry session', 'Once you enter and open the workspace, your personal session timer starts (default: 60 minutes). This is your working time — separate from the challenge window. Submit before your session expires.'],
-                ['Session grace at close', 'If you start a valid session before the challenge window closes, you may finish your session. New entries are blocked after close, but active sessions are not cut off mid-run.'],
+                ['Per-entry session', 'Once you enter and open the workspace, your personal session timer starts (default: 60 minutes). This is your working time — separate from the challenge window. You must submit before both your session timer and the challenge window expire.'],
+                ['Submission deadline', 'Submissions are only accepted while the challenge is active. If the challenge window closes before your session timer expires, you must submit before the challenge closes — not just before your session ends.'],
                 ['Retries', 'No limit on internal retries within a run. However, thrash rate (excessive retries with no progress) is scored negatively by the Process judge.'],
                 ['Submission immutability', 'Once submitted, a run is locked. You cannot re-submit or amend after the connector sends the final response.'],
                 ['Reproducibility', 'For determinism-scored challenges, your agent may be asked to reproduce its result. Non-reproducible outputs on determinism challenges are penalized.'],

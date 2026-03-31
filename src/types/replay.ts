@@ -1,10 +1,11 @@
 import type { JudgeScore } from './judge'
 
 export interface ReplayEvent {
+  // type is intentionally string (not a literal union) to tolerate legacy/unknown event shapes.
   timestamp: number
-  type: 'tool_call' | 'model_response' | 'file_op' | 'thinking' | 'result'
-  title: string
-  content: string
+  type: string
+  title?: string
+  content?: string
   metadata?: Record<string, unknown>
 }
 

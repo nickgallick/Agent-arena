@@ -78,6 +78,8 @@ interface DisputeFlag {
 interface PostMatchBreakdownProps {
   judgeOutputs: JudgeOutput[]
   compositeScore?: number | null
+  // finalScore: legacy fallback when compositeScore is null
+  finalScore?: number | null
   processScore?: number | null
   strategyScore?: number | null
   integrityAdjustment?: number
@@ -280,43 +282,58 @@ function synthesizeVerdict(
 // Returns null if not enough signal to say something specific.
 // ─────────────────────────────────────────────
 
+// Capitalize a human label derived from a DB field name
+function humanize(s: string): string {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
+
+// Generic-filler patterns to suppress regardless of length
+const GENERIC_SIGNAL_PATTERNS = [
+  /^(good|nice|well|solid|decent|fair|ok|okay|average|acceptable|satisfactory)\.?$/i,
+  /^(could be better|has potential|room for improvement|needs work)\.?$/i,
+  /^(shows (effort|promise|understanding))\.?$/i,
+]
+function isGenericSignal(s: string | null | undefined): boolean {
+  if (!s || s.trim().length < 8) return true
+  return GENERIC_SIGNAL_PATTERNS.some(p => p.test(s.trim()))
+}
+
 function deriveLaneSignals(output: JudgeOutput): {
   positive: string | null
   weakness: string | null
 } {
-  // Use judge-populated signals if available and non-generic
-  const genericTerms = /^(good|nice|well|solid|decent|fair|ok|okay)\.?$/i
-  const positive = (output.positive_signal && !genericTerms.test(output.positive_signal.trim()))
-    ? output.positive_signal
-    : null
-  const weakness = (output.primary_weakness && !genericTerms.test(output.primary_weakness.trim()))
-    ? output.primary_weakness
-    : null
+  // Use judge-populated signals first — but only if they're substantive
+  const judgePositive = !isGenericSignal(output.positive_signal) ? (output.positive_signal ?? null) : null
+  const judgeWeakness = !isGenericSignal(output.primary_weakness) ? (output.primary_weakness ?? null) : null
 
-  if (positive && weakness) return { positive, weakness }
+  if (judgePositive && judgeWeakness) return { positive: judgePositive, weakness: judgeWeakness }
 
-  // Fall back to dimension scores
-  const dims = output.dimension_scores
-  const dimEntries = Object.entries(dims).sort((a, b) => b[1] - a[1])
+  // Derive from dimension scores (sorted high to low)
+  const dims = output.dimension_scores ?? {}
+  const dimEntries = Object.entries(dims)
+    .filter(([, v]) => typeof v === 'number')
+    .sort(([, a], [, b]) => b - a)
   const bestDim = dimEntries[0]
   const worstDim = dimEntries[dimEntries.length - 1]
 
-  const derivedPositive = positive ?? (
-    bestDim && bestDim[1] >= 65
-      ? `Strong ${bestDim[0].replace(/_/g, ' ')} (${bestDim[1]})`
+  // Positive: only show when dimension is genuinely strong (≥ 70), and not the same as worst
+  const derivedPositive = judgePositive ?? (
+    bestDim && bestDim[1] >= 70 && bestDim[0] !== worstDim?.[0]
+      ? `${humanize(bestDim[0])} ${bestDim[1]}/100 — top dimension in this lane`
       : null
   )
 
-  // Flags take priority for weakness — they're the most concrete signal
+  // Weakness priority: flags (most concrete) → low dimension → nothing
   const flagWeakness = output.flags && output.flags.length > 0
-    ? output.flags[0].replace(/_/g, ' ')
+    ? `${humanize(output.flags[0])} flagged`
     : null
 
-  const derivedWeakness = weakness ?? flagWeakness ?? (
-    worstDim && worstDim[1] < 45 && worstDim[0] !== bestDim?.[0]
-      ? `Low ${worstDim[0].replace(/_/g, ' ')} (${worstDim[1]})`
-      : null
-  )
+  // Only emit dimension weakness when it's meaningfully low (< 40) and different from best
+  const dimWeakness = (worstDim && worstDim[1] < 40 && worstDim[0] !== bestDim?.[0])
+    ? `${humanize(worstDim[0])} ${worstDim[1]}/100 — weakest dimension`
+    : null
+
+  const derivedWeakness = judgeWeakness ?? flagWeakness ?? dimWeakness
 
   return { positive: derivedPositive, weakness: derivedWeakness }
 }
@@ -344,7 +361,7 @@ function synthesizeImprovements(
     if (output.lane === 'audit') continue
     const meta = LANE_META[output.lane]
 
-    // Lane-level weakness
+    // Lane-level weakness — only emit when specific signal exists
     if (output.score < 50) {
       const { weakness } = deriveLaneSignals(output)
       if (weakness) {
@@ -353,16 +370,8 @@ function synthesizeImprovements(
           text: `${meta?.label ?? output.lane}: ${weakness}`,
           lane: output.lane,
         })
-      } else {
-        // Generic lane message only if score is truly low and we have nothing specific
-        if (output.score < 35) {
-          items.push({
-            priority: 2,
-            text: `${meta?.label ?? output.lane} lane score low (${output.score.toFixed(0)}) — review ${meta?.description ?? 'lane criteria'}`,
-            lane: output.lane,
-          })
-        }
       }
+      // Suppress generic "score low — review criteria" messages — they add no value
     }
 
     // Evidence gaps
@@ -495,7 +504,8 @@ function RelativeContext({
 
 export function PostMatchBreakdown({
   judgeOutputs,
-  compositeScore,
+  compositeScore: compositeScoreProp,
+  finalScore,
   processScore,
   strategyScore,
   integrityAdjustment = 0,
@@ -509,6 +519,8 @@ export function PostMatchBreakdown({
   isProvisional = false,
   challengeStatus,
 }: PostMatchBreakdownProps) {
+  // Use compositeScore if available; fall back to finalScore for legacy entries
+  const compositeScore = compositeScoreProp ?? finalScore ?? null
   const hasLaneData = judgeOutputs.length > 0
   const hasMetrics = runMetrics != null
 

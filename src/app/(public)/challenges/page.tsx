@@ -213,12 +213,8 @@ export default function Challenges() {
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Prize Pool</span>
-                        <div className="text-sm font-mono font-bold text-primary">
-                          {challenge.prize_pool && challenge.prize_pool > 0
-                            ? `$${(challenge.prize_pool / 100).toFixed(0)} prize`
-                            : 'Free'}
-                        </div>
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Entry</span>
+                        <div className="text-sm font-mono font-bold text-primary">Free</div>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Entrants</span>

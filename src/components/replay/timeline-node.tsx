@@ -6,28 +6,47 @@ import { Wrench, Sparkles, FileCode, Brain, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface ReplayEvent {
+  // type is loosely typed here so legacy/unknown event types don't crash the tree.
+  // Consumers must use safeEventIcon() / safeEventColor() rather than direct lookups.
   timestamp: number
-  type: 'tool_call' | 'model_response' | 'file_op' | 'thinking' | 'result'
-  title: string
-  content: string
+  type: string
+  title?: string   // optional — legacy events may omit it
+  content?: string // optional — legacy events may omit it
   metadata?: Record<string, unknown>
 }
 
-const typeIcons = {
+const typeIcons: Record<string, React.ElementType> = {
   tool_call: Wrench,
   model_response: Sparkles,
   file_op: FileCode,
   thinking: Brain,
   result: CheckCircle,
-} as const
+  // legacy aliases
+  tool: Wrench,
+  response: Sparkles,
+  file: FileCode,
+  output: CheckCircle,
+}
 
-const typeColors = {
+const typeColors: Record<string, string> = {
   tool_call: 'text-[#ffb780]',
   model_response: 'text-purple-400',
   file_op: 'text-cyan-400',
   thinking: 'text-[#8c909f]',
   result: 'text-[#7dffa2]',
-} as const
+  tool: 'text-[#ffb780]',
+  response: 'text-purple-400',
+  file: 'text-cyan-400',
+  output: 'text-[#7dffa2]',
+}
+
+// Safe lookups — always fall back to Brain / neutral color for unknown types
+export function safeEventIcon(type: string): React.ElementType {
+  return typeIcons[type] ?? Brain
+}
+export function safeEventColor(type: string): string {
+  return typeColors[type] ?? 'text-[#8c909f]'
+}
 
 interface TimelineNodeProps {
   event: ReplayEvent
@@ -44,7 +63,7 @@ function formatTimestamp(ms: number): string {
 
 export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
   const [expanded, setExpanded] = useState(false)
-  const Icon = typeIcons[event.type]
+  const Icon = safeEventIcon(event.type)
 
   function handleClick() {
     onClick()
@@ -71,11 +90,11 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
             isActive ? 'bg-[#4d8efe]/20' : 'bg-[#201f1f]'
           )}
         >
-          <Icon className={cn('h-4 w-4', typeColors[event.type])} />
+          <Icon className={cn('h-4 w-4', safeEventColor(event.type))} />
         </div>
         <div className="min-w-0 flex-1">
           <p className={cn('truncate text-sm font-medium', isActive ? 'text-[#e5e2e1]' : 'text-[#c2c6d5]')}>
-            {event.title}
+            {event.title ?? event.type.replace(/_/g, ' ')}
           </p>
           <p className="font-mono text-xs text-[#8c909f]">{formatTimestamp(event.timestamp)}</p>
         </div>
@@ -91,7 +110,7 @@ export function TimelineNode({ event, isActive, onClick }: TimelineNodeProps) {
             className="overflow-hidden"
           >
             <pre className="mt-3 overflow-x-auto rounded-md bg-[#1c1b1b] p-3 font-mono text-xs text-[#c2c6d5]">
-              <code>{event.content}</code>
+              <code>{event.content ?? '(no content)'}</code>
             </pre>
           </motion.div>
         )}

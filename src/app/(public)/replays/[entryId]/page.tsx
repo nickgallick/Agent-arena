@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PostMatchBreakdown } from '@/components/replay/post-match-breakdown'
+import { safeEventIcon, safeEventColor } from '@/components/replay/timeline-node'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -93,6 +94,7 @@ interface ReplayData {
   overall_verdict?: string | null
   // Placement context — populated by replay API
   total_entries?: number | null
+  provisional_placement?: number | null
   challenge_ends_at?: string | null
 }
 
@@ -100,21 +102,8 @@ interface ReplayData {
 // Constants
 // ---------------------------------------------------------------------------
 
-const eventIcons = {
-  tool_call: Wrench,
-  model_response: Sparkles,
-  file_op: FileCode,
-  thinking: Brain,
-  result: CheckCircle,
-} as const
-
-const eventColors = {
-  tool_call: 'text-tertiary',
-  model_response: 'text-purple-400',
-  file_op: 'text-cyan-400',
-  thinking: 'text-outline',
-  result: 'text-secondary',
-} as const
+// Icon/color lookups now delegate to safeEventIcon/safeEventColor from timeline-node.
+// This ensures unknown/legacy event types never crash the replay tree.
 
 const scoreCategories = [
   { key: 'quality_score' as const, label: 'QUALITY' },
@@ -164,6 +153,35 @@ export default function ReplayPage() {
           replayData.judge_scores = replayData.judge_scores.map((s: Record<string, unknown>) => ({
             ...s,
             entry_id: s.entry_id ?? entryId,
+            red_flags: Array.isArray(s.red_flags) ? s.red_flags : [],
+          }))
+        }
+        // Normalize transcript events — harden against legacy/partial shapes.
+        // Unknown types, missing titles, missing content all handled safely.
+        if (replayData?.transcript && Array.isArray(replayData.transcript)) {
+          replayData.transcript = replayData.transcript
+            .filter((e: unknown) => e !== null && typeof e === 'object')
+            .map((e: Record<string, unknown>) => ({
+              timestamp: typeof e.timestamp === 'number' ? e.timestamp : 0,
+              type: typeof e.type === 'string' && e.type.length > 0 ? e.type : 'thinking',
+              title: typeof e.title === 'string' ? e.title : (typeof e.type === 'string' ? e.type.replace(/_/g, ' ') : 'Event'),
+              content: typeof e.content === 'string' ? e.content : (typeof e.output === 'string' ? e.output : ''),
+              metadata: (typeof e.metadata === 'object' && e.metadata !== null) ? e.metadata as Record<string, unknown> : undefined,
+            }))
+        }
+        // Normalize judge_outputs — harden against partial/missing optional fields
+        if (replayData?.judge_outputs && Array.isArray(replayData.judge_outputs)) {
+          replayData.judge_outputs = replayData.judge_outputs.map((o: Record<string, unknown>) => ({
+            ...o,
+            dimension_scores: (typeof o.dimension_scores === 'object' && o.dimension_scores !== null) ? o.dimension_scores : {},
+            evidence_refs: Array.isArray(o.evidence_refs) ? o.evidence_refs : [],
+            flags: Array.isArray(o.flags) ? o.flags : [],
+            score: typeof o.score === 'number' ? o.score : 0,
+            confidence: typeof o.confidence === 'number' ? o.confidence : 0,
+            short_rationale: typeof o.short_rationale === 'string' ? o.short_rationale : '',
+            is_fallback: Boolean(o.is_fallback),
+            positive_signal: typeof o.positive_signal === 'string' ? o.positive_signal : null,
+            primary_weakness: typeof o.primary_weakness === 'string' ? o.primary_weakness : null,
           }))
         }
         setReplay(replayData ?? null)
@@ -180,7 +198,7 @@ export default function ReplayPage() {
   const events: ReplayEvent[] = Array.isArray(rawTranscript) ? rawTranscript : []
   const progress = events.length > 0 ? ((currentIndex + 1) / events.length) * 100 : 0
   const activeEvent = events[currentIndex] ?? null
-  const ActiveIcon = activeEvent ? eventIcons[activeEvent.type] ?? Brain : Brain
+  const ActiveIcon = activeEvent ? safeEventIcon(activeEvent.type) : Brain
 
   const advance = useCallback(() => {
     setCurrentIndex((prev) => {
@@ -317,16 +335,18 @@ export default function ReplayPage() {
                       {new Date(replay.all_revealed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
                   )}
-                  {replay.placement != null && (() => {
+                  {(() => {
+                    // Use stored placement for closed challenges; provisional_placement for open ones.
+                    const displayPlacement = replay.placement ?? replay.provisional_placement
+                    if (displayPlacement == null) return null
                     const isProvisional =
-                      replay.challenge?.status === 'active' &&
                       !!replay.challenge_ends_at &&
                       new Date(replay.challenge_ends_at).getTime() > Date.now()
                     const placementLabel =
-                      replay.placement === 1 ? '1st Place'
-                      : replay.placement === 2 ? '2nd Place'
-                      : replay.placement === 3 ? '3rd Place'
-                      : `#${replay.placement}`
+                      displayPlacement === 1 ? '1st Place'
+                      : displayPlacement === 2 ? '2nd Place'
+                      : displayPlacement === 3 ? '3rd Place'
+                      : `#${displayPlacement}`
                     return (
                       <span className="flex items-center gap-1.5">
                         <Trophy className="size-3.5 text-secondary" />
@@ -440,13 +460,13 @@ export default function ReplayPage() {
                   {events.length > 0 && activeEvent ? (
                     <div>
                       <div className="mb-4 flex items-center gap-3">
-                        <ActiveIcon className={cn('h-4 w-4', eventColors[activeEvent.type] ?? 'text-outline')} />
-                        <span className="font-semibold text-on-surface text-sm">{activeEvent.title}</span>
+                        <ActiveIcon className={cn('h-4 w-4', safeEventColor(activeEvent.type))} />
+                        <span className="font-semibold text-on-surface text-sm">{activeEvent.title ?? activeEvent.type.replace(/_/g, ' ')}</span>
                         <span className="text-outline text-xs">
-                          {formatTimestamp(activeEvent.timestamp)} &middot; Step {currentIndex + 1}/{events.length}
+                          {formatTimestamp(activeEvent.timestamp ?? 0)} &middot; Step {currentIndex + 1}/{events.length}
                         </span>
                       </div>
-                      <pre className="whitespace-pre-wrap text-on-surface-variant">{activeEvent.content}</pre>
+                      <pre className="whitespace-pre-wrap text-on-surface-variant">{activeEvent.content ?? '(no content)'}</pre>
                     </div>
                   ) : replay.submission_text ? (
                     <pre className="whitespace-pre-wrap text-on-surface-variant">{replay.submission_text}</pre>
@@ -477,6 +497,7 @@ export default function ReplayPage() {
                 <PostMatchBreakdown
                   judgeOutputs={replay.judge_outputs ?? []}
                   compositeScore={replay.composite_score}
+                  finalScore={replay.final_score}
                   processScore={replay.process_score}
                   strategyScore={replay.strategy_score}
                   integrityAdjustment={replay.integrity_adjustment ?? 0}
@@ -485,10 +506,9 @@ export default function ReplayPage() {
                   disputeFlag={replay.dispute_flag}
                   challengeFormat={replay.challenge_format}
                   overallVerdict={replay.overall_verdict}
-                  placement={replay.placement}
+                  placement={replay.placement ?? replay.provisional_placement}
                   totalEntries={replay.total_entries}
                   isProvisional={
-                    replay.challenge?.status === 'active' &&
                     !!replay.challenge_ends_at &&
                     new Date(replay.challenge_ends_at).getTime() > Date.now()
                   }
@@ -513,16 +533,17 @@ export default function ReplayPage() {
                   <span className="text-[10px] font-label text-secondary uppercase tracking-widest">
                     {getTierLabel(finalScore)}
                   </span>
-                  {replay.placement != null && (() => {
+                  {(() => {
+                    const displayPlacement = replay.placement ?? replay.provisional_placement
+                    if (displayPlacement == null) return null
                     const isProvisional =
-                      replay.challenge?.status === 'active' &&
                       !!replay.challenge_ends_at &&
                       new Date(replay.challenge_ends_at).getTime() > Date.now()
                     return (
                       <div className="mt-2 flex items-center justify-end gap-1.5">
                         <BadgeCheck className="size-3.5 text-secondary" />
                         <span className="text-[11px] font-label font-bold text-on-surface-variant uppercase tracking-wider">
-                          {replay.placement === 1 ? '🥇 1st Place' : replay.placement === 2 ? '🥈 2nd Place' : replay.placement === 3 ? '🥉 3rd Place' : `#${replay.placement} Place`}
+                          {displayPlacement === 1 ? '🥇 1st Place' : displayPlacement === 2 ? '🥈 2nd Place' : displayPlacement === 3 ? '🥉 3rd Place' : `#${displayPlacement} Place`}
                         </span>
                         {isProvisional && (
                           <span
@@ -664,7 +685,7 @@ export default function ReplayPage() {
                     {events.map((evt, idx) => {
                       const isActive = idx === currentIndex
                       const isFuture = idx > currentIndex
-                      const EvtIcon = eventIcons[evt.type] ?? Brain
+                      const EvtIcon = safeEventIcon(evt.type)
                       return (
                         <div
                           key={idx}
@@ -679,14 +700,14 @@ export default function ReplayPage() {
                                 : 'bg-surface-container border-outline-variant/30'
                             )}
                           >
-                            <EvtIcon className={cn('size-3.5', isActive ? 'text-primary' : 'text-outline')} />
+                            <EvtIcon className={cn('size-3.5', isActive ? 'text-primary' : safeEventColor(evt.type))} />
                           </div>
                           <div>
                             <p className={cn('text-[11px] font-bold', isActive ? 'text-primary' : 'text-on-surface')}>
-                              {evt.title}
+                              {evt.title ?? evt.type.replace(/_/g, ' ')}
                             </p>
                             <p className="text-[10px] text-outline font-label">
-                              T+{(evt.timestamp / 1000).toFixed(2)}s &bull; {evt.type.replace('_', ' ')}
+                              T+{((evt.timestamp ?? 0) / 1000).toFixed(2)}s &bull; {evt.type.replace(/_/g, ' ')}
                             </p>
                           </div>
                         </div>

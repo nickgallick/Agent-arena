@@ -500,7 +500,7 @@ export default function WorkspacePage() {
                       <WorkspaceChallengeCountdown endsAt={challenge.ends_at} />
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-1">
-                      These are two different clocks. Your session is your personal timer. The challenge window controls when new entries are accepted.
+                      Two separate timers. Your session is your personal working time. You must submit before both your session expires and the challenge window closes.
                     </p>
                   </div>
                 )}
@@ -785,7 +785,7 @@ function WorkspaceChallengeCountdown({ endsAt }: { endsAt: string }) {
 
   if (msLeft <= 0) {
     return (
-      <span className="text-[10px] font-mono text-[#8c909f]">Closed — finish your session</span>
+      <span className="text-[10px] font-mono text-[#ffb4ab]">Challenge closed — no submissions accepted</span>
     )
   }
 

@@ -181,26 +181,8 @@ export default function WalletPage() {
         <p className="text-sm text-[#adc6ff]">Prize payouts are coming soon. Your balance is tracked and will be transferable when payouts launch.</p>
       </div>
 
-      {/* W-9 alert banner */}
-      {nearW9Threshold && (
-        <div className="rounded-xl border border-[#ffb780]/30 bg-[#ffb780]/10 p-4 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-[#ffb780] flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-[#ffb780] mb-1">Tax verification required soon</p>
-            <p className="text-xs text-[#c2c6d5]">
-              You&apos;ve earned ${annualTotal.toFixed(2)} in prizes this year. At ${W9_THRESHOLD}, 
-              federal law requires us to collect your Tax ID before releasing further payments. 
-              {w9Remaining > 0 ? ` You have $${w9Remaining.toFixed(2)} remaining before the gate triggers.` : ''}
-            </p>
-          </div>
-          <button
-            onClick={() => setW9(w => ({ ...w, open: true }))}
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-[#ffb780] text-[#0e0e0e] text-xs font-bold"
-          >
-            Complete W-9
-          </button>
-        </div>
-      )}
+      {/* W-9 alert banner — suppressed at launch; payouts not live */}
+      {/* {nearW9Threshold && ( ... )} */}
 
       {/* Claim success */}
       {claim.success && (
@@ -218,7 +200,7 @@ export default function WalletPage() {
             <span className="font-mono text-[10px] text-[#ffb780] uppercase tracking-widest">Balance</span>
           </div>
           <div className="font-['Manrope'] font-black text-3xl text-[#e5e2e1]">${coinsUsd}</div>
-          <div className="text-xs text-[#8c909f] mt-1">USD prize balance</div>
+          <div className="text-xs text-[#8c909f] mt-1">Prize balance (payouts launching soon)</div>
         </div>
 
         <div className="rounded-xl border border-[#adc6ff]/20 bg-[#adc6ff]/5 p-5">
@@ -236,9 +218,7 @@ export default function WalletPage() {
             <span className="font-mono text-[10px] text-[#7dffa2] uppercase tracking-widest">Tax Year Total</span>
           </div>
           <div className="font-['Manrope'] font-black text-3xl text-[#e5e2e1]">${annualTotal.toFixed(2)}</div>
-          <div className="text-xs text-[#8c909f] mt-1">
-            {w9Collected ? '✓ W-9 on file' : `$${w9Remaining.toFixed(2)} until W-9 required`}
-          </div>
+          <div className="text-xs text-[#8c909f] mt-1">Tax year total</div>
         </div>
       </div>
 
@@ -291,7 +271,7 @@ export default function WalletPage() {
           <div className="px-5 py-12 text-center">
             <Coins className="w-8 h-8 text-[#353534] mx-auto mb-3" />
             <p className="text-sm text-[#8c909f]">No transactions yet</p>
-            <p className="text-xs text-[#353534] mt-1">Enter challenges to earn prize money</p>
+            <p className="text-xs text-[#353534] mt-1">Enter challenges to build your history</p>
             <Link href="/challenges" className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-lg bg-[#201f1f] text-[#adc6ff] text-xs font-bold hover:bg-[#2a2a2a] transition-colors">
               Browse Challenges <ChevronRight className="w-3.5 h-3.5" />
             </Link>

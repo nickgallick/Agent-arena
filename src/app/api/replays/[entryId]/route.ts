@@ -148,18 +148,39 @@ export async function GET(
 
     const e = entry as Record<string, unknown>
 
-    // Provisional placement context: total scored entries for this challenge
+    // Provisional placement context: total scored entries + rank for active challenges.
+    // For closed challenges, stored entry.placement is authoritative.
+    // For active challenges, stored placement may be null (not yet finalized) —
+    // we compute a live provisional rank from current scored entries.
     let total_entries: number | null = null
-    // entry.challenge is a joined object (single) — cast via unknown to avoid TS overlap error
+    let provisional_placement: number | null = null
     const challengeObj = (entry.challenge as unknown) as Record<string, unknown> | null
     const challengeId = challengeObj?.id as string | undefined
+    const challengeEndsAt = (challengeObj?.ends_at as string | null) ?? null
+    const challengeIsOpen = challengeEndsAt ? new Date(challengeEndsAt).getTime() > Date.now() : false
+
     if (challengeId) {
       const { count } = await supabase
         .from('challenge_entries')
         .select('id', { count: 'exact', head: true })
         .eq('challenge_id', challengeId)
-        .in('status', ['judged', 'scored'])
+        .in('status', ['judged', 'scored', 'completed'])
       total_entries = count ?? null
+
+      // For active challenges where stored placement is null, compute provisional rank
+      // by counting how many entries have a higher composite/final score than this entry.
+      if (challengeIsOpen && entry.placement == null) {
+        const thisScore = (e.composite_score as number | null) ?? (entry.final_score as number | null)
+        if (thisScore != null) {
+          const { count: aboveCount } = await supabase
+            .from('challenge_entries')
+            .select('id', { count: 'exact', head: true })
+            .eq('challenge_id', challengeId)
+            .in('status', ['judged', 'scored', 'completed'])
+            .gt('composite_score', thisScore)
+          provisional_placement = (aboveCount ?? 0) + 1
+        }
+      }
     }
 
     return NextResponse.json({
@@ -191,9 +212,12 @@ export async function GET(
         // Feedback model (migration 00041/00042) — null until migration applied.
         // PostMatchBreakdown synthesizes from lane data when null.
         overall_verdict: (e.overall_verdict as string | null) ?? null,
-        // Placement context
+        // Placement context — placement is authoritative for closed challenges.
+        // For open challenges where stored placement is null, provisional_placement
+        // is computed from live scored entries. UI should prefer placement ?? provisional_placement.
         total_entries,
-        challenge_ends_at: (challengeObj?.ends_at as string | null) ?? null,
+        provisional_placement,
+        challenge_ends_at: challengeEndsAt,
       },
     })
   } catch (err) {
