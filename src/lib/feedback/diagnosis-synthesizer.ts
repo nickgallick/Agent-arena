@@ -81,6 +81,31 @@ Prior agent profile (${signals.prior_profile.total_bouts} bouts):
     ? `Placement: #${signals.placement} of ${signals.total_entries} entries`
     : 'Placement: not yet ranked'
 
+  // B1/D3 FIX: Only emit real computed deltas. Never ask LLM to estimate these.
+  const fs = signals.field_stats
+  const compScore = signals.composite_score
+  const hasRealComparison = fs != null && fs.sample_count >= 5 && compScore != null
+
+  const competitiveComparisonInstruction = hasRealComparison && fs
+    ? `REAL COMPUTED FIELD STATS (use these exact values — do NOT estimate or invent any numbers):
+- Field sample count: ${fs.sample_count} entries
+- Winner composite: ${fs.winner_composite?.toFixed(1) ?? 'N/A'}
+- Top-quartile composite: ${fs.top_quartile_composite?.toFixed(1) ?? 'N/A'}
+- Median composite: ${fs.median_composite?.toFixed(1) ?? 'N/A'}
+- This submission composite: ${compScore.toFixed(1)}
+- vs_median delta (REAL): ${compScore != null && fs.median_composite != null ? (compScore - fs.median_composite).toFixed(1) : 'N/A'}
+- vs_top_quartile delta (REAL): ${compScore != null && fs.top_quartile_composite != null ? (compScore - fs.top_quartile_composite).toFixed(1) : 'N/A'}
+- vs_winner delta (REAL): ${compScore != null && fs.winner_composite != null ? (compScore - fs.winner_composite).toFixed(1) : 'N/A'}
+${signals.prior_profile?.rolling_overall_score != null && compScore != null
+  ? `- vs_prior_baseline delta (REAL): ${(compScore - signals.prior_profile.rolling_overall_score).toFixed(1)} (this bout vs rolling average of ${signals.prior_profile.rolling_overall_score.toFixed(1)})`
+  : '- vs_prior_baseline: no prior average yet'}
+
+RULE: Use the exact computed deltas above. Do NOT estimate, round differently, or invent new numbers.
+competitive_comparison narrative: write ONE sentence summarizing competitive position using the data above.`
+    : `COMPETITIVE COMPARISON: null — sample size is ${fs?.sample_count ?? 0} (minimum 5 required).
+DO NOT generate any competitive_comparison data. Set competitive_comparison to null.
+Never invent or estimate numeric comparisons when real data is unavailable.`
+
   return `You are an expert performance analyst for an AI agent competition platform called Bouts.
 Your job is to produce FORENSIC PERFORMANCE INTELLIGENCE — not commentary, not a summary.
 A serious ML engineer or AI builder will read this. They expect precision, not encouragement.
@@ -108,6 +133,8 @@ ${telBlock}
 
 ${priorBlock}
 
+${competitiveComparisonInstruction}
+
 FAILURE MODE TAXONOMY (classify using these exact codes):
 ${failureTaxonomy}
 
@@ -122,7 +149,7 @@ TASK: Produce a JSON diagnosis with EXACTLY this structure. Every field must be 
   "result_narrative": "2-3 sentences. What actually happened in plain language. Describe the execution arc. Reference specific signals.",
   "primary_loss_driver": "single short phrase, e.g. 'validation discipline failure' or 'hidden constraint miss'",
   "secondary_loss_driver": "single short phrase or null",
-  "decisive_moment": "The single most important event or pattern. E.g. 'The agent locked path A at step 12 without verifying constraint C — this decision propagated to all subsequent outputs.'",
+  "decisive_moment": "REQUIRED: The single most important event or pattern. MUST reference at least one of: a specific flag name, a telemetry metric value, a score differential, or a concrete behavior observed in the submission. Example: 'The agent locked path A at step 12 without verifying constraint C (flag: hidden_constraint_miss, objective score dropped 23 points) — this decision propagated to all subsequent outputs.' Generic phrases like 'the agent struggled with X' are not acceptable.",
   "dominant_strength": "The agent's clearest demonstrated strength. MUST be specific. E.g. 'Rapid structural decomposition — the agent broke down the problem into correct subparts within the first 8 steps.'",
   "dominant_weakness": "The agent's clearest demonstrated weakness. MUST be specific. E.g. 'Low verification density — only 2% of actions were verification steps despite 40+ implementation actions.'",
   "failure_modes": [
@@ -171,28 +198,40 @@ TASK: Produce a JSON diagnosis with EXACTLY this structure. Every field must be 
       "evidence_signal": "The data point that shows this"
     }
   ],
-  "competitive_comparison": ${signals.placement && signals.total_entries && signals.total_entries >= 3
-    ? `{
+  "competitive_comparison": ${hasRealComparison && fs ? `{
     "vs_median": {
-      "label": "vs. median entrant",
-      "composite_delta": estimate based on placement,
+      "label": "vs. median (${fs.sample_count} entries)",
+      "composite_delta": ${compScore != null && fs.median_composite != null ? (compScore - fs.median_composite).toFixed(1) : 'null'},
       "objective_delta": null,
       "process_delta": null,
       "strategy_delta": null,
-      "summary": "one sentence"
+      "summary": "write exactly one sentence — use the real delta above, e.g. 'Scored X.X points above the median of ${fs.median_composite?.toFixed(1)} across ${fs.sample_count} entries.'"
     },
-    "vs_top_quartile": null,
-    "vs_winner": null,
-    "vs_prior_baseline": ${signals.prior_profile && signals.prior_profile.rolling_overall_score != null
-      ? `{
-      "label": "vs. your prior average",
-      "composite_delta": computed delta,
+    "vs_top_quartile": {
+      "label": "vs. top 25%",
+      "composite_delta": ${compScore != null && fs.top_quartile_composite != null ? (compScore - fs.top_quartile_composite).toFixed(1) : 'null'},
       "objective_delta": null,
       "process_delta": null,
       "strategy_delta": null,
-      "summary": "one sentence comparing this bout to prior rolling average"
+      "summary": "one sentence using the real delta"
+    },
+    "vs_winner": {
+      "label": "vs. current leader",
+      "composite_delta": ${compScore != null && fs.winner_composite != null ? (compScore - fs.winner_composite).toFixed(1) : 'null'},
+      "objective_delta": null,
+      "process_delta": null,
+      "strategy_delta": null,
+      "summary": "one sentence using the real delta"
+    },
+    "vs_prior_baseline": ${signals.prior_profile?.rolling_overall_score != null && compScore != null ? `{
+      "label": "vs. your prior average (${signals.prior_profile.total_bouts} bouts)",
+      "composite_delta": ${(compScore - signals.prior_profile.rolling_overall_score).toFixed(1)},
+      "objective_delta": null,
+      "process_delta": null,
+      "strategy_delta": null,
+      "summary": "one sentence using the real delta"
     }` : 'null'},
-    "narrative": "One sentence summary of competitive standing. E.g. You outperformed the field on strategy but lost on validation discipline."
+    "narrative": "One sentence using ONLY the computed values above. DO NOT invent any numbers."
   }` : 'null'},
   "confidence_overall": "high|medium|low",
   "evidence_density_score": number 0-10 (how much hard evidence supports this diagnosis),

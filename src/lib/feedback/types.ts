@@ -110,6 +110,15 @@ export interface TelemetrySignal {
   telemetry_efficiency_score: number
 }
 
+// B1/D3 FIX: Real computed field statistics — populated when sample_count >= 5.
+// Null when insufficient entries exist. Never estimated or fabricated by LLM.
+export interface FieldStats {
+  sample_count: number
+  winner_composite: number | null
+  top_quartile_composite: number | null
+  median_composite: number | null
+}
+
 export interface ExtractedSignals {
   submission_id: string
   entry_id: string | null
@@ -124,6 +133,8 @@ export interface ExtractedSignals {
   integrity_adjustment: number
   placement: number | null
   total_entries: number | null
+  // B1/D3: Real DB-computed field stats. null = insufficient sample (<5). Never LLM-estimated.
+  field_stats: FieldStats | null
   challenge_ends_at: string | null
   // Prior agent profile for longitudinal context
   prior_profile: AgentPriorProfile | null

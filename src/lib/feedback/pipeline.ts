@@ -244,13 +244,27 @@ export async function runFeedbackPipeline(
 // Read a completed report from DB
 // ─────────────────────────────────────────────
 
+// B4 FIX: Explicit field whitelist for submission_feedback_reports.
+// Internal/operational fields (error_message, generated_by_model, generation_ms,
+// pipeline_version) are excluded here — not just omitted from the type shape —
+// so future schema additions cannot accidentally leak through a SELECT *.
+const FEEDBACK_REPORT_PUBLIC_COLUMNS = [
+  'id', 'submission_id', 'entry_id', 'version', 'status',
+  'overall_summary', 'executive_diagnosis', 'result_narrative',
+  'primary_loss_driver', 'secondary_loss_driver', 'decisive_moment',
+  'dominant_strength', 'dominant_weakness',
+  'highest_leverage_fix', 'next_best_fix',
+  'confidence_overall', 'evidence_density_score', 'ambiguity_level',
+  'created_at', 'updated_at',
+].join(', ')
+
 export async function loadFeedbackReport(
   supabase: SupabaseClient,
   submission_id: string
 ): Promise<FeedbackReport | null> {
   const { data: report } = await supabase
     .from('submission_feedback_reports')
-    .select('*')
+    .select(FEEDBACK_REPORT_PUBLIC_COLUMNS)
     .eq('submission_id', submission_id)
     .order('version', { ascending: false })
     .limit(1)
@@ -258,7 +272,7 @@ export async function loadFeedbackReport(
 
   if (!report) return null
 
-  const r = report as Record<string, unknown>
+  const r = report as unknown as Record<string, unknown>
   const report_id = String(r.id)
 
   // Parallel load of child tables

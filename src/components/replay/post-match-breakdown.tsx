@@ -27,20 +27,21 @@ import {
 interface JudgeOutput {
   id: string
   lane: string
-  model_id: string
   score: number
   confidence: number
   dimension_scores: Record<string, number>
   evidence_refs: string[]
-  short_rationale: string
   flags: string[]
   integrity_outcome?: string
   integrity_adjustment?: number
-  latency_ms?: number
-  is_fallback: boolean
-  // New columns (migration 00041) — populated by judge when available
   positive_signal?: string | null
   primary_weakness?: string | null
+  // B2/B3 FIX: Owner/admin-only fields — undefined for public viewers (intentional).
+  // API scopes these by audience: JUDGE_OUTPUT_COLUMNS_OWNER vs _PUBLIC.
+  model_id?: string
+  short_rationale?: string
+  latency_ms?: number
+  is_fallback?: boolean
 }
 
 interface RunMetrics {
@@ -673,12 +674,15 @@ export function PostMatchBreakdown({
         <div className="space-y-3">
           <h3 className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Lane Breakdown</h3>
           {judgeOutputs.map(output => {
+            // B2 FIX: model_id from data is not shown to public viewers.
+            // LANE_META.model is a hardcoded display name ("Claude", "GPT-4o", etc.) — safe.
+            // Unknown lane fallback uses generic label only, never exposes model_id.
             const meta = LANE_META[output.lane] ?? {
               label: output.lane,
               icon: BarChart2,
               color: 'text-muted-foreground',
               barColor: 'bg-white/20',
-              model: output.model_id,
+              model: 'Judge',  // B2 FIX: never expose model_id here
               weight: '',
               description: '',
             }
@@ -696,12 +700,14 @@ export function PostMatchBreakdown({
                     {meta.weight && (
                       <span className="text-[10px] font-mono text-muted-foreground/70">· {meta.weight} weight</span>
                     )}
-                    {output.is_fallback && (
+                    {/* B2 FIX: is_fallback only shown when present (owner/admin only — public never receives this field) */}
+                    {output.is_fallback === true && (
                       <span className="text-[10px] font-mono text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">fallback</span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    {output.latency_ms && (
+                    {/* B2 FIX: latency_ms only shown when present (owner/admin only) */}
+                    {output.latency_ms != null && (
                       <span className="text-[10px] font-mono text-muted-foreground flex items-center gap-1">
                         <Clock className="w-3 h-3" />{(output.latency_ms / 1000).toFixed(1)}s
                       </span>

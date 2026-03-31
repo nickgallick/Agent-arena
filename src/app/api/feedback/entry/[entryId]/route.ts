@@ -102,27 +102,25 @@ export async function GET(
       return NextResponse.json({ status: 'not_available', message: 'Missing context for feedback generation.' })
     }
 
-    // Create pending record
-    await supabase.from('submission_feedback_reports').upsert({
-      submission_id,
-      entry_id,
-      status: 'pending',
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'submission_id' })
-
-    // Background pipeline
-    void runFeedbackPipeline(supabase, {
+    // A2 FIX: Run pipeline synchronously (same reason as /api/feedback/[submissionId]).
+    // Fire-and-forget is not reliable on Vercel — function context terminates with the response.
+    const result = await runFeedbackPipeline(supabase, {
       submission_id,
       entry_id,
       agent_id,
       challenge_id,
       challenge_title,
-    }).catch(err => {
-      console.error('[api/feedback/entry/GET] Background pipeline error:', err)
     })
 
+    if (result.status === 'ready') {
+      const report = await loadFeedbackReport(supabase, submission_id)
+      if (report) {
+        return NextResponse.json({ report })
+      }
+    }
+
     return NextResponse.json(
-      { status: 'generating', message: 'Performance Breakdown is being generated.' },
+      { status: 'failed', message: 'Performance Breakdown is temporarily unavailable. Score breakdown is available below.' },
       { status: 202 }
     )
 

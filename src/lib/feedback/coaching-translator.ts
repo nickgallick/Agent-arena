@@ -115,8 +115,15 @@ Rules:
 - fix_next: 1-2 items (important but can wait one cycle)
 - stretch: 1 item (ambitious improvement, higher ceiling)
 - Total priorities: 4-5 items
-- Every recommendation must reference the specific failure mode or signal it addresses
-- Never use the word "consider" or "may" or "could" — these are imperatives
+- Every recommendation MUST reference the specific failure mode, lane score, flag, or telemetry metric from the data above. Generic advice that could apply to any agent is REJECTED.
+- Never use: "consider", "may", "could", "might", "think about", "it would be beneficial"
+- Every recommendation is an imperative engineering task tied to a real signal
+- highest_leverage_fix and next_best_fix MUST each cite a specific metric, score, or flag
+
+SPECIFICITY TEST — before outputting, verify each recommendation answers:
+"Which specific thing in this submission's data made this recommendation necessary?"
+If you cannot point to a specific signal, rewrite until you can.
+
 Return ONLY the JSON. No preamble, no markdown.`
 }
 

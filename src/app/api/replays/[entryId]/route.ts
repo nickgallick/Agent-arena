@@ -9,7 +9,11 @@ const idSchema = z.string().uuid('Invalid entry ID')
 // Migration 00042 applied — overall_verdict, positive_signal, primary_weakness all exist.
 const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, transcript, submission_text, submission_files, screenshot_urls, created_at, composite_score, process_score, strategy_score, integrity_adjustment, efficiency_score, dispute_flagged, dispute_reason, challenge_format, overall_verdict, agent:agents(id, name, avatar_url, weight_class_id), challenge:challenges(id, title, category, status, format, has_visual_output, difficulty_profile, judge_weights, ends_at)'
 const JUDGE_SCORE_COLUMNS = 'id, judge_type, provider, lane, lane_score, quality_score, creativity_score, completeness_score, practicality_score, overall_score, feedback, red_flags, model_used, short_rationale, dimension_scores, confidence, integrity_outcome, integrity_adjustment, created_at'
-const JUDGE_OUTPUT_COLUMNS = 'id, lane, model_id, score, confidence, dimension_scores, evidence_refs, short_rationale, flags, integrity_outcome, integrity_adjustment, latency_ms, is_fallback, positive_signal, primary_weakness, created_at'
+// Public columns — never expose: model_id (infra detail), latency_ms (infra timing),
+// is_fallback (internal pipeline state). short_rationale is scoped per audience below.
+const JUDGE_OUTPUT_COLUMNS_PUBLIC = 'id, lane, score, confidence, dimension_scores, evidence_refs, flags, integrity_outcome, integrity_adjustment, positive_signal, primary_weakness, created_at'
+// Owner/admin columns — includes short_rationale + infra fields for transparency
+const JUDGE_OUTPUT_COLUMNS_OWNER = 'id, lane, model_id, score, confidence, dimension_scores, evidence_refs, short_rationale, flags, integrity_outcome, integrity_adjustment, latency_ms, is_fallback, positive_signal, primary_weakness, created_at'
 
 export async function GET(
   request: NextRequest,
@@ -113,19 +117,42 @@ export async function GET(
     // This enables learning, verification, and community review.
     // This is a deliberate product decision for Bouts as a competition platform.
 
+    // Determine audience for field scoping.
+    // Owner and admin see infra fields (model_id, latency_ms, is_fallback, short_rationale).
+    // Public viewers see sanitized output only.
+    let isOwnerOrAdmin = false
+    try {
+      const viewer = await getUser()
+      if (viewer) {
+        const entryRecord = entry as Record<string, unknown>
+        if (viewer.id === String(entryRecord.user_id ?? '')) {
+          isOwnerOrAdmin = true
+        } else {
+          const { data: viewerProfile } = await supabase
+            .from('profiles').select('role').eq('id', viewer.id).maybeSingle()
+          if (viewerProfile?.role === 'admin') isOwnerOrAdmin = true
+        }
+      }
+    } catch { /* unauthenticated viewer — stays false */ }
+
+    const judgeOutputColumns = isOwnerOrAdmin
+      ? JUDGE_OUTPUT_COLUMNS_OWNER
+      : JUDGE_OUTPUT_COLUMNS_PUBLIC
+
     // Fetch legacy judge_scores (backcompat)
     const { data: judgeScores } = await supabase
       .from('judge_scores')
       .select(JUDGE_SCORE_COLUMNS)
       .eq('entry_id', entryId)
 
-    // Fetch new lane-based judge_outputs (Phase 1+)
-    const { data: judgeOutputs } = await supabase
+    // Fetch new lane-based judge_outputs (Phase 1+) — field-scoped by audience
+    // The select column string is dynamic (audience-scoped) — cast to avoid TS union-type explosion
+    const { data: judgeOutputs } = await (supabase
       .from('judge_outputs')
-      .select(JUDGE_OUTPUT_COLUMNS)
+      .select(judgeOutputColumns as string)
       .eq('entry_id', entryId)
       .eq('is_arbitration', false)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: true }) as unknown as Promise<{ data: Record<string, unknown>[] | null }>)
 
     // Fetch run metrics for telemetry breakdown
     const { data: runMetrics } = await supabase

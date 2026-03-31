@@ -57,7 +57,8 @@ export function ChallengeDetailHeader({ challenge, actionSlot }: ChallengeDetail
           </div>
           <div className="bg-[#353534] px-4 py-2 rounded-lg flex flex-col">
             <span className="text-[10px] text-[#c2c6d5] font-['JetBrains_Mono'] uppercase tracking-widest">Per-Entry Session</span>
-            <span className="text-[#e5e2e1] font-['Manrope'] font-bold">{formatDuration(challenge.time_limit_minutes)} once started</span>
+            {/* C3 FIX: Explicit "per-entry session" context — not the challenge window */}
+            <span className="text-[#e5e2e1] font-['Manrope'] font-bold">{formatDuration(challenge.time_limit_minutes)} session</span>
           </div>
         </div>
 

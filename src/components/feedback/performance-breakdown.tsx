@@ -148,6 +148,7 @@ function OutcomeHeader({
           {compositeScore != null && (
             <div className={`text-5xl font-mono font-bold ${scoreColor(compositeScore)}`}>
               {compositeScore.toFixed(1)}
+              {/* C1: /100 scale — explicit, always shown */}
               <span className="text-xl text-muted-foreground">/100</span>
             </div>
           )}
@@ -261,21 +262,19 @@ function ExecutiveDiagnosis({ report }: { report: FeedbackReport }) {
         </div>
       )}
 
+      {/* D2 FIX: Simplified confidence footer — removed raw evidence_density score (internal-feeling).
+          Keep confidence badge + ambiguity level; suppress evidence_density number from user-facing surface. */}
       <div className="flex items-center gap-2 flex-wrap">
         <ConfidenceBadge level={report.confidence_overall} />
-        {report.evidence_density_score != null && (
-          <span className="text-[9px] font-mono text-muted-foreground bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
-            evidence density {report.evidence_density_score.toFixed(1)}/10
-          </span>
-        )}
-        {report.ambiguity_level && (
+        {report.ambiguity_level && report.ambiguity_level !== 'low' && (
           <span className={cn(
             'text-[9px] font-mono px-1.5 py-0.5 rounded border',
-            report.ambiguity_level === 'low' ? 'text-green-400 bg-green-500/10 border-green-500/20' :
             report.ambiguity_level === 'medium' ? 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' :
             'text-red-400 bg-red-500/10 border-red-500/20'
-          )}>
-            {report.ambiguity_level} ambiguity
+          )}
+          title="How much ambiguity remains in the interpretation of this submission's signals"
+          >
+            {report.ambiguity_level === 'medium' ? 'some ambiguity' : 'high ambiguity'}
           </span>
         )}
       </div>
@@ -314,13 +313,18 @@ function LaneScorecards({ lanes }: { lanes: LaneDiagnosis[] }) {
                 <ConfidenceBadge level={lane.confidence} />
               </div>
               <div className="flex items-center gap-3 flex-shrink-0">
+                {/* D2 FIX: Percentile shown with tooltip explaining it, not raw "p78" shorthand */}
                 {lane.percentile != null && (
-                  <span className="text-[10px] font-mono text-[#adc6ff]">
-                    p{lane.percentile.toFixed(0)}
+                  <span
+                    className="text-[10px] font-mono text-[#adc6ff] cursor-help"
+                    title={`Top ${(100 - lane.percentile).toFixed(0)}% of submissions on this lane (percentile: ${lane.percentile.toFixed(0)})`}
+                  >
+                    top {Math.max(1, 100 - Math.round(lane.percentile))}%
                   </span>
                 )}
                 <span className={`text-2xl font-mono font-bold ${scoreColor(lane.score)}`}>
                   {lane.score.toFixed(0)}
+                  <span className="text-xs text-muted-foreground font-normal">/100</span>
                 </span>
                 {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
               </div>
@@ -680,6 +684,11 @@ function EvidencePanel({ refs }: { refs: EvidenceRef[] }) {
 // Block 8: Competitive Comparison
 // ─────────────────────────────────────────────
 
+// B1/D3 FIX: CompetitiveComparison only renders when competitive_comparison is non-null.
+// The pipeline only sets competitive_comparison when field_stats.sample_count >= 5 AND
+// the deltas are real DB-computed values. Never estimated or LLM-fabricated.
+// The component also shows the data source label ("based on N submissions") so users
+// understand the numbers are measured, not inferred.
 function CompetitiveComparison({ comparison }: { comparison: FeedbackReport['competitive_comparison'] }) {
   if (!comparison) return null
   const points = [
@@ -693,7 +702,14 @@ function CompetitiveComparison({ comparison }: { comparison: FeedbackReport['com
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-      <SectionHeader icon={Trophy} label="Competitive Comparison" />
+      <div className="flex items-center gap-2 mb-3">
+        <Trophy className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        <h3 className="text-sm font-semibold text-foreground">Competitive Comparison</h3>
+        {/* B1: Explicit data-source badge — measured, not estimated */}
+        <span className="text-[9px] font-mono text-green-400 bg-green-500/10 border border-green-500/20 px-1.5 py-0.5 rounded ml-1">
+          measured
+        </span>
+      </div>
 
       {suppress(comparison.narrative ?? null) && (
         <div className="rounded-lg bg-white/3 border border-white/5 px-4 py-3">
@@ -889,12 +905,21 @@ function LongitudinalProfile({ longitudinal }: { longitudinal: AgentLongitudinal
 // Loading State
 // ─────────────────────────────────────────────
 
+// C2 FIX: Loading component is now only used as an inline indicator, not the main view.
+// The replay page shows classic breakdown immediately and overlays this indicator in the tab.
 export function PerformanceBreakdownLoading() {
   return (
-    <div className="rounded-xl border border-border bg-card p-8 text-center space-y-3">
-      <div className="w-8 h-8 border-2 border-[#adc6ff] border-t-transparent rounded-full animate-spin mx-auto" />
-      <p className="text-sm text-muted-foreground font-mono">Generating Performance Breakdown…</p>
-      <p className="text-xs text-muted-foreground/50">This takes ~15–30 seconds. Forensic analysis in progress.</p>
+    <div className="rounded-xl border border-[#adc6ff]/15 bg-[#adc6ff]/5 p-6 space-y-3">
+      <div className="flex items-center gap-3">
+        <div className="w-5 h-5 border-2 border-[#adc6ff] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+        <div>
+          <p className="text-sm text-[#adc6ff] font-mono">Forensic analysis in progress…</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Performance Breakdown takes ~15–45s to generate.</p>
+        </div>
+      </div>
+      <p className="text-[11px] text-muted-foreground/60 font-mono pl-8">
+        Score Breakdown is available immediately on the other tab.
+      </p>
     </div>
   )
 }

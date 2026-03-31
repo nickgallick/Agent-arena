@@ -65,12 +65,17 @@ interface ReplayData {
   reveal_summary?: Record<string, { score: number; feedback: string }> | null
   all_revealed_at?: string | null
   // Phase 1+ lane scoring
+  // B2/B3 FIX: Public-scoped fields only. model_id, latency_ms, is_fallback are infra
+  // fields not intended for public consumers. short_rationale is owner/admin only.
+  // The API already scopes columns by audience (JUDGE_OUTPUT_COLUMNS_PUBLIC vs _OWNER).
+  // The type here reflects what public viewers actually receive.
   judge_outputs?: {
-    id: string; lane: string; model_id: string; score: number; confidence: number
-    dimension_scores: Record<string, number>; evidence_refs: string[]; short_rationale: string
+    id: string; lane: string; score: number; confidence: number
+    dimension_scores: Record<string, number>; evidence_refs: string[]
     flags: string[]; integrity_outcome?: string; integrity_adjustment?: number
-    latency_ms?: number; is_fallback: boolean
     positive_signal?: string | null; primary_weakness?: string | null
+    // Owner/admin-only (may be present for owner viewers, undefined for public):
+    model_id?: string; latency_ms?: number; is_fallback?: boolean; short_rationale?: string
   }[]
   composite_score?: number | null
   process_score?: number | null
@@ -134,8 +139,14 @@ export default function ReplayPage() {
 
   // Premium feedback report state
   const [feedbackReport, setFeedbackReport] = useState<FeedbackReport | null>(null)
-  const [feedbackStatus, setFeedbackStatus] = useState<'idle' | 'loading' | 'generating' | 'ready' | 'not_available' | 'error'>('idle')
-  const [breakdownTab, setBreakdownTab] = useState<'premium' | 'classic'>('premium')
+  const [feedbackStatus, setFeedbackStatus] = useState<'idle' | 'loading' | 'generating' | 'ready' | 'not_available' | 'failed' | 'error'>('idle')
+  // A4 FIX: Default to 'classic' tab so score data is ALWAYS immediately visible.
+  // Premium tab auto-switches only after the report successfully loads.
+  const [breakdownTab, setBreakdownTab] = useState<'premium' | 'classic'>('classic')
+  const [premiumAutoOpened, setPremiumAutoOpened] = useState(false)
+
+  // Derived: whether premium tab should be accessible at all
+  const premiumAvailable = feedbackStatus === 'ready' && feedbackReport != null
 
   useEffect(() => {
     async function fetchReplay() {
@@ -176,7 +187,9 @@ export default function ReplayPage() {
               metadata: (typeof e.metadata === 'object' && e.metadata !== null) ? e.metadata as Record<string, unknown> : undefined,
             }))
         }
-        // Normalize judge_outputs — harden against partial/missing optional fields
+        // Normalize judge_outputs — harden against partial/missing optional fields.
+        // B2/B3 FIX: model_id, latency_ms, is_fallback, short_rationale are owner/admin-only.
+        // They may be present (owner) or absent (public) — both are valid. Never force-add them.
         if (replayData?.judge_outputs && Array.isArray(replayData.judge_outputs)) {
           replayData.judge_outputs = replayData.judge_outputs.map((o: Record<string, unknown>) => ({
             ...o,
@@ -185,10 +198,13 @@ export default function ReplayPage() {
             flags: Array.isArray(o.flags) ? o.flags : [],
             score: typeof o.score === 'number' ? o.score : 0,
             confidence: typeof o.confidence === 'number' ? o.confidence : 0,
-            short_rationale: typeof o.short_rationale === 'string' ? o.short_rationale : '',
-            is_fallback: Boolean(o.is_fallback),
             positive_signal: typeof o.positive_signal === 'string' ? o.positive_signal : null,
             primary_weakness: typeof o.primary_weakness === 'string' ? o.primary_weakness : null,
+            // Owner/admin-only fields — kept only if present in API response, never injected
+            ...(typeof o.short_rationale === 'string' ? { short_rationale: o.short_rationale } : {}),
+            ...(typeof o.model_id === 'string' ? { model_id: o.model_id } : {}),
+            ...(typeof o.latency_ms === 'number' ? { latency_ms: o.latency_ms } : {}),
+            ...(o.is_fallback !== undefined ? { is_fallback: Boolean(o.is_fallback) } : {}),
           }))
         }
         setReplay(replayData ?? null)
@@ -201,66 +217,65 @@ export default function ReplayPage() {
     fetchReplay()
   }, [entryId])
 
-  // Fetch premium feedback report once replay is loaded (has submission_id via entry)
+  // A2/A3/A4 FIX: Fetch premium feedback (synchronous pipeline — no polling required).
+  // The API now runs the pipeline synchronously and returns {report} or {status:'failed'}.
+  // We show the classic tab immediately (default) and auto-switch to premium when ready.
   useEffect(() => {
     if (!replay) return
-    // We need submission_id — it's not directly in ReplayData, but we can try via entry_id
-    // The feedback API accepts submission_id. We'll try to get it from the replay entry.
-    // If not available, feedback is still accessible via the replay entry_id route.
     async function fetchFeedback() {
       if (!replay) return
       setFeedbackStatus('loading')
       try {
-        // Try to fetch feedback for this entry via a custom endpoint that accepts entry_id
-        const res = await fetch(`/api/feedback/entry/${entryId}`)
-        if (res.status === 202) {
-          const data = await res.json() as { status: string }
-          if (data.status === 'generating') {
-            setFeedbackStatus('generating')
-            // Poll every 5s until ready (max 6 attempts = 30s)
-            let attempts = 0
-            const poll = setInterval(async () => {
-              attempts++
-              if (attempts > 6) { clearInterval(poll); return }
-              const pollRes = await fetch(`/api/feedback/entry/${entryId}`)
-              if (pollRes.ok) {
-                const pollData = await pollRes.json() as { report?: FeedbackReport }
-                if (pollData.report) {
-                  setFeedbackReport(pollData.report)
-                  setFeedbackStatus('ready')
-                  clearInterval(poll)
-                }
-              }
-            }, 5000)
-          } else if (data.status === 'not_available') {
-            setFeedbackStatus('not_available')
-          } else {
-            setFeedbackStatus('generating')
-          }
-          return
+        // A2 FIX: API now runs synchronously. Single fetch — no polling loop needed.
+        // Timeout: 60s (pipeline takes ~15-45s for real LLM calls)
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 60_000)
+        let res: Response
+        try {
+          res = await fetch(`/api/feedback/entry/${entryId}`, { signal: controller.signal })
+        } finally {
+          clearTimeout(timeout)
         }
+
         if (res.status === 404 || res.status === 403) {
           setFeedbackStatus('not_available')
           return
         }
-        if (!res.ok) {
-          setFeedbackStatus('error')
-          return
-        }
-        const data = await res.json() as { report?: FeedbackReport }
+
+        const data = await res.json() as { report?: FeedbackReport; status?: string; message?: string }
+
+        // A3 FIX: All terminal states land here — no polling loop that can get stuck.
         if (data.report?.status === 'ready') {
           setFeedbackReport(data.report)
           setFeedbackStatus('ready')
-        } else if (data.report?.status === 'generating' || data.report?.status === 'pending') {
-          setFeedbackStatus('generating')
+          // A4 FIX: Auto-switch to premium tab once ready (only if user hasn't manually toggled)
+          if (!premiumAutoOpened) {
+            setBreakdownTab('premium')
+            setPremiumAutoOpened(true)
+          }
+        } else if (data.status === 'not_available' || res.status === 404) {
+          setFeedbackStatus('not_available')
+        } else if (data.status === 'failed') {
+          // A3 FIX: Pipeline failure → graceful degraded state (not stuck spinner)
+          setFeedbackStatus('failed')
+        } else if (!res.ok) {
+          setFeedbackStatus('error')
         } else {
+          // Unexpected state — degrade gracefully
           setFeedbackStatus('not_available')
         }
-      } catch {
-        setFeedbackStatus('error')
+      } catch (err) {
+        // A3 FIX: AbortError (timeout) or network error → graceful degraded state.
+        // User stays on classic tab. Never stuck on spinner.
+        if (err instanceof Error && err.name === 'AbortError') {
+          setFeedbackStatus('failed')
+        } else {
+          setFeedbackStatus('error')
+        }
       }
     }
     fetchFeedback()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [replay, entryId])
 
   const rawTranscript = replay?.transcript
@@ -564,38 +579,80 @@ export default function ReplayPage() {
 
           {/* ── Right Column: Scores & Timeline ── */}
           <div className="col-span-12 lg:col-span-4 space-y-6">
-            {/* Performance Breakdown — Premium (tabbed: premium vs classic) */}
+            {/* Performance Breakdown — tabbed: Premium vs Classic
+                A4 FIX: Classic tab is default and ALWAYS available.
+                Premium tab only appears when report is ready or while loading.
+                No spinner dead-ends — every state has a visible fallback. */}
             {(replay.judge_outputs && replay.judge_outputs.length > 0) || replay.composite_score != null || replay.run_metrics ? (
               <section className="space-y-3">
-                {/* Tab switcher — only show if premium feedback available or loading */}
-                {(feedbackStatus === 'ready' || feedbackStatus === 'loading' || feedbackStatus === 'generating') && (
-                  <div className="flex items-center gap-1 bg-card border border-border rounded-lg p-1">
-                    <button
-                      onClick={() => setBreakdownTab('premium')}
-                      className={cn(
-                        'flex-1 text-xs font-mono py-1.5 px-3 rounded transition-colors',
-                        breakdownTab === 'premium'
-                          ? 'bg-[#adc6ff]/15 text-[#adc6ff] border border-[#adc6ff]/20'
-                          : 'text-muted-foreground hover:text-foreground'
-                      )}
-                    >
-                      Performance Breakdown
-                    </button>
+
+                {/* Tab switcher — always show both tabs once replay loads */}
+                <div className="flex items-center gap-1 bg-card border border-border rounded-lg p-1">
+                  <button
+                    onClick={() => setBreakdownTab('premium')}
+                    disabled={!premiumAvailable && feedbackStatus !== 'loading'}
+                    className={cn(
+                      'flex-1 text-xs font-mono py-1.5 px-3 rounded transition-colors relative',
+                      breakdownTab === 'premium' && premiumAvailable
+                        ? 'bg-[#adc6ff]/15 text-[#adc6ff] border border-[#adc6ff]/20'
+                        : 'text-muted-foreground hover:text-foreground',
+                      (!premiumAvailable && feedbackStatus !== 'loading') && 'opacity-40 cursor-not-allowed'
+                    )}
+                  >
+                    Performance Breakdown
+                    {/* C2 FIX: Loading indicator in tab button — not a full-page spinner */}
+                    {feedbackStatus === 'loading' && (
+                      <span className="ml-1.5 inline-block w-2 h-2 rounded-full bg-[#adc6ff] animate-pulse" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setBreakdownTab('classic')}
+                    className={cn(
+                      'flex-1 text-xs font-mono py-1.5 px-3 rounded transition-colors',
+                      breakdownTab === 'classic'
+                        ? 'bg-white/5 text-foreground border border-white/10'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    Score Breakdown
+                  </button>
+                </div>
+
+                {/* C2 FIX: Status banner — honest, non-blocking, never a dead-end */}
+                {breakdownTab === 'premium' && feedbackStatus === 'loading' && (
+                  <div className="rounded-lg border border-[#adc6ff]/15 bg-[#adc6ff]/5 px-4 py-3 flex items-center gap-3">
+                    <span className="w-3 h-3 rounded-full border-2 border-[#adc6ff] border-t-transparent animate-spin flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-mono text-[#adc6ff]">Generating Performance Breakdown…</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Takes ~15–45s. Score Breakdown tab is available now.</p>
+                    </div>
                     <button
                       onClick={() => setBreakdownTab('classic')}
-                      className={cn(
-                        'flex-1 text-xs font-mono py-1.5 px-3 rounded transition-colors',
-                        breakdownTab === 'classic'
-                          ? 'bg-white/5 text-foreground border border-white/10'
-                          : 'text-muted-foreground hover:text-foreground'
-                      )}
+                      className="ml-auto text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors underline"
                     >
-                      Score Breakdown
+                      View scores →
                     </button>
                   </div>
                 )}
 
-                {/* Premium feedback view */}
+                {/* A3 FIX: Failed/error states show clear message + immediate classic switch */}
+                {breakdownTab === 'premium' && (feedbackStatus === 'failed' || feedbackStatus === 'error') && (
+                  <div className="rounded-lg border border-outline-variant/15 bg-surface-container-low/50 px-4 py-3 flex items-center justify-between gap-3">
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {feedbackStatus === 'failed'
+                        ? 'Performance Breakdown unavailable for this submission.'
+                        : 'Could not load Performance Breakdown.'}
+                    </p>
+                    <button
+                      onClick={() => setBreakdownTab('classic')}
+                      className="text-[10px] font-mono text-[#adc6ff] hover:text-foreground transition-colors underline flex-shrink-0"
+                    >
+                      View Score Breakdown →
+                    </button>
+                  </div>
+                )}
+
+                {/* Premium view — only rendered when report is actually ready */}
                 {breakdownTab === 'premium' && feedbackStatus === 'ready' && feedbackReport && (
                   <PerformanceBreakdown
                     report={feedbackReport}
@@ -610,46 +667,47 @@ export default function ReplayPage() {
                   />
                 )}
 
-                {breakdownTab === 'premium' && (feedbackStatus === 'loading' || feedbackStatus === 'generating') && (
-                  <PerformanceBreakdownLoading />
-                )}
-
-                {/* Classic view (always available as fallback) */}
-                {(breakdownTab === 'classic' || feedbackStatus === 'not_available' || feedbackStatus === 'idle' || feedbackStatus === 'error') && (
-                <PostMatchBreakdown
-                  judgeOutputs={replay.judge_outputs ?? []}
-                  compositeScore={replay.composite_score}
-                  finalScore={replay.final_score}
-                  processScore={replay.process_score}
-                  strategyScore={replay.strategy_score}
-                  integrityAdjustment={replay.integrity_adjustment ?? 0}
-                  efficiencyScore={replay.efficiency_score}
-                  runMetrics={replay.run_metrics}
-                  disputeFlag={replay.dispute_flag}
-                  challengeFormat={replay.challenge_format}
-                  overallVerdict={replay.overall_verdict}
-                  placement={replay.placement ?? replay.provisional_placement}
-                  totalEntries={replay.total_entries}
-                  isProvisional={
-                    // P1 fix: status must be 'active' — manually-closed challenges
-                    // (status=complete, ends_at still future) must show final-only language.
-                    replay.challenge?.status === 'active' &&
-                    !!replay.challenge_ends_at &&
-                    new Date(replay.challenge_ends_at).getTime() > Date.now()
-                  }
-                  challengeStatus={replay.challenge?.status ?? null}
-                />
+                {/* Classic view — A4: always rendered when on classic tab, or when premium unavailable */}
+                {(breakdownTab === 'classic' ||
+                  feedbackStatus === 'not_available' ||
+                  feedbackStatus === 'idle' ||
+                  (breakdownTab === 'premium' && !premiumAvailable && feedbackStatus !== 'loading' && feedbackStatus !== 'failed' && feedbackStatus !== 'error')
+                ) && (
+                  <PostMatchBreakdown
+                    judgeOutputs={replay.judge_outputs ?? []}
+                    compositeScore={replay.composite_score}
+                    finalScore={replay.final_score}
+                    processScore={replay.process_score}
+                    strategyScore={replay.strategy_score}
+                    integrityAdjustment={replay.integrity_adjustment ?? 0}
+                    efficiencyScore={replay.efficiency_score}
+                    runMetrics={replay.run_metrics}
+                    disputeFlag={replay.dispute_flag}
+                    challengeFormat={replay.challenge_format}
+                    overallVerdict={replay.overall_verdict}
+                    placement={replay.placement ?? replay.provisional_placement}
+                    totalEntries={replay.total_entries}
+                    isProvisional={
+                      replay.challenge?.status === 'active' &&
+                      !!replay.challenge_ends_at &&
+                      new Date(replay.challenge_ends_at).getTime() > Date.now()
+                    }
+                    challengeStatus={replay.challenge?.status ?? null}
+                  />
                 )}
               </section>
             ) : null}
 
-            {/* Legacy Judge Scores Panel (pre-Phase 1 entries) */}
+            {/* Legacy Judge Scores Panel (pre-Phase 1 entries)
+                C1 FIX: Legacy panel uses /10 scale (old judge_scores system).
+                Phase 1+ lane scoring uses /100 scale (composite_score / judge_outputs).
+                Label clearly distinguishes which scale each number uses. */}
             <section className="bg-surface-container-low p-6 rounded-xl border-l-4 border-primary">
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h3 className="font-headline font-extrabold text-xl">Judge Evaluation</h3>
                   <p className="font-label text-[10px] uppercase text-outline tracking-tighter mt-1">
-                    Bouts Judging System
+                    {judgeScores.length > 0 ? 'Legacy scoring · /10 scale' : 'Bouts Judging System'}
                   </p>
                 </div>
                 <div className="text-right">
@@ -685,7 +743,7 @@ export default function ReplayPage() {
                 </div>
               </div>
 
-              {/* Score bars */}
+              {/* Score bars — C1: /10 scale, explicit label */}
               <div className="space-y-4 mb-6">
                 {scoreCategories.map((cat) => {
                   const val = avgScore(cat.key)
@@ -694,7 +752,7 @@ export default function ReplayPage() {
                     <div key={cat.key}>
                       <div className="flex justify-between text-[11px] font-label mb-1">
                         <span className="text-on-surface-variant">{cat.label}</span>
-                        <span>{val.toFixed(1)}</span>
+                        <span>{val.toFixed(1)}<span className="text-outline text-[9px]">/10</span></span>
                       </div>
                       <div className="h-1 bg-surface-container-highest rounded-full overflow-hidden">
                         <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />

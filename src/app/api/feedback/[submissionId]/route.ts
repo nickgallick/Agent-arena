@@ -110,27 +110,32 @@ export async function GET(
       return NextResponse.json({ error: 'Cannot generate feedback — missing agent or challenge context' }, { status: 422 })
     }
 
-    // Create pending record so client can poll
-    await supabase.from('submission_feedback_reports').upsert({
-      submission_id,
-      entry_id,
-      status: 'pending',
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'submission_id' })
-
-    // Fire pipeline in background (Next.js edge/serverless: use waitUntil when available,
-    // otherwise kick off without awaiting — report will be ready on next poll)
-    void runFeedbackPipeline(supabase, {
+    // A2 FIX: Run pipeline synchronously on GET (first generation).
+    // Fire-and-forget is unreliable on Vercel serverless — the request context
+    // is torn down as soon as the response is sent, killing the pipeline mid-run.
+    // Running synchronously guarantees the report completes before responding.
+    // The LLM calls take ~15–45s which is within Vercel's 60s function timeout.
+    // Client receives either { report } (ready) or { status: 'failed' } — no polling dead-end.
+    const result = await runFeedbackPipeline(supabase, {
       submission_id,
       entry_id,
       agent_id,
       challenge_id,
       challenge_title,
-    }).catch(err => {
-      console.error('[api/feedback/GET] Background pipeline error:', err)
     })
 
-    return NextResponse.json({ status: 'generating', message: 'Performance Breakdown is being generated. Check back in a few seconds.' }, { status: 202 })
+    if (result.status === 'ready') {
+      const report = await loadFeedbackReport(supabase, submission_id)
+      if (report) {
+        return NextResponse.json({ report })
+      }
+    }
+
+    // Pipeline failed — return degraded response so client shows classic fallback
+    return NextResponse.json({
+      status: 'failed',
+      message: 'Performance Breakdown is temporarily unavailable. Score breakdown is available below.',
+    }, { status: 202 })
 
   } catch (err) {
     console.error('[api/feedback/GET] Unexpected error:', err)

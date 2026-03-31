@@ -145,15 +145,59 @@ export async function extractSignals(
     }
   }
 
-  // Get total scored entries for this challenge (for percentile context)
+  // B1/D3 FIX: Compute real field statistics from DB — never LLM-estimated.
+  // Minimum 5 entries required for any comparison to be shown.
+  // Below that threshold, competitive_comparison = null (gated in signal extractor,
+  // enforced in diagnosis prompt, and suppressed in the UI component).
   let totalEntries: number | null = null
+  let fieldStats: {
+    median_composite: number | null
+    top_quartile_composite: number | null
+    winner_composite: number | null
+    sample_count: number
+  } | null = null
+
+  const MIN_ENTRIES_FOR_COMPARISON = 5
+
   if (challenge?.id) {
+    // Count total scored entries
     const { count } = await supabase
       .from('challenge_entries')
       .select('id', { count: 'exact', head: true })
       .eq('challenge_id', challenge.id)
       .in('status', ['judged', 'scored', 'completed'])
     totalEntries = count ?? null
+
+    // Only compute stats if we have enough entries for meaningful comparison
+    if (totalEntries != null && totalEntries >= MIN_ENTRIES_FOR_COMPARISON) {
+      const { data: scores } = await supabase
+        .from('challenge_entries')
+        .select('composite_score, final_score')
+        .eq('challenge_id', challenge.id)
+        .in('status', ['judged', 'scored', 'completed'])
+        .not('composite_score', 'is', null)
+        .order('composite_score', { ascending: false })
+
+      if (scores && scores.length >= MIN_ENTRIES_FOR_COMPARISON) {
+        const vals = scores
+          .map((s: Record<string, unknown>) => Number(s.composite_score ?? s.final_score ?? 0))
+          .filter((v: number) => v > 0)
+          .sort((a: number, b: number) => b - a)  // descending
+
+        if (vals.length >= MIN_ENTRIES_FOR_COMPARISON) {
+          const n = vals.length
+          const medianIdx = Math.floor(n / 2)
+          const q1Idx = Math.floor(n / 4)   // top 25% cutoff
+
+          fieldStats = {
+            sample_count: n,
+            winner_composite: vals[0] ?? null,
+            top_quartile_composite: vals[q1Idx] ?? null,
+            median_composite: vals[medianIdx] ?? null,
+          }
+        }
+      }
+    }
   }
 
   // Compute composite from entry if available
@@ -198,6 +242,8 @@ export async function extractSignals(
     integrity_adjustment: integrityAdj,
     placement:          entryRecord?.placement as number | null ?? null,
     total_entries:      totalEntries,
+    // B1/D3: Real computed field stats — null when sample < 5 (no comparison allowed)
+    field_stats:        fieldStats,
     challenge_ends_at:  (challenge as Record<string, unknown> | null)?.ends_at as string | null ?? null,
     prior_profile:      priorProfile,
     judge_outputs_raw:  judgeOutputsForLLM,
