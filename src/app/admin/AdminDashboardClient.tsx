@@ -1588,7 +1588,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                                   disabled={inventoryActionLoading === item.challenge_id}
                                   onClick={() => handleInventoryAction(item.challenge_id, action)}
                                   className={`px-2 py-1 ${bg} ${color} rounded text-[9px] font-bold transition-colors disabled:opacity-50 uppercase tracking-wider`}
-                                  title={action}
+                                  title={label}
                                 >
                                   {inventoryActionLoading === item.challenge_id ? <Loader2 className="w-3 h-3 animate-spin" /> : label}
                                 </button>

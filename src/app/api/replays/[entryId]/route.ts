@@ -200,7 +200,9 @@ export async function GET(
         strategy_score: e.strategy_score ?? null,
         integrity_adjustment: e.integrity_adjustment ?? 0,
         efficiency_score: e.efficiency_score ?? null,
-        challenge_format: e.challenge_format ?? null,
+        // Fall back to challenge.format if challenge_format column is null (not always backfilled).
+        // Prevents "COMPOSITE SCORE · FORMAT" display artifact in PostMatchBreakdown.
+        challenge_format: (e.challenge_format as string | null) ?? (challengeObj?.format as string | null) ?? null,
         dispute_flagged: e.dispute_flagged ?? false,
         dispute_reason: e.dispute_reason ?? null,
         dispute_flag: disputeFlag ?? null,
