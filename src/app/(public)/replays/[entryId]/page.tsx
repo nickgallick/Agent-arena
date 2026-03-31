@@ -30,6 +30,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PostMatchBreakdown } from '@/components/replay/post-match-breakdown'
+import { PerformanceBreakdown, PerformanceBreakdownLoading } from '@/components/feedback/performance-breakdown'
+import type { FeedbackReport } from '@/lib/feedback/types'
 import { safeEventIcon, safeEventColor } from '@/components/replay/timeline-node'
 
 // ---------------------------------------------------------------------------
@@ -130,6 +132,11 @@ export default function ReplayPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
 
+  // Premium feedback report state
+  const [feedbackReport, setFeedbackReport] = useState<FeedbackReport | null>(null)
+  const [feedbackStatus, setFeedbackStatus] = useState<'idle' | 'loading' | 'generating' | 'ready' | 'not_available' | 'error'>('idle')
+  const [breakdownTab, setBreakdownTab] = useState<'premium' | 'classic'>('premium')
+
   useEffect(() => {
     async function fetchReplay() {
       try {
@@ -193,6 +200,68 @@ export default function ReplayPage() {
     }
     fetchReplay()
   }, [entryId])
+
+  // Fetch premium feedback report once replay is loaded (has submission_id via entry)
+  useEffect(() => {
+    if (!replay) return
+    // We need submission_id — it's not directly in ReplayData, but we can try via entry_id
+    // The feedback API accepts submission_id. We'll try to get it from the replay entry.
+    // If not available, feedback is still accessible via the replay entry_id route.
+    async function fetchFeedback() {
+      if (!replay) return
+      setFeedbackStatus('loading')
+      try {
+        // Try to fetch feedback for this entry via a custom endpoint that accepts entry_id
+        const res = await fetch(`/api/feedback/entry/${entryId}`)
+        if (res.status === 202) {
+          const data = await res.json() as { status: string }
+          if (data.status === 'generating') {
+            setFeedbackStatus('generating')
+            // Poll every 5s until ready (max 6 attempts = 30s)
+            let attempts = 0
+            const poll = setInterval(async () => {
+              attempts++
+              if (attempts > 6) { clearInterval(poll); return }
+              const pollRes = await fetch(`/api/feedback/entry/${entryId}`)
+              if (pollRes.ok) {
+                const pollData = await pollRes.json() as { report?: FeedbackReport }
+                if (pollData.report) {
+                  setFeedbackReport(pollData.report)
+                  setFeedbackStatus('ready')
+                  clearInterval(poll)
+                }
+              }
+            }, 5000)
+          } else if (data.status === 'not_available') {
+            setFeedbackStatus('not_available')
+          } else {
+            setFeedbackStatus('generating')
+          }
+          return
+        }
+        if (res.status === 404 || res.status === 403) {
+          setFeedbackStatus('not_available')
+          return
+        }
+        if (!res.ok) {
+          setFeedbackStatus('error')
+          return
+        }
+        const data = await res.json() as { report?: FeedbackReport }
+        if (data.report?.status === 'ready') {
+          setFeedbackReport(data.report)
+          setFeedbackStatus('ready')
+        } else if (data.report?.status === 'generating' || data.report?.status === 'pending') {
+          setFeedbackStatus('generating')
+        } else {
+          setFeedbackStatus('not_available')
+        }
+      } catch {
+        setFeedbackStatus('error')
+      }
+    }
+    fetchFeedback()
+  }, [replay, entryId])
 
   const rawTranscript = replay?.transcript
   const events: ReplayEvent[] = Array.isArray(rawTranscript) ? rawTranscript : []
@@ -495,9 +564,58 @@ export default function ReplayPage() {
 
           {/* ── Right Column: Scores & Timeline ── */}
           <div className="col-span-12 lg:col-span-4 space-y-6">
-            {/* Phase 1+ Post-Match Breakdown (lane scores, telemetry, dispute) */}
+            {/* Performance Breakdown — Premium (tabbed: premium vs classic) */}
             {(replay.judge_outputs && replay.judge_outputs.length > 0) || replay.composite_score != null || replay.run_metrics ? (
-              <section>
+              <section className="space-y-3">
+                {/* Tab switcher — only show if premium feedback available or loading */}
+                {(feedbackStatus === 'ready' || feedbackStatus === 'loading' || feedbackStatus === 'generating') && (
+                  <div className="flex items-center gap-1 bg-card border border-border rounded-lg p-1">
+                    <button
+                      onClick={() => setBreakdownTab('premium')}
+                      className={cn(
+                        'flex-1 text-xs font-mono py-1.5 px-3 rounded transition-colors',
+                        breakdownTab === 'premium'
+                          ? 'bg-[#adc6ff]/15 text-[#adc6ff] border border-[#adc6ff]/20'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      Performance Breakdown
+                    </button>
+                    <button
+                      onClick={() => setBreakdownTab('classic')}
+                      className={cn(
+                        'flex-1 text-xs font-mono py-1.5 px-3 rounded transition-colors',
+                        breakdownTab === 'classic'
+                          ? 'bg-white/5 text-foreground border border-white/10'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      Score Breakdown
+                    </button>
+                  </div>
+                )}
+
+                {/* Premium feedback view */}
+                {breakdownTab === 'premium' && feedbackStatus === 'ready' && feedbackReport && (
+                  <PerformanceBreakdown
+                    report={feedbackReport}
+                    compositeScore={replay.composite_score}
+                    placement={replay.placement ?? replay.provisional_placement}
+                    totalEntries={replay.total_entries}
+                    isProvisional={
+                      replay.challenge?.status === 'active' &&
+                      !!replay.challenge_ends_at &&
+                      new Date(replay.challenge_ends_at).getTime() > Date.now()
+                    }
+                  />
+                )}
+
+                {breakdownTab === 'premium' && (feedbackStatus === 'loading' || feedbackStatus === 'generating') && (
+                  <PerformanceBreakdownLoading />
+                )}
+
+                {/* Classic view (always available as fallback) */}
+                {(breakdownTab === 'classic' || feedbackStatus === 'not_available' || feedbackStatus === 'idle' || feedbackStatus === 'error') && (
                 <PostMatchBreakdown
                   judgeOutputs={replay.judge_outputs ?? []}
                   compositeScore={replay.composite_score}
@@ -521,6 +639,7 @@ export default function ReplayPage() {
                   }
                   challengeStatus={replay.challenge?.status ?? null}
                 />
+                )}
               </section>
             ) : null}
 

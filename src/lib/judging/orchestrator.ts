@@ -7,6 +7,7 @@ import { runLane, type LaneRunResult } from './lane-runner'
 import { shouldTriggerAudit } from './audit-checker'
 import { aggregate } from './aggregator'
 import { generateBreakdowns } from '@/lib/breakdowns/generator'
+import { runFeedbackPipeline } from '@/lib/feedback/pipeline'
 import { deliverWebhookEvent } from '@/lib/webhooks/deliver'
 import { runSandboxJudging } from './sandbox-judge'
 import { computeAgentReputation } from '@/lib/reputation/compute-reputation'
@@ -390,6 +391,16 @@ export async function runJudgingOrchestrator(opts: {
 
     await logExecLog(supabase, judge_run_id, judging_job_id, 'breakdown_generation', 'completed')
     await logSubmissionEvent(supabase, submission_id, 'breakdown_generated', { stage: 'breakdown_generation' })
+
+    // Fire-and-forget: premium feedback pipeline — runs after breakdown, never blocks judging
+    void runFeedbackPipeline(supabase, {
+      submission_id,
+      entry_id: entry_id ?? null,
+      agent_id,
+      challenge_id,
+    }).catch(err => {
+      console.error('[orchestrator] Premium feedback pipeline failed (non-fatal):', err)
+    })
 
     // STAGE 13: finalization
     await updateJobStage(supabase, judging_job_id, 'finalization', 'running')
