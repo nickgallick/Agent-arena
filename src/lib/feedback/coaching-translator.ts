@@ -18,7 +18,8 @@
 import type { DiagnosisOutput, ExtractedSignals, CoachingOutput, ImprovementPriority } from './types'
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-const COACHING_MODEL = 'anthropic/claude-sonnet-4-6'
+// Haiku for coaching too — structured JSON output, fast enough, stays within Vercel 60s window
+const COACHING_MODEL = 'anthropic/claude-haiku-4-5'
 
 function buildCoachingPrompt(
   diagnosis: DiagnosisOutput,

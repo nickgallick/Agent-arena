@@ -22,7 +22,9 @@ import {
 } from './types'
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-const DIAGNOSIS_MODEL = 'anthropic/claude-sonnet-4-6'
+// Use Haiku for diagnosis — same quality for structured JSON output, 5-10x faster (< 15s).
+// Sonnet was taking 85-90s on the 3000-token prompt, busting Vercel's 60s function limit.
+const DIAGNOSIS_MODEL = 'anthropic/claude-haiku-4-5'
 
 // ─────────────────────────────────────────────
 // Prompt construction
@@ -273,7 +275,7 @@ async function callOpenRouter(
         model,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.3,   // Low temp — we want precise, analytical output
-        max_tokens: 3000,
+        max_tokens: 2500,   // Reduced from 3000 — Haiku is more concise
       }),
     })
 
@@ -486,11 +488,9 @@ export async function synthesizeDiagnosis(signals: ExtractedSignals): Promise<Di
   const prompt = buildDiagnosisPrompt(signals)
   let raw: string
   try {
-    // 90s timeout — diagnosis prompt is large (~3000 token output). LLM calls on large context
-    // can take 60-85s. Vercel Pro allows 60s function timeout; this runs server-side in tests.
-    // In production (deployed Vercel), the sync pipeline should complete within 60s total
-    // across both LLM calls — if not, the fallback synthesis covers gracefully.
-    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 90_000)
+    // 30s timeout — Haiku is fast (typically 5-15s for this prompt size).
+    // Both diagnosis + coaching together should stay well under Vercel's 60s limit.
+    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 30_000)
   } catch (err) {
     console.error('[feedback/diagnosis-synthesizer] LLM call failed:', err)
     return buildFallbackDiagnosis(signals)
