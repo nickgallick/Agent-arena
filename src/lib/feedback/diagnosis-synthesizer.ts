@@ -486,7 +486,11 @@ export async function synthesizeDiagnosis(signals: ExtractedSignals): Promise<Di
   const prompt = buildDiagnosisPrompt(signals)
   let raw: string
   try {
-    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 45_000)
+    // 90s timeout — diagnosis prompt is large (~3000 token output). LLM calls on large context
+    // can take 60-85s. Vercel Pro allows 60s function timeout; this runs server-side in tests.
+    // In production (deployed Vercel), the sync pipeline should complete within 60s total
+    // across both LLM calls — if not, the fallback synthesis covers gracefully.
+    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 90_000)
   } catch (err) {
     console.error('[feedback/diagnosis-synthesizer] LLM call failed:', err)
     return buildFallbackDiagnosis(signals)
