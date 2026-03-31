@@ -7,6 +7,7 @@ import {
   LayoutDashboard, Swords, Terminal, Bot, Flag, Activity, TrendingUp,
   Network, Zap, Shield, PlusCircle, X, Loader2, Inbox, FlaskConical,
   Package, BarChart3, ChevronDown, ChevronRight, Key, Tag, Users,
+  CheckCircle, XCircle, ChevronUp, RefreshCw,
 } from 'lucide-react'
 
 interface AdminDashboardClientProps {
@@ -55,10 +56,22 @@ interface ForgeReviewItem {
   bundle_id: string | null
   verdict: string | null
   submitted_at: string
+  // When loaded from review_queue (challenges with pipeline_status=draft_review)
+  // the fields are flat; when loaded from challenge_forge_reviews join, they're nested.
+  // Support both shapes:
+  title?: string
+  category?: string
+  format?: string
+  challenge_type?: string
+  prompt?: string
+  weight_class_id?: string | null
+  pipeline_status?: string
+  created_at?: string
   challenges: {
     title: string
     category: string
     format: string
+    prompt?: string
     weight_class_id: string | null
     pipeline_status: string
     validation_status?: string
@@ -208,6 +221,90 @@ function StatusBadge({ status, className }: { status: string; className?: string
     <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${color} ${className ?? ''}`} title={status}>
       {label}
     </span>
+  )
+}
+
+// ─────────────────────────────────────────────
+// ForgeReviewCard — mobile-first challenge review card
+// Replaces the table layout which is unusable on mobile.
+// Shows full prompt in an expandable section so Nick can read
+// and approve/decline directly from his phone.
+// ─────────────────────────────────────────────
+function ForgeReviewCard({
+  title, category, format, challengeType, prompt,
+  submittedAt, isLoading, onApprove, onRevision,
+}: {
+  title: string
+  category: string
+  format: string
+  challengeType: string
+  prompt?: string | null
+  submittedAt: string
+  isLoading: boolean
+  onApprove: () => void
+  onRevision: () => void
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const dateStr = submittedAt ? new Date(submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'
+
+  return (
+    <div className="bg-[#1c1b1b] rounded-xl border border-[#424753]/20 overflow-hidden">
+      {/* Header */}
+      <div className="p-4 space-y-3">
+        {/* Title + meta */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[#e5e2e1] font-bold text-sm leading-snug">{title}</p>
+            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <span className="text-[10px] font-['JetBrains_Mono'] bg-[#424753]/20 text-[#c2c6d5] px-1.5 py-0.5 rounded uppercase">{category}</span>
+              <span className="text-[10px] font-['JetBrains_Mono'] bg-[#424753]/20 text-[#c2c6d5] px-1.5 py-0.5 rounded uppercase">{format}</span>
+              <span className="text-[10px] font-['JetBrains_Mono'] bg-[#adc6ff]/10 text-[#adc6ff] px-1.5 py-0.5 rounded uppercase">{challengeType}</span>
+            </div>
+          </div>
+          <span className="text-[10px] font-['JetBrains_Mono'] text-[#8c909f] flex-shrink-0">{dateStr}</span>
+        </div>
+
+        {/* Action buttons — full width on mobile */}
+        <div className="flex gap-2">
+          <button
+            disabled={isLoading}
+            onClick={onApprove}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#7dffa2]/10 text-[#7dffa2] rounded-lg text-sm font-bold hover:bg-[#7dffa2]/20 transition-colors disabled:opacity-50 border border-[#7dffa2]/20"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+            Approve
+          </button>
+          <button
+            disabled={isLoading}
+            onClick={onRevision}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-[#ffb780]/10 text-[#ffb780] rounded-lg text-sm font-bold hover:bg-[#ffb780]/20 transition-colors disabled:opacity-50 border border-[#ffb780]/20"
+          >
+            <XCircle className="w-4 h-4" />
+            Decline
+          </button>
+        </div>
+      </div>
+
+      {/* Prompt toggle */}
+      {prompt && (
+        <>
+          <button
+            onClick={() => setExpanded(e => !e)}
+            className="w-full flex items-center justify-between px-4 py-2.5 border-t border-[#424753]/20 text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#8c909f] hover:text-[#c2c6d5] transition-colors"
+          >
+            <span>Read prompt</span>
+            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+          {expanded && (
+            <div className="px-4 pb-4 pt-1 border-t border-[#424753]/10">
+              <pre className="text-[11px] font-['JetBrains_Mono'] text-[#c2c6d5] whitespace-pre-wrap leading-relaxed max-h-[60vh] overflow-y-auto">
+                {prompt}
+              </pre>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   )
 }
 
@@ -434,7 +531,25 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     try {
       const res = await fetch('/api/admin/forge-review')
       const data = await res.json()
-      setForgeReviews(data.reviews ?? [])
+      // API returns review_queue (flat challenge objects with bundle_id attached)
+      // Normalize to ForgeReviewItem shape for the UI
+      const raw: Record<string, unknown>[] = data.review_queue ?? data.reviews ?? []
+      const normalized: ForgeReviewItem[] = raw.map((c) => ({
+        id: String(c.id ?? ''),
+        challenge_id: String(c.id ?? ''),
+        bundle_id: c.bundle_id ? String(c.bundle_id) : null,
+        verdict: null,
+        submitted_at: String(c.created_at ?? ''),
+        title: String(c.title ?? ''),
+        category: String(c.category ?? ''),
+        format: String(c.format ?? ''),
+        challenge_type: String(c.challenge_type ?? ''),
+        prompt: c.prompt ? String(c.prompt) : undefined,
+        pipeline_status: String(c.pipeline_status ?? ''),
+        created_at: String(c.created_at ?? ''),
+        challenges: null,
+      }))
+      setForgeReviews(normalized)
     } catch {
       setForgeReviews([])
     } finally {
@@ -879,9 +994,29 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
 
       <main className={`flex-grow ${judgingQueue ? 'pt-32' : 'pt-24'} pb-32 px-4 md:px-8 max-w-[1600px] mx-auto w-full grid grid-cols-12 gap-6`}>
 
-        {/* Sidebar */}
+        {/* Sidebar — desktop: vertical list | mobile: horizontal scroll strip */}
         <aside className="col-span-12 lg:col-span-2 space-y-2">
-          <div className="bg-[#1c1b1b] p-2 rounded-xl">
+          {/* Mobile tab strip */}
+          <div className="lg:hidden overflow-x-auto pb-1 -mx-1 px-1">
+            <div className="flex gap-2 w-max">
+              {tabs.map(tab => (
+                <button
+                  key={tab.label}
+                  onClick={() => setActiveTab(tab.label)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors whitespace-nowrap text-xs font-bold flex-shrink-0 ${
+                    activeTab === tab.label
+                      ? 'bg-[#adc6ff]/15 text-[#adc6ff] border border-[#adc6ff]/20'
+                      : 'bg-[#1c1b1b] text-[#c2c6d5]'
+                  }`}
+                >
+                  <span className="w-3.5 h-3.5 flex-shrink-0">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Desktop sidebar */}
+          <div className="hidden lg:block bg-[#1c1b1b] p-2 rounded-xl">
             <nav className="flex flex-col gap-1">
               {tabs.map(tab => (
                 <button
@@ -1354,8 +1489,13 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
 
           {/* ── FORGE REVIEW TAB ── */}
           {activeTab === 'Forge Review' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-black text-[#e5e2e1] font-['Manrope']">Forge Review Queue</h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-xl font-black text-[#e5e2e1] font-['Manrope']">Forge Review Queue</h2>
+                <button onClick={fetchForgeReviews} className="p-2 rounded-lg bg-[#1c1b1b] text-[#c2c6d5] hover:text-[#adc6ff] transition-colors">
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
               {forgeLoading ? (
                 <div className="p-8 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#adc6ff]" /></div>
               ) : forgeReviews.length === 0 ? (
@@ -1364,52 +1504,30 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                   <p className="text-[#c2c6d5] text-sm font-['JetBrains_Mono'] uppercase tracking-widest">No challenges awaiting Forge review</p>
                 </div>
               ) : (
-                <div className="bg-[#1c1b1b] rounded-xl overflow-hidden">
-                  <table className="w-full text-left text-xs font-['JetBrains_Mono']">
-                    <thead>
-                      <tr className="text-[#c2c6d5] border-b border-[#424753]/20">
-                        <th className="px-6 py-4 uppercase tracking-widest">Challenge</th>
-                        <th className="px-6 py-4 uppercase tracking-widest">Family</th>
-                        <th className="px-6 py-4 uppercase tracking-widest">Format</th>
-                        <th className="px-6 py-4 uppercase tracking-widest">Weight</th>
-                        <th className="px-6 py-4 uppercase tracking-widest">Validation</th>
-                        <th className="px-6 py-4 uppercase tracking-widest">Submitted</th>
-                        <th className="px-6 py-4 uppercase tracking-widest">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#424753]/10">
-                      {forgeReviews.map(review => (
-                        <tr key={review.id} className="hover:bg-[#201f1f] transition-colors">
-                          <td className="px-6 py-4 text-[#e5e2e1] font-bold">{review.challenges?.title ?? '—'}</td>
-                          <td className="px-6 py-4 text-[#c2c6d5]">{review.challenges?.category ?? '—'}</td>
-                          <td className="px-6 py-4 text-[#c2c6d5]">{review.challenges?.format ?? '—'}</td>
-                          <td className="px-6 py-4 text-[#c2c6d5]">{review.challenges?.weight_class_id ?? 'open'}</td>
-                          <td className="px-6 py-4">
-                            <StatusBadge status={review.challenges?.validation_status ?? review.challenges?.pipeline_status ?? 'pending'} />
-                          </td>
-                          <td className="px-6 py-4 text-[#8c909f]">{new Date(review.submitted_at).toLocaleDateString()}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <button
-                                disabled={forgeActionLoading === review.challenge_id}
-                                onClick={() => handleForgeVerdict(review.challenge_id, review.bundle_id ?? undefined, 'approved_for_calibration')}
-                                className="px-3 py-1.5 bg-[#7dffa2]/10 text-[#7dffa2] rounded text-[10px] font-bold hover:bg-[#7dffa2]/20 transition-colors disabled:opacity-50"
-                              >
-                                {forgeActionLoading === review.challenge_id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Approve'}
-                              </button>
-                              <button
-                                disabled={forgeActionLoading === review.challenge_id}
-                                onClick={() => setRevisionModal({ challenge_id: review.challenge_id, bundle_id: review.bundle_id ?? undefined })}
-                                className="px-3 py-1.5 bg-[#ffb780]/10 text-[#ffb780] rounded text-[10px] font-bold hover:bg-[#ffb780]/20 transition-colors disabled:opacity-50"
-                              >
-                                Needs Revision
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-3">
+                  {forgeReviews.map(review => {
+                    const title = review.title ?? review.challenges?.title ?? '—'
+                    const category = review.category ?? review.challenges?.category ?? '—'
+                    const format = review.format ?? review.challenges?.format ?? '—'
+                    const challengeType = review.challenge_type ?? '—'
+                    const prompt = review.prompt ?? review.challenges?.prompt
+                    const submittedAt = review.submitted_at || review.created_at || ''
+                    const isLoading = forgeActionLoading === review.challenge_id
+                    return (
+                      <ForgeReviewCard
+                        key={review.id}
+                        title={title}
+                        category={category}
+                        format={format}
+                        challengeType={challengeType}
+                        prompt={prompt}
+                        submittedAt={submittedAt}
+                        isLoading={isLoading}
+                        onApprove={() => handleForgeVerdict(review.challenge_id, review.bundle_id ?? undefined, 'approved_for_calibration')}
+                        onRevision={() => setRevisionModal({ challenge_id: review.challenge_id, bundle_id: review.bundle_id ?? undefined })}
+                      />
+                    )
+                  })}
                 </div>
               )}
 

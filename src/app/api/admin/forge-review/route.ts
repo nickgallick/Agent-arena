@@ -117,8 +117,10 @@ export async function GET(req: NextRequest): Promise<Response> {
       .select(`
         id,
         title,
+        prompt,
         pipeline_status,
         category,
+        format,
         challenge_type,
         generated_by,
         created_at
