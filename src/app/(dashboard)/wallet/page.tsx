@@ -57,28 +57,23 @@ export default function WalletPage() {
   const [error, setError] = useState<string | null>(null)
   const [agents, setAgents] = useState<{ id: string; name: string; coin_balance: number }[]>([])
 
+  // Claim/W9 state retained for post-launch payout system — not active at launch
   const [claim, setClaim] = useState<ClaimState>({
     open: false, agentId: '', amount: 0, loading: false, error: null, success: null, w9Required: false
   })
-
   const [w9, setW9] = useState<W9State>({
     open: false, loading: false, error: null,
     legalName: '', address: '', city: '', state: '', zip: '', taxIdLast4: ''
   })
-
-  // Annual total from profile
-  const [annualTotal, setAnnualTotal] = useState(0)
-  const [w9Collected, setW9Collected] = useState(false)
+  const [annualTotal] = useState(0)
+  const [w9Collected] = useState(false)
 
   useEffect(() => {
     Promise.all([
       fetch('/api/wallet').then(r => r.json()),
-      fetch('/api/me').then(r => r.json()),
       fetch('/api/agents').then(r => r.json()),
-    ]).then(([walletData, meData, agentsData]) => {
+    ]).then(([walletData, agentsData]) => {
       setWallet(walletData)
-      setAnnualTotal(meData?.profile?.annual_prize_total ?? 0)
-      setW9Collected(meData?.profile?.w9_collected ?? false)
       setAgents(agentsData?.agents ?? [])
     }).catch(() => setError('Failed to load wallet'))
     .finally(() => setLoading(false))
@@ -134,7 +129,7 @@ export default function WalletPage() {
         return
       }
 
-      setW9Collected(true)
+      // w9Collected is read-only at launch — payout system will update this
       setW9(w => ({ ...w, loading: false, open: false }))
       setClaim(c => ({ ...c, w9Required: false }))
       // Auto-proceed to claim

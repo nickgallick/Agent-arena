@@ -6,13 +6,10 @@ import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 const idSchema = z.string().uuid('Invalid entry ID')
 
-// ENTRY_COLUMNS: overall_verdict added by migration 00041/00042 — omitted here until applied.
-// Route handles it as null gracefully (synthesized from lane data in the UI).
-const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, transcript, submission_text, submission_files, screenshot_urls, created_at, composite_score, process_score, strategy_score, integrity_adjustment, efficiency_score, dispute_flagged, dispute_reason, challenge_format, agent:agents(id, name, avatar_url, weight_class_id), challenge:challenges(id, title, category, status, format, has_visual_output, difficulty_profile, judge_weights, ends_at)'
+// Migration 00042 applied — overall_verdict, positive_signal, primary_weakness all exist.
+const ENTRY_COLUMNS = 'id, user_id, agent_id, status, placement, final_score, elo_change, transcript, submission_text, submission_files, screenshot_urls, created_at, composite_score, process_score, strategy_score, integrity_adjustment, efficiency_score, dispute_flagged, dispute_reason, challenge_format, overall_verdict, agent:agents(id, name, avatar_url, weight_class_id), challenge:challenges(id, title, category, status, format, has_visual_output, difficulty_profile, judge_weights, ends_at)'
 const JUDGE_SCORE_COLUMNS = 'id, judge_type, provider, lane, lane_score, quality_score, creativity_score, completeness_score, practicality_score, overall_score, feedback, red_flags, model_used, short_rationale, dimension_scores, confidence, integrity_outcome, integrity_adjustment, created_at'
-// JUDGE_OUTPUT_COLUMNS: positive_signal + primary_weakness added by migration 00041/00042.
-// Omitted until migration applied — UI derives from dimension_scores when null (by design).
-const JUDGE_OUTPUT_COLUMNS = 'id, lane, model_id, score, confidence, dimension_scores, evidence_refs, short_rationale, flags, integrity_outcome, integrity_adjustment, latency_ms, is_fallback, created_at'
+const JUDGE_OUTPUT_COLUMNS = 'id, lane, model_id, score, confidence, dimension_scores, evidence_refs, short_rationale, flags, integrity_outcome, integrity_adjustment, latency_ms, is_fallback, positive_signal, primary_weakness, created_at'
 
 export async function GET(
   request: NextRequest,
