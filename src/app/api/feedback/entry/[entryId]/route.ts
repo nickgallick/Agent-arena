@@ -1,5 +1,8 @@
 // GET /api/feedback/entry/[entryId] — load or trigger feedback by entry_id
 // Forge · 2026-03-31
+
+// Vercel route config: 120s max duration for synchronous LLM pipeline
+export const maxDuration = 120
 //
 // Proxy that resolves entry_id → submission_id, then delegates to the main pipeline.
 // The replay page only has entry_id, so this adapter is required.

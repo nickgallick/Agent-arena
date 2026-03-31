@@ -2,6 +2,11 @@
 // POST /api/feedback/[submissionId] — trigger/force regeneration
 // Forge · 2026-03-31
 
+// Vercel route config: allow up to 120s for synchronous LLM pipeline
+// (Sonnet diagnosis ~45-60s + Haiku coaching ~10s = ~55-70s total)
+// Vercel Pro supports maxDuration up to 300s on serverless functions.
+export const maxDuration = 120
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'

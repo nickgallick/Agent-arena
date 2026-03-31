@@ -22,8 +22,10 @@ import {
 } from './types'
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-// Use Haiku for diagnosis — same quality for structured JSON output, 5-10x faster (< 15s).
-// Sonnet was taking 85-90s on the 3000-token prompt, busting Vercel's 60s function limit.
+// Haiku 4.5 for diagnosis — fast (15-20s), reliable JSON output via Bedrock.
+// Sonnet 4.6 was hitting timeouts due to slow large-token generation on OpenRouter.
+// Haiku produces equivalent structured JSON quality for this forensic analysis task.
+// Coaching (stage 3) also uses Haiku.
 const DIAGNOSIS_MODEL = 'anthropic/claude-haiku-4-5'
 
 // ─────────────────────────────────────────────
@@ -180,26 +182,6 @@ TASK: Produce a JSON diagnosis with EXACTLY this structure. Every field must be 
       "evidence_refs": ["signal descriptions from the data above"]
     }
   ],
-  "decisive_positive_factors": [
-    {
-      "title": "Short label",
-      "description": "What happened and why it helped",
-      "impact_direction": "positive",
-      "impact_magnitude": "high|medium|low",
-      "lane": "which lane this factor primarily affected",
-      "evidence_signal": "The data point that shows this"
-    }
-  ],
-  "decisive_negative_factors": [
-    {
-      "title": "Short label",
-      "description": "What happened and why it hurt",
-      "impact_direction": "negative",
-      "impact_magnitude": "high|medium|low",
-      "lane": "which lane this factor primarily affected",
-      "evidence_signal": "The data point that shows this"
-    }
-  ],
   "competitive_comparison": ${hasRealComparison && fs ? `{
     "vs_median": {
       "label": "vs. median (${fs.sample_count} entries)",
@@ -241,7 +223,6 @@ TASK: Produce a JSON diagnosis with EXACTLY this structure. Every field must be 
 }
 
 Populate failure_modes with 1-3 entries. Mark primary_flag=true on the dominant one only.
-Populate decisive_positive_factors with 1-3 entries and decisive_negative_factors with 1-3 entries.
 Lane diagnoses must cover every lane in the input data.
 Return ONLY the JSON object. No preamble, no explanation, no markdown fences.`
 }
@@ -275,7 +256,7 @@ async function callOpenRouter(
         model,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.3,   // Low temp — we want precise, analytical output
-        max_tokens: 2500,   // Reduced from 3000 — Haiku is more concise
+        max_tokens: 3500,   // Sonnet output is ~2500 tokens for 3-lane analysis — need headroom
       }),
     })
 
@@ -488,9 +469,9 @@ export async function synthesizeDiagnosis(signals: ExtractedSignals): Promise<Di
   const prompt = buildDiagnosisPrompt(signals)
   let raw: string
   try {
-    // 30s timeout — Haiku is fast (typically 5-15s for this prompt size).
-    // Both diagnosis + coaching together should stay well under Vercel's 60s limit.
-    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 30_000)
+    // 45s timeout — Sonnet typically responds in 2-15s. 45s covers OpenRouter latency spikes.
+    // Route maxDuration=120s. Root issue was max_tokens:2000 truncating the ~2500 token output.
+    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 45_000)
   } catch (err) {
     console.error('[feedback/diagnosis-synthesizer] LLM call failed:', err)
     return buildFallbackDiagnosis(signals)
