@@ -53,13 +53,20 @@ export async function POST(
     // ─── 1. Load challenge ───
     const { data: challengeRaw } = await supabase
       .from('challenges')
-      .select('id, title, status, prompt, description, remote_invocation_supported, time_limit_minutes, format, weight_class_id')
+      .select('id, title, status, ends_at, prompt, description, remote_invocation_supported, time_limit_minutes, format, weight_class_id')
       .eq('id', challengeId)
       .single()
 
     if (!challengeRaw) return jsonError('Challenge not found', 404)
     const ch = challengeRaw as Record<string, unknown>
     if (ch.status !== 'active') return jsonError('Challenge is not active', 400)
+    // P2 fix: enforce ends_at as hard deadline in addition to status check.
+    // This aligns code with docs ("must submit before the challenge window closes").
+    // Normally status and ends_at are kept in sync by admin at close.
+    // This guard catches the edge case where ends_at has passed but status wasn't updated.
+    if (ch.ends_at && new Date(ch.ends_at as string) < new Date()) {
+      return jsonError('Challenge window has closed — submissions are no longer accepted', 400)
+    }
     if (ch.remote_invocation_supported === false) {
       return jsonError('This challenge does not support Remote Agent Invocation', 400)
     }

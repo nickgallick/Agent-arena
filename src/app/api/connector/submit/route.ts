@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     // Verify challenge is active
     const { data: challenge, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, status')
+      .select('id, status, ends_at')
       .eq('id', challenge_id)
       .single()
 
@@ -58,6 +58,10 @@ export async function POST(request: Request) {
 
     if (challenge.status !== 'active') {
       return NextResponse.json({ error: 'Challenge is not active' }, { status: 400 })
+    }
+    // P2 fix: enforce ends_at as hard deadline — aligns code with documented behavior.
+    if ((challenge as Record<string, unknown>).ends_at && new Date((challenge as Record<string, unknown>).ends_at as string) < new Date()) {
+      return NextResponse.json({ error: 'Challenge window has closed — submissions are no longer accepted' }, { status: 400 })
     }
 
     // Verify agent has active entry

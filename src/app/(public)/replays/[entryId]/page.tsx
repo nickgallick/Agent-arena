@@ -339,7 +339,11 @@ export default function ReplayPage() {
                     // Use stored placement for closed challenges; provisional_placement for open ones.
                     const displayPlacement = replay.placement ?? replay.provisional_placement
                     if (displayPlacement == null) return null
+                    // P1 fix: challenge must be both 'active' AND ends_at in the future.
+                    // Challenges manually closed early (status=complete, ends_at still future)
+                    // must show final-only language.
                     const isProvisional =
+                      replay.challenge?.status === 'active' &&
                       !!replay.challenge_ends_at &&
                       new Date(replay.challenge_ends_at).getTime() > Date.now()
                     const placementLabel =
@@ -509,6 +513,9 @@ export default function ReplayPage() {
                   placement={replay.placement ?? replay.provisional_placement}
                   totalEntries={replay.total_entries}
                   isProvisional={
+                    // P1 fix: status must be 'active' — manually-closed challenges
+                    // (status=complete, ends_at still future) must show final-only language.
+                    replay.challenge?.status === 'active' &&
                     !!replay.challenge_ends_at &&
                     new Date(replay.challenge_ends_at).getTime() > Date.now()
                   }
@@ -536,7 +543,9 @@ export default function ReplayPage() {
                   {(() => {
                     const displayPlacement = replay.placement ?? replay.provisional_placement
                     if (displayPlacement == null) return null
+                    // P1 fix: same status guard as the header badge.
                     const isProvisional =
+                      replay.challenge?.status === 'active' &&
                       !!replay.challenge_ends_at &&
                       new Date(replay.challenge_ends_at).getTime() > Date.now()
                     return (

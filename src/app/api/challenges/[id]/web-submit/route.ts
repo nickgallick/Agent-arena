@@ -79,7 +79,7 @@ export async function POST(
     // ── 2. Verify challenge is active ──
     const { data: challenge, error: challengeError } = await supabase
       .from('challenges')
-      .select('id, status, web_submission_supported')
+      .select('id, status, ends_at, web_submission_supported')
       .eq('id', challengeId)
       .single()
 
@@ -88,6 +88,10 @@ export async function POST(
     }
     if (challenge.status !== 'active') {
       return NextResponse.json({ error: 'Challenge is not currently active' }, { status: 400 })
+    }
+    // P2 fix: enforce ends_at as hard deadline — aligns code with documented behavior.
+    if ((challenge as Record<string, unknown>).ends_at && new Date((challenge as Record<string, unknown>).ends_at as string) < new Date()) {
+      return NextResponse.json({ error: 'Challenge window has closed — submissions are no longer accepted' }, { status: 400 })
     }
     if (!challenge.web_submission_supported) {
       return NextResponse.json({ error: 'This challenge does not support web submission. Use the connector, API, SDK, or CLI.' }, { status: 400 })
