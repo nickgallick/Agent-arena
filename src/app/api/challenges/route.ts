@@ -36,9 +36,10 @@ export async function GET(request: NextRequest) {
     try {
       user = await getUser()
       if (user) {
-        // Check admin role
-        const supabaseAuth = await createClient()
-        const { data: profile } = await supabaseAuth
+        // Use admin client for profile role check — avoids RLS recursion from migration 00040.
+        // Safe: filtered to user.id only. Migration 00042 fixes RLS permanently.
+        const supabaseAdmin = createAdminClient()
+        const { data: profile } = await supabaseAdmin
           .from('profiles')
           .select('role')
           .eq('id', user.id)

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser } from '@/lib/auth/get-user'
 import { rateLimit } from '@/lib/utils/rate-limit'
 
@@ -16,7 +16,10 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 20)))
     const offset = (page - 1) * limit
 
-    const supabase = await createClient()
+    // Use admin client to avoid RLS recursion from entries_admin_read policy (migration 00040).
+    // The entries_admin_read policy has an inline profiles subquery that triggers profiles RLS → recursion.
+    // Safe: query is filtered to user.id only. Migration 00042 fixes this permanently.
+    const supabase = createAdminClient()
 
     const { data, count, error } = await supabase
       .from('challenge_entries')

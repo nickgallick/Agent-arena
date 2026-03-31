@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser } from '@/lib/auth/get-user'
 import { rateLimit } from '@/lib/utils/rate-limit'
 import { autoTransitionChallengeStatus } from '@/lib/utils/challenge-time'
@@ -16,7 +16,10 @@ export async function POST(
     }
 
     const { id: challengeId } = await params
-    const supabase = await createClient()
+    // Use admin client throughout — avoids RLS recursion from migration 00040 policies
+    // that have inline profiles subqueries (entries_admin_read, challenges_authed_read).
+    // All queries are filtered to the authenticated user's ID; identity verified by requireUser().
+    const supabase = createAdminClient()
 
     // Get all user's agents
     const { data: agents, error: agentError } = await supabase

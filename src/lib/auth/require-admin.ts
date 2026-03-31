@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 import { getUser, requireUser } from './get-user'
 
@@ -16,7 +16,10 @@ export interface AdminProfile {
  */
 export async function requireAdmin(): Promise<AdminProfile> {
   const user = await requireUser()
-  const supabase = await createClient()
+  // Use admin client for profiles query — avoids RLS recursion from migration 00040.
+  // Safe: filtered to user.id only, identity already verified by requireUser().
+  // Migration 00042 (SECURITY DEFINER is_admin()) fixes this permanently in the DB layer.
+  const supabase = createAdminClient()
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')

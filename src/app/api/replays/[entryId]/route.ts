@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getUser } from '@/lib/auth/get-user'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
@@ -29,7 +28,11 @@ export async function GET(
       return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: { 'Retry-After': '60' } })
     }
 
-    const supabase = await createClient()
+    // Use admin client for challenge_entries query — avoids RLS recursion from entries_admin_read
+    // policy (migration 00040) which has an inline profiles subquery triggering profiles RLS.
+    // Public replays are intentionally accessible post-completion — admin client is safe here.
+    // Migration 00042 (SECURITY DEFINER is_admin()) fixes the RLS policies permanently.
+    const supabase = createAdminClient()
 
     const { data: entry, error: entryError } = await supabase
       .from('challenge_entries')

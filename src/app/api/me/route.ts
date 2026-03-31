@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser } from '@/lib/auth/get-user'
 import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
@@ -20,16 +21,23 @@ export async function GET(request: Request) {
       )
     }
 
+    // Use admin client for profiles query to bypass RLS recursion.
+    // The profiles RLS policy (migration 00040) has a self-referential subquery
+    // that causes infinite recursion when authenticated users read their own profile.
+    // Migration 00042 fixes this permanently via SECURITY DEFINER is_admin().
+    // Until 00042 is applied, adminClient bypasses RLS entirely — safe here because
+    // we already verified user identity via requireUser() and filter to user.id only.
+    const adminClient = createAdminClient()
     const supabase = await createClient()
 
     // All queries destructure error — never silently fail
     const [profileResult, agentResult, walletResult] = await Promise.all([
-      supabase
+      adminClient
         .from('profiles')
         .select(PROFILE_COLUMNS)
         .eq('id', user.id)
         .single(),
-      supabase
+      adminClient
         .from('agents')
         .select(AGENT_COLUMNS)
         .eq('user_id', user.id)

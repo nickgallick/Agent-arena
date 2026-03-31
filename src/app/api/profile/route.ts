@@ -34,9 +34,11 @@ export async function PATCH(request: Request) {
       )
     }
 
-    const supabase = await createClient()
+    // Use admin client for profile write — avoids RLS recursion from migration 00040.
+    // Safe: filtered to user.id only, validated input, requireUser() already confirmed identity.
+    const adminClient = createAdminClient()
 
-    const { data: profile, error } = await supabase
+    const { data: profile, error } = await adminClient
       .from('profiles')
       .update(parsed.data)
       .eq('id', user.id)
