@@ -148,20 +148,65 @@ const CHALLENGE_CATEGORIES = [
 const CHALLENGE_FORMATS = ['sprint', 'standard', 'marathon', 'creative']
 const CHALLENGE_TYPES = ['daily', 'weekly_featured', 'special']
 
+// Human-readable label map for internal pipeline/calibration status values.
+// Prevents snake_case or machine labels from surfacing directly to operators.
+const STATUS_LABELS: Record<string, string> = {
+  // Challenge lifecycle
+  active:                    'Active',
+  upcoming:                  'Upcoming',
+  inactive:                  'Inactive',
+  draft:                     'Draft',
+  archived:                  'Archived',
+  // Pipeline statuses
+  draft_review:              'Awaiting Review',
+  approved_for_calibration:  'In Calibration',
+  calibrating:               'Calibrating',
+  calibration_complete:      'Cal. Complete',
+  reserve:                   'In Reserve',
+  queued_for_activation:     'Queued',
+  activating:                'Activating',
+  activation_failed:         'Activation Failed',
+  // Calibration outcomes
+  passed:                    'Passed',
+  failed:                    'Failed',
+  needs_revision:            'Needs Revision',
+  quarantined:               'Quarantined',
+  retired:                   'Retired',
+  // Validation
+  pending:                   'Pending',
+  valid:                     'Valid',
+  invalid:                   'Invalid',
+  // Inventory decisions
+  publish_now:               'Activate',
+  hold_reserve:              'Hold in Reserve',
+  queue_for_later:           'Queued',
+  quarantine:                'Quarantine',
+  // Tags
+  approved:                  'Approved',
+  rejected:                  'Rejected',
+  warning:                   'Warning',
+  // Generic
+  complete:                  'Complete',
+  completed:                 'Complete',
+}
+
 function StatusBadge({ status, className }: { status: string; className?: string }) {
   const color =
-    status === 'active' || status === 'passed' || status === 'approved_for_calibration'
+    status === 'active' || status === 'passed' || status === 'approved_for_calibration' || status === 'valid' || status === 'approved'
       ? 'bg-[#7dffa2]/15 text-[#7dffa2]'
-      : status === 'upcoming' || status === 'pending' || status === 'calibrating'
+      : status === 'upcoming' || status === 'pending' || status === 'calibrating' || status === 'approved_for_calibration' || status === 'queued_for_activation'
         ? 'bg-[#adc6ff]/15 text-[#adc6ff]'
-        : status === 'failed' || status === 'quarantined' || status === 'needs_revision'
+        : status === 'failed' || status === 'quarantined' || status === 'needs_revision' || status === 'invalid' || status === 'rejected' || status === 'activation_failed'
           ? 'bg-[#ffb4ab]/15 text-[#ffb4ab]'
-          : status === 'warning'
+          : status === 'warning' || status === 'draft_review'
             ? 'bg-[#ffb780]/15 text-[#ffb780]'
-            : 'bg-[#424753]/30 text-[#8c909f]'
+            : status === 'reserve' || status === 'hold_reserve'
+              ? 'bg-[#adc6ff]/10 text-[#adc6ff]'
+              : 'bg-[#424753]/30 text-[#8c909f]'
+  const label = STATUS_LABELS[status] ?? status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
   return (
-    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${color} ${className ?? ''}`}>
-      {status}
+    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${color} ${className ?? ''}`} title={status}>
+      {label}
     </span>
   )
 }
@@ -198,6 +243,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
     max_entries: '' as number | '',
     family_id: '' as string,
     org_id: '' as string,
+    is_sandbox: false,
+    remote_invocation_supported: true,
     difficulty_profile: {
       reasoning_depth: 5,
       tool_dependence: 5,
@@ -576,6 +623,8 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
           family_id: form.family_id || null,
           org_id: form.org_id || null,
           difficulty_profile: form.difficulty_profile,
+          is_sandbox: form.is_sandbox,
+          remote_invocation_supported: form.remote_invocation_supported,
         }),
       })
       const data = await res.json()
@@ -588,6 +637,7 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
           title: '', description: '', prompt: '', category: 'algorithm', format: 'standard',
           challenge_type: 'special', starts_at: '', ends_at: '', time_limit_minutes: 60, max_coins: 500,
           entry_fee_cents: 0, max_entries: '' as number | '', family_id: '', org_id: '',
+          is_sandbox: false, remote_invocation_supported: true,
           difficulty_profile: { reasoning_depth: 5, tool_dependence: 5, ambiguity: 5, deception: 5, time_pressure: 5, error_recovery_burden: 5, non_local_dependency: 5, evaluation_strictness: 5 },
         })
         fetchChallenges()
@@ -1033,19 +1083,19 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                       </select>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Starts At (UTC) *</label>
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Challenge Window Opens (UTC) *</label>
                       <input type="datetime-local" value={form.starts_at} onChange={e => setForm(f => ({ ...f, starts_at: e.target.value }))}
                         required className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Ends At (UTC) *</label>
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Challenge Window Closes (UTC) *</label>
                       <input type="datetime-local" value={form.ends_at} onChange={e => setForm(f => ({ ...f, ends_at: e.target.value }))}
                         required className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Time Limit (minutes)</label>
+                      <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]" title="Per-entry session: starts when a competitor opens the workspace. Separate from the challenge window. Default: 60 min.">Per-Entry Session (minutes)</label>
                       <input type="number" value={form.time_limit_minutes} onChange={e => setForm(f => ({ ...f, time_limit_minutes: Number(e.target.value) }))}
-                        min={5} max={480} className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
+                        min={5} max={480} placeholder="60" className="bg-[#0e0e0e] text-[#e5e2e1] px-4 py-2.5 rounded text-sm border-none outline-none focus:ring-1 focus:ring-[#adc6ff]/30" />
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-[10px] font-['JetBrains_Mono'] uppercase tracking-widest text-[#c2c6d5]">Max Coins Prize</label>
@@ -1127,6 +1177,34 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                         ))}
                       </div>
                     </div>
+                    {/* Submission path + environment controls */}
+                    <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-[#424753]/20">
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={form.remote_invocation_supported}
+                          onChange={e => setForm(f => ({ ...f, remote_invocation_supported: e.target.checked }))}
+                          className="mt-0.5 accent-[#adc6ff]"
+                        />
+                        <div>
+                          <span className="text-[11px] font-['JetBrains_Mono'] font-bold text-[#c2c6d5] block">Remote Agent Invocation</span>
+                          <span className="text-[10px] text-[#8c909f] font-['JetBrains_Mono']">Bouts calls the agent's HTTPS endpoint. Production submission path.</span>
+                        </div>
+                      </label>
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={form.is_sandbox}
+                          onChange={e => setForm(f => ({ ...f, is_sandbox: e.target.checked }))}
+                          className="mt-0.5 accent-[#ffb780]"
+                        />
+                        <div>
+                          <span className="text-[11px] font-['JetBrains_Mono'] font-bold text-[#c2c6d5] block">Sandbox Challenge</span>
+                          <span className="text-[10px] text-[#8c909f] font-['JetBrains_Mono']">Visible to all for practice. Does not affect public leaderboards. Not included in anon challenge list.</span>
+                        </div>
+                      </label>
+                    </div>
+
                     {formError && <p className="md:col-span-2 text-sm text-[#ffb4ab]">{formError}</p>}
                     <div className="md:col-span-2 flex gap-3">
                       <button type="submit" disabled={formSubmitting}
@@ -1499,14 +1577,20 @@ export default function AdminDashboardClient({ isAdmin }: AdminDashboardClientPr
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex flex-wrap gap-1">
-                              {(['publish_now', 'hold_reserve', 'queue_for_later', 'quarantine'] as const).map(action => (
+                              {([
+                                { action: 'publish_now',    label: 'Activate', color: 'text-[#7dffa2]', bg: 'bg-[#7dffa2]/10 hover:bg-[#7dffa2]/20' },
+                                { action: 'hold_reserve',   label: 'Hold in Reserve', color: 'text-[#adc6ff]', bg: 'bg-[#adc6ff]/10 hover:bg-[#adc6ff]/20' },
+                                { action: 'queue_for_later',label: 'Queue', color: 'text-[#c2c6d5]', bg: 'bg-[#201f1f] hover:bg-[#2a2a2a]' },
+                                { action: 'quarantine',     label: 'Quarantine', color: 'text-[#ffb780]', bg: 'bg-[#ffb780]/10 hover:bg-[#ffb780]/20' },
+                              ] as const).map(({ action, label, color, bg }) => (
                                 <button
                                   key={action}
                                   disabled={inventoryActionLoading === item.challenge_id}
                                   onClick={() => handleInventoryAction(item.challenge_id, action)}
-                                  className="px-2 py-1 bg-[#201f1f] text-[#c2c6d5] rounded text-[9px] font-bold hover:bg-[#2a2a2a] transition-colors disabled:opacity-50 uppercase tracking-wider"
+                                  className={`px-2 py-1 ${bg} ${color} rounded text-[9px] font-bold transition-colors disabled:opacity-50 uppercase tracking-wider`}
+                                  title={action}
                                 >
-                                  {inventoryActionLoading === item.challenge_id ? <Loader2 className="w-3 h-3 animate-spin" /> : action.replace(/_/g, ' ')}
+                                  {inventoryActionLoading === item.challenge_id ? <Loader2 className="w-3 h-3 animate-spin" /> : label}
                                 </button>
                               ))}
                             </div>

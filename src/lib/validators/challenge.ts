@@ -79,4 +79,8 @@ export const createChallengeSchema = z.object({
   family_id: z.string().optional(),
   org_id: z.string().uuid().optional().nullable(),
   retire_after_solves: z.number().int().min(5).max(500).optional().default(50),
+  // Submission path + environment controls
+  is_sandbox: z.boolean().optional().default(false),
+  remote_invocation_supported: z.boolean().optional().default(true),
+  web_submission_supported: z.boolean().optional().default(false),
 })

@@ -317,12 +317,29 @@ export default function ReplayPage() {
                       {new Date(replay.all_revealed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
                   )}
-                  {replay.placement != null && (
-                    <span className="flex items-center gap-1.5">
-                      <Trophy className="size-3.5 text-secondary" />
-                      {replay.placement === 1 ? '1st Place' : replay.placement === 2 ? '2nd Place' : replay.placement === 3 ? '3rd Place' : `#${replay.placement}`}
-                    </span>
-                  )}
+                  {replay.placement != null && (() => {
+                    const isProvisional =
+                      replay.challenge?.status === 'active' &&
+                      !!replay.challenge_ends_at &&
+                      new Date(replay.challenge_ends_at).getTime() > Date.now()
+                    const placementLabel =
+                      replay.placement === 1 ? '1st Place'
+                      : replay.placement === 2 ? '2nd Place'
+                      : replay.placement === 3 ? '3rd Place'
+                      : `#${replay.placement}`
+                    return (
+                      <span className="flex items-center gap-1.5">
+                        <Trophy className="size-3.5 text-secondary" />
+                        {placementLabel}
+                        {isProvisional && (
+                          <span
+                            className="text-[10px] text-on-surface-variant font-label"
+                            title="Official standings finalize when the challenge closes."
+                          >· provisional</span>
+                        )}
+                      </span>
+                    )
+                  })()}
                   {replay.challenge?.format && (
                     <span className="px-2 py-0.5 rounded bg-surface-container text-xs font-label capitalize">
                       {replay.challenge.format}
@@ -496,14 +513,26 @@ export default function ReplayPage() {
                   <span className="text-[10px] font-label text-secondary uppercase tracking-widest">
                     {getTierLabel(finalScore)}
                   </span>
-                  {replay.placement != null && (
-                    <div className="mt-2 flex items-center justify-end gap-1.5">
-                      <BadgeCheck className="size-3.5 text-secondary" />
-                      <span className="text-[11px] font-label font-bold text-on-surface-variant uppercase tracking-wider">
-                        {replay.placement === 1 ? '🥇 1st Place' : replay.placement === 2 ? '🥈 2nd Place' : replay.placement === 3 ? '🥉 3rd Place' : `#${replay.placement} Place`}
-                      </span>
-                    </div>
-                  )}
+                  {replay.placement != null && (() => {
+                    const isProvisional =
+                      replay.challenge?.status === 'active' &&
+                      !!replay.challenge_ends_at &&
+                      new Date(replay.challenge_ends_at).getTime() > Date.now()
+                    return (
+                      <div className="mt-2 flex items-center justify-end gap-1.5">
+                        <BadgeCheck className="size-3.5 text-secondary" />
+                        <span className="text-[11px] font-label font-bold text-on-surface-variant uppercase tracking-wider">
+                          {replay.placement === 1 ? '🥇 1st Place' : replay.placement === 2 ? '🥈 2nd Place' : replay.placement === 3 ? '🥉 3rd Place' : `#${replay.placement} Place`}
+                        </span>
+                        {isProvisional && (
+                          <span
+                            className="text-[9px] text-on-surface-variant font-label normal-case"
+                            title="Official standings finalize when the challenge closes."
+                          >· provisional</span>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               </div>
 

@@ -257,7 +257,7 @@ export default function ChallengeDetail() {
                         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Opens</span>
                       </div>
                       <div className="text-sm font-mono font-semibold text-foreground">
-                        {new Date(challenge.starts_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
+                        {new Date(challenge.starts_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
                       </div>
                     </div>
                   )}
@@ -268,7 +268,7 @@ export default function ChallengeDetail() {
                         <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Closes</span>
                       </div>
                       <div className="text-sm font-mono font-semibold text-foreground">
-                        {new Date(challenge.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
+                        {new Date(challenge.ends_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
                       </div>
                       <ChallengeCountdown endsAt={challenge.ends_at} isActive={isActive} />
                     </div>
@@ -298,10 +298,19 @@ export default function ChallengeDetail() {
               {/* Top Entries (if available) */}
               {challenge.entries && challenge.entries.length > 0 && (
                 <div className="rounded-xl border border-border bg-card p-5">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-1">
                     <span className="font-display font-bold text-foreground text-sm">Top Performers</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-primary/15 text-primary">Live</span>
+                    {isActive ? (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-[#adc6ff]/10 text-[#adc6ff]">Provisional</span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-primary/15 text-primary">Final</span>
+                    )}
                   </div>
+                  {isActive && (
+                    <p className="text-[10px] text-muted-foreground font-mono mb-3">
+                      Standings finalize when the challenge closes.
+                    </p>
+                  )}
                   <div className="space-y-4">
                     {challenge.entries.slice(0, 3).map((entry, i) => (
                       <div key={entry.id} className="flex items-center gap-3">
@@ -320,21 +329,16 @@ export default function ChallengeDetail() {
                 </div>
               )}
 
-              {/* Prize */}
+              {/* Entry — free at launch */}
               <div className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <Trophy className="w-4 h-4 text-amber" />
-                  <span className="font-display font-bold text-foreground text-sm">Prize Allocation</span>
+                  <span className="font-display font-bold text-foreground text-sm">Entry</span>
                 </div>
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-xs text-muted-foreground">Live Pool</span>
-                  <span className="text-xl font-mono font-bold text-primary">
-                    {challenge.prize_pool && challenge.prize_pool > 0
-                      ? `$${(challenge.prize_pool / 100).toFixed(0)} prize`
-                      : 'Free Entry'}
-                  </span>
+                  <span className="text-xl font-mono font-bold text-primary">Free</span>
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">Distributed to top-performing agents based on weighted performance metrics.</p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">Open to any registered agent. No entry fee required to compete.</p>
               </div>
             </div>
           </div>

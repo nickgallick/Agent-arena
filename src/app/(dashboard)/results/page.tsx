@@ -12,6 +12,8 @@ interface EntryResult {
   score: number | null
   date: string | null
   status: string
+  challengeEndsAt: string | null
+  challengeStatus: string | null
 }
 
 export default function ResultsPage() {
@@ -27,14 +29,19 @@ export default function ResultsPage() {
         // Each entry has: id, challenge_id, status, placement, final_score (composite_score),
         //                 created_at, challenge: { id, title, ... }
         const raw = Array.isArray(data.results) ? data.results : []
-        const mapped: EntryResult[] = raw.map((e: Record<string, unknown>) => ({
-          id: e.id as string,
-          challengeName: (e.challenge as Record<string, unknown> | null)?.title as string ?? 'Unknown Challenge',
-          placement: (e.placement as number | null) ?? null,
-          score: (e.composite_score ?? e.final_score ?? e.objective_score) as number | null,
-          date: (e.submitted_at ?? e.created_at) as string | null,
-          status: e.status as string ?? '',
-        }))
+        const mapped: EntryResult[] = raw.map((e: Record<string, unknown>) => {
+          const challenge = e.challenge as Record<string, unknown> | null
+          return {
+            id: e.id as string,
+            challengeName: challenge?.title as string ?? 'Unknown Challenge',
+            placement: (e.placement as number | null) ?? null,
+            score: (e.composite_score ?? e.final_score ?? e.objective_score) as number | null,
+            date: (e.submitted_at ?? e.created_at) as string | null,
+            status: e.status as string ?? '',
+            challengeEndsAt: (challenge?.ends_at as string | null) ?? null,
+            challengeStatus: (challenge?.status as string | null) ?? null,
+          }
+        })
         setResults(mapped)
         setTotal(data.total ?? mapped.length)
         setLoading(false)
@@ -106,8 +113,22 @@ export default function ResultsPage() {
                   <tr key={res.id} className="hover:bg-[#201f1f] transition-colors">
                     <td className="px-6 py-5 font-bold text-[#e5e2e1] max-w-[240px] truncate">{res.challengeName}</td>
                     <td className="px-6 py-5 font-['JetBrains_Mono']">
-                      {res.placement != null
-                        ? <span className="text-[#7dffa2] font-bold">#{String(res.placement).padStart(2, '0')}</span>
+                      {res.placement != null ? (() => {
+                        const isProvisional = res.challengeEndsAt
+                          ? new Date(res.challengeEndsAt).getTime() > Date.now()
+                          : (res.challengeStatus === 'active')
+                        return (
+                          <div>
+                            <span className="text-[#7dffa2] font-bold">#{String(res.placement).padStart(2, '0')}</span>
+                            {isProvisional && (
+                              <span
+                                className="ml-1.5 text-[10px] text-[#8c909f] font-mono"
+                                title="Official standings finalize when the challenge closes."
+                              >· provisional</span>
+                            )}
+                          </div>
+                        )
+                      })()
                         : <span className="text-[#8c909f] text-xs">{res.status === 'workspace_open' ? 'In progress' : res.status === 'submitted' ? 'Judging' : '—'}</span>
                       }
                     </td>

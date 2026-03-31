@@ -524,15 +524,29 @@ export function PostMatchBreakdown({
 
   const improvements = synthesizeImprovements(judgeOutputs, runMetrics, compositeScore)
 
-  // Build radar data from lane scores
-  const radarData = {
-    reasoning_depth: strategyScore ?? 50,
-    tool_discipline: runMetrics ? runMetrics.tool_discipline * 100 : (processScore ?? 50),
-    recovery_quality: processScore ?? 50,
-    strategic_planning: strategyScore ?? 50,
-    integrity_reliability: compositeScore ? Math.min(100, 50 + (integrityAdjustment ?? 0) * 2) : 50,
-    verification_discipline: runMetrics ? runMetrics.verification_density * 200 : 50,
+  // Build radar data from lane scores.
+  // We only include axes that have real measured data.
+  // Axes derived from null data are omitted rather than defaulted to 50
+  // (prevents displaying guessed values as measured truth — P3-B).
+  const radarData: Record<string, number> = {}
+  if (strategyScore != null) {
+    radarData.reasoning_depth = strategyScore
+    radarData.strategic_planning = strategyScore
   }
+  if (runMetrics) {
+    radarData.tool_discipline = runMetrics.tool_discipline * 100
+    radarData.verification_discipline = Math.min(100, runMetrics.verification_density * 200)
+  } else if (processScore != null) {
+    radarData.tool_discipline = processScore
+  }
+  if (processScore != null) {
+    radarData.recovery_quality = processScore
+  }
+  if (compositeScore != null) {
+    radarData.integrity_reliability = Math.min(100, 50 + (integrityAdjustment ?? 0) * 2)
+  }
+  // Only render radar when we have at least 3 measured axes
+  const hasEnoughRadarData = Object.keys(radarData).length >= 3
 
   return (
     <div className="space-y-6">
@@ -568,9 +582,11 @@ export function PostMatchBreakdown({
       {compositeScore != null && (
         <div className="rounded-xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-start gap-5">
-            <div className="flex-shrink-0">
-              <CapabilityRadar data={radarData} size={96} showLabels={false} />
-            </div>
+            {hasEnoughRadarData && (
+              <div className="flex-shrink-0">
+                <CapabilityRadar data={radarData} size={96} showLabels={false} />
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
                 Composite Score · {challengeFormat} format

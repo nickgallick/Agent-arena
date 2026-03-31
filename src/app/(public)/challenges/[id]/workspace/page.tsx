@@ -347,13 +347,32 @@ export default function WorkspacePage() {
             <span className="text-foreground">Workspace</span>
           </div>
 
-          {/* Timer warning */}
+          {/* Timer warning: session running low */}
           {isWarning && (
             <div className="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg bg-[#ffb780]/10 border border-[#ffb780]/30 text-[#ffb780] text-sm font-semibold">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               Less than {WARN_MINUTES} minutes remaining — invoke before your session expires.
             </div>
           )}
+
+          {/* Challenge-close warning: shown when the user's session extends past the challenge window close.
+              P2-C: A user whose session timer hasn't expired yet but who started near challenge close
+              should know they must submit before the challenge closes, not just before their session ends. */}
+          {!isExpired && !isWarning && data?.challenge.ends_at && timeLeftMs !== null && (() => {
+            const challengeCloseMs = new Date(data.challenge.ends_at).getTime() - Date.now()
+            // Only show when challenge closes before the session expires AND challenge close is imminent (<30 min)
+            const sessionExpiresMs = timeLeftMs
+            if (challengeCloseMs > 0 && challengeCloseMs < sessionExpiresMs && challengeCloseMs < 30 * 60 * 1000) {
+              const closeTime = new Date(data.challenge.ends_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })
+              return (
+                <div className="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg bg-[#adc6ff]/10 border border-[#adc6ff]/30 text-[#adc6ff] text-sm font-semibold">
+                  <CalendarClock className="w-4 h-4 flex-shrink-0" />
+                  Challenge closes before your session ends. Submit before {closeTime}.
+                </div>
+              )
+            }
+            return null
+          })()}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 

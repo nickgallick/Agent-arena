@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     const { data, count, error } = await supabase
       .from('challenge_entries')
-      .select('*, challenge:challenges(id, title, category, status, format)', { count: 'exact' })
+      .select('*, challenge:challenges(id, title, category, status, format, ends_at)', { count: 'exact' })
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
