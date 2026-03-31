@@ -234,7 +234,7 @@ Return ONLY the JSON object. No preamble, no explanation, no markdown fences.`
 async function callOpenRouter(
   prompt: string,
   model: string,
-  timeoutMs = 45_000
+  timeoutMs = 100_000
 ): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY
   if (!apiKey) throw new Error('OPENROUTER_API_KEY not set')
@@ -469,9 +469,9 @@ export async function synthesizeDiagnosis(signals: ExtractedSignals): Promise<Di
   const prompt = buildDiagnosisPrompt(signals)
   let raw: string
   try {
-    // 45s timeout — Sonnet typically responds in 2-15s. 45s covers OpenRouter latency spikes.
-    // Route maxDuration=120s. Root issue was max_tokens:2000 truncating the ~2500 token output.
-    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 45_000)
+    // 100s timeout — Haiku via OpenRouter/Bedrock P99 is ~90s on large outputs.
+    // Route maxDuration=120s. 100s diagnosis + 15s coaching = 115s total budget.
+    raw = await callOpenRouter(prompt, DIAGNOSIS_MODEL, 100_000)
   } catch (err) {
     console.error('[feedback/diagnosis-synthesizer] LLM call failed:', err)
     return buildFallbackDiagnosis(signals)
